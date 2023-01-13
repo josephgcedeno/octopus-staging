@@ -5,7 +5,7 @@ An article explaining the deeper intricacies of the template can be found here: 
 
 ## Demo
 
-Download the Flirt demo app from Google Play Store: https://play.google.com/store/apps/details?id=com.nuxify.flirt
+Download the Flirt demo app from Google Play Store: https://play.google.com/store/apps/details?id=com.nuxify.octopus
 
 Coming soon in Apple App Store.
 

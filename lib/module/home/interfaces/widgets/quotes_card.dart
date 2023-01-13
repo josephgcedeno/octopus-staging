@@ -1,9 +1,10 @@
 import 'dart:async';
-import 'package:flirt/configs/themes.dart';
-import 'package:flirt/module/home/service/cubit/quote_cubit.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
+import 'package:octopus/configs/themes.dart';
+import 'package:octopus/module/home/service/cubit/quote_cubit.dart';
 import 'package:shimmer/shimmer.dart';
 
 class QuotesCard extends StatefulWidget {

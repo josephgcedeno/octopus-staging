@@ -1,8 +1,8 @@
-import 'package:flirt/infrastructures/models/api_response.dart';
-import 'package:flirt/infrastructures/models/quote/quote_response.dart';
-import 'package:flirt/infrastructures/repository/interfaces/quote_repository.dart';
-import 'package:flirt/module/home/service/cubit/quote_dto.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/infrastructures/models/api_response.dart';
+import 'package:octopus/infrastructures/models/quote/quote_response.dart';
+import 'package:octopus/infrastructures/repository/interfaces/quote_repository.dart';
+import 'package:octopus/module/home/service/cubit/quote_dto.dart';
 
 part 'quote_state.dart';
 

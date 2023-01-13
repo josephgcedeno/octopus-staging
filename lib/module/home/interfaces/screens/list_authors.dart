@@ -1,9 +1,9 @@
-import 'package:flirt/configs/themes.dart';
-import 'package:flirt/module/home/interfaces/widgets/floating_button.dart';
-import 'package:flirt/module/home/service/cubit/quote_cubit.dart';
-import 'package:flirt/module/home/service/cubit/quote_dto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/configs/themes.dart';
+import 'package:octopus/module/home/interfaces/widgets/floating_button.dart';
+import 'package:octopus/module/home/service/cubit/quote_cubit.dart';
+import 'package:octopus/module/home/service/cubit/quote_dto.dart';
 
 class ListAuthors extends StatelessWidget {
   ListAuthors({Key? key}) : super(key: key);
@@ -20,7 +20,7 @@ class ListAuthors extends StatelessWidget {
         // ignore: use_decorated_box
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(colors: flirtGradient),
+            gradient: LinearGradient(colors: octopusGradient),
           ),
         ),
         elevation: 0,
@@ -28,7 +28,7 @@ class ListAuthors extends StatelessWidget {
       body: DecoratedBox(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: flirtGradient,
+            colors: octopusGradient,
           ),
         ),
         child: Center(

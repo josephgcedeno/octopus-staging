@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flirt/infrastructures/models/api_response.dart';
-import 'package:flirt/infrastructures/models/quote/quote_response.dart';
-import 'package:flirt/infrastructures/repository/interfaces/quote_repository.dart';
+
 import 'package:http/http.dart' as http;
+import 'package:octopus/infrastructures/models/api_response.dart';
+import 'package:octopus/infrastructures/models/quote/quote_response.dart';
+import 'package:octopus/infrastructures/repository/interfaces/quote_repository.dart';
 
 class QuoteRepository implements IQuoteRepository {
   final String _baseURL = 'api.quotable.io';

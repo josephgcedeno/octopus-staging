@@ -35,7 +35,7 @@ TextTheme _buildDefaultTextTheme(TextTheme base) {
 const Color shimmerBase = Colors.white38;
 const Color shimmerGlow = Colors.white60;
 
-const List<Color> flirtGradient = <Color>[
+const List<Color> octopusGradient = <Color>[
   Color(0xFFFB6BA3),
   Color(0xFFFF38A6),
   Color(0xFFEE1E6F),

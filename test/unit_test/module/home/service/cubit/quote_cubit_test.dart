@@ -1,10 +1,10 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:flirt/infrastructures/models/api_response.dart';
-import 'package:flirt/infrastructures/models/quote/quote_response.dart';
-import 'package:flirt/infrastructures/repository/quote_repository.dart';
-import 'package:flirt/module/home/service/cubit/quote_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:octopus/infrastructures/models/api_response.dart';
+import 'package:octopus/infrastructures/models/quote/quote_response.dart';
+import 'package:octopus/infrastructures/repository/quote_repository.dart';
+import 'package:octopus/module/home/service/cubit/quote_cubit.dart';
 
 class MockQuoteRepository extends Mock implements QuoteRepository {}
 

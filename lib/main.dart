@@ -1,10 +1,10 @@
-import 'package:flirt/configs/themes.dart';
-import 'package:flirt/infrastructures/repository/quote_repository.dart';
-import 'package:flirt/module/home/interfaces/screens/home_screen.dart';
-import 'package:flirt/module/home/service/cubit/quote_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:octopus/configs/themes.dart';
+import 'package:octopus/infrastructures/repository/quote_repository.dart';
+import 'package:octopus/module/home/interfaces/screens/home_screen.dart';
+import 'package:octopus/module/home/service/cubit/quote_cubit.dart';
 
 void main() async {
   /// Load env file
