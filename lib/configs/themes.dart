@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 final ThemeData defaultTheme = _buildDefaultTheme();
-const Color kPink = Color(0xFFFB6BA3);
+const Color kBlue = Color(0xFF017BFF);
 
 ThemeData _buildDefaultTheme() {
   final ThemeData base = ThemeData.light();
   return base.copyWith(
     textTheme: _buildDefaultTextTheme(base.textTheme),
-    primaryColor: kPink,
+    primaryColor: kBlue,
     colorScheme: base.colorScheme.copyWith(
-      secondary: const Color(0xFF004e92),
+      secondary: Colors.orange,
     ),
   );
 }
@@ -34,9 +34,3 @@ TextTheme _buildDefaultTextTheme(TextTheme base) {
 
 const Color shimmerBase = Colors.white38;
 const Color shimmerGlow = Colors.white60;
-
-const List<Color> octopusGradient = <Color>[
-  Color(0xFFFB6BA3),
-  Color(0xFFFF38A6),
-  Color(0xFFEE1E6F),
-];
