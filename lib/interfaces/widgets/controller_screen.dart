@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:octopus/module/home/interfaces/screens/home_screen.dart';
+import 'package:octopus/module/menu/interfaces/screens/menu_screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class ControllerScreen extends StatefulWidget {
   const ControllerScreen({Key? key}) : super(key: key);
+  static const String routeName = '/controller';
 
   @override
   State<ControllerScreen> createState() => _ControllerScreenState();
@@ -16,7 +18,7 @@ class _ControllerScreenState extends State<ControllerScreen> {
     return <Widget>[
       const HomeScreen(),
       const HomeScreen(),
-      const HomeScreen(),
+      const MenuScreen(),
     ];
   }
 
