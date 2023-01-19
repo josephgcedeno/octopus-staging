@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:octopus/module/home/interfaces/screens/home_screen.dart';
-import 'package:octopus/module/home/service/cubit/quote_cubit.dart';
-import 'package:octopus/module/home/service/cubit/quote_dto.dart';
+import 'package:octopus/module/time_in/interfaces/screens/time_in_screen.dart';
+import 'package:octopus/module/time_in/service/cubit/quote_cubit.dart';
+import 'package:octopus/module/time_in/service/cubit/quote_dto.dart';
 
 class MockQuoteCubit extends MockCubit<QuoteState> implements QuoteCubit {}
 
@@ -21,7 +21,7 @@ void main() {
         BlocProvider<QuoteCubit>(
           create: (BuildContext context) => mockQuoteCubit,
           child: const MaterialApp(
-            home: HomeScreen(),
+            home: TimeInScreen(),
           ),
         ),
       );

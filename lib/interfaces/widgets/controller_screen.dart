@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:octopus/module/home/interfaces/screens/home_screen.dart';
+import 'package:octopus/module/dsr/interfaces/screens/dsr_screen.dart';
 import 'package:octopus/module/menu/interfaces/screens/menu_screen.dart';
+import 'package:octopus/module/time_in/interfaces/screens/time_in_screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class ControllerScreen extends StatefulWidget {
@@ -16,8 +17,8 @@ class _ControllerScreenState extends State<ControllerScreen> {
 
   List<Widget> _buildScreens() {
     return <Widget>[
-      const HomeScreen(),
-      const HomeScreen(),
+      const TimeInScreen(),
+      const DSRScreen(),
       const MenuScreen(),
     ];
   }
@@ -25,26 +26,20 @@ class _ControllerScreenState extends State<ControllerScreen> {
   List<PersistentBottomNavBarItem> _navBarsItems() {
     return <PersistentBottomNavBarItem>[
       PersistentBottomNavBarItem(
-        icon: const Icon(
-          Icons.dashboard_rounded,
-        ),
-        activeColorPrimary: Colors.orange,
+        icon: const Icon(Icons.timer_rounded),
+        activeColorPrimary: Colors.orange.shade300,
         inactiveColorPrimary: Colors.white,
         title: 'Dashboard',
       ),
       PersistentBottomNavBarItem(
-        icon: const Icon(
-          Icons.document_scanner,
-        ),
-        activeColorPrimary: Colors.orange,
+        icon: const Icon(Icons.document_scanner),
+        activeColorPrimary: Colors.orange.shade300,
         inactiveColorPrimary: Colors.white,
         title: 'DSR',
       ),
       PersistentBottomNavBarItem(
-        icon: const Icon(
-          Icons.menu_rounded,
-        ),
-        activeColorPrimary: Colors.orange,
+        icon: const Icon(Icons.dashboard_rounded),
+        activeColorPrimary: Colors.orange.shade300,
         inactiveColorPrimary: Colors.white,
         title: 'Others',
       ),

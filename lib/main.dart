@@ -4,7 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/repository/quote_repository.dart';
 import 'package:octopus/interfaces/widgets/controller_screen.dart';
-import 'package:octopus/module/home/service/cubit/quote_cubit.dart';
+import 'package:octopus/module/time_in/service/cubit/quote_cubit.dart';
 
 void main() async {
   /// Load env file
