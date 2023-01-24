@@ -32,9 +32,11 @@ dependencies:
   flutter_neumorphic: ^3.2.0
   flutter_secure_storage: ^6.0.0
   http: ^0.13.5
+  intl: ^0.18.0
   json_annotation: ^4.7.0
   path: ^1.8.2
   path_provider: ^2.0.11
+  percent_indicator: ^4.2.2
   persistent_bottom_nav_bar: ^5.0.2
   shimmer: ^2.0.0
   url_launcher: ^6.1.6
@@ -71,14 +73,14 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: Nunito
+    - family: Gilroy
       fonts:
-        - asset: assets/fonts/Nunito/Nunito-Regular.ttf
-        - asset: assets/fonts/Nunito/Nunito-Italic.ttf
+        - asset: assets/fonts/Gilroy/Gilroy-Regular.ttf
+        - asset: assets/fonts/Gilroy/Gilroy-Italic.ttf
           style: italic
-        - asset: assets/fonts/Nunito/Nunito-Light.ttf
+        - asset: assets/fonts/Gilroy/Gilroy-Light.ttf
           weight: 300
-        - asset: assets/fonts/Nunito/Nunito-LightItalic.ttf
+        - asset: assets/fonts/Gilroy/Gilroy-LightItalic.ttf
           weight: 300
           style: italic
   #   - family: Trajan Pro
