@@ -16,19 +16,19 @@ ThemeData _buildDefaultTheme() {
 
 TextTheme _buildDefaultTextTheme(TextTheme base) {
   return base.copyWith(
-    headline6: base.headline6?.copyWith(fontFamily: 'Nunito'),
-    headline5: base.headline5?.copyWith(fontFamily: 'Nunito'),
-    headline4: base.headline4?.copyWith(fontFamily: 'Nunito'),
-    headline3: base.headline3?.copyWith(fontFamily: 'Nunito'),
-    headline2: base.headline2?.copyWith(fontFamily: 'Nunito'),
-    headline1: base.headline1?.copyWith(fontFamily: 'Nunito'),
-    subtitle2: base.subtitle2?.copyWith(fontFamily: 'Nunito'),
-    subtitle1: base.subtitle1?.copyWith(fontFamily: 'Nunito'),
-    bodyText2: base.bodyText2?.copyWith(fontFamily: 'Nunito'),
-    bodyText1: base.bodyText1?.copyWith(fontFamily: 'Nunito'),
-    caption: base.caption?.copyWith(fontFamily: 'Nunito'),
-    button: base.button?.copyWith(fontFamily: 'Nunito'),
-    overline: base.overline?.copyWith(fontFamily: 'Nunito'),
+    headline6: base.headline6?.copyWith(fontFamily: 'Gilroy'),
+    headline5: base.headline5?.copyWith(fontFamily: 'Gilroy'),
+    headline4: base.headline4?.copyWith(fontFamily: 'Gilroy'),
+    headline3: base.headline3?.copyWith(fontFamily: 'Gilroy'),
+    headline2: base.headline2?.copyWith(fontFamily: 'Gilroy'),
+    headline1: base.headline1?.copyWith(fontFamily: 'Gilroy'),
+    subtitle2: base.subtitle2?.copyWith(fontFamily: 'Gilroy'),
+    subtitle1: base.subtitle1?.copyWith(fontFamily: 'Gilroy'),
+    bodyText2: base.bodyText2?.copyWith(fontFamily: 'Gilroy'),
+    bodyText1: base.bodyText1?.copyWith(fontFamily: 'Gilroy'),
+    caption: base.caption?.copyWith(fontFamily: 'Gilroy'),
+    button: base.button?.copyWith(fontFamily: 'Gilroy'),
+    overline: base.overline?.copyWith(fontFamily: 'Gilroy'),
   );
 }
 
