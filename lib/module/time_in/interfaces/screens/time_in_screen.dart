@@ -44,7 +44,9 @@ class _TimeInScreenState extends State<TimeInScreen> {
               Icons.grid_view_rounded,
               color: Colors.black,
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
           actions: <Widget>[
             Padding(
