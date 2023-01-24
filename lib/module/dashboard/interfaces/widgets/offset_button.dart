@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 class OffsetButton extends StatelessWidget {
@@ -12,9 +13,11 @@ class OffsetButton extends StatelessWidget {
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all(const Color(0xFFE5F2FF)),
         elevation: MaterialStateProperty.all(0),
-        padding: MaterialStateProperty.all(
-          const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-        ),
+        padding: kIsWeb
+            ? MaterialStateProperty.all(
+                const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+              )
+            : MaterialStateProperty.all(const EdgeInsets.all(12)),
         shape: MaterialStateProperty.all(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -23,10 +26,15 @@ class OffsetButton extends StatelessWidget {
       ),
       child: Text(
         'Request for offset',
-        style: theme.textTheme.bodyText2?.copyWith(
-          color: theme.primaryColor,
-          fontWeight: FontWeight.w600,
-        ),
+        style: kIsWeb
+            ? theme.textTheme.bodyText2?.copyWith(
+                color: theme.primaryColor,
+                fontWeight: FontWeight.w600,
+              )
+            : theme.textTheme.caption?.copyWith(
+                color: theme.primaryColor,
+                fontWeight: FontWeight.w600,
+              ),
       ),
     );
   }

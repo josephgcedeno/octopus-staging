@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:octopus/module/dashboard/interfaces/widgets/details.dart';
 import 'package:octopus/module/dashboard/interfaces/widgets/dtr_clock.dart';
@@ -66,12 +67,14 @@ class _TimeInScreenState extends State<TimeInScreen> {
               Center(
                 child: Padding(
                   padding: EdgeInsets.only(
-                    top: height * 0.035,
+                    // top: height * 0.035,
                     bottom: height * 0.03,
                   ),
                   child: Text(
                     'Daily Time Record',
-                    style: theme.textTheme.headline6,
+                    style: kIsWeb
+                        ? theme.textTheme.headline6
+                        : theme.textTheme.subtitle1,
                   ),
                 ),
               ),

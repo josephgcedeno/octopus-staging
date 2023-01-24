@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -117,6 +117,16 @@ class _DTRClockState extends State<DTRClock> {
     final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
 
+    final TextStyle? timerTextStyle = kIsWeb
+        ? theme.textTheme.headline3?.copyWith(
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+          )
+        : theme.textTheme.headline4?.copyWith(
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+          );
+
     return Container(
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
@@ -146,13 +156,7 @@ class _DTRClockState extends State<DTRClock> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text(
-                        '0:00:00',
-                        style: theme.textTheme.headline3?.copyWith(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      Text('0:00:00', style: timerTextStyle),
                     ],
                   )
                 else if (isOvertime())
@@ -162,10 +166,7 @@ class _DTRClockState extends State<DTRClock> {
                       Text('+', style: theme.textTheme.headline5),
                       Text(
                         formatTimer(elapsed),
-                        style: theme.textTheme.headline3?.copyWith(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: timerTextStyle,
                       ),
                     ],
                   )
@@ -186,16 +187,15 @@ class _DTRClockState extends State<DTRClock> {
                       }
                       return Text(
                         formatTimer(value),
-                        style: theme.textTheme.headline3?.copyWith(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: timerTextStyle,
                       );
                     },
                   ),
                 Text(
                   clockLabel(),
-                  style: theme.textTheme.subtitle1,
+                  style: kIsWeb
+                      ? theme.textTheme.subtitle1
+                      : theme.textTheme.caption,
                 )
               ],
             ),

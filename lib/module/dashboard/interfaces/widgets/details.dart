@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 class DTRDetails extends StatelessWidget {
@@ -7,6 +8,7 @@ class DTRDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final double height = MediaQuery.of(context).size.height;
+    final double width = MediaQuery.of(context).size.width;
 
     final List<String> labels = <String>[
       'Date today:',
@@ -24,8 +26,11 @@ class DTRDetails extends StatelessWidget {
     ];
 
     return Container(
-      padding: EdgeInsets.only(top: height * 0.05, bottom: height * 0.03),
-      width: 350,
+      padding: EdgeInsets.only(
+        top: height * 0.05,
+        bottom: kIsWeb ? height * 0.03 : 0,
+      ),
+      width: kIsWeb ? 350 : width * 0.7,
       child: Column(
         children: <Widget>[
           for (int i = 0; i < 5; i++)
@@ -41,7 +46,7 @@ class DTRDetails extends StatelessWidget {
                   ),
                   Text(
                     values[i],
-                    style: theme.textTheme.subtitle1,
+                    style: theme.textTheme.bodyText2,
                   ),
                 ],
               ),

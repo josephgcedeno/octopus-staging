@@ -52,6 +52,7 @@ class _ControllerScreenState extends State<ControllerScreen> {
       appBar: AppBar(
         elevation: 0,
         toolbarHeight: 0,
+        backgroundColor: Colors.white,
       ),
       body: PersistentTabView(
         context,

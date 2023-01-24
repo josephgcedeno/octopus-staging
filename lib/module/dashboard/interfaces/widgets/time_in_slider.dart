@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 class TimeInSlider extends StatefulWidget {
@@ -19,11 +20,14 @@ class _TimeInSliderState extends State<TimeInSlider> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final double height = MediaQuery.of(context).size.height;
+    final double width = MediaQuery.of(context).size.width;
 
     return Container(
-      width: 370,
+      width: kIsWeb ? 370 : width * 0.8,
       height: height * 0.07,
-      margin: EdgeInsets.only(top: height * 0.08),
+      margin: kIsWeb
+          ? EdgeInsets.only(top: height * 0.08)
+          : EdgeInsets.only(top: height * 0.02),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: <Color>[
