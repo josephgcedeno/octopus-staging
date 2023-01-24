@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:octopus/module/dashboard/interfaces/widgets/details.dart';
+import 'package:octopus/module/dashboard/interfaces/widgets/dtr_clock.dart';
+import 'package:octopus/module/dashboard/interfaces/widgets/time_in_slider.dart';
 
 class TimeInScreen extends StatefulWidget {
   const TimeInScreen({Key? key}) : super(key: key);
@@ -9,39 +12,81 @@ class TimeInScreen extends StatefulWidget {
   State<TimeInScreen> createState() => _TimeInScreenState();
 }
 
-class _TimeInScreenState extends State<TimeInScreen>
-    with TickerProviderStateMixin {
-  late AnimationController controller;
-
-  @override
-  void initState() {
-    controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..addListener(() {
-        setState(() {});
+class _TimeInScreenState extends State<TimeInScreen> {
+  Future<bool> timeInTimeOut(DismissDirection dir) async {
+    if (timeInEpoch == -1) {
+      setState(() {
+        timeInEpoch = DateTime.now().millisecondsSinceEpoch;
       });
-    // controller.repeat(reverse: true);
-
-    super.initState();
+    } else {
+      setState(() => timeInEpoch = -1);
+    }
+    return false;
   }
 
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
+  int timeInEpoch = -1;
 
   @override
   Widget build(BuildContext context) {
-    // final ThemeData theme = Theme.of(context);
-    // final double width = MediaQuery.of(context).size.width;
-    // final double height = MediaQuery.of(context).size.height;
+    final ThemeData theme = Theme.of(context);
+    final double width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery.of(context).size.height;
 
-    return Column(
-      children: const <Widget>[
-        Center(child: Text('Time IN/OUT Screen')),
-      ],
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          leading: IconButton(
+            icon: const Icon(
+              Icons.grid_view_rounded,
+              color: Colors.black,
+            ),
+            onPressed: () {},
+          ),
+          actions: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(right: width * 0.025),
+              child: const CircleAvatar(
+                radius: 18,
+                backgroundColor: Colors.black,
+                child: Icon(
+                  Icons.face,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+          elevation: 0,
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Center(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    top: height * 0.035,
+                    bottom: height * 0.1,
+                  ),
+                  child: Text(
+                    'Daily Time Record',
+                    style: theme.textTheme.headline6,
+                  ),
+                ),
+              ),
+              DTRClock(
+                timeInEpoch: timeInEpoch,
+                key: UniqueKey(),
+              ),
+              const DTRDetails(),
+              TimeInSlider(
+                onSlide: timeInTimeOut,
+                timeInEpoch: timeInEpoch,
+              )
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
