@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:octopus/module/dashboard/interfaces/widgets/details.dart';
 import 'package:octopus/module/dashboard/interfaces/widgets/dtr_clock.dart';
+import 'package:octopus/module/dashboard/interfaces/widgets/offset_button.dart';
 import 'package:octopus/module/dashboard/interfaces/widgets/time_in_slider.dart';
 
 class TimeInScreen extends StatefulWidget {
@@ -66,7 +67,7 @@ class _TimeInScreenState extends State<TimeInScreen> {
                 child: Padding(
                   padding: EdgeInsets.only(
                     top: height * 0.035,
-                    bottom: height * 0.1,
+                    bottom: height * 0.03,
                   ),
                   child: Text(
                     'Daily Time Record',
@@ -79,6 +80,7 @@ class _TimeInScreenState extends State<TimeInScreen> {
                 key: UniqueKey(),
               ),
               const DTRDetails(),
+              const OffsetButton(),
               TimeInSlider(
                 onSlide: timeInTimeOut,
                 timeInEpoch: timeInEpoch,

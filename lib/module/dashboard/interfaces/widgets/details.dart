@@ -24,7 +24,7 @@ class DTRDetails extends StatelessWidget {
     ];
 
     return Container(
-      padding: EdgeInsets.only(top: height * 0.05),
+      padding: EdgeInsets.only(top: height * 0.05, bottom: height * 0.03),
       width: 350,
       child: Column(
         children: <Widget>[

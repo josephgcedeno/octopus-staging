@@ -23,7 +23,7 @@ class _TimeInSliderState extends State<TimeInSlider> {
     return Container(
       width: 370,
       height: height * 0.07,
-      margin: EdgeInsets.only(top: height * 0.03),
+      margin: EdgeInsets.only(top: height * 0.08),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: <Color>[
