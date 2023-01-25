@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ToolButton extends StatelessWidget {
-  const ToolButton({
+class DashboardButton extends StatelessWidget {
+  const DashboardButton({
     required this.icon,
     required this.label,
     required this.onTap,
@@ -36,7 +36,7 @@ class ToolButton extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
                   label,
-                  style: theme.textTheme.subtitle1,
+                  style: theme.textTheme.bodyText1,
                 ),
               ),
             ],

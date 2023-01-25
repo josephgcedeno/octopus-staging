@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/module/dashboard/interfaces/widgets/details.dart';
 import 'package:octopus/module/dashboard/interfaces/widgets/dtr_clock.dart';
 import 'package:octopus/module/dashboard/interfaces/widgets/offset_button.dart';
@@ -31,67 +32,35 @@ class _TimeInScreenState extends State<TimeInScreen> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
 
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          leading: IconButton(
-            icon: const Icon(
-              Icons.grid_view_rounded,
-              color: Colors.black,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          actions: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(right: width * 0.025),
-              child: const CircleAvatar(
-                radius: 18,
-                backgroundColor: Colors.black,
-                child: Icon(
-                  Icons.face,
-                  color: Colors.white,
+    return Scaffold(
+      appBar: const GlobalAppBar(leading: LeadingButton.menu),
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Center(
+              child: Padding(
+                padding: EdgeInsets.only(bottom: height * 0.03),
+                child: Text(
+                  'Daily Time Record',
+                  style: kIsWeb
+                      ? theme.textTheme.headline6
+                      : theme.textTheme.subtitle1,
                 ),
               ),
             ),
+            DTRClock(
+              timeInEpoch: timeInEpoch,
+              key: UniqueKey(),
+            ),
+            const DTRDetails(),
+            const OffsetButton(),
+            TimeInSlider(
+              onSlide: timeInTimeOut,
+              timeInEpoch: timeInEpoch,
+            )
           ],
-          elevation: 0,
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    // top: height * 0.035,
-                    bottom: height * 0.03,
-                  ),
-                  child: Text(
-                    'Daily Time Record',
-                    style: kIsWeb
-                        ? theme.textTheme.headline6
-                        : theme.textTheme.subtitle1,
-                  ),
-                ),
-              ),
-              DTRClock(
-                timeInEpoch: timeInEpoch,
-                key: UniqueKey(),
-              ),
-              const DTRDetails(),
-              const OffsetButton(),
-              TimeInSlider(
-                onSlide: timeInTimeOut,
-                timeInEpoch: timeInEpoch,
-              )
-            ],
-          ),
         ),
       ),
     );
