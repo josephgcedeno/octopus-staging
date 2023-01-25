@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/quote/quote_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/quote_repository.dart';
-import 'package:octopus/module/time_in/service/cubit/quote_dto.dart';
+import 'package:octopus/module/time_record/service/cubit/quote_dto.dart';
 
 part 'quote_state.dart';
 

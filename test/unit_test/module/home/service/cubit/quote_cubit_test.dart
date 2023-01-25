@@ -4,7 +4,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/quote/quote_response.dart';
 import 'package:octopus/infrastructures/repository/quote_repository.dart';
-import 'package:octopus/module/time_in/service/cubit/quote_cubit.dart';
+import 'package:octopus/module/time_record/service/cubit/quote_cubit.dart';
 
 class MockQuoteRepository extends Mock implements QuoteRepository {}
 

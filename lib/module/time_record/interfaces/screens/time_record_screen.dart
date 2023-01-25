@@ -1,21 +1,21 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
-import 'package:octopus/module/dashboard/interfaces/widgets/details.dart';
-import 'package:octopus/module/dashboard/interfaces/widgets/dtr_clock.dart';
-import 'package:octopus/module/dashboard/interfaces/widgets/offset_button.dart';
-import 'package:octopus/module/dashboard/interfaces/widgets/time_in_slider.dart';
+import 'package:octopus/module/time_record/interfaces/widgets/details.dart';
+import 'package:octopus/module/time_record/interfaces/widgets/dtr_clock.dart';
+import 'package:octopus/module/time_record/interfaces/widgets/offset_button.dart';
+import 'package:octopus/module/time_record/interfaces/widgets/time_record_slider.dart';
 
-class TimeInScreen extends StatefulWidget {
-  const TimeInScreen({Key? key}) : super(key: key);
+class TimeRecordScreen extends StatefulWidget {
+  const TimeRecordScreen({Key? key}) : super(key: key);
 
-  static const String routeName = '/time_in';
+  static const String routeName = '/time_record';
 
   @override
-  State<TimeInScreen> createState() => _TimeInScreenState();
+  State<TimeRecordScreen> createState() => _TimeRecordScreenState();
 }
 
-class _TimeInScreenState extends State<TimeInScreen> {
+class _TimeRecordScreenState extends State<TimeRecordScreen> {
   Future<bool> timeInTimeOut(DismissDirection dir) async {
     if (timeInEpoch == -1) {
       setState(() {

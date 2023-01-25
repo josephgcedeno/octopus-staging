@@ -68,7 +68,7 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
           padding: EdgeInsets.only(right: 15),
           child: CircleAvatar(
             radius: 18,
-            backgroundColor: Colors.black,
+            backgroundColor: Colors.blueAccent,
             child: Icon(
               Icons.face,
               color: Colors.white,

@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/interfaces/widgets/dashboard_button.dart';
-import 'package:octopus/module/time_in/interfaces/screens/time_in_screen.dart';
+import 'package:octopus/module/time_record/interfaces/screens/time_record_screen.dart';
 
 class ControllerScreen extends StatefulWidget {
   const ControllerScreen({Key? key}) : super(key: key);
@@ -70,7 +70,7 @@ class _ControllerScreenState extends State<ControllerScreen> {
                           onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute<dynamic>(
-                                builder: (_) => const TimeInScreen(),
+                                builder: (_) => const TimeRecordScreen(),
                               ),
                             );
                           },
