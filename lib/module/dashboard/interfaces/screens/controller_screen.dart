@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
-import 'package:octopus/interfaces/widgets/dashboard_button.dart';
+import 'package:octopus/module/dashboard/interfaces/widgets/dashboard_button.dart';
 import 'package:octopus/module/time_record/interfaces/screens/time_record_screen.dart';
 
 class ControllerScreen extends StatefulWidget {
