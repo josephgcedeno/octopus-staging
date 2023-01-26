@@ -7,6 +7,7 @@ ThemeData _buildDefaultTheme() {
   final ThemeData base = ThemeData.light();
   return base.copyWith(
     textTheme: _buildDefaultTextTheme(base.textTheme),
+    scaffoldBackgroundColor: Colors.white,
     primaryColor: kBlue,
     colorScheme: base.colorScheme.copyWith(
       secondary: Colors.orange,

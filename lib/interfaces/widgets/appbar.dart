@@ -60,7 +60,7 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     return AppBar(
       automaticallyImplyLeading: false,
-      backgroundColor: const Color(0xFFfafafa),
+      backgroundColor: Colors.white,
       centerTitle: false,
       title: leadingButton(),
       actions: const <Widget>[
