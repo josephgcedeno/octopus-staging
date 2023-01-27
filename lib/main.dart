@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/repository/quote_repository.dart';
-import 'package:octopus/module/standup_report/interfaces/screens/standup_report_screen.dart';
+import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
 import 'package:octopus/module/time_record/service/cubit/quote_cubit.dart';
 
 void main() async {
@@ -43,6 +43,6 @@ class App extends StatelessWidget {
 class _HomePageState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const StandupReportScreen();
+    return const ControllerScreen();
   }
 }
