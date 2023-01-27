@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
-import 'package:octopus/module/standup_report/interfaces/widgets/expanded_textfield.dart';
-import 'package:octopus/module/standup_report/interfaces/widgets/item_list.dart';
-import 'package:octopus/module/standup_report/interfaces/widgets/mini_textfield.dart';
+import 'package:octopus/module/standup_report/interfaces/widgets/status_column.dart';
+import 'package:octopus/module/standup_report/interfaces/widgets/task_textarea.dart';
+import 'package:octopus/module/standup_report/service/cubit/task_card_dto.dart';
 
 class StandupReportScreen extends StatefulWidget {
   const StandupReportScreen({Key? key}) : super(key: key);
@@ -15,83 +15,61 @@ class StandupReportScreen extends StatefulWidget {
 }
 
 class _StandupReportScreenState extends State<StandupReportScreen> {
-  TextEditingController textController = TextEditingController();
-  bool textBoxIsExpanded = false;
-  bool projectsAreShowing = false;
-  bool statusIsShowing = false;
+  List<TaskCardDTO> doing = <TaskCardDTO>[
+    TaskCardDTO(taskName: 'Sample Task 1', taskID: '0', status: 0),
+    TaskCardDTO(taskName: 'Sample Task 2', taskID: '1', status: 0),
+    TaskCardDTO(taskName: 'Sample Task 3', taskID: '2', status: 0),
+    TaskCardDTO(taskName: 'Sample Task 4', taskID: '3', status: 0),
+  ];
 
-  void expandTextBox() {
-    setState(() => textBoxIsExpanded = true);
-  }
+  List<TaskCardDTO> done = <TaskCardDTO>[
+    TaskCardDTO(taskName: 'Sample Task 5', taskID: '4', status: 1),
+  ];
 
-  void toggleProjectsList() {
-    setState(() {
-      statusIsShowing = false;
-      projectsAreShowing = !projectsAreShowing;
-    });
-  }
-
-  void toggleStatusList() {
-    setState(() {
-      projectsAreShowing = false;
-      statusIsShowing = !statusIsShowing;
-    });
-  }
+  List<TaskCardDTO> blockers = <TaskCardDTO>[
+    TaskCardDTO(taskName: 'Sample Task 6', taskID: '5', status: 2),
+  ];
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: const GlobalAppBar(leading: LeadingButton.menu),
       backgroundColor: Colors.white,
-      body: Column(
+      body: Stack(
         children: <Widget>[
-          Text(
-            'Daily Stand-Up Report',
-            style:
-                kIsWeb ? theme.textTheme.headline6 : theme.textTheme.subtitle1,
-          ),
-          // Padding(
-          //   padding: EdgeInsets.only(top: height * 0.15),
-          //   child: SvgPicture.asset('assets/human_board_graphic.svg'),
-          // ),
-          // Expanded(
-          //   child: Container(
-          //     width: width,
-          //     color: Colors.red,
-          //     child: Text('haha'),
-          //   ),
-          // ),
-          Expanded(
-            child: Align(
-              alignment: FractionalOffset.bottomCenter,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: <Widget>[
-                    Positioned(
-                      bottom: 0,
-                      child: SizedBox(
-                        width: width * 0.9,
-                        child: textBoxIsExpanded
-                            ? ExpandedTextField(
-                                onTapProject: toggleProjectsList,
-                                onTapStatus: toggleStatusList,
-                              )
-                            : MiniTextField(onTap: expandTextBox),
-                      ),
-                    ),
-                    if (projectsAreShowing || statusIsShowing)
-                      ItemList(isShowProject: projectsAreShowing)
-                  ],
+          Positioned(
+            top: 0,
+            child: Column(
+              children: <Widget>[
+                Text(
+                  'Daily Stand-Up Report',
+                  style: kIsWeb
+                      ? theme.textTheme.headline6
+                      : theme.textTheme.subtitle1,
                 ),
-              ),
+                Container(
+                  padding: EdgeInsets.only(top: height * 0.02),
+                  height: height,
+                  width: width,
+                  child: ListView(
+                    children: <Widget>[
+                      StatusColumn(data: doing, status: ProjectStatus.doing),
+                      StatusColumn(data: done, status: ProjectStatus.done),
+                      StatusColumn(
+                        data: blockers,
+                        status: ProjectStatus.blockers,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
+          const TaskTextArea()
         ],
       ),
     );
