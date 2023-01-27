@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 class TaskCard extends StatelessWidget {
@@ -18,7 +19,7 @@ class TaskCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(7),
         color: label.isEmpty ? Colors.black12 : Colors.white,
       ),
-      width: width * 0.8,
+      width: kIsWeb ? width * 0.3 : width * 0.8,
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.only(bottom: 10),
       child: Text(label, style: theme.textTheme.bodyText2),

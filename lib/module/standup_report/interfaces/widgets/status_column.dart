@@ -57,7 +57,8 @@ class _StatusColumnState extends State<StatusColumn> {
         List<TaskCardDTO?> candidateData,
         List<dynamic> rejectedData,
       ) {
-        return Padding(
+        return Container(
+          width: width * 0.3,
           padding: widget.status == ProjectStatus.blockers
               ? EdgeInsets.only(
                   left: 8,
