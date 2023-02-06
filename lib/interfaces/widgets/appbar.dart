@@ -32,9 +32,14 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
     );
 
-    final Widget backButton = IconButton(
-      onPressed: () {},
-      icon: const Icon(Icons.keyboard_arrow_left_rounded),
+    final Widget backButton = GestureDetector(
+      onTap: () {
+        Navigator.pop(context);
+      },
+      child: const Icon(
+        Icons.chevron_left,
+        color: Colors.black,
+      ),
     );
 
     final Widget menuButton = IconButton(
