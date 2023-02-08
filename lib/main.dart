@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:octopus/configs/themes.dart';
-import 'package:octopus/infrastructures/repository/quote_repository.dart';
-import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
-import 'package:octopus/module/time_record/service/cubit/quote_cubit.dart';
+import 'package:octopus/infrastructures/repository/auth_repository.dart';
+import 'package:octopus/module/login/interfaces/screens/login_screen.dart';
+import 'package:octopus/module/login/service/cubit/login_cubit.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 void main() async {
@@ -31,13 +31,13 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AuthRepository authRepository = AuthRepository();
+
     return MultiBlocProvider(
       providers: <BlocProvider<dynamic>>[
-        // ================ quote module ================
-        BlocProvider<QuoteCubit>(
-          create: (BuildContext context) => QuoteCubit(
-            quoteRepository: QuoteRepository(),
-          ),
+        BlocProvider<LoginCubit>(
+          create: (BuildContext context) =>
+              LoginCubit(authRepository: authRepository),
         ),
       ],
       child: MaterialApp(
@@ -56,6 +56,6 @@ class App extends StatelessWidget {
 class _HomePageState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const ControllerScreen();
+    return const LoginScreen();
   }
 }

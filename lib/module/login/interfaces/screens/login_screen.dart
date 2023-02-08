@@ -1,4 +1,6 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:octopus/module/login/service/cubit/login_cubit.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -10,6 +12,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
   bool showPassword = false;
   @override
   Widget build(BuildContext context) {
@@ -33,6 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Text('Email'),
             ),
             TextField(
+              controller: emailController,
               onTap: () {},
               decoration: InputDecoration(
                 border: OutlineInputBorder(
@@ -58,6 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             TextField(
+              controller: passwordController,
               onTap: () {},
               decoration: InputDecoration(
                 border: OutlineInputBorder(
@@ -88,7 +95,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  context.read<LoginCubit>().login(
+                        email: emailController.text,
+                        password: passwordController.text,
+                      );
+                },
                 child: const Text('Sign In'),
               ),
             ),

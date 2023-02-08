@@ -1,3 +1,4 @@
+import 'package:octopus/infrastructures/models/auth/auth_request.dart';
 import 'package:octopus/infrastructures/repository/interfaces/auth_repository.dart';
 import 'package:octopus/internal/database_strings.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
@@ -23,15 +24,11 @@ class AuthRepository extends IAuthRepository {
   }
 
   @override
-  Future<ParseResponse> loginUser({
-    required String username,
-    required String password,
-    String? email,
-  }) async {
+  Future<ParseResponse> loginUser(AuthLoginRequest payload) async {
     final ParseUser user = ParseUser(
-      username,
-      password,
-      email,
+      payload.username,
+      payload.password,
+      payload.username,
     );
 
     return user.login();
@@ -44,23 +41,16 @@ class AuthRepository extends IAuthRepository {
       ParseUser(null, null, email).requestPasswordReset();
 
   @override
-  Future<ParseResponse> signUpUser({
-    required String password,
-    required String email,
-    String? name,
-    String? position,
-    bool? isAdmin,
-    String? photo,
-  }) async {
+  Future<ParseResponse> signUpUser(AuthRegisterRequest payload) async {
     final ParseUser user = ParseUser.createUser(
-      email,
-      password,
-      email,
+      payload.email,
+      payload.password,
+      payload.email,
     )
-      ..set<String?>(usersNameField, name)
-      ..set<String?>(usersPositionField, position)
-      ..set<bool?>(usersIsAdminField, isAdmin)
-      ..set<String?>(usersPhotoField, photo);
+      ..set<String?>(usersNameField, payload.email)
+      ..set<String?>(usersPositionField, payload.position)
+      ..set<bool?>(usersIsAdminField, payload.isAdmin ?? false)
+      ..set<String?>(usersPhotoField, payload.photo);
 
     return user.signUp();
   }
