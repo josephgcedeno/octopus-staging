@@ -41,8 +41,10 @@ String hourFormatFromSeconds(int value) {
 /// For converting dynamic list to desired list.
 List<DSRWorkTrack> convertListDynamic(List<dynamic> datas) {
   final List<DSRWorkTrack> convertedData = <DSRWorkTrack>[];
-  for (final Map<String, dynamic> data in datas as List<Map<String, dynamic>>) {
-    convertedData.add(DSRWorkTrack.fromJson(data));
+
+  for (final dynamic data in datas) {
+    final Map<String, dynamic> parseTask = data as Map<String, dynamic>;
+    convertedData.add(DSRWorkTrack.fromJson(parseTask));
   }
   return convertedData;
 }
