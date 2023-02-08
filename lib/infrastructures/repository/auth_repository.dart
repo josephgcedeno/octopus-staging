@@ -1,3 +1,4 @@
+import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/auth/auth_request.dart';
 import 'package:octopus/infrastructures/repository/interfaces/auth_repository.dart';
 import 'package:octopus/internal/database_strings.dart';
@@ -16,11 +17,30 @@ class AuthRepository extends IAuthRepository {
       final ParseResponse? sessionResponse =
           await ParseUser.getCurrentUserFromServer(sessionToken);
 
-      return sessionResponse != null &&
-          (sessionResponse.error?.type ?? '') != 'InvalidSessionToken';
+      if (sessionResponse != null && sessionResponse.success) {
+        return (sessionResponse.error?.type ?? '') != 'InvalidSessionToken';
+      }
+
+      throw APIResponse<void>(
+        success: false,
+        message: sessionResponse != null && sessionResponse.error != null
+            ? sessionResponse.error!.message
+            : '',
+        data: null,
+        errorCode: sessionResponse?.error != null
+            ? sessionResponse?.error.toString()
+            : '',
+      );
+    } else if (user == null) {
+      return false;
     }
 
-    return false;
+    throw APIResponse<void>(
+      success: false,
+      message: 'Something went wrong',
+      data: null,
+      errorCode: null,
+    );
   }
 
   @override
@@ -31,14 +51,41 @@ class AuthRepository extends IAuthRepository {
       payload.username,
     );
 
-    return user.login();
+    final ParseResponse loginAccountResponse = await user.login();
+    if (loginAccountResponse.success) {
+      return loginAccountResponse;
+    }
+
+    throw APIResponse<void>(
+      success: false,
+      message: loginAccountResponse.error != null
+          ? loginAccountResponse.error!.message
+          : '',
+      data: null,
+      errorCode: loginAccountResponse.error != null
+          ? loginAccountResponse.error.toString()
+          : '',
+    );
   }
 
   @override
   Future<ParseResponse> resetPassword({
     required String email,
-  }) async =>
-      ParseUser(null, null, email).requestPasswordReset();
+  }) async {
+    final ParseResponse resetResponse =
+        await ParseUser(null, null, email).requestPasswordReset();
+    if (resetResponse.success) {
+      return resetResponse;
+    }
+
+    throw APIResponse<void>(
+      success: false,
+      message: resetResponse.error != null ? resetResponse.error!.message : '',
+      data: null,
+      errorCode:
+          resetResponse.error != null ? resetResponse.error.toString() : '',
+    );
+  }
 
   @override
   Future<ParseResponse> signUpUser(AuthRegisterRequest payload) async {
@@ -52,6 +99,17 @@ class AuthRepository extends IAuthRepository {
       ..set<bool?>(usersIsAdminField, payload.isAdmin ?? false)
       ..set<String?>(usersPhotoField, payload.photo);
 
-    return user.signUp();
+    final ParseResponse signUpResponse = await user.signUp();
+    if (signUpResponse.success) {
+      return signUpResponse;
+    }
+    throw APIResponse<void>(
+      success: false,
+      message:
+          signUpResponse.error != null ? signUpResponse.error!.message : '',
+      data: null,
+      errorCode:
+          signUpResponse.error != null ? signUpResponse.error.toString() : '',
+    );
   }
 }
