@@ -577,9 +577,11 @@ class DSRRepository extends IDSRRepository {
     final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
     if (user != null) {
       final ParseObject sprints = ParseObject(dsrsTable);
+      final ParseObject? sprintToday = await sprintInfoQueryToday();
+
       final QueryBuilder<ParseObject> getAllDSRQuery =
           QueryBuilder<ParseObject>(sprints)
-            ..whereEqualTo(dsrsSprintidField, sprintId)
+            ..whereEqualTo(dsrsSprintidField, sprintId ?? sprintToday?.objectId)
             ..whereEqualTo(dsrsUserIdField, user.objectId);
 
       final ParseResponse getAllDSRQueryResponse = dsrId != null
@@ -589,11 +591,11 @@ class DSRRepository extends IDSRRepository {
       if (getAllDSRQueryResponse.success) {
         final List<DSRRecord> dsrs = <DSRRecord>[];
         if (getAllDSRQueryResponse.results != null) {
-          for (final ParseObject dsr
-              in getAllDSRQueryResponse.results! as List<ParseObject>) {
+          for (final ParseObject? dsr
+              in getAllDSRQueryResponse.results! as List<ParseObject?>) {
             dsrs.add(
               DSRRecord(
-                id: dsr.objectId!,
+                id: dsr!.objectId!,
                 done:
                     convertListDynamic(dsr.get<List<dynamic>>(dsrsDoneField)!),
                 wip: convertListDynamic(dsr.get<List<dynamic>>(dsrsWipField)!),
