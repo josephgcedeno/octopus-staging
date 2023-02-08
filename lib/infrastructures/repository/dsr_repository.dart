@@ -19,11 +19,16 @@ class DSRRepository extends IDSRRepository {
     String? filterByProject,
   }) async {
     final List<DSRWorks> data = <DSRWorks>[];
-    for (final Map<String, String> task in tasks as List<Map<String, String>>) {
-      final String projectName = ((await ParseObject(projectTagsTable)
-                  .getObject(task['project_tag_id']!))
-              .result as ParseObject)
-          .get<String>(
+    for (final dynamic task in tasks) {
+      final Map<String, dynamic> parseTask = task as Map<String, dynamic>;
+
+      final String projectTagId = parseTask['project_tag_id']!.toString();
+      final String text = parseTask['text']!.toString();
+
+      final String projectName =
+          ((await ParseObject(projectTagsTable).getObject(projectTagId)).result
+                  as ParseObject)
+              .get<String>(
         projectTagsProjectNameField,
       )!;
 
@@ -32,8 +37,8 @@ class DSRRepository extends IDSRRepository {
               filterByProject == projectName)
           ? data.add(
               DSRWorks(
-                tagId: task['project_tag_id']!,
-                text: task['text']!,
+                tagId: projectTagId,
+                text: text,
                 user: userName,
                 projectName: projectName,
                 date: date,
@@ -41,8 +46,8 @@ class DSRRepository extends IDSRRepository {
             )
           : data.add(
               DSRWorks(
-                tagId: task['project_tag_id']!,
-                text: task['text']!,
+                tagId: projectTagId,
+                text: text,
                 user: userName,
                 projectName: projectName,
                 date: date,
