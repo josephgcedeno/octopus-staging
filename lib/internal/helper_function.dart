@@ -3,11 +3,11 @@ import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 /// Get the id of the ParseObject in a list of dynamic
 String getResultId(List<dynamic> data) =>
-    ((data as List<ParseObject>).first).objectId!;
+    ((data as List<ParseObject?>).first)!.objectId!;
 
 /// Get the whole ParseObject in a list of dynamic
 ParseObject getParseObject(List<dynamic> data) =>
-    (data as List<ParseObject>).first;
+    (data as List<ParseObject?>).first!;
 
 int epochFromDateTime({required DateTime date}) => date.millisecondsSinceEpoch;
 
