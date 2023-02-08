@@ -1,13 +1,13 @@
 import 'package:octopus/infrastructures/models/time_in_out/attendance_response.dart';
 
 abstract class ITimeInOutRepository {
-  /// This function gets the initial record whether if the use is already has an existing attendance for the day.
+  /// This function gets the initial record whether the use is already has an existing attendance for the day.
   Future<AttendanceResponse?> getInitialData();
 
   /// This function will sign in the user for the day.
   Future<AttendanceResponse> signInToday();
 
-  /// This function will sign out the user fot the day.
+  /// This function will sign out the user for the day.
   Future<AttendanceResponse> signOutToday();
 
   /// This function will request an offset to the admin.
@@ -34,7 +34,7 @@ abstract class ITimeInOutRepository {
 
   /// FOR: ADMIN USE ONLY
   ///
-  /// This function will approved the offset request of the user.
+  /// This function will approve the offset request of the user.
   ///
   /// [attendanceId] which attendance record will be approved the offset.
   Future<AttendanceResponse> approveOffset({

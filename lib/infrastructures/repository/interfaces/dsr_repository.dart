@@ -1,11 +1,14 @@
-
 import 'package:octopus/infrastructures/models/dsr/dsr_request.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
 
 abstract class IDSRRepository {
+  /// FOR: ADMIN USE ONLY
+  ///
   /// This function will add a sprint to the database.
   ///
-  /// [startDate] a data that defines when is the start date of the sprint. It is in a datetime format and will converted to an epoch type when stored in the databse.
+  /// [startDate] a data that defines when is the start date of the sprint. It is in a datetime format and will converted to an epoch type when stored in the database.
+  ///
+  /// [endDate] a date that defines when is the end date of the sprint. It is in a datetime format and will converted to an epoch type when stored in the database.
   Future<SprintResponse> addSprint({
     required DateTime startDate,
     required DateTime endDate,

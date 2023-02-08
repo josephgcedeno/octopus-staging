@@ -6,7 +6,7 @@ abstract class IProjectRepository {
 
   /// FOR: ADMIN USE ONLY
   ///
-  /// This functino will update the project information such as project name, color, status and date.
+  /// This function will update the project information such as project name, color, status and date.
   ///
   /// [id] this determines which project to be updated.
   ///
@@ -35,7 +35,7 @@ abstract class IProjectRepository {
   });
 
   /// FOR: ADMIN USE ONLY
-  /// 
+  ///
   /// This function will add a project to the database.
   ///
   /// [projectName] this defines the name of the project.

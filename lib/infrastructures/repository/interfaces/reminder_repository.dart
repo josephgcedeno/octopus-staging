@@ -6,18 +6,18 @@ abstract class IReminderRepository {
 
   /// FOR: ADMIN USE ONLY
   ///
-  /// This function will get all the reminder available.
+  /// This function will get all the reminders available.
   Future<ReminderResponse> getAllReminder();
 
   /// FOR: ADMIN USE ONLY
   ///
   /// This function will create a reminder.
   ///
-  /// [announcement] this defines the announcment text of the reminder.
+  /// [announcement] this defines the announcement text of the reminder.
   ///
   /// [startDate] determines when will this reminder starts to display.
   ///
-  /// [endDate] determines when will this reminder ends to display.
+  /// [endDate] determines when this reminder ends to display.
   ///
   /// [isShow] determines if the reminder is viewable by the user.
   Future<ReminderResponse> createReminder({
