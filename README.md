@@ -1,21 +1,31 @@
-# Flirt
-Flutter Template for Building Amazing Mobile Apps
+# Project Octopus
 
-An article explaining the deeper intricacies of the template can be found here: https://nuxify.tech/blog/modular-flutter-template-with-state-management
+Nuxify's very own, all-in-one, workflow tool based on a custom Agile workflow.
 
-## Demo
+## Features
 
-Download the Flirt demo app from Google Play Store: https://play.google.com/store/apps/details?id=com.nuxify.octopus
+- [x] Login
+- [x] Time In / Time Out
+- [x] Reminders Panel
+- [x] Daily Standup Report
+- [x] Leaves Tracking & Requests
+- [x] Credentials List
+- [x] HR Files (Static)
+- [x] Admin Panel
+- [x] Accomplishments Generator (via Admin Panel)
+- [x] Create Account (via Admin Panel)
+- [x] Mobile Application
+- [x] Web Application
+- [x] Desktop App (Windows/macOS)
 
-Coming soon in Apple App Store.
 
-## Example
+- [ ] Work Analytics
+- [ ] Automated Payslip Generation
 
-You can check the `qr-example-flutter-2` branch.
 
-This app is a basic QR generator and scanner where the user:
-- can generate QR code with optional ID and custom data
-- scan the genereted QR code and display the decoded message to user
+Coming soon to Play Store & App Store.
+
+
 
 ## Build steps
 
