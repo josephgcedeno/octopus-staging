@@ -1,20 +1,14 @@
 class ReminderResponse {
-  final String status;
-  final List<Reminder> reminders;
-
   ReminderResponse({
     required this.status,
     required this.reminders,
   });
+
+  final String status;
+  final List<Reminder> reminders;
 }
 
 class Reminder {
-  final String id;
-  final String announcement;
-  final int startDateEpoch;
-  final int endDateEpoch;
-  final bool isShow;
-
   Reminder({
     required this.id,
     required this.announcement,
@@ -22,4 +16,10 @@ class Reminder {
     required this.endDateEpoch,
     required this.isShow,
   });
+
+  final String id;
+  final String announcement;
+  final int startDateEpoch;
+  final int endDateEpoch;
+  final bool isShow;
 }

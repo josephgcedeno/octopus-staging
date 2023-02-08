@@ -1,20 +1,14 @@
 class ProjectTagResponse {
-  final String status;
-  final List<ProjectTag> projects;
-
   ProjectTagResponse({
     required this.status,
     required this.projects,
   });
+
+  final String status;
+  final List<ProjectTag> projects;
 }
 
 class ProjectTag {
-  final String id;
-  final String projectName;
-  final int dateEpoch;
-  final String status;
-  final String color;
-
   ProjectTag({
     required this.id,
     required this.projectName,
@@ -22,4 +16,10 @@ class ProjectTag {
     required this.status,
     required this.color,
   });
+
+  final String id;
+  final String projectName;
+  final int dateEpoch;
+  final String status;
+  final String color;
 }

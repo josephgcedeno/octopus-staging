@@ -5,17 +5,18 @@ part 'dsr_request.g.dart';
 
 @JsonSerializable()
 class DSRWorkTrack {
-  final String text;
-  @JsonKey(name: 'project_tag_id')
-  final String projectTagId;
-
   DSRWorkTrack({
     required this.text,
     required this.projectTagId,
   });
+
   factory DSRWorkTrack.fromJson(
     Map<String, dynamic> json,
   ) =>
       _$DSRWorkTrackFromJson(json);
+
+  final String text;
+  @JsonKey(name: 'project_tag_id')
+  final String projectTagId;
   Map<String, dynamic> toJson() => _$DSRWorkTrackToJson(this);
 }
