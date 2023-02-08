@@ -31,4 +31,7 @@ abstract class IAuthRepository {
 
   /// This function will validate if the user is already logged in. It will verify if the token is expired or not. If expired, the user will need to login again.
   Future<bool> isLoggedIn();
+
+  /// This function will logout current user and session.
+  Future<ParseResponse> logout();
 }

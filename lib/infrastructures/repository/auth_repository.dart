@@ -112,4 +112,32 @@ class AuthRepository extends IAuthRepository {
           signUpResponse.error != null ? signUpResponse.error.toString() : '',
     );
   }
+
+  @override
+  Future<ParseResponse> logout() async {
+    final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+
+    if (user != null) {
+      final ParseResponse logoutResponse = await user.logout();
+
+      if (logoutResponse.success) {
+        return logoutResponse;
+      }
+      throw APIResponse<void>(
+        success: false,
+        message:
+            logoutResponse.error != null ? logoutResponse.error!.message : '',
+        data: null,
+        errorCode:
+            logoutResponse.error != null ? logoutResponse.error.toString() : '',
+      );
+    }
+
+    throw APIResponse<void>(
+      success: false,
+      message: 'Something went wrong',
+      data: null,
+      errorCode: null,
+    );
+  }
 }
