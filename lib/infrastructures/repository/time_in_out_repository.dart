@@ -131,27 +131,30 @@ class TimeInOutRepository extends ITimeInOutRepository {
     final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
     if (user != null) {
       /// Get yesterday record to get the id.
-      final ParseObject? queryYesterdayRecrod =
+      final ParseObject? queryYesterdayRecord =
           await dateRecordInfo(today: false);
 
       /// If there is a record yesterday.
-      if (queryYesterdayRecrod != null) {
+      if (queryYesterdayRecord != null) {
         final ParseResponse attendanceYesterday = await queryAttendance(
-          attedanceId: queryYesterdayRecrod.objectId!,
+          attedanceId: queryYesterdayRecord.objectId!,
           userId: user.objectId!,
         );
 
-        final ParseObject resultParseObject =
-            getParseObject(attendanceYesterday.results!);
+        /// Add check if there is a record yesterday
+        if (attendanceYesterday.success && attendanceYesterday.count == 1) {
+          final ParseObject resultParseObject =
+              getParseObject(attendanceYesterday.results!);
 
-        /// If there is a record yesterday and if the yesterday's offset is approved. Set the current required minute to the offset minutes yesterday.
-        if (attendanceYesterday.success &&
-            attendanceYesterday.results != null &&
-            resultParseObject.get<String>(timeAttendancesOffsetStatusField) ==
-                'APPROVED') {
-          return resultParseObject
-                  .get<int>(timeAttendancesOffsetDurationField) ??
-              0;
+          /// If there is a record yesterday and if the yesterday's offset is approved. Set the current required minute to the offset minutes yesterday.
+          if (attendanceYesterday.success &&
+              attendanceYesterday.results != null &&
+              resultParseObject.get<String>(timeAttendancesOffsetStatusField) ==
+                  'APPROVED') {
+            return resultParseObject
+                    .get<int>(timeAttendancesOffsetDurationField) ??
+                0;
+          }
         }
       }
     }
