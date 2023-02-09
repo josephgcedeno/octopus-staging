@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/holiday/holiday_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/holiday_repository.dart';
@@ -11,79 +12,88 @@ class HolidayRepository extends IHoliday {
     required String holidayName,
     required DateTime holidayDate,
   }) async {
-    final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
-    if (user != null && user.get<bool>(usersIsAdminField)!) {
-      final ParseObject holidays = ParseObject(holidaysTable);
-      final int dateEpoch = epochFromDateTime(date: holidayDate);
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final ParseObject holidays = ParseObject(holidaysTable);
+        final int dateEpoch = epochFromDateTime(date: holidayDate);
 
-      holidays
-        ..set(holidayNameField, holidayName)
-        ..set<int>(holidayDateField, dateEpoch);
+        holidays
+          ..set(holidayNameField, holidayName)
+          ..set<int>(holidayDateField, dateEpoch);
 
-      final ParseResponse addHolidayResponse = await holidays.save();
+        final ParseResponse addHolidayResponse = await holidays.save();
 
-      if (addHolidayResponse.success) {
-        return HolidayResponse(
-          holidays: <Holiday>[
-            Holiday(
-              id: getResultId(addHolidayResponse.results!),
-              dateEpoch: dateEpoch,
-              holiday: holidayName,
-            )
-          ],
-          status: 'success',
+        if (addHolidayResponse.success) {
+          return HolidayResponse(
+            holidays: <Holiday>[
+              Holiday(
+                id: getResultId(addHolidayResponse.results!),
+                dateEpoch: dateEpoch,
+                holiday: holidayName,
+              )
+            ],
+            status: 'success',
+          );
+        }
+        throw APIResponse<void>(
+          success: false,
+          message: addHolidayResponse.error != null
+              ? addHolidayResponse.error!.message
+              : '',
+          data: null,
+          errorCode: null,
         );
       }
+
       throw APIResponse<void>(
         success: false,
-        message: addHolidayResponse.error != null
-            ? addHolidayResponse.error!.message
-            : '',
+        message: 'Something went wrong',
         data: null,
         errorCode: null,
       );
+    } on SocketException {
+      throw APIResponse.socketErrorResponse();
     }
-
-    throw APIResponse<void>(
-      success: false,
-      message: 'Something went wrong',
-      data: null,
-      errorCode: null,
-    );
   }
 
   @override
   Future<HolidayResponse> deleteHoliday({required String id}) async {
-    final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
-    if (user != null && user.get<bool>(usersIsAdminField)!) {
-      final ParseObject holidays = ParseObject(holidaysTable);
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final ParseObject holidays = ParseObject(holidaysTable);
 
-      final ParseResponse holidayDeleteResponse = await holidays.delete(id: id);
+        final ParseResponse holidayDeleteResponse =
+            await holidays.delete(id: id);
 
-      if (holidayDeleteResponse.success) {
-        return HolidayResponse(
-          holidays: <Holiday>[],
-          status: 'success',
+        if (holidayDeleteResponse.success) {
+          return HolidayResponse(
+            holidays: <Holiday>[],
+            status: 'success',
+          );
+        }
+        throw APIResponse<void>(
+          success: false,
+          message: holidayDeleteResponse.error != null
+              ? holidayDeleteResponse.error!.message
+              : '',
+          data: null,
+          errorCode: null,
         );
       }
+
       throw APIResponse<void>(
         success: false,
-        message: holidayDeleteResponse.error != null
-            ? holidayDeleteResponse.error!.message
-            : '',
+        message: 'Something went wrong',
         data: null,
         errorCode: null,
       );
+    } on SocketException {
+      throw APIResponse.socketErrorResponse();
     }
-
-    throw APIResponse<void>(
-      success: false,
-      message: 'Something went wrong',
-      data: null,
-      errorCode: null,
-    );
   }
 
   @override
@@ -92,69 +102,73 @@ class HolidayRepository extends IHoliday {
     String? holidayName,
     DateTime? holidayDate,
   }) async {
-    final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
-    if (user != null && user.get<bool>(usersIsAdminField)!) {
-      final ParseObject holidays = ParseObject(holidaysTable);
-      final QueryBuilder<ParseObject> holidayQuery =
-          QueryBuilder<ParseObject>(holidays);
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final ParseObject holidays = ParseObject(holidaysTable);
+        final QueryBuilder<ParseObject> holidayQuery =
+            QueryBuilder<ParseObject>(holidays);
 
-      if (holidayName != null) {
-        holidayQuery.whereContains(holidayNameField, holidayName);
-      }
-
-      if (holidayDate != null) {
-        holidayQuery.whereEqualTo(
-          holidayDateField,
-          epochFromDateTime(
-            date: holidayDate,
-          ),
-        );
-      }
-
-      final ParseResponse getHolidayResponse =
-          holidayDate != null || holidayName != null
-              ? await holidayQuery.query()
-              : holidayId != null
-                  ? await holidays.getObject(holidayId)
-                  : await holidays.getAll();
-
-      if (getHolidayResponse.success) {
-        final List<Holiday> holidays = <Holiday>[];
-
-        if (getHolidayResponse.results != null) {
-          for (final ParseObject result
-              in getHolidayResponse.results! as List<ParseObject>) {
-            holidays.add(
-              Holiday(
-                id: result.objectId!,
-                holiday: result.get<String>(holidayNameField)!,
-                dateEpoch: result.get<int>(holidayDateField)!,
-              ),
-            );
-          }
+        if (holidayName != null) {
+          holidayQuery.whereContains(holidayNameField, holidayName);
         }
-        return HolidayResponse(
-          holidays: holidays,
-          status: '',
+
+        if (holidayDate != null) {
+          holidayQuery.whereEqualTo(
+            holidayDateField,
+            epochFromDateTime(
+              date: holidayDate,
+            ),
+          );
+        }
+
+        final ParseResponse getHolidayResponse =
+            holidayDate != null || holidayName != null
+                ? await holidayQuery.query()
+                : holidayId != null
+                    ? await holidays.getObject(holidayId)
+                    : await holidays.getAll();
+
+        if (getHolidayResponse.success) {
+          final List<Holiday> holidays = <Holiday>[];
+
+          if (getHolidayResponse.results != null) {
+            for (final ParseObject result
+                in getHolidayResponse.results! as List<ParseObject>) {
+              holidays.add(
+                Holiday(
+                  id: result.objectId!,
+                  holiday: result.get<String>(holidayNameField)!,
+                  dateEpoch: result.get<int>(holidayDateField)!,
+                ),
+              );
+            }
+          }
+          return HolidayResponse(
+            holidays: holidays,
+            status: '',
+          );
+        }
+        throw APIResponse<void>(
+          success: false,
+          message: getHolidayResponse.error != null
+              ? getHolidayResponse.error!.message
+              : '',
+          data: null,
+          errorCode: null,
         );
       }
+
       throw APIResponse<void>(
         success: false,
-        message: getHolidayResponse.error != null
-            ? getHolidayResponse.error!.message
-            : '',
+        message: 'Something went wrong',
         data: null,
         errorCode: null,
       );
+    } on SocketException {
+      throw APIResponse.socketErrorResponse();
     }
-
-    throw APIResponse<void>(
-      success: false,
-      message: 'Something went wrong',
-      data: null,
-      errorCode: null,
-    );
   }
 
   @override
@@ -163,62 +177,66 @@ class HolidayRepository extends IHoliday {
     String? holidayName,
     DateTime? holidayDate,
   }) async {
-    final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
-    if (user != null && user.get<bool>(usersIsAdminField)!) {
-      final ParseObject holidays = ParseObject(holidaysTable);
-      holidays.objectId = id;
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final ParseObject holidays = ParseObject(holidaysTable);
+        holidays.objectId = id;
 
-      if (holidayName != null) {
-        holidays.set<String>(holidayNameField, holidayName);
-      }
+        if (holidayName != null) {
+          holidays.set<String>(holidayNameField, holidayName);
+        }
 
-      if (holidayDate != null) {
-        holidays.set<int>(
-          holidayDateField,
-          epochFromDateTime(
-            date: holidayDate,
-          ),
-        );
-      }
-      final ParseResponse holidayUpdateResponse = await holidays.save();
-
-      if (holidayUpdateResponse.success) {
-        final ParseResponse getUpdatedRecordResponse =
-            await holidays.getObject(id);
-
-        if (getUpdatedRecordResponse.success &&
-            getUpdatedRecordResponse.results != null) {
-          final ParseObject updatedRecord =
-              getParseObject(getUpdatedRecordResponse.results!);
-
-          return HolidayResponse(
-            holidays: <Holiday>[
-              Holiday(
-                id: updatedRecord.objectId!,
-                holiday: updatedRecord.get<String>(holidayNameField)!,
-                dateEpoch: updatedRecord.get<int>(holidayDateField)!,
-              ),
-            ],
-            status: 'success',
+        if (holidayDate != null) {
+          holidays.set<int>(
+            holidayDateField,
+            epochFromDateTime(
+              date: holidayDate,
+            ),
           );
         }
+        final ParseResponse holidayUpdateResponse = await holidays.save();
+
+        if (holidayUpdateResponse.success) {
+          final ParseResponse getUpdatedRecordResponse =
+              await holidays.getObject(id);
+
+          if (getUpdatedRecordResponse.success &&
+              getUpdatedRecordResponse.results != null) {
+            final ParseObject updatedRecord =
+                getParseObject(getUpdatedRecordResponse.results!);
+
+            return HolidayResponse(
+              holidays: <Holiday>[
+                Holiday(
+                  id: updatedRecord.objectId!,
+                  holiday: updatedRecord.get<String>(holidayNameField)!,
+                  dateEpoch: updatedRecord.get<int>(holidayDateField)!,
+                ),
+              ],
+              status: 'success',
+            );
+          }
+        }
+        throw APIResponse<void>(
+          success: false,
+          message: holidayUpdateResponse.error != null
+              ? holidayUpdateResponse.error!.message
+              : '',
+          data: null,
+          errorCode: null,
+        );
       }
+
       throw APIResponse<void>(
         success: false,
-        message: holidayUpdateResponse.error != null
-            ? holidayUpdateResponse.error!.message
-            : '',
+        message: 'Something went wrong',
         data: null,
         errorCode: null,
       );
+    } on SocketException {
+      throw APIResponse.socketErrorResponse();
     }
-
-    throw APIResponse<void>(
-      success: false,
-      message: 'Something went wrong',
-      data: null,
-      errorCode: null,
-    );
   }
 }

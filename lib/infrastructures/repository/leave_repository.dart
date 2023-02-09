@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/leaves/leaves_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/leave_repository.dart';
@@ -15,47 +16,52 @@ class LeaveRepository extends ILeaveRepository {
     required DateTime startDate,
     required DateTime endDate,
   }) async {
-    final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
-    if (user != null && user.get<bool>(usersIsAdminField)!) {
-      final int startDateEpoch = epochFromDateTime(date: startDate);
-      final int endDateEpoch = epochFromDateTime(date: endDate);
-      final ParseObject leaves = ParseObject(leavesTable)
-        ..set<int>(leavesNoLeavesField, noLeaves)
-        ..set<int>(leavesStartDateField, startDateEpoch)
-        ..set<int>(leavesEndDateField, endDateEpoch);
-      final ParseResponse createLeaveResponse = await leaves.save();
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final int startDateEpoch = epochFromDateTime(date: startDate);
+        final int endDateEpoch = epochFromDateTime(date: endDate);
+        final ParseObject leaves = ParseObject(leavesTable)
+          ..set<int>(leavesNoLeavesField, noLeaves)
+          ..set<int>(leavesStartDateField, startDateEpoch)
+          ..set<int>(leavesEndDateField, endDateEpoch);
+        final ParseResponse createLeaveResponse = await leaves.save();
 
-      if (createLeaveResponse.success && createLeaveResponse.results != null) {
-        return LeaveResponse(
-          status: 'success',
-          leaves: <Leave>[
-            Leave(
-              id: getResultId(createLeaveResponse.results!),
-              startDateEpoch: startDateEpoch,
-              noLeaves: noLeaves,
-              endDateEpoch: endDateEpoch,
-            )
-          ],
+        if (createLeaveResponse.success &&
+            createLeaveResponse.results != null) {
+          return LeaveResponse(
+            status: 'success',
+            leaves: <Leave>[
+              Leave(
+                id: getResultId(createLeaveResponse.results!),
+                startDateEpoch: startDateEpoch,
+                noLeaves: noLeaves,
+                endDateEpoch: endDateEpoch,
+              )
+            ],
+          );
+        }
+
+        throw APIResponse<void>(
+          success: false,
+          message: createLeaveResponse.error != null
+              ? createLeaveResponse.error!.message
+              : '',
+          data: null,
+          errorCode: null,
         );
       }
 
       throw APIResponse<void>(
         success: false,
-        message: createLeaveResponse.error != null
-            ? createLeaveResponse.error!.message
-            : '',
+        message: 'Something went wrong',
         data: null,
         errorCode: null,
       );
+    } on SocketException {
+      throw APIResponse.socketErrorResponse();
     }
-
-    throw APIResponse<void>(
-      success: false,
-      message: 'Something went wrong',
-      data: null,
-      errorCode: null,
-    );
   }
 
   @override
@@ -63,65 +69,72 @@ class LeaveRepository extends ILeaveRepository {
     DateTime? startDate,
     DateTime? endDate,
   }) async {
-    final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
-    if (user != null && user.get<bool>(usersIsAdminField)!) {
-      final ParseObject leaves = ParseObject(leavesTable);
-      final QueryBuilder<ParseObject> leavesQuery =
-          QueryBuilder<ParseObject>(leaves);
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final ParseObject leaves = ParseObject(leavesTable);
+        final QueryBuilder<ParseObject> leavesQuery =
+            QueryBuilder<ParseObject>(leaves);
 
-      if (startDate != null && endDate != null) {
-        leavesQuery
-          ..whereGreaterThanOrEqualsTo(
-            leavesStartDateField,
-            epochFromDateTime(date: startDate),
-          )
-          ..whereLessThan(leavesEndDateField, epochFromDateTime(date: endDate));
-      }
-
-      final ParseResponse getAllLeaveResponse =
-          startDate != null && endDate != null
-              ? await leavesQuery.query()
-              : await leaves.getAll();
-
-      if (getAllLeaveResponse.success) {
-        final List<Leave> leaves = <Leave>[];
-
-        if (getAllLeaveResponse.results != null) {
-          for (final ParseObject leave
-              in getAllLeaveResponse.results! as List<ParseObject>) {
-            leaves.add(
-              Leave(
-                id: leave.objectId!,
-                startDateEpoch: leave.get<int>(leavesStartDateField)!,
-                endDateEpoch: leave.get<int>(leavesEndDateField)!,
-                noLeaves: leave.get<int>(leavesNoLeavesField)!,
-              ),
+        if (startDate != null && endDate != null) {
+          leavesQuery
+            ..whereGreaterThanOrEqualsTo(
+              leavesStartDateField,
+              epochFromDateTime(date: startDate),
+            )
+            ..whereLessThan(
+              leavesEndDateField,
+              epochFromDateTime(date: endDate),
             );
-          }
         }
 
-        return LeaveResponse(
-          status: 'success',
-          leaves: leaves,
+        final ParseResponse getAllLeaveResponse =
+            startDate != null && endDate != null
+                ? await leavesQuery.query()
+                : await leaves.getAll();
+
+        if (getAllLeaveResponse.success) {
+          final List<Leave> leaves = <Leave>[];
+
+          if (getAllLeaveResponse.results != null) {
+            for (final ParseObject leave
+                in getAllLeaveResponse.results! as List<ParseObject>) {
+              leaves.add(
+                Leave(
+                  id: leave.objectId!,
+                  startDateEpoch: leave.get<int>(leavesStartDateField)!,
+                  endDateEpoch: leave.get<int>(leavesEndDateField)!,
+                  noLeaves: leave.get<int>(leavesNoLeavesField)!,
+                ),
+              );
+            }
+          }
+
+          return LeaveResponse(
+            status: 'success',
+            leaves: leaves,
+          );
+        }
+
+        throw APIResponse<void>(
+          success: false,
+          message: getAllLeaveResponse.error != null
+              ? getAllLeaveResponse.error!.message
+              : '',
+          data: null,
+          errorCode: null,
         );
       }
 
       throw APIResponse<void>(
         success: false,
-        message: getAllLeaveResponse.error != null
-            ? getAllLeaveResponse.error!.message
-            : '',
+        message: 'Something went wrong',
         data: null,
         errorCode: null,
       );
+    } on SocketException {
+      throw APIResponse.socketErrorResponse();
     }
-
-    throw APIResponse<void>(
-      success: false,
-      message: 'Something went wrong',
-      data: null,
-      errorCode: null,
-    );
   }
 
   @override
@@ -131,270 +144,297 @@ class LeaveRepository extends ILeaveRepository {
     DateTime? startDate,
     DateTime? endDate,
   }) async {
-    final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
-    if (user != null && user.get<bool>(usersIsAdminField)!) {
-      final ParseObject leaves = ParseObject(leavesTable);
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final ParseObject leaves = ParseObject(leavesTable);
 
-      leaves.objectId = id;
+        leaves.objectId = id;
 
-      if (noLeaves != null) {
-        leaves.set<int>(leavesNoLeavesField, noLeaves);
-      }
-      if (startDate != null && endDate != null) {
-        leaves
-          ..set<int>(leavesStartDateField, epochFromDateTime(date: startDate))
-          ..set<int>(leavesEndDateField, epochFromDateTime(date: endDate));
-      }
-      final ParseResponse updateVacationResponse = await leaves.save();
-
-      if (updateVacationResponse.success) {
-        final ParseResponse getVacationInfoResponse =
-            await leaves.getObject(id);
-
-        if (getVacationInfoResponse.success &&
-            getVacationInfoResponse.results != null) {
-          final ParseObject resultParseObject =
-              getParseObject(getVacationInfoResponse.results!);
-
-          return LeaveResponse(
-            status: 'success',
-            leaves: <Leave>[
-              Leave(
-                id: id,
-                noLeaves: resultParseObject.get<int>(leavesNoLeavesField)!,
-                startDateEpoch:
-                    resultParseObject.get<int>(leavesStartDateField)!,
-                endDateEpoch: resultParseObject.get<int>(leavesEndDateField)!,
-              )
-            ],
-          );
+        if (noLeaves != null) {
+          leaves.set<int>(leavesNoLeavesField, noLeaves);
         }
-      }
+        if (startDate != null && endDate != null) {
+          leaves
+            ..set<int>(leavesStartDateField, epochFromDateTime(date: startDate))
+            ..set<int>(leavesEndDateField, epochFromDateTime(date: endDate));
+        }
+        final ParseResponse updateVacationResponse = await leaves.save();
 
-      throw APIResponse<void>(
-        success: false,
-        message: updateVacationResponse.error != null
-            ? updateVacationResponse.error!.message
-            : '',
-        data: null,
-        errorCode: null,
-      );
-    }
+        if (updateVacationResponse.success) {
+          final ParseResponse getVacationInfoResponse =
+              await leaves.getObject(id);
 
-    throw APIResponse<void>(
-      success: false,
-      message: 'Something went wrong',
-      data: null,
-      errorCode: null,
-    );
-  }
+          if (getVacationInfoResponse.success &&
+              getVacationInfoResponse.results != null) {
+            final ParseObject resultParseObject =
+                getParseObject(getVacationInfoResponse.results!);
 
-  @override
-  Future<LeaveResponse> deleteLeave({required String id}) async {
-    final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
-    if (user != null && user.get<bool>(usersIsAdminField)!) {
-      final ParseObject leaves = ParseObject(leavesTable);
+            return LeaveResponse(
+              status: 'success',
+              leaves: <Leave>[
+                Leave(
+                  id: id,
+                  noLeaves: resultParseObject.get<int>(leavesNoLeavesField)!,
+                  startDateEpoch:
+                      resultParseObject.get<int>(leavesStartDateField)!,
+                  endDateEpoch: resultParseObject.get<int>(leavesEndDateField)!,
+                )
+              ],
+            );
+          }
+        }
 
-      final ParseResponse deleteVacationResponse = await leaves.delete(id: id);
-
-      if (deleteVacationResponse.success) {
-        return LeaveResponse(
-          status: 'success',
-          leaves: <Leave>[],
+        throw APIResponse<void>(
+          success: false,
+          message: updateVacationResponse.error != null
+              ? updateVacationResponse.error!.message
+              : '',
+          data: null,
+          errorCode: null,
         );
       }
 
       throw APIResponse<void>(
         success: false,
-        message: deleteVacationResponse.error != null
-            ? deleteVacationResponse.error!.message
-            : '',
+        message: 'Something went wrong',
         data: null,
         errorCode: null,
       );
+    } on SocketException {
+      throw APIResponse.socketErrorResponse();
     }
+  }
 
-    throw APIResponse<void>(
-      success: false,
-      message: 'Something went wrong',
-      data: null,
-      errorCode: null,
-    );
+  @override
+  Future<LeaveResponse> deleteLeave({required String id}) async {
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final ParseObject leaves = ParseObject(leavesTable);
+
+        final ParseResponse deleteVacationResponse =
+            await leaves.delete(id: id);
+
+        if (deleteVacationResponse.success) {
+          return LeaveResponse(
+            status: 'success',
+            leaves: <Leave>[],
+          );
+        }
+
+        throw APIResponse<void>(
+          success: false,
+          message: deleteVacationResponse.error != null
+              ? deleteVacationResponse.error!.message
+              : '',
+          data: null,
+          errorCode: null,
+        );
+      }
+
+      throw APIResponse<void>(
+        success: false,
+        message: 'Something went wrong',
+        data: null,
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIResponse.socketErrorResponse();
+    }
   }
 
   @override
   Future<LeaveRequestsResponse> approveRequestLeave({
     required String requestId,
   }) async {
-    final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
-    if (user != null && user.get<bool>(usersIsAdminField)!) {
-      final ParseObject leaveRequests = ParseObject(leaveRequestsTable);
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final ParseObject leaveRequests = ParseObject(leaveRequestsTable);
 
-      leaveRequests
-        ..objectId = requestId
-        ..set<String>(leaveRequestStatusField, 'APPROVED');
+        leaveRequests
+          ..objectId = requestId
+          ..set<String>(leaveRequestStatusField, 'APPROVED');
 
-      final ParseResponse updateReqRecordResponse = await leaveRequests.save();
+        final ParseResponse updateReqRecordResponse =
+            await leaveRequests.save();
 
-      if (updateReqRecordResponse.success) {
-        final ParseResponse getUpdatedRecordResponse =
-            await leaveRequests.getObject(requestId);
+        if (updateReqRecordResponse.success) {
+          final ParseResponse getUpdatedRecordResponse =
+              await leaveRequests.getObject(requestId);
 
-        if (getUpdatedRecordResponse.success) {
-          final ParseObject leaveReq =
-              getParseObject(getUpdatedRecordResponse.results!);
+          if (getUpdatedRecordResponse.success) {
+            final ParseObject leaveReq =
+                getParseObject(getUpdatedRecordResponse.results!);
 
-          return LeaveRequestsResponse(
-            leaveRequests: <LeaveRequest>[
-              LeaveRequest(
-                id: leaveReq.objectId!,
-                leaveId: leaveReq.get<String>(leaveRequestLeaveIdField)!,
-                userId: leaveReq.get<String>(leaveRequestUserIdField)!,
-                dateFiledEpoch: leaveReq.get<int>(leaveRequestDateFiledField)!,
-                dateUsedEpoch: leaveReq.get<int>(leaveRequestDateUsedField)!,
-                leaveType: leaveReq.get<String>(leaveRequestLeaveTypeField)!,
-                reason: leaveReq.get<String>(leaveRequestReasonField)!,
-                status: leaveReq.get<String>(leaveRequestStatusField)!,
-              ),
-            ],
-            status: 'success',
-          );
+            return LeaveRequestsResponse(
+              leaveRequests: <LeaveRequest>[
+                LeaveRequest(
+                  id: leaveReq.objectId!,
+                  leaveId: leaveReq.get<String>(leaveRequestLeaveIdField)!,
+                  userId: leaveReq.get<String>(leaveRequestUserIdField)!,
+                  dateFiledEpoch:
+                      leaveReq.get<int>(leaveRequestDateFiledField)!,
+                  dateUsedEpoch: leaveReq.get<int>(leaveRequestDateUsedField)!,
+                  leaveType: leaveReq.get<String>(leaveRequestLeaveTypeField)!,
+                  reason: leaveReq.get<String>(leaveRequestReasonField)!,
+                  status: leaveReq.get<String>(leaveRequestStatusField)!,
+                ),
+              ],
+              status: 'success',
+            );
+          }
         }
+
+        throw APIResponse<void>(
+          success: false,
+          message: updateReqRecordResponse.error != null
+              ? updateReqRecordResponse.error!.message
+              : '',
+          data: null,
+          errorCode: null,
+        );
       }
 
       throw APIResponse<void>(
         success: false,
-        message: updateReqRecordResponse.error != null
-            ? updateReqRecordResponse.error!.message
-            : '',
+        message: 'Something went wrong',
         data: null,
         errorCode: null,
       );
+    } on SocketException {
+      throw APIResponse.socketErrorResponse();
     }
-
-    throw APIResponse<void>(
-      success: false,
-      message: 'Something went wrong',
-      data: null,
-      errorCode: null,
-    );
   }
 
   @override
   Future<LeaveRequestsResponse> cancelRequestLeave({
     required String requestId,
   }) async {
-    final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
-    if (user != null && user.get<bool>(usersIsAdminField)!) {
-      final ParseObject leaveRequests = ParseObject(leaveRequestsTable);
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final ParseObject leaveRequests = ParseObject(leaveRequestsTable);
 
-      leaveRequests
-        ..objectId = requestId
-        ..set<String>(leaveRequestStatusField, 'CANCELLED');
+        leaveRequests
+          ..objectId = requestId
+          ..set<String>(leaveRequestStatusField, 'CANCELLED');
 
-      final ParseResponse updateReqRecordResponse = await leaveRequests.save();
+        final ParseResponse updateReqRecordResponse =
+            await leaveRequests.save();
 
-      if (updateReqRecordResponse.success) {
-        final ParseResponse getUpdatedRecordResponse =
-            await leaveRequests.getObject(requestId);
+        if (updateReqRecordResponse.success) {
+          final ParseResponse getUpdatedRecordResponse =
+              await leaveRequests.getObject(requestId);
 
-        if (getUpdatedRecordResponse.success) {
-          final ParseObject leaveReq =
-              getParseObject(getUpdatedRecordResponse.results!);
+          if (getUpdatedRecordResponse.success) {
+            final ParseObject leaveReq =
+                getParseObject(getUpdatedRecordResponse.results!);
 
-          return LeaveRequestsResponse(
-            leaveRequests: <LeaveRequest>[
-              LeaveRequest(
-                id: leaveReq.objectId!,
-                leaveId: leaveReq.get<String>(leaveRequestLeaveIdField)!,
-                userId: leaveReq.get<String>(leaveRequestUserIdField)!,
-                dateFiledEpoch: leaveReq.get<int>(leaveRequestDateFiledField)!,
-                dateUsedEpoch: leaveReq.get<int>(leaveRequestDateUsedField)!,
-                leaveType: leaveReq.get<String>(leaveRequestLeaveTypeField)!,
-                reason: leaveReq.get<String>(leaveRequestReasonField)!,
-                status: leaveReq.get<String>(leaveRequestStatusField)!,
-              ),
-            ],
-            status: 'success',
-          );
+            return LeaveRequestsResponse(
+              leaveRequests: <LeaveRequest>[
+                LeaveRequest(
+                  id: leaveReq.objectId!,
+                  leaveId: leaveReq.get<String>(leaveRequestLeaveIdField)!,
+                  userId: leaveReq.get<String>(leaveRequestUserIdField)!,
+                  dateFiledEpoch:
+                      leaveReq.get<int>(leaveRequestDateFiledField)!,
+                  dateUsedEpoch: leaveReq.get<int>(leaveRequestDateUsedField)!,
+                  leaveType: leaveReq.get<String>(leaveRequestLeaveTypeField)!,
+                  reason: leaveReq.get<String>(leaveRequestReasonField)!,
+                  status: leaveReq.get<String>(leaveRequestStatusField)!,
+                ),
+              ],
+              status: 'success',
+            );
+          }
         }
+
+        throw APIResponse<void>(
+          success: false,
+          message: updateReqRecordResponse.error != null
+              ? updateReqRecordResponse.error!.message
+              : '',
+          data: null,
+          errorCode: null,
+        );
       }
 
       throw APIResponse<void>(
         success: false,
-        message: updateReqRecordResponse.error != null
-            ? updateReqRecordResponse.error!.message
-            : '',
+        message: 'Something went wrong',
         data: null,
         errorCode: null,
       );
+    } on SocketException {
+      throw APIResponse.socketErrorResponse();
     }
-
-    throw APIResponse<void>(
-      success: false,
-      message: 'Something went wrong',
-      data: null,
-      errorCode: null,
-    );
   }
 
   @override
   Future<LeaveRequestsResponse> declineRequestLeave({
     required String requestId,
   }) async {
-    final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
-    if (user != null && user.get<bool>(usersIsAdminField)!) {
-      final ParseObject leaveRequests = ParseObject(leaveRequestsTable);
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final ParseObject leaveRequests = ParseObject(leaveRequestsTable);
 
-      leaveRequests
-        ..objectId = requestId
-        ..set<String>(leaveRequestStatusField, 'DECLINED');
+        leaveRequests
+          ..objectId = requestId
+          ..set<String>(leaveRequestStatusField, 'DECLINED');
 
-      final ParseResponse updateReqRecordResponse = await leaveRequests.save();
+        final ParseResponse updateReqRecordResponse =
+            await leaveRequests.save();
 
-      if (updateReqRecordResponse.success) {
-        final ParseResponse getUpdatedRecordResponse =
-            await leaveRequests.getObject(requestId);
+        if (updateReqRecordResponse.success) {
+          final ParseResponse getUpdatedRecordResponse =
+              await leaveRequests.getObject(requestId);
 
-        if (getUpdatedRecordResponse.success) {
-          final ParseObject leaveReq =
-              getParseObject(getUpdatedRecordResponse.results!);
+          if (getUpdatedRecordResponse.success) {
+            final ParseObject leaveReq =
+                getParseObject(getUpdatedRecordResponse.results!);
 
-          return LeaveRequestsResponse(
-            leaveRequests: <LeaveRequest>[
-              LeaveRequest(
-                id: leaveReq.objectId!,
-                leaveId: leaveReq.get<String>(leaveRequestLeaveIdField)!,
-                userId: leaveReq.get<String>(leaveRequestUserIdField)!,
-                dateFiledEpoch: leaveReq.get<int>(leaveRequestDateFiledField)!,
-                dateUsedEpoch: leaveReq.get<int>(leaveRequestDateUsedField)!,
-                leaveType: leaveReq.get<String>(leaveRequestLeaveTypeField)!,
-                reason: leaveReq.get<String>(leaveRequestReasonField)!,
-                status: leaveReq.get<String>(leaveRequestStatusField)!,
-              ),
-            ],
-            status: 'success',
-          );
+            return LeaveRequestsResponse(
+              leaveRequests: <LeaveRequest>[
+                LeaveRequest(
+                  id: leaveReq.objectId!,
+                  leaveId: leaveReq.get<String>(leaveRequestLeaveIdField)!,
+                  userId: leaveReq.get<String>(leaveRequestUserIdField)!,
+                  dateFiledEpoch:
+                      leaveReq.get<int>(leaveRequestDateFiledField)!,
+                  dateUsedEpoch: leaveReq.get<int>(leaveRequestDateUsedField)!,
+                  leaveType: leaveReq.get<String>(leaveRequestLeaveTypeField)!,
+                  reason: leaveReq.get<String>(leaveRequestReasonField)!,
+                  status: leaveReq.get<String>(leaveRequestStatusField)!,
+                ),
+              ],
+              status: 'success',
+            );
+          }
         }
+
+        throw APIResponse<void>(
+          success: false,
+          message: updateReqRecordResponse.error != null
+              ? updateReqRecordResponse.error!.message
+              : '',
+          data: null,
+          errorCode: null,
+        );
       }
 
       throw APIResponse<void>(
         success: false,
-        message: updateReqRecordResponse.error != null
-            ? updateReqRecordResponse.error!.message
-            : '',
+        message: 'Something went wrong',
         data: null,
         errorCode: null,
       );
+    } on SocketException {
+      throw APIResponse.socketErrorResponse();
     }
-
-    throw APIResponse<void>(
-      success: false,
-      message: 'Something went wrong',
-      data: null,
-      errorCode: null,
-    );
   }
 
   @override
@@ -404,71 +444,75 @@ class LeaveRepository extends ILeaveRepository {
     String? userId,
     String status = 'PENDING',
   }) async {
-    final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
-    if (user != null && user.get<bool>(usersIsAdminField)!) {
-      final ParseObject leaveRequests = ParseObject(leaveRequestsTable);
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final ParseObject leaveRequests = ParseObject(leaveRequestsTable);
 
-      final QueryBuilder<ParseObject> leaveReqQuery =
-          QueryBuilder<ParseObject>(leaveRequests)
-            ..whereEqualTo(leaveRequestStatusField, status);
+        final QueryBuilder<ParseObject> leaveReqQuery =
+            QueryBuilder<ParseObject>(leaveRequests)
+              ..whereEqualTo(leaveRequestStatusField, status);
 
-      if (leaveId != null) {
-        leaveReqQuery.whereEqualTo(leaveRequestLeaveIdField, leaveId);
-      }
-      if (userId != null) {
-        leaveReqQuery.whereEqualTo(leaveRequestUserIdField, userId);
-      }
-
-      final ParseResponse getLeaveReqResponse = leaveRequestId != null
-          ? await leaveRequests.getObject(leaveRequestId)
-          : await leaveReqQuery.query();
-
-      if (getLeaveReqResponse.success) {
-        final List<LeaveRequest> leaveRequests = <LeaveRequest>[];
-
-        if (getLeaveReqResponse.results != null) {
-          for (final ParseObject leaveRequest
-              in getLeaveReqResponse.results! as List<ParseObject>) {
-            leaveRequests.add(
-              LeaveRequest(
-                id: leaveRequest.objectId!,
-                leaveId: leaveRequest.get<String>(leaveRequestLeaveIdField)!,
-                userId: leaveRequest.get<String>(leaveRequestUserIdField)!,
-                dateFiledEpoch:
-                    leaveRequest.get<int>(leaveRequestDateFiledField)!,
-                dateUsedEpoch:
-                    leaveRequest.get<int>(leaveRequestDateUsedField)!,
-                status: leaveRequest.get<String>(leaveRequestStatusField)!,
-                leaveType:
-                    leaveRequest.get<String>(leaveRequestLeaveTypeField)!,
-                reason: leaveRequest.get<String>(leaveRequestReasonField)!,
-              ),
-            );
-          }
+        if (leaveId != null) {
+          leaveReqQuery.whereEqualTo(leaveRequestLeaveIdField, leaveId);
         }
-        return LeaveRequestsResponse(
-          leaveRequests: leaveRequests,
-          status: 'success',
+        if (userId != null) {
+          leaveReqQuery.whereEqualTo(leaveRequestUserIdField, userId);
+        }
+
+        final ParseResponse getLeaveReqResponse = leaveRequestId != null
+            ? await leaveRequests.getObject(leaveRequestId)
+            : await leaveReqQuery.query();
+
+        if (getLeaveReqResponse.success) {
+          final List<LeaveRequest> leaveRequests = <LeaveRequest>[];
+
+          if (getLeaveReqResponse.results != null) {
+            for (final ParseObject leaveRequest
+                in getLeaveReqResponse.results! as List<ParseObject>) {
+              leaveRequests.add(
+                LeaveRequest(
+                  id: leaveRequest.objectId!,
+                  leaveId: leaveRequest.get<String>(leaveRequestLeaveIdField)!,
+                  userId: leaveRequest.get<String>(leaveRequestUserIdField)!,
+                  dateFiledEpoch:
+                      leaveRequest.get<int>(leaveRequestDateFiledField)!,
+                  dateUsedEpoch:
+                      leaveRequest.get<int>(leaveRequestDateUsedField)!,
+                  status: leaveRequest.get<String>(leaveRequestStatusField)!,
+                  leaveType:
+                      leaveRequest.get<String>(leaveRequestLeaveTypeField)!,
+                  reason: leaveRequest.get<String>(leaveRequestReasonField)!,
+                ),
+              );
+            }
+          }
+          return LeaveRequestsResponse(
+            leaveRequests: leaveRequests,
+            status: 'success',
+          );
+        }
+
+        throw APIResponse<void>(
+          success: false,
+          message: getLeaveReqResponse.error != null
+              ? getLeaveReqResponse.error!.message
+              : '',
+          data: null,
+          errorCode: null,
         );
       }
 
       throw APIResponse<void>(
         success: false,
-        message: getLeaveReqResponse.error != null
-            ? getLeaveReqResponse.error!.message
-            : '',
+        message: 'Something went wrong',
         data: null,
         errorCode: null,
       );
+    } on SocketException {
+      throw APIResponse.socketErrorResponse();
     }
-
-    throw APIResponse<void>(
-      success: false,
-      message: 'Something went wrong',
-      data: null,
-      errorCode: null,
-    );
   }
 
   Future<ParseObject> getCurrentYearInfo() async {
@@ -505,67 +549,71 @@ class LeaveRepository extends ILeaveRepository {
     required String reason,
     required String leaveType,
   }) async {
-    final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
-    if (user != null) {
-      final ParseObject leaveRequests = ParseObject(leaveRequestsTable);
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+      if (user != null) {
+        final ParseObject leaveRequests = ParseObject(leaveRequestsTable);
 
-      final String currentYearsId = await getCurrentYearInfo().then(
-        (ParseObject value) => value.objectId!,
-      );
-      final String usersId = user.objectId!;
-      final int dateFiledEpoch = epochFromDateTime(
-        date: DateTime(currentDay.year, currentDay.month, currentDay.day),
-      );
+        final String currentYearsId = await getCurrentYearInfo().then(
+          (ParseObject value) => value.objectId!,
+        );
+        final String usersId = user.objectId!;
+        final int dateFiledEpoch = epochFromDateTime(
+          date: DateTime(currentDay.year, currentDay.month, currentDay.day),
+        );
 
-      final int dateUsedEpoch = epochFromDateTime(date: dateUsed);
+        final int dateUsedEpoch = epochFromDateTime(date: dateUsed);
 
-      const String status = 'PENDING';
+        const String status = 'PENDING';
 
-      leaveRequests
-        ..set<String>(leaveRequestLeaveIdField, currentYearsId)
-        ..set<String>(leaveRequestUserIdField, usersId)
-        ..set<int>(leaveRequestDateFiledField, dateFiledEpoch)
-        ..set<int>(leaveRequestDateUsedField, dateUsedEpoch)
-        ..set<String>(leaveRequestStatusField, status)
-        ..set<String>(leaveRequestReasonField, reason)
-        ..set<String>(leaveRequestLeaveTypeField, leaveType);
+        leaveRequests
+          ..set<String>(leaveRequestLeaveIdField, currentYearsId)
+          ..set<String>(leaveRequestUserIdField, usersId)
+          ..set<int>(leaveRequestDateFiledField, dateFiledEpoch)
+          ..set<int>(leaveRequestDateUsedField, dateUsedEpoch)
+          ..set<String>(leaveRequestStatusField, status)
+          ..set<String>(leaveRequestReasonField, reason)
+          ..set<String>(leaveRequestLeaveTypeField, leaveType);
 
-      final ParseResponse createLeaveRequestResponse =
-          await leaveRequests.save();
-      if (createLeaveRequestResponse.success &&
-          createLeaveRequestResponse.results != null) {
-        return LeaveRequestsResponse(
-          leaveRequests: <LeaveRequest>[
-            LeaveRequest(
-              id: getResultId(createLeaveRequestResponse.results!),
-              leaveId: currentYearsId,
-              userId: usersId,
-              dateFiledEpoch: dateFiledEpoch,
-              dateUsedEpoch: dateUsedEpoch,
-              status: status,
-              leaveType: leaveType,
-              reason: reason,
-            )
-          ],
-          status: 'success',
+        final ParseResponse createLeaveRequestResponse =
+            await leaveRequests.save();
+        if (createLeaveRequestResponse.success &&
+            createLeaveRequestResponse.results != null) {
+          return LeaveRequestsResponse(
+            leaveRequests: <LeaveRequest>[
+              LeaveRequest(
+                id: getResultId(createLeaveRequestResponse.results!),
+                leaveId: currentYearsId,
+                userId: usersId,
+                dateFiledEpoch: dateFiledEpoch,
+                dateUsedEpoch: dateUsedEpoch,
+                status: status,
+                leaveType: leaveType,
+                reason: reason,
+              )
+            ],
+            status: 'success',
+          );
+        }
+
+        throw APIResponse<void>(
+          success: false,
+          message: createLeaveRequestResponse.error != null
+              ? createLeaveRequestResponse.error!.message
+              : '',
+          data: null,
+          errorCode: null,
         );
       }
 
       throw APIResponse<void>(
         success: false,
-        message: createLeaveRequestResponse.error != null
-            ? createLeaveRequestResponse.error!.message
-            : '',
+        message: 'Something went wrong',
         data: null,
         errorCode: null,
       );
+    } on SocketException {
+      throw APIResponse.socketErrorResponse();
     }
-
-    throw APIResponse<void>(
-      success: false,
-      message: 'Something went wrong',
-      data: null,
-      errorCode: null,
-    );
   }
 }
