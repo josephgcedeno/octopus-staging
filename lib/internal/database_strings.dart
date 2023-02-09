@@ -22,7 +22,7 @@ const String usersIsAdminField = 'is_admin';
 const String usersPhotoField = 'photo';
 
 /// For time_in_outs table
-const String timeInOutsHolidayField = 'holiday';
+const String timeInOutsHolidayIdField = 'holiday_id';
 const String timeInOutDateField = 'date';
 
 /// For time_attendances table
