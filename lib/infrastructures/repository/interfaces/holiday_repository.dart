@@ -7,11 +7,11 @@ abstract class IHoliday {
   ///
   /// [holidayName] this search which holiday matches the query.
   ///
-  /// [holidateDate] this get holiday that matches a certain date.
+  /// [holidayDate] this get holiday that matches a certain date.
   Future<HolidayResponse> getHoliday({
     String? holidayId,
     String? holidayName,
-    DateTime? holidateDate,
+    DateTime? holidayDate,
   });
 
   /// FOR: ADMIN USE ONLY
@@ -20,10 +20,10 @@ abstract class IHoliday {
   ///
   /// [holidayName] this identifies what is the holiday.
   ///
-  /// [holidateDate] this identifies when is the holiday.
+  /// [holidayDate] this identifies when is the holiday.
   Future<HolidayResponse> addHoliday({
     required String holidayName,
-    required DateTime holidateDate,
+    required DateTime holidayDate,
   });
 
   /// FOR: ADMIN USE ONLY
@@ -36,7 +36,7 @@ abstract class IHoliday {
   Future<HolidayResponse> updateHoliday({
     required String id,
     String? holidayName,
-    DateTime? holidateDate,
+    DateTime? holidayDate,
   });
 
   /// FOR: ADMIN USE ONLY
