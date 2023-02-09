@@ -10,6 +10,29 @@ class TimeInOutRepository extends ITimeInOutRepository {
 
   DateTime get currentDate => DateTime(now.year, now.month, now.day);
 
+  /// This function will check if today is holiday, if it is holiday, return the parse object for the record for this holiday such as ID.
+  Future<ParseObject?> todayHoliday(
+    DateTime today,
+  ) async {
+    final ParseObject holiday = ParseObject(holidaysTable);
+    final QueryBuilder<ParseObject> holidayTodayQuery =
+        QueryBuilder<ParseObject>(holiday)
+          ..whereEqualTo(
+            holidayDateField,
+            epochFromDateTime(date: today),
+          );
+    final ParseResponse holidayTodayQueryResponse =
+        await holidayTodayQuery.query();
+
+    if (holidayTodayQueryResponse.success) {
+      if (holidayTodayQueryResponse.results != null) {
+        return getParseObject(holidayTodayQueryResponse.results!);
+      }
+    }
+
+    return null;
+  }
+
   Future<void> createNewDate() async {
     final DateTime date = DateTime(now.year, now.month, now.day);
 
@@ -29,8 +52,11 @@ class TimeInOutRepository extends ITimeInOutRepository {
 
     /// If empty create one.
     if (responseDsr.count == 0) {
+      /// Check if today is holiday base from the holiday table.
+      final ParseObject? holidayToday = await todayHoliday(date);
+
       final ParseObject timeINOUt = timeInOut
-        ..set<String>(timeInOutsHolidayField, '')
+        ..set<String>(timeInOutsHolidayIdField, holidayToday?.objectId ?? '')
         ..set<int>(timeInOutDateField, epochFromDateTime(date: now));
 
       await timeINOUt.save();
@@ -618,7 +644,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
 
       updateTimeInOut
         ..objectId = id
-        ..set(timeInOutsHolidayField, holiday);
+        ..set(timeInOutsHolidayIdField, holiday);
 
       final ParseResponse updateTimeInOutResponse =
           await updateTimeInOut.save();
