@@ -62,7 +62,7 @@ class ReminderRepository extends IReminderRepository {
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
@@ -117,7 +117,7 @@ class ReminderRepository extends IReminderRepository {
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
@@ -177,7 +177,7 @@ class ReminderRepository extends IReminderRepository {
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
@@ -216,7 +216,7 @@ class ReminderRepository extends IReminderRepository {
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
@@ -302,7 +302,7 @@ class ReminderRepository extends IReminderRepository {
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 }

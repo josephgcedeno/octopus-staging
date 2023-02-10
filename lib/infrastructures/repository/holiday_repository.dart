@@ -51,7 +51,7 @@ class HolidayRepository extends IHoliday {
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
@@ -87,7 +87,7 @@ class HolidayRepository extends IHoliday {
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
@@ -160,7 +160,7 @@ class HolidayRepository extends IHoliday {
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
@@ -225,7 +225,7 @@ class HolidayRepository extends IHoliday {
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 }

@@ -160,7 +160,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
@@ -216,7 +216,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
@@ -342,7 +342,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
@@ -402,7 +402,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
@@ -527,7 +527,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
@@ -589,7 +589,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
@@ -666,7 +666,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
@@ -724,7 +724,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 }

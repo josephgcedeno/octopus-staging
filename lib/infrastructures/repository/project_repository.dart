@@ -62,7 +62,7 @@ class ProjectRepository extends IProjectRepository {
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
@@ -99,7 +99,7 @@ class ProjectRepository extends IProjectRepository {
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
@@ -163,7 +163,7 @@ class ProjectRepository extends IProjectRepository {
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
@@ -252,7 +252,7 @@ class ProjectRepository extends IProjectRepository {
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 }
