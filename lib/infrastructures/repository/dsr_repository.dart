@@ -236,21 +236,17 @@ class DSRRepository extends IDSRRepository {
           );
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message:
               sprintResponse.error != null ? sprintResponse.error!.message : '',
-          data: null,
           errorCode: sprintResponse.error != null
               ? sprintResponse.error!.code as String
               : '',
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
@@ -367,12 +363,10 @@ class DSRRepository extends IDSRRepository {
             );
           }
 
-          throw APIResponse<void>(
-            success: false,
+          throw APIErrorResponse(
             message: isAlreadyExisitingResponse.error != null
                 ? isAlreadyExisitingResponse.error!.message
                 : '',
-            data: null,
             errorCode: isAlreadyExisitingResponse.error != null
                 ? isAlreadyExisitingResponse.error!.code as String
                 : '',
@@ -380,10 +374,8 @@ class DSRRepository extends IDSRRepository {
         }
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
@@ -572,20 +564,16 @@ class DSRRepository extends IDSRRepository {
           }
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: saveDsrResponse.error != null
               ? saveDsrResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
@@ -648,20 +636,16 @@ class DSRRepository extends IDSRRepository {
           );
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: getAllDSRQueryResponse.error != null
               ? getAllDSRQueryResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
