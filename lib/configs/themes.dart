@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 final ThemeData defaultTheme = _buildDefaultTheme();
 const Color kBlue = Color(0xFF017BFF);
+const Color kRed = Color(0xFFE63462);
 
 ThemeData _buildDefaultTheme() {
   final ThemeData base = ThemeData.light();
@@ -9,6 +10,7 @@ ThemeData _buildDefaultTheme() {
     textTheme: _buildDefaultTextTheme(base.textTheme),
     scaffoldBackgroundColor: Colors.white,
     primaryColor: kBlue,
+    errorColor: kRed,
     colorScheme: base.colorScheme.copyWith(
       secondary: Colors.orange,
     ),
