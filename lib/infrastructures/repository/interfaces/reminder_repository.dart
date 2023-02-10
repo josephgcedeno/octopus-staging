@@ -1,13 +1,14 @@
+import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/reminders/reminders_response.dart';
 
 abstract class IReminderRepository {
   /// This function gets the scheduled reminders available to this current day.
-  Future<ReminderResponse> getScheduledReminder();
+  Future<APIListResponse<Reminder>> getScheduledReminder();
 
   /// FOR: ADMIN USE ONLY
   ///
   /// This function will get all the reminders available.
-  Future<ReminderResponse> getAllReminder();
+  Future<APIListResponse<Reminder>> getAllReminder();
 
   /// FOR: ADMIN USE ONLY
   ///
@@ -20,7 +21,7 @@ abstract class IReminderRepository {
   /// [endDate] determines when this reminder ends to display.
   ///
   /// [isShow] determines if the reminder is viewable by the user.
-  Future<ReminderResponse> createReminder({
+  Future<APIResponse<Reminder>> createReminder({
     required String announcement,
     required DateTime startDate,
     required DateTime endDate,
@@ -38,7 +39,7 @@ abstract class IReminderRepository {
   /// [endDate] determines when will this reminder ends to display.
   ///
   /// [isShow] determines if the reminder is viewable by the user.
-  Future<ReminderResponse> updateReminder({
+  Future<APIResponse<Reminder>> updateReminder({
     required String id,
     String? announcement,
     DateTime? startDate,
@@ -51,7 +52,7 @@ abstract class IReminderRepository {
   /// This function will delete a reminder.
   ///
   /// [id] determines which reminder to be deleted.
-  Future<ReminderResponse> deleteReminder({
+  Future<APIResponse<void>> deleteReminder({
     required String id,
   });
 }

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/reminders/reminders_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/reminder_repository.dart';
@@ -9,7 +10,7 @@ import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 class ReminderRepository extends IReminderRepository {
   /// Only admin can create reminder.
   @override
-  Future<ReminderResponse> createReminder({
+  Future<APIResponse<Reminder>> createReminder({
     required String announcement,
     required DateTime startDate,
     required DateTime endDate,
@@ -34,34 +35,30 @@ class ReminderRepository extends IReminderRepository {
 
         if (createReminderReponse.success &&
             createReminderReponse.results != null) {
-          return ReminderResponse(
-            reminders: <Reminder>[
-              Reminder(
-                id: getResultId(createReminderReponse.results!),
-                announcement: announcement,
-                endDateEpoch: epochFromDateTime(date: endDate),
-                isShow: isShow,
-                startDateEpoch: epochFromDateTime(date: startDate),
-              )
-            ],
-            status: 'success',
+          return APIResponse<Reminder>(
+            success: true,
+            message: 'Successfully created reminder',
+            data: Reminder(
+              id: getResultId(createReminderReponse.results!),
+              announcement: announcement,
+              endDateEpoch: epochFromDateTime(date: endDate),
+              isShow: isShow,
+              startDateEpoch: epochFromDateTime(date: startDate),
+            ),
+            errorCode: null,
           );
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: createReminderReponse.error != null
               ? createReminderReponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
@@ -71,7 +68,7 @@ class ReminderRepository extends IReminderRepository {
 
   /// Only admin can access all reminders.
   @override
-  Future<ReminderResponse> getAllReminder() async {
+  Future<APIListResponse<Reminder>> getAllReminder() async {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
@@ -99,26 +96,24 @@ class ReminderRepository extends IReminderRepository {
             }
           }
 
-          return ReminderResponse(
-            reminders: reminders,
-            status: 'success',
+          return APIListResponse<Reminder>(
+            success: true,
+            message: 'Successfully get all reminders',
+            data: reminders,
+            errorCode: null,
           );
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: remindersResponse.error != null
               ? remindersResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
@@ -127,7 +122,7 @@ class ReminderRepository extends IReminderRepository {
   }
 
   @override
-  Future<ReminderResponse> getScheduledReminder() async {
+  Future<APIListResponse<Reminder>> getScheduledReminder() async {
     try {
       final DateTime today = DateTime.now();
 
@@ -167,18 +162,18 @@ class ReminderRepository extends IReminderRepository {
             );
           }
         }
-        return ReminderResponse(
-          reminders: reminders,
-          status: 'success',
+        return APIListResponse<Reminder>(
+          success: true,
+          message: 'Successfully get all scheduled reminder',
+          data: reminders,
+          errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: requeryReminderResponse.error != null
             ? requeryReminderResponse.error!.message
             : '',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
@@ -188,7 +183,7 @@ class ReminderRepository extends IReminderRepository {
 
   /// Only admin can update reminder.
   @override
-  Future<ReminderResponse> deleteReminder({
+  Future<APIResponse<void>> deleteReminder({
     required String id,
   }) async {
     try {
@@ -200,26 +195,24 @@ class ReminderRepository extends IReminderRepository {
             await deleteReminder.delete(id: id);
 
         if (deleteReminderResponse.success) {
-          return ReminderResponse(
-            reminders: <Reminder>[],
-            status: 'success',
+          return APIResponse<void>(
+            success: true,
+            message: 'Successfully deleted reminder',
+            data: null,
+            errorCode: null,
           );
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: deleteReminderResponse.error != null
               ? deleteReminderResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
@@ -229,7 +222,7 @@ class ReminderRepository extends IReminderRepository {
 
   /// Only admin can update reminder.
   @override
-  Future<ReminderResponse> updateReminder({
+  Future<APIResponse<Reminder>> updateReminder({
     required String id,
     String? announcement,
     DateTime? startDate,
@@ -277,39 +270,35 @@ class ReminderRepository extends IReminderRepository {
             final ParseObject resultParseObject =
                 getParseObject(reminderRecord.results!);
 
-            return ReminderResponse(
-              reminders: <Reminder>[
-                Reminder(
-                  id: resultParseObject.objectId!,
-                  announcement: resultParseObject
-                      .get<String>(pannelRemindersAnnouncementField)!,
-                  startDateEpoch: resultParseObject
-                      .get<int>(pannelRemindersStartDateField)!,
-                  endDateEpoch:
-                      resultParseObject.get<int>(pannelRemindersEndDateField)!,
-                  isShow:
-                      resultParseObject.get<bool>(pannelRemindersIsShowField)!,
-                )
-              ],
-              status: 'success',
+            return APIResponse<Reminder>(
+              success: true,
+              message: 'Successfully updated reminder.',
+              data: Reminder(
+                id: resultParseObject.objectId!,
+                announcement: resultParseObject
+                    .get<String>(pannelRemindersAnnouncementField)!,
+                startDateEpoch:
+                    resultParseObject.get<int>(pannelRemindersStartDateField)!,
+                endDateEpoch:
+                    resultParseObject.get<int>(pannelRemindersEndDateField)!,
+                isShow:
+                    resultParseObject.get<bool>(pannelRemindersIsShowField)!,
+              ),
+              errorCode: null,
             );
           }
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: updateReminderResponse.error != null
               ? updateReminderResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
