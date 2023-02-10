@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:intl/intl.dart';
+import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_request.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
@@ -59,7 +60,7 @@ class DSRRepository extends IDSRRepository {
   }
 
   @override
-  Future<DSRResponse> getAllDSRRecordForSprint({
+  Future<APIResponse<AllDSRItem>> getAllDSRRecordForSprint({
     required String sprintId,
     List<String> columns = const <String>[
       dsrsDoneField,
@@ -114,76 +115,67 @@ class DSRRepository extends IDSRRepository {
         final ParseResponse dsrResponse = await dsrQuery.query();
 
         final Map<String, List<DSRWorks>> datas = <String, List<DSRWorks>>{};
+        if (dsrResponse.success) {
+          if (dsrResponse.results != null) {
+            for (final ParseObject dsrDonePerUser
+                in dsrResponse.results! as List<ParseObject>) {
+              final String userName = ((await ParseUser.forQuery().getObject(
+                dsrDonePerUser.get<String>(dsrsUserIdField)!,
+              ))
+                      .result as ParseObject)
+                  .get(usersNameField)!;
 
-        if (dsrResponse.success && dsrResponse.results != null) {
-          for (final ParseObject dsrDonePerUser
-              in dsrResponse.results! as List<ParseObject>) {
-            final String userName = ((await ParseUser.forQuery().getObject(
-              dsrDonePerUser.get<String>(dsrsUserIdField)!,
-            ))
-                    .result as ParseObject)
-                .get(usersNameField)!;
-
-            final String date = DateFormat('EEE, MMM d, yyyy').format(
-              dateTimeFromEpoch(
-                epoch: dsrDonePerUser.get<int>(dsrsDateField)!,
-              ),
-            );
-
-            for (final String column in columns) {
-              final List<dynamic> tasks = dsrDonePerUser.get(column)!;
-
-              if (datas.containsKey(column)) {
-                datas[column]!.addAll(
-                  await manageData(
-                    tasks: tasks,
-                    userName: userName,
-                    filterByProject: projectName,
-                    date: date,
-                  ),
-                );
-                continue;
-              }
-
-              datas[column] = await manageData(
-                tasks: tasks,
-                userName: userName,
-                filterByProject: projectName,
-                date: date,
+              final String date = DateFormat('EEE, MMM d, yyyy').format(
+                dateTimeFromEpoch(
+                  epoch: dsrDonePerUser.get<int>(dsrsDateField)!,
+                ),
               );
+
+              for (final String column in columns) {
+                final List<dynamic> tasks = dsrDonePerUser.get(column)!;
+
+                if (datas.containsKey(column)) {
+                  datas[column]!.addAll(
+                    await manageData(
+                      tasks: tasks,
+                      userName: userName,
+                      filterByProject: projectName,
+                      date: date,
+                    ),
+                  );
+                  continue;
+                }
+
+                datas[column] = await manageData(
+                  tasks: tasks,
+                  userName: userName,
+                  filterByProject: projectName,
+                  date: date,
+                );
+              }
             }
           }
 
           /// Return formatted data for admin.
-          return DSRResponse(
-            status: 'success',
-            dsrs: <DSRRecord>[],
-            data: datas,
+          return APIResponse<AllDSRItem>(
+            success: true,
+            data: AllDSRItem(
+              data: datas,
+            ),
+            errorCode: null,
+            message: 'success',
           );
         }
-
-        if (dsrResponse.error != null &&
-            dsrResponse.error!.message ==
-                'Successful request, but no results found') {
-          return DSRResponse(
-            dsrs: <DSRRecord>[],
-            status: 'success',
-          );
-        }
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: dsrResponse.error != null ? dsrResponse.error!.message : '',
-          data: null,
           errorCode: dsrResponse.error != null
               ? dsrResponse.error!.code as String
               : '',
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
@@ -192,7 +184,7 @@ class DSRRepository extends IDSRRepository {
   }
 
   @override
-  Future<SprintResponse> getAllSprints({
+  Future<APIListResponse<SprintRecord>> getAllSprints({
     DateTime? startDate,
     DateTime? endDate,
   }) async {
@@ -236,9 +228,11 @@ class DSRRepository extends IDSRRepository {
               );
             }
           }
-          return SprintResponse(
-            sprints: sprints,
-            status: 'success',
+          return APIListResponse<SprintRecord>(
+            success: true,
+            message: 'Successfully retrieve sprints',
+            data: sprints,
+            errorCode: null,
           );
         }
 
@@ -288,7 +282,7 @@ class DSRRepository extends IDSRRepository {
   }
 
   @override
-  Future<DSRResponse> createDSRForToday() async {
+  Future<APIResponse<DSRRecord>> createDSRForToday() async {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
@@ -330,19 +324,19 @@ class DSRRepository extends IDSRRepository {
 
             if (createDSRResponse.success &&
                 createDSRResponse.results != null) {
-              return DSRResponse(
-                status: 'success',
-                dsrs: <DSRRecord>[
-                  DSRRecord(
-                    id: getResultId(createDSRResponse.results!),
-                    sprintId: sprintId,
-                    dateEpoch: epochDateToday,
-                    done: <DSRWorkTrack>[],
-                    wip: <DSRWorkTrack>[],
-                    blockers: <DSRWorkTrack>[],
-                    status: workStatus,
-                  ),
-                ],
+              return APIResponse<DSRRecord>(
+                success: true,
+                message: 'Successfully created DSR.',
+                data: DSRRecord(
+                  id: getResultId(createDSRResponse.results!),
+                  sprintId: sprintId,
+                  dateEpoch: epochDateToday,
+                  done: <DSRWorkTrack>[],
+                  wip: <DSRWorkTrack>[],
+                  blockers: <DSRWorkTrack>[],
+                  status: workStatus,
+                ),
+                errorCode: null,
               );
             }
           } else if (isAlreadyExisitingResponse.success &&
@@ -351,25 +345,25 @@ class DSRRepository extends IDSRRepository {
             final ParseObject resultParseObject =
                 getParseObject(isAlreadyExisitingResponse.results!);
 
-            return DSRResponse(
-              status: 'success',
-              dsrs: <DSRRecord>[
-                DSRRecord(
-                  id: resultParseObject.objectId!,
-                  sprintId: resultParseObject.get<String>(dsrsSprintidField)!,
-                  done: convertListDynamic(
-                    resultParseObject.get<List<dynamic>>(dsrsDoneField)!,
-                  ),
-                  wip: convertListDynamic(
-                    resultParseObject.get<List<dynamic>>(dsrsWipField)!,
-                  ),
-                  blockers: convertListDynamic(
-                    resultParseObject.get<List<dynamic>>(dsrsBlockersField)!,
-                  ),
-                  dateEpoch: resultParseObject.get<int>(dsrsDateField)!,
-                  status: workStatus,
+            return APIResponse<DSRRecord>(
+              success: true,
+              message: 'There is an already record for today.',
+              data: DSRRecord(
+                id: resultParseObject.objectId!,
+                sprintId: resultParseObject.get<String>(dsrsSprintidField)!,
+                done: convertListDynamic(
+                  resultParseObject.get<List<dynamic>>(dsrsDoneField)!,
                 ),
-              ],
+                wip: convertListDynamic(
+                  resultParseObject.get<List<dynamic>>(dsrsWipField)!,
+                ),
+                blockers: convertListDynamic(
+                  resultParseObject.get<List<dynamic>>(dsrsBlockersField)!,
+                ),
+                dateEpoch: resultParseObject.get<int>(dsrsDateField)!,
+                status: workStatus,
+              ),
+              errorCode: null,
             );
           }
 
@@ -398,7 +392,7 @@ class DSRRepository extends IDSRRepository {
   }
 
   @override
-  Future<SprintResponse> addSprint({
+  Future<APIResponse<SprintRecord>> addSprint({
     required DateTime startDate,
     required DateTime endDate,
   }) async {
@@ -435,33 +429,29 @@ class DSRRepository extends IDSRRepository {
           final ParseResponse createSprint = await sprints.save();
 
           if (createSprint.success) {
-            return SprintResponse(
-              sprints: <SprintRecord>[
-                SprintRecord(
-                  endDateEpoch: epochFromDateTime(date: endDate),
-                  id: getResultId(createSprint.results!),
-                  startDateEpoch: epochFromDateTime(date: startDate),
-                ),
-              ],
-              status: 'success',
+            return APIResponse<SprintRecord>(
+              success: true,
+              message: 'Successfully add sprint.',
+              data: SprintRecord(
+                endDateEpoch: epochFromDateTime(date: endDate),
+                id: getResultId(createSprint.results!),
+                startDateEpoch: epochFromDateTime(date: startDate),
+              ),
+              errorCode: null,
             );
           }
         } else if (isAlreadyExisitingResponse.success &&
             isAlreadyExisitingResponse.count > 0) {
           /// If there is an existing sprint with this date. Throw error.
-          throw APIResponse<void>(
-            success: false,
-            message: 'There is an existing sprint with this date already',
-            data: null,
+          throw APIErrorResponse(
+            message: 'There is an existing sprint with this date already!',
             errorCode: null,
           );
         }
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
@@ -470,7 +460,7 @@ class DSRRepository extends IDSRRepository {
   }
 
   @override
-  Future<DSRResponse> addDSRWork({
+  Future<APIResponse<DSRRecord>> addDSRWork({
     required String dsrId,
     required String column,
     required List<DSRWorkTrack> dsrworkTrack,
@@ -494,43 +484,39 @@ class DSRRepository extends IDSRRepository {
             final ParseObject resultParseObject =
                 getParseObject(dsrInfoAfterAdding.results!);
 
-            return DSRResponse(
-              status: 'success',
-              dsrs: <DSRRecord>[
-                DSRRecord(
-                  id: resultParseObject.objectId!,
-                  sprintId: resultParseObject.get<String>(dsrsSprintidField)!,
-                  done: convertListDynamic(
-                    resultParseObject.get<List<dynamic>>(dsrsDoneField)!,
-                  ),
-                  wip: convertListDynamic(
-                    resultParseObject.get<List<dynamic>>(dsrsWipField)!,
-                  ),
-                  blockers: convertListDynamic(
-                    resultParseObject.get<List<dynamic>>(dsrsBlockersField)!,
-                  ),
-                  status: resultParseObject.get<String>(dsrsStatusField)!,
-                  dateEpoch: resultParseObject.get<int>(dsrsDateField)!,
-                )
-              ],
+            return APIResponse<DSRRecord>(
+              success: true,
+              message: 'Successfully added works on $column.',
+              data: DSRRecord(
+                id: resultParseObject.objectId!,
+                sprintId: resultParseObject.get<String>(dsrsSprintidField)!,
+                done: convertListDynamic(
+                  resultParseObject.get<List<dynamic>>(dsrsDoneField)!,
+                ),
+                wip: convertListDynamic(
+                  resultParseObject.get<List<dynamic>>(dsrsWipField)!,
+                ),
+                blockers: convertListDynamic(
+                  resultParseObject.get<List<dynamic>>(dsrsBlockersField)!,
+                ),
+                status: resultParseObject.get<String>(dsrsStatusField)!,
+                dateEpoch: resultParseObject.get<int>(dsrsDateField)!,
+              ),
+              errorCode: null,
             );
           }
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: saveDsrResponse.error != null
               ? saveDsrResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
@@ -539,7 +525,7 @@ class DSRRepository extends IDSRRepository {
   }
 
   @override
-  Future<DSRResponse> updateDSRWorkStatus({
+  Future<APIResponse<DSRRecord>> updateDSRWorkStatus({
     required String dsrId,
     required String status,
   }) async {
@@ -563,25 +549,25 @@ class DSRRepository extends IDSRRepository {
             final ParseObject resultParseObject =
                 getParseObject(dsrInfoAfterUpdating.results!);
 
-            return DSRResponse(
-              status: 'success',
-              dsrs: <DSRRecord>[
-                DSRRecord(
-                  id: resultParseObject.objectId!,
-                  sprintId: resultParseObject.get<String>(dsrsSprintidField)!,
-                  done: convertListDynamic(
-                    resultParseObject.get<List<dynamic>>(dsrsDoneField)!,
-                  ),
-                  wip: convertListDynamic(
-                    resultParseObject.get<List<dynamic>>(dsrsWipField)!,
-                  ),
-                  blockers: convertListDynamic(
-                    resultParseObject.get<List<dynamic>>(dsrsBlockersField)!,
-                  ),
-                  status: resultParseObject.get<String>(dsrsStatusField)!,
-                  dateEpoch: resultParseObject.get<int>(dsrsDateField)!,
-                )
-              ],
+            return APIResponse<DSRRecord>(
+              success: true,
+              message: 'Successfully update DSR record.',
+              data: DSRRecord(
+                id: resultParseObject.objectId!,
+                sprintId: resultParseObject.get<String>(dsrsSprintidField)!,
+                done: convertListDynamic(
+                  resultParseObject.get<List<dynamic>>(dsrsDoneField)!,
+                ),
+                wip: convertListDynamic(
+                  resultParseObject.get<List<dynamic>>(dsrsWipField)!,
+                ),
+                blockers: convertListDynamic(
+                  resultParseObject.get<List<dynamic>>(dsrsBlockersField)!,
+                ),
+                status: resultParseObject.get<String>(dsrsStatusField)!,
+                dateEpoch: resultParseObject.get<int>(dsrsDateField)!,
+              ),
+              errorCode: null,
             );
           }
         }
@@ -608,7 +594,7 @@ class DSRRepository extends IDSRRepository {
   }
 
   @override
-  Future<DSRResponse> getAvailableDSRSForSprint({
+  Future<APIListResponse<DSRRecord>> getAvailableDSRSForSprint({
     String? sprintId,
     String? dsrId,
   }) async {
@@ -654,9 +640,11 @@ class DSRRepository extends IDSRRepository {
             }
           }
 
-          return DSRResponse(
-            dsrs: dsrs,
-            status: 'success',
+          return APIListResponse<DSRRecord>(
+            success: true,
+            message: 'Successfully fetch dsrs.',
+            data: dsrs,
+            errorCode: null,
           );
         }
 
