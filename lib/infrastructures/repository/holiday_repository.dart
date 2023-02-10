@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/holiday/holiday_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/holiday_repository.dart';
@@ -8,7 +9,7 @@ import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class HolidayRepository extends IHoliday {
   @override
-  Future<HolidayResponse> addHoliday({
+  Future<APIResponse<Holiday>> addHoliday({
     required String holidayName,
     required DateTime holidayDate,
   }) async {
@@ -26,31 +27,27 @@ class HolidayRepository extends IHoliday {
         final ParseResponse addHolidayResponse = await holidays.save();
 
         if (addHolidayResponse.success) {
-          return HolidayResponse(
-            holidays: <Holiday>[
-              Holiday(
-                id: getResultId(addHolidayResponse.results!),
-                dateEpoch: dateEpoch,
-                holiday: holidayName,
-              )
-            ],
-            status: 'success',
+          return APIResponse<Holiday>(
+            success: true,
+            message: 'Successfully added holiday.',
+            data: Holiday(
+              id: getResultId(addHolidayResponse.results!),
+              dateEpoch: dateEpoch,
+              holiday: holidayName,
+            ),
+            errorCode: null,
           );
         }
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: addHolidayResponse.error != null
               ? addHolidayResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
@@ -59,7 +56,7 @@ class HolidayRepository extends IHoliday {
   }
 
   @override
-  Future<HolidayResponse> deleteHoliday({required String id}) async {
+  Future<APIResponse<void>> deleteHoliday({required String id}) async {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
@@ -70,25 +67,23 @@ class HolidayRepository extends IHoliday {
             await holidays.delete(id: id);
 
         if (holidayDeleteResponse.success) {
-          return HolidayResponse(
-            holidays: <Holiday>[],
-            status: 'success',
+          return APIResponse<void>(
+            success: true,
+            message: 'Successfully deleted holiday.',
+            data: null,
+            errorCode: null,
           );
         }
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: holidayDeleteResponse.error != null
               ? holidayDeleteResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
@@ -97,7 +92,7 @@ class HolidayRepository extends IHoliday {
   }
 
   @override
-  Future<HolidayResponse> getHoliday({
+  Future<APIListResponse<Holiday>> getHoliday({
     String? holidayId,
     String? holidayName,
     DateTime? holidayDate,
@@ -145,25 +140,23 @@ class HolidayRepository extends IHoliday {
               );
             }
           }
-          return HolidayResponse(
-            holidays: holidays,
-            status: '',
+          return APIListResponse<Holiday>(
+            success: true,
+            message: 'Successfully get holidays',
+            data: holidays,
+            errorCode: null,
           );
         }
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: getHolidayResponse.error != null
               ? getHolidayResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
@@ -172,7 +165,7 @@ class HolidayRepository extends IHoliday {
   }
 
   @override
-  Future<HolidayResponse> updateHoliday({
+  Future<APIResponse<Holiday>> updateHoliday({
     required String id,
     String? holidayName,
     DateTime? holidayDate,
@@ -207,32 +200,28 @@ class HolidayRepository extends IHoliday {
             final ParseObject updatedRecord =
                 getParseObject(getUpdatedRecordResponse.results!);
 
-            return HolidayResponse(
-              holidays: <Holiday>[
-                Holiday(
-                  id: updatedRecord.objectId!,
-                  holiday: updatedRecord.get<String>(holidayNameField)!,
-                  dateEpoch: updatedRecord.get<int>(holidayDateField)!,
-                ),
-              ],
-              status: 'success',
+            return APIResponse<Holiday>(
+              success: true,
+              message: 'Successfully updated holiday.',
+              data: Holiday(
+                id: updatedRecord.objectId!,
+                holiday: updatedRecord.get<String>(holidayNameField)!,
+                dateEpoch: updatedRecord.get<int>(holidayDateField)!,
+              ),
+              errorCode: null,
             );
           }
         }
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: holidayUpdateResponse.error != null
               ? holidayUpdateResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
