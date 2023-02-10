@@ -1,14 +1,6 @@
 import 'package:octopus/infrastructures/models/dsr/dsr_request.dart';
 
-class SprintResponse {
-  SprintResponse({
-    required this.sprints,
-    required this.status,
-  });
-  final List<SprintRecord> sprints;
-  final String status;
-}
-
+/// This object will contain the necessary field for sprint record.
 class SprintRecord {
   SprintRecord({
     required this.id,
@@ -20,20 +12,16 @@ class SprintRecord {
   final String id;
 }
 
-class DSRResponse {
-  DSRResponse({
-    required this.status,
-    required this.dsrs,
-    this.data,
+/// This record is for admin access listing all data for every user.
+class AllDSRItem {
+  AllDSRItem({
+    required this.data,
   });
-  final String status;
-  final List<DSRRecord> dsrs;
 
-  /// This record is for admin access listing all data for every user.
-  final Map<String, List<DSRWorks>>? data;
+  final Map<String, List<DSRWorks>> data;
 }
 
-/// DSRS from the user record.
+/// This object will contain the necessary field for DSR record.
 class DSRRecord {
   DSRRecord({
     required this.id,
