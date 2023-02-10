@@ -1,13 +1,4 @@
-class ReminderResponse {
-  ReminderResponse({
-    required this.status,
-    required this.reminders,
-  });
-
-  final String status;
-  final List<Reminder> reminders;
-}
-
+/// This object will contain the necessary field for reminder record.
 class Reminder {
   Reminder({
     required this.id,
