@@ -1,13 +1,4 @@
-class LeaveResponse {
-  LeaveResponse({
-    required this.status,
-    required this.leaves,
-  });
-
-  final String status;
-  final List<Leave> leaves;
-}
-
+/// This object will contain the necessary field for Leave record.
 class Leave {
   Leave({
     required this.id,
@@ -22,16 +13,7 @@ class Leave {
   final int endDateEpoch;
 }
 
-class LeaveRequestsResponse {
-  LeaveRequestsResponse({
-    required this.status,
-    required this.leaveRequests,
-  });
-
-  final String status;
-  final List<LeaveRequest> leaveRequests;
-}
-
+/// This object will contain the necessary field for LeaveRequest record.
 class LeaveRequest {
   LeaveRequest({
     required this.id,
