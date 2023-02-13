@@ -70,7 +70,7 @@ abstract class IDSRRepository {
   /// [column] this determines which field should be modified (done, wip, blockers)
   ///
   /// [dsrworkTrack] this contains the list of the item to be stored in the database.
-  Future<APIResponse<DSRRecord>> addDSRWork({
+  Future<APIResponse<DSRRecord>> updateDSREntries({
     required String dsrId,
     required String column,
     required List<DSRWorkTrack> dsrworkTrack,

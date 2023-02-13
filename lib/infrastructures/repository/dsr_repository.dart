@@ -452,7 +452,7 @@ class DSRRepository extends IDSRRepository {
   }
 
   @override
-  Future<APIResponse<DSRRecord>> addDSRWork({
+  Future<APIResponse<DSRRecord>> updateDSREntries({
     required String dsrId,
     required String column,
     required List<DSRWorkTrack> dsrworkTrack,
