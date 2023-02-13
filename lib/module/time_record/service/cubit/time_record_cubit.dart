@@ -63,4 +63,29 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
       );
     }
   }
+
+  /// Time out today
+  Future<void> signOutToday() async {
+    try {
+      emit(FetchTimeInDataLoading());
+
+      final APIResponse<Attendance> signOutToday =
+          await timeInOutRepository.signOutToday();
+
+      emit(
+        FetchTimeInDataLoadingSuccess(
+          attendance: signOutToday.data,
+        ),
+      );
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+
+      emit(
+        FetchTimeInDataLoadingFailed(
+          errorCode: error.errorCode!,
+          message: error.message,
+        ),
+      );
+    }
+  }
 }
