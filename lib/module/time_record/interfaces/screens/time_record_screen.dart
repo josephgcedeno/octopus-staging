@@ -24,7 +24,7 @@ class _TimeRecordScreenState extends State<TimeRecordScreen> {
       context.read<TimeRecordCubit>().signInToday();
     } else {
       /// This condition will check to drag is TIME OUT
-      setState(() => timeInEpoch = -1);
+      context.read<TimeRecordCubit>().signOutToday();
     }
     return false;
   }
