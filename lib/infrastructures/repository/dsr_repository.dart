@@ -263,11 +263,11 @@ class DSRRepository extends IDSRRepository {
               fromDateTimeToEpoch,
             );
 
-      final ParseResponse queryTodayRecrod = await todayRecord.query();
+      final ParseResponse queryTodayRecord = await todayRecord.query();
 
-      if (queryTodayRecrod.success && queryTodayRecrod.results != null) {
+      if (queryTodayRecord.success && queryTodayRecord.results != null) {
         final ParseObject sprintInfo =
-            getParseObject(queryTodayRecrod.results!);
+            getParseObject(queryTodayRecord.results!);
 
         return APIResponse<SprintRecord>(
           success: true,
@@ -281,11 +281,11 @@ class DSRRepository extends IDSRRepository {
         );
       }
       throw APIErrorResponse(
-        message: queryTodayRecrod.error != null
-            ? queryTodayRecrod.error!.message
+        message: queryTodayRecord.error != null
+            ? queryTodayRecord.error!.message
             : '',
-        errorCode: queryTodayRecrod.error != null
-            ? queryTodayRecrod.error!.code as String
+        errorCode: queryTodayRecord.error != null
+            ? queryTodayRecord.error!.code as String
             : '',
       );
     } on SocketException {
