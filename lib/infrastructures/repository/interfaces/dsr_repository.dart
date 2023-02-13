@@ -85,4 +85,7 @@ abstract class IDSRRepository {
     required String dsrId,
     required String status,
   });
+
+  /// This function will get  the sprint info within the duration from start date and end date to set for today. It will return SprintRecord object that contains id, startDateEpoch (millisecondFromEpoch), and endDateEpoch (millisecondFromEpoch).
+  Future<APIResponse<SprintRecord>> sprintInfoQueryToday();
 }
