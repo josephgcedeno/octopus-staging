@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
-import 'package:octopus/infrastructures/models/quote/quote_response.dart';
 import 'package:octopus/infrastructures/models/time_in_out/attendance_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/time_in_out_repository.dart';
 
@@ -18,18 +18,18 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
     try {
       emit(FetchTimeInDataLoading());
 
-      final AttendanceResponse? isAlreadyIn =
+      final APIResponse<Attendance?> isAlreadyIn =
           await timeInOutRepository.getInitialData();
 
-      if (isAlreadyIn != null) {
+      if (isAlreadyIn.data != null) {
         emit(
           FetchTimeInDataLoadingSuccess(
-            attendance: isAlreadyIn.attendances.first,
+            attendance: isAlreadyIn.data!,
           ),
         );
       }
     } catch (e) {
-      final APIResponse<void> error = e as APIResponse<void>;
+      final APIErrorResponse error = e as APIErrorResponse;
       emit(
         FetchTimeInDataLoadingFailed(
           errorCode: error.errorCode!,
@@ -44,18 +44,17 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
     try {
       emit(FetchTimeInDataLoading());
 
-      final AttendanceResponse signInToday =
+      final APIResponse<Attendance> signInToday =
           await timeInOutRepository.signInToday();
 
-      if (signInToday.status == 'success') {
-        emit(
-          FetchTimeInDataLoadingSuccess(
-            attendance: signInToday.attendances.first,
-          ),
-        );
-      }
+      emit(
+        FetchTimeInDataLoadingSuccess(
+          attendance: signInToday.data,
+        ),
+      );
     } catch (e) {
-      final APIResponse<void> error = e as APIResponse<void>;
+      final APIErrorResponse error = e as APIErrorResponse;
+
       emit(
         FetchTimeInDataLoadingFailed(
           errorCode: error.errorCode!,
