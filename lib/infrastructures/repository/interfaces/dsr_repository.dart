@@ -33,7 +33,7 @@ abstract class IDSRRepository {
   ///
   /// [columns] this determines which column should be displayed. It can only show done column.
   ///
-  /// [projectName] this filters the result by project name given.
+  /// [projectId] this filters the result by project name given.
   ///
   /// [startDate] an optional parameter to set an starting date range of fetching all the sprint record. If not set, it will return all of records.
   ///
@@ -45,13 +45,13 @@ abstract class IDSRRepository {
       'work_in_progress',
       'blockers'
     ],
-    String? projectName,
+    String? projectId,
     DateTime? startDate,
     DateTime? endDate,
   });
 
-  /// This function will creates a dsr record for the day under the sprint.
-  Future<APIResponse<DSRRecord>> createDSRForToday();
+  /// This function will creates a dsr record for the day under the sprint. After creating DSR, it will return DSRRecord object that contains id, sprint_id, done, wip, blockers, dateEpoch and status.
+  Future<APIResponse<DSRRecord>> initializeDSR();
 
   /// This function will get all the available dsr for the given sprint. It will also return a certain dsr record to fetch individually.
   ///
@@ -63,14 +63,14 @@ abstract class IDSRRepository {
     String? dsrId,
   });
 
-  /// This function will add/update/delete (done,wip,blockers) as a list of DSRWorkTrack to the database within the dsr item.
+  /// This function will add/update/delete (done, work_in_progress, blockers) as a list of DSRWorkTrack to the database within the dsr item.
   ///
   /// [dsrId] this determines which record will be added, updated, or deleted.
   ///
-  /// [column] this determines which field should be modified (done, wip, blockers)
+  /// [column] this determines which field should be modified (done, work_in_progress, blockers)
   ///
   /// [dsrworkTrack] this contains the list of the item to be stored in the database.
-  Future<APIResponse<DSRRecord>> addDSRWork({
+  Future<APIResponse<DSRRecord>> updateDSREntries({
     required String dsrId,
     required String column,
     required List<DSRWorkTrack> dsrworkTrack,

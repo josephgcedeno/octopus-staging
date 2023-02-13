@@ -18,13 +18,18 @@ class DSRRepository extends IDSRRepository {
     required List<dynamic> tasks,
     required String userName,
     required String date,
-    String? filterByProject,
+    String? filterByProjectId,
   }) async {
     final List<DSRWorks> data = <DSRWorks>[];
     for (final dynamic task in tasks) {
       final Map<String, dynamic> parseTask = task as Map<String, dynamic>;
 
       final String projectTagId = parseTask['project_tag_id']!.toString();
+
+      /// Check if the filterByProjectId is not null and the current project id does not match the filterByProjectId then just continue.
+      if (filterByProjectId != null && projectTagId != filterByProjectId) {
+        continue;
+      }
       final String text = parseTask['text']!.toString();
 
       final String projectName =
@@ -34,27 +39,15 @@ class DSRRepository extends IDSRRepository {
         projectTagsProjectNameField,
       )!;
 
-      (filterByProject != null &&
-              filterByProject != 'None' &&
-              filterByProject == projectName)
-          ? data.add(
-              DSRWorks(
-                tagId: projectTagId,
-                text: text,
-                user: userName,
-                projectName: projectName,
-                date: date,
-              ),
-            )
-          : data.add(
-              DSRWorks(
-                tagId: projectTagId,
-                text: text,
-                user: userName,
-                projectName: projectName,
-                date: date,
-              ),
-            );
+      data.add(
+        DSRWorks(
+          tagId: projectTagId,
+          text: text,
+          user: userName,
+          projectName: projectName,
+          date: date,
+        ),
+      );
     }
     return data;
   }
@@ -68,7 +61,7 @@ class DSRRepository extends IDSRRepository {
       dsrsBlockersField,
     ],
     String? userId,
-    String? projectName,
+    String? projectId,
     DateTime? startDate,
     DateTime? endDate,
   }) async {
@@ -139,7 +132,7 @@ class DSRRepository extends IDSRRepository {
                     await manageData(
                       tasks: tasks,
                       userName: userName,
-                      filterByProject: projectName,
+                      filterByProjectId: projectId,
                       date: date,
                     ),
                   );
@@ -149,7 +142,7 @@ class DSRRepository extends IDSRRepository {
                 datas[column] = await manageData(
                   tasks: tasks,
                   userName: userName,
-                  filterByProject: projectName,
+                  filterByProjectId: projectId,
                   date: date,
                 );
               }
@@ -278,7 +271,7 @@ class DSRRepository extends IDSRRepository {
   }
 
   @override
-  Future<APIResponse<DSRRecord>> createDSRForToday() async {
+  Future<APIResponse<DSRRecord>> initializeDSR() async {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
@@ -452,7 +445,7 @@ class DSRRepository extends IDSRRepository {
   }
 
   @override
-  Future<APIResponse<DSRRecord>> addDSRWork({
+  Future<APIResponse<DSRRecord>> updateDSREntries({
     required String dsrId,
     required String column,
     required List<DSRWorkTrack> dsrworkTrack,
