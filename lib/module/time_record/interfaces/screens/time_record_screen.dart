@@ -45,15 +45,15 @@ class _TimeRecordScreenState extends State<TimeRecordScreen> {
     return BlocListener<TimeRecordCubit, TimeRecordState>(
       listenWhen: (TimeRecordState previous, TimeRecordState current) =>
           current is FetchTimeInDataLoading ||
-          current is FetchTimeInDataLoadingSuccess ||
-          current is FetchTimeInDataLoadingFailed,
+          current is FetchTimeInDataSuccess ||
+          current is FetchTimeInDataFailed,
       listener: (BuildContext context, TimeRecordState state) {
         if (state is FetchTimeInDataLoading) {
-        } else if (state is FetchTimeInDataLoadingSuccess) {
+        } else if (state is FetchTimeInDataSuccess) {
           setState(() {
             timeInEpoch = state.attendance.timeInEpoch ?? 0;
           });
-        } else if (state is FetchTimeInDataLoadingFailed) {}
+        } else if (state is FetchTimeInDataFailed) {}
       },
       child: Scaffold(
         appBar: const GlobalAppBar(leading: LeadingButton.menu),

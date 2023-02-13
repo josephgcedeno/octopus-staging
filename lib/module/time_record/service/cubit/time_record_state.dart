@@ -9,16 +9,16 @@ class FetchTimeInDataLoading extends TimeRecordState {
   FetchTimeInDataLoading() : super();
 }
 
-class FetchTimeInDataLoadingSuccess extends TimeRecordState {
-  const FetchTimeInDataLoadingSuccess({
+class FetchTimeInDataSuccess extends TimeRecordState {
+  const FetchTimeInDataSuccess({
     required this.attendance,
   }) : super();
 
   final Attendance attendance;
 }
 
-class FetchTimeInDataLoadingFailed extends TimeRecordState {
-  const FetchTimeInDataLoadingFailed({
+class FetchTimeInDataFailed extends TimeRecordState {
+  const FetchTimeInDataFailed({
     required this.errorCode,
     required this.message,
   }) : super();

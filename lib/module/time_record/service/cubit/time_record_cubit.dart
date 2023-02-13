@@ -23,7 +23,7 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
 
       if (isAlreadyIn.data != null) {
         emit(
-          FetchTimeInDataLoadingSuccess(
+          FetchTimeInDataSuccess(
             attendance: isAlreadyIn.data!,
           ),
         );
@@ -31,7 +31,7 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
     } catch (e) {
       final APIErrorResponse error = e as APIErrorResponse;
       emit(
-        FetchTimeInDataLoadingFailed(
+        FetchTimeInDataFailed(
           errorCode: error.errorCode!,
           message: error.message,
         ),
@@ -48,7 +48,7 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
           await timeInOutRepository.signInToday();
 
       emit(
-        FetchTimeInDataLoadingSuccess(
+        FetchTimeInDataSuccess(
           attendance: signInToday.data,
         ),
       );
@@ -56,7 +56,7 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
       final APIErrorResponse error = e as APIErrorResponse;
 
       emit(
-        FetchTimeInDataLoadingFailed(
+        FetchTimeInDataFailed(
           errorCode: error.errorCode!,
           message: error.message,
         ),
@@ -73,7 +73,7 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
           await timeInOutRepository.signOutToday();
 
       emit(
-        FetchTimeInDataLoadingSuccess(
+        FetchTimeInDataSuccess(
           attendance: signOutToday.data,
         ),
       );
@@ -81,7 +81,7 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
       final APIErrorResponse error = e as APIErrorResponse;
 
       emit(
-        FetchTimeInDataLoadingFailed(
+        FetchTimeInDataFailed(
           errorCode: error.errorCode!,
           message: error.message,
         ),

@@ -88,15 +88,15 @@ class _DTRDetailsState extends State<DTRDetails> {
     return BlocListener<TimeRecordCubit, TimeRecordState>(
       listenWhen: (TimeRecordState previous, TimeRecordState current) =>
           current is FetchTimeInDataLoading ||
-          current is FetchTimeInDataLoadingSuccess ||
-          current is FetchTimeInDataLoadingFailed,
+          current is FetchTimeInDataSuccess ||
+          current is FetchTimeInDataFailed,
       listener: (BuildContext context, TimeRecordState state) {
         if (state is FetchTimeInDataLoading) {
-        } else if (state is FetchTimeInDataLoadingSuccess) {
+        } else if (state is FetchTimeInDataSuccess) {
           setInfo(
             state.attendance,
           );
-        } else if (state is FetchTimeInDataLoadingFailed) {}
+        } else if (state is FetchTimeInDataFailed) {}
       },
       child: Container(
         padding: EdgeInsets.only(
