@@ -200,14 +200,14 @@ class TimeInOutRepository extends ITimeInOutRepository {
                 errorCode: null,
               );
             }
-          } else {
-            return APIResponse<int>(
-              success: true,
-              message: "Successfully get yesterday's offset",
-              data: 0,
-              errorCode: null,
-            );
           }
+        } else {
+          return APIResponse<int>(
+            success: true,
+            message: "Successfully get yesterday's offset",
+            data: 0,
+            errorCode: null,
+          );
         }
       }
 
