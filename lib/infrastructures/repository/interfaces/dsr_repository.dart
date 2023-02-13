@@ -51,7 +51,7 @@ abstract class IDSRRepository {
   });
 
   /// This function will creates a dsr record for the day under the sprint.
-  Future<APIResponse<DSRRecord>> createDSRForToday();
+  Future<APIResponse<DSRRecord>> initializeDSR();
 
   /// This function will get all the available dsr for the given sprint. It will also return a certain dsr record to fetch individually.
   ///

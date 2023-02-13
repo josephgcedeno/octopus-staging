@@ -271,7 +271,7 @@ class DSRRepository extends IDSRRepository {
   }
 
   @override
-  Future<APIResponse<DSRRecord>> createDSRForToday() async {
+  Future<APIResponse<DSRRecord>> initializeDSR() async {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
