@@ -63,11 +63,11 @@ abstract class IDSRRepository {
     String? dsrId,
   });
 
-  /// This function will add/update/delete (done,wip,blockers) as a list of DSRWorkTrack to the database within the dsr item.
+  /// This function will add/update/delete (done, work_in_progress, blockers) as a list of DSRWorkTrack to the database within the dsr item.
   ///
   /// [dsrId] this determines which record will be added, updated, or deleted.
   ///
-  /// [column] this determines which field should be modified (done, wip, blockers)
+  /// [column] this determines which field should be modified (done, work_in_progress, blockers)
   ///
   /// [dsrworkTrack] this contains the list of the item to be stored in the database.
   Future<APIResponse<DSRRecord>> updateDSREntries({
