@@ -50,7 +50,7 @@ abstract class IDSRRepository {
     DateTime? endDate,
   });
 
-  /// This function will creates a dsr record for the day under the sprint.
+  /// This function will creates a dsr record for the day under the sprint. After creating DSR, it will return DSRRecord object that contains id, sprint_id, done, wip, blockers, dateEpoch and status.
   Future<APIResponse<DSRRecord>> initializeDSR();
 
   /// This function will get all the available dsr for the given sprint. It will also return a certain dsr record to fetch individually.
