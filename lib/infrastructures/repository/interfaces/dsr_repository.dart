@@ -33,7 +33,7 @@ abstract class IDSRRepository {
   ///
   /// [columns] this determines which column should be displayed. It can only show done column.
   ///
-  /// [projectName] this filters the result by project name given.
+  /// [projectId] this filters the result by project name given.
   ///
   /// [startDate] an optional parameter to set an starting date range of fetching all the sprint record. If not set, it will return all of records.
   ///
@@ -45,7 +45,7 @@ abstract class IDSRRepository {
       'work_in_progress',
       'blockers'
     ],
-    String? projectName,
+    String? projectId,
     DateTime? startDate,
     DateTime? endDate,
   });
