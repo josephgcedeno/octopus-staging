@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/status_column.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/task_textarea.dart';
+import 'package:octopus/module/standup_report/service/cubit/dsr_cubit.dart';
 import 'package:octopus/module/standup_report/service/cubit/task_card_dto.dart';
 
 class StandupReportScreen extends StatefulWidget {
@@ -29,6 +31,12 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
   List<TaskCardDTO> blockers = <TaskCardDTO>[
     TaskCardDTO(taskName: 'Sample Task 6', taskID: '5', status: 2),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<DSRCubit>().fetchCurrentDate();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,12 +76,25 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
                   margin: const EdgeInsets.only(top: 8),
                   padding:
                       const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  child: Text(
-                    'Jan 15 - Jan 31 > Day 11 of 14',
-                    style: theme.textTheme.overline?.copyWith(
-                      color: theme.primaryColor,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  child: BlocBuilder<DSRCubit, DSRState>(
+                    buildWhen: (DSRState previous, DSRState current) =>
+                        current is FetchDatesSuccess ||
+                        current is FetchDatesLoading,
+                    builder: (BuildContext context, DSRState state) {
+                      if (state is FetchDatesSuccess) {
+                        return Text(
+                          state.dateString,
+                          style: theme.textTheme.overline?.copyWith(
+                            color: theme.primaryColor,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        );
+                      }
+                      return SizedBox(
+                        width: width * 0.5,
+                        child: const LinearProgressIndicator(),
+                      );
+                    },
                   ),
                 ),
                 Container(
