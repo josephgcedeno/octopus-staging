@@ -3,10 +3,11 @@ import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/auth/auth_request.dart';
 import 'package:octopus/infrastructures/repository/interfaces/auth_repository.dart';
 
-part 'login_state.dart';
+part 'authentication_state.dart';
 
-class LoginCubit extends Cubit<LoginState> {
-  LoginCubit({required this.authRepository}) : super(const LoginState());
+class AuthenticationCubit extends Cubit<AuthenticationState> {
+  AuthenticationCubit({required this.authRepository})
+      : super(const AuthenticationState());
 
   final IAuthRepository authRepository;
 
@@ -30,6 +31,21 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
+  Future<void> validateToken() async {
+    try {
+      await authRepository.isLoggedIn();
+      emit(const ValidateTokenSuccess());
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+      emit(
+        ValidateTokenFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
+    }
+  }
+
   Future<void> register({
     required String email,
     required String password,
@@ -39,12 +55,12 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       emit(const LoginLoading());
 
-      final AuthRegisterRequest payload = AuthRegisterRequest(
-        email: email,
-        password: password,
-        position: position,
-        photo: photo,
-      );
+      // final AuthRegisterRequest payload = AuthRegisterRequest(
+      //   email: email,
+      //   password: password,
+      //   position: position,
+      //   photo: photo,
+      // );
 
       // final ParseResponse response = await authRepository.signUpUser(payload);
 
@@ -52,7 +68,7 @@ class LoginCubit extends Cubit<LoginState> {
       //   emit(const LoginSuccess());
       // }
     } catch (e) {
-      print(e);
+      // print(e);
       // emit(LoginFailed(error.code, error.message, error.formattedError));
     }
   }

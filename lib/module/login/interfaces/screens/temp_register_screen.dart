@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:octopus/module/login/service/cubit/login_cubit.dart';
+import 'package:octopus/module/login/service/cubit/authentication_cubit.dart';
 
 class TempRegisterScreen extends StatefulWidget {
   const TempRegisterScreen({Key? key}) : super(key: key);
@@ -102,7 +102,7 @@ class _TempRegisterScreenState extends State<TempRegisterScreen> {
                   ),
                 ),
                 onPressed: () {
-                  context.read<LoginCubit>().register(
+                  context.read<AuthenticationCubit>().register(
                         email: emailController.text,
                         password: '123123123',
                         position: 'COO',

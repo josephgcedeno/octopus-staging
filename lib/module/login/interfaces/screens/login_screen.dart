@@ -3,7 +3,7 @@ import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:octopus/interfaces/widgets/loading_indicator.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
 import 'package:octopus/module/login/interfaces/screens/temp_register_screen.dart';
-import 'package:octopus/module/login/service/cubit/login_cubit.dart';
+import 'package:octopus/module/login/service/cubit/authentication_cubit.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -25,10 +25,10 @@ class _LoginScreenState extends State<LoginScreen> {
     final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
 
-    return BlocListener<LoginCubit, LoginState>(
-      listenWhen: (LoginState previous, LoginState current) =>
+    return BlocListener<AuthenticationCubit, AuthenticationState>(
+      listenWhen: (AuthenticationState previous, AuthenticationState current) =>
           current is LoginSuccess || current is LoginFailed,
-      listener: (BuildContext context, LoginState state) {
+      listener: (BuildContext context, AuthenticationState state) {
         if (state is LoginSuccess) {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute<dynamic>(
@@ -128,17 +128,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   onPressed: () {
-                    context.read<LoginCubit>().login(
+                    context.read<AuthenticationCubit>().login(
                           email: emailController.text,
                           password: passwordController.text,
                         );
                   },
-                  child: BlocBuilder<LoginCubit, LoginState>(
-                    buildWhen: (LoginState previous, LoginState current) =>
+                  child: BlocBuilder<AuthenticationCubit, AuthenticationState>(
+                    buildWhen: (
+                      AuthenticationState previous,
+                      AuthenticationState current,
+                    ) =>
                         current is LoginLoading ||
                         current is LoginFailed ||
                         current is LoginSuccess,
-                    builder: (BuildContext context, LoginState state) {
+                    builder: (BuildContext context, AuthenticationState state) {
                       if (state is LoginLoading) {
                         return const LoadingIndicator();
                       }
