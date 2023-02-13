@@ -247,27 +247,50 @@ class DSRRepository extends IDSRRepository {
     }
   }
 
-  /// Get the sprint info within the duration from start date and end date to set for TODAY.
-  Future<ParseObject?> sprintInfoQueryToday() async {
-    final int fromDateTimeToEpoch = epochFromDateTime(date: currentDate);
+  @override
+  Future<APIResponse<SprintRecord>> sprintInfoQueryToday() async {
+    try {
+      final int fromDateTimeToEpoch = epochFromDateTime(date: currentDate);
 
-    final QueryBuilder<ParseObject> todayRecord =
-        QueryBuilder<ParseObject>(ParseObject(sprintsTable))
-          ..whereGreaterThanOrEqualsTo(
-            sprintsEndDateField,
-            fromDateTimeToEpoch,
-          )
-          ..whereLessThanOrEqualTo(
-            sprintsStartDateField,
-            fromDateTimeToEpoch,
-          );
+      final QueryBuilder<ParseObject> todayRecord =
+          QueryBuilder<ParseObject>(ParseObject(sprintsTable))
+            ..whereGreaterThanOrEqualsTo(
+              sprintsEndDateField,
+              fromDateTimeToEpoch,
+            )
+            ..whereLessThanOrEqualTo(
+              sprintsStartDateField,
+              fromDateTimeToEpoch,
+            );
 
-    final ParseResponse queryTodayRecrod = await todayRecord.query();
+      final ParseResponse queryTodayRecrod = await todayRecord.query();
 
-    if (queryTodayRecrod.success && queryTodayRecrod.results != null) {
-      return queryTodayRecrod.results!.first as ParseObject;
+      if (queryTodayRecrod.success && queryTodayRecrod.results != null) {
+        final ParseObject sprintInfo =
+            getParseObject(queryTodayRecrod.results!);
+
+        return APIResponse<SprintRecord>(
+          success: true,
+          message: 'Successfully get the sprint record for this day.',
+          data: SprintRecord(
+            id: sprintInfo.objectId!,
+            startDateEpoch: sprintInfo.get<int>(sprintsStartDateField)!,
+            endDateEpoch: sprintInfo.get<int>(sprintsEndDateField)!,
+          ),
+          errorCode: null,
+        );
+      }
+      throw APIErrorResponse(
+        message: queryTodayRecrod.error != null
+            ? queryTodayRecrod.error!.message
+            : '',
+        errorCode: queryTodayRecrod.error != null
+            ? queryTodayRecrod.error!.code as String
+            : '',
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
     }
-    return null;
   }
 
   @override
@@ -278,10 +301,11 @@ class DSRRepository extends IDSRRepository {
       if (user != null) {
         final ParseObject dsrs = ParseObject(dsrsTable);
 
-        final ParseObject? sprintInfo = await sprintInfoQueryToday();
+        final APIResponse<SprintRecord> sprintInfo =
+            await sprintInfoQueryToday();
 
-        if (sprintInfo != null) {
-          final String sprintId = sprintInfo.objectId!;
+        if (sprintInfo.success) {
+          final String sprintId = sprintInfo.data.id;
           final String userId = user.objectId!;
           const String workStatus = 'ABSENT';
 
@@ -583,13 +607,14 @@ class DSRRepository extends IDSRRepository {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null) {
         final ParseObject sprints = ParseObject(dsrsTable);
-        final ParseObject? sprintToday = await sprintInfoQueryToday();
+        final APIResponse<SprintRecord> sprintToday =
+            await sprintInfoQueryToday();
 
         final QueryBuilder<ParseObject> getAllDSRQuery =
             QueryBuilder<ParseObject>(sprints)
               ..whereEqualTo(
                 dsrsSprintidField,
-                sprintId ?? sprintToday?.objectId,
+                sprintId ?? sprintToday.data.id,
               )
               ..whereEqualTo(dsrsUserIdField, user.objectId);
 
