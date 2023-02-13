@@ -1,3 +1,4 @@
+import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_request.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
 
@@ -9,7 +10,7 @@ abstract class IDSRRepository {
   /// [startDate] a data that defines when is the start date of the sprint. It is in a datetime format and will converted to an epoch type when stored in the database.
   ///
   /// [endDate] a date that defines when is the end date of the sprint. It is in a datetime format and will converted to an epoch type when stored in the database.
-  Future<SprintResponse> addSprint({
+  Future<APIResponse<SprintRecord>> addSprint({
     required DateTime startDate,
     required DateTime endDate,
   });
@@ -19,7 +20,7 @@ abstract class IDSRRepository {
   /// [startDate] an optional parameter to set an starting date range of fetching all the sprint record. If not set, it will return all of records.
   ///
   /// [endDate] an optional parameter to set an ending date range of fetching all the sprint record. If not set, it will return all of records.
-  Future<SprintResponse> getAllSprints({
+  Future<APIListResponse<SprintRecord>> getAllSprints({
     DateTime? startDate,
     DateTime? endDate,
   });
@@ -37,7 +38,7 @@ abstract class IDSRRepository {
   /// [startDate] an optional parameter to set an starting date range of fetching all the sprint record. If not set, it will return all of records.
   ///
   /// [endDate] an optional parameter to set an ending date range of fetching all the sprint record. If not set, it will return all of records.
-  Future<DSRResponse> getAllDSRRecordForSprint({
+  Future<APIResponse<AllDSRItem>> getAllDSRRecordForSprint({
     required String sprintId,
     List<String> columns = const <String>[
       'done',
@@ -50,14 +51,14 @@ abstract class IDSRRepository {
   });
 
   /// This function will creates a dsr record for the day under the sprint.
-  Future<DSRResponse> createDSRForToday();
+  Future<APIResponse<DSRRecord>> createDSRForToday();
 
   /// This function will get all the available dsr for the given sprint. It will also return a certain dsr record to fetch individually.
   ///
   /// [sprintId] this will get all the dsr record of the user on a particular sprint.
   ///
   /// [dsrId] this will get an individual dsr record of the user base on a particular sprint.
-  Future<DSRResponse> getAvailableDSRSForSprint({
+  Future<APIListResponse<DSRRecord>> getAvailableDSRSForSprint({
     String? sprintId,
     String? dsrId,
   });
@@ -69,7 +70,7 @@ abstract class IDSRRepository {
   /// [column] this determines which field should be modified (done, wip, blockers)
   ///
   /// [dsrworkTrack] this contains the list of the item to be stored in the database.
-  Future<DSRResponse> addDSRWork({
+  Future<APIResponse<DSRRecord>> addDSRWork({
     required String dsrId,
     required String column,
     required List<DSRWorkTrack> dsrworkTrack,
@@ -80,7 +81,7 @@ abstract class IDSRRepository {
   /// [dsrId] this determines which record will be updated.
   ///
   /// [status] this determines what is the status of the dsr (Holiday, Working, Leave, and etc.).
-  Future<DSRResponse> updateDSRWorkStatus({
+  Future<APIResponse<DSRRecord>> updateDSRWorkStatus({
     required String dsrId,
     required String status,
   });

@@ -21,14 +21,6 @@ class APIResponse<T> {
   Map<String, dynamic> toJson(Object Function(T value) toJsonT) =>
       _$APIResponseToJson(this, toJsonT);
 
-  static Map<String, dynamic> socketErrorResponse() {
-    return <String, dynamic>{
-      'success': false,
-      'message': 'No Internet Connection',
-      'errorCode': 'NO_INTERNET_CONNECTION',
-    };
-  }
-
   /// base API response
   final bool success;
   final String message;

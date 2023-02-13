@@ -1,13 +1,4 @@
-class ProjectTagResponse {
-  ProjectTagResponse({
-    required this.status,
-    required this.projects,
-  });
-
-  final String status;
-  final List<ProjectTag> projects;
-}
-
+/// This object will contain the necessary field for project record.
 class ProjectTag {
   ProjectTag({
     required this.id,

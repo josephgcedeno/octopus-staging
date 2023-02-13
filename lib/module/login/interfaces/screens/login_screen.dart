@@ -1,6 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:octopus/module/login/service/cubit/login_cubit.dart';
+import 'package:octopus/interfaces/widgets/loading_indicator.dart';
+import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
+import 'package:octopus/module/login/interfaces/screens/temp_register_screen.dart';
+import 'package:octopus/module/login/service/cubit/authentication_cubit.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -22,89 +25,133 @@ class _LoginScreenState extends State<LoginScreen> {
     final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      body: Container(
-        // padding: EdgeInsets.symmetric(horizontal: width * 0.1),
-        margin: EdgeInsets.symmetric(
-          vertical: height * 0.06,
-          horizontal: width * 0.1,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            const Padding(
-              padding: EdgeInsets.only(bottom: 4.0),
-              child: Text('Email'),
+    return BlocListener<AuthenticationCubit, AuthenticationState>(
+      listenWhen: (AuthenticationState previous, AuthenticationState current) =>
+          current is LoginSuccess || current is LoginFailed,
+      listener: (BuildContext context, AuthenticationState state) {
+        if (state is LoginSuccess) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute<dynamic>(
+              builder: (_) => const ControllerScreen(),
             ),
-            TextField(
-              controller: emailController,
-              onTap: () {},
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: const Color(0xFFf5f7f9),
+            (Route<dynamic> route) => false,
+          );
+        } else if (state is LoginFailed) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: theme.errorColor,
+            ),
+          );
+        }
+      },
+      child: Scaffold(
+        body: Container(
+          // padding: EdgeInsets.symmetric(horizontal: width * 0.1),
+          margin: EdgeInsets.symmetric(
+            vertical: height * 0.06,
+            horizontal: width * 0.1,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Padding(
+                padding: EdgeInsets.only(bottom: 4.0),
+                child: Text('Email'),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  const Text('Password'),
-                  Text(
-                    'Forgotten?',
-                    style: theme.textTheme.bodyText2
-                        ?.copyWith(color: theme.primaryColor),
+              TextField(
+                controller: emailController,
+                onTap: () {},
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide.none,
                   ),
-                ],
-              ),
-            ),
-            TextField(
-              controller: passwordController,
-              onTap: () {},
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
+                  filled: true,
+                  fillColor: const Color(0xFFf5f7f9),
                 ),
-                filled: true,
-                fillColor: const Color(0xFFf5f7f9),
-                suffixIcon: GestureDetector(
-                  onTap: () => setState(() => showPassword = !showPassword),
-                  child: Icon(
-                    Icons.remove_red_eye_outlined,
-                    color: showPassword ? theme.primaryColor : Colors.grey,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    const Text('Password'),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<dynamic>(
+                            builder: (_) => const TempRegisterScreen(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'Forgotten?',
+                        style: theme.textTheme.bodyText2
+                            ?.copyWith(color: theme.primaryColor),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              TextField(
+                controller: passwordController,
+                onTap: () {},
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide.none,
                   ),
-                ),
-              ),
-              obscureText: !showPassword,
-            ),
-            Container(
-              width: width,
-              margin: EdgeInsets.only(top: height * 0.03),
-              child: ElevatedButton(
-                style: ButtonStyle(
-                  elevation: MaterialStateProperty.all(0),
-                  shape: MaterialStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
+                  filled: true,
+                  fillColor: const Color(0xFFf5f7f9),
+                  suffixIcon: GestureDetector(
+                    onTap: () => setState(() => showPassword = !showPassword),
+                    child: Icon(
+                      Icons.remove_red_eye_outlined,
+                      color: showPassword ? theme.primaryColor : Colors.grey,
                     ),
                   ),
                 ),
-                onPressed: () {
-                  context.read<LoginCubit>().login(
-                        email: emailController.text,
-                        password: passwordController.text,
-                      );
-                },
-                child: const Text('Sign In'),
+                obscureText: !showPassword,
               ),
-            ),
-          ],
+              Container(
+                width: width,
+                margin: EdgeInsets.only(top: height * 0.03),
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    elevation: MaterialStateProperty.all(0),
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ),
+                  ),
+                  onPressed: () {
+                    context.read<AuthenticationCubit>().login(
+                          email: emailController.text,
+                          password: passwordController.text,
+                        );
+                  },
+                  child: BlocBuilder<AuthenticationCubit, AuthenticationState>(
+                    buildWhen: (
+                      AuthenticationState previous,
+                      AuthenticationState current,
+                    ) =>
+                        current is LoginLoading ||
+                        current is LoginFailed ||
+                        current is LoginSuccess,
+                    builder: (BuildContext context, AuthenticationState state) {
+                      if (state is LoginLoading) {
+                        return const LoadingIndicator();
+                      }
+                      return const Text('Sign In');
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

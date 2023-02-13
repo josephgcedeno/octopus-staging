@@ -1,3 +1,4 @@
+import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/holiday/holiday_response.dart';
 
 abstract class IHoliday {
@@ -8,7 +9,7 @@ abstract class IHoliday {
   /// [holidayName] this search which holiday matches the query.
   ///
   /// [holidayDate] this get holiday that matches a certain date.
-  Future<HolidayResponse> getHoliday({
+  Future<APIListResponse<Holiday>> getHoliday({
     String? holidayId,
     String? holidayName,
     DateTime? holidayDate,
@@ -21,7 +22,7 @@ abstract class IHoliday {
   /// [holidayName] this identifies what is the holiday.
   ///
   /// [holidayDate] this identifies when is the holiday.
-  Future<HolidayResponse> addHoliday({
+  Future<APIResponse<Holiday>> addHoliday({
     required String holidayName,
     required DateTime holidayDate,
   });
@@ -33,7 +34,7 @@ abstract class IHoliday {
   /// [id] this identifies which holiday record will be updated.
   ///
   /// [holidayName] this identifies what is the holiday.
-  Future<HolidayResponse> updateHoliday({
+  Future<APIResponse<Holiday>> updateHoliday({
     required String id,
     String? holidayName,
     DateTime? holidayDate,
@@ -44,7 +45,7 @@ abstract class IHoliday {
   /// This function will delete a certain holiday record.
   ///
   /// [id] this identifies which holiday record will be deleted.
-  Future<HolidayResponse> deleteHoliday({
+  Future<APIResponse<void>> deleteHoliday({
     required String id,
   });
 }

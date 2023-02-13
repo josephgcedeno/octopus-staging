@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/leaves/leaves_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/leave_repository.dart';
@@ -11,7 +12,7 @@ class LeaveRepository extends ILeaveRepository {
   DateTime get currentDay => DateTime.now();
 
   @override
-  Future<LeaveResponse> createLeave({
+  Future<APIResponse<Leave>> createLeave({
     required int noLeaves,
     required DateTime startDate,
     required DateTime endDate,
@@ -30,42 +31,38 @@ class LeaveRepository extends ILeaveRepository {
 
         if (createLeaveResponse.success &&
             createLeaveResponse.results != null) {
-          return LeaveResponse(
-            status: 'success',
-            leaves: <Leave>[
-              Leave(
-                id: getResultId(createLeaveResponse.results!),
-                startDateEpoch: startDateEpoch,
-                noLeaves: noLeaves,
-                endDateEpoch: endDateEpoch,
-              )
-            ],
+          return APIResponse<Leave>(
+            success: true,
+            message: 'Successfully created leave',
+            data: Leave(
+              id: getResultId(createLeaveResponse.results!),
+              startDateEpoch: startDateEpoch,
+              noLeaves: noLeaves,
+              endDateEpoch: endDateEpoch,
+            ),
+            errorCode: null,
           );
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: createLeaveResponse.error != null
               ? createLeaveResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
   @override
-  Future<LeaveResponse> getAllLeaves({
+  Future<APIListResponse<Leave>> getAllLeaves({
     DateTime? startDate,
     DateTime? endDate,
   }) async {
@@ -110,35 +107,33 @@ class LeaveRepository extends ILeaveRepository {
             }
           }
 
-          return LeaveResponse(
-            status: 'success',
-            leaves: leaves,
+          return APIListResponse<Leave>(
+            success: true,
+            message: 'Successfully get all leaves.',
+            data: leaves,
+            errorCode: null,
           );
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: getAllLeaveResponse.error != null
               ? getAllLeaveResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
   @override
-  Future<LeaveResponse> updateLeave({
+  Future<APIResponse<Leave>> updateLeave({
     required String id,
     int? noLeaves,
     DateTime? startDate,
@@ -171,44 +166,40 @@ class LeaveRepository extends ILeaveRepository {
             final ParseObject resultParseObject =
                 getParseObject(getVacationInfoResponse.results!);
 
-            return LeaveResponse(
-              status: 'success',
-              leaves: <Leave>[
-                Leave(
-                  id: id,
-                  noLeaves: resultParseObject.get<int>(leavesNoLeavesField)!,
-                  startDateEpoch:
-                      resultParseObject.get<int>(leavesStartDateField)!,
-                  endDateEpoch: resultParseObject.get<int>(leavesEndDateField)!,
-                )
-              ],
+            return APIResponse<Leave>(
+              success: true,
+              message: 'Successfull updated leave',
+              data: Leave(
+                id: id,
+                noLeaves: resultParseObject.get<int>(leavesNoLeavesField)!,
+                startDateEpoch:
+                    resultParseObject.get<int>(leavesStartDateField)!,
+                endDateEpoch: resultParseObject.get<int>(leavesEndDateField)!,
+              ),
+              errorCode: null,
             );
           }
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: updateVacationResponse.error != null
               ? updateVacationResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
   @override
-  Future<LeaveResponse> deleteLeave({required String id}) async {
+  Future<APIResponse<void>> deleteLeave({required String id}) async {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
@@ -218,35 +209,33 @@ class LeaveRepository extends ILeaveRepository {
             await leaves.delete(id: id);
 
         if (deleteVacationResponse.success) {
-          return LeaveResponse(
-            status: 'success',
-            leaves: <Leave>[],
+          return APIResponse<void>(
+            success: true,
+            message: 'Successfully deleted leave.',
+            data: null,
+            errorCode: null,
           );
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: deleteVacationResponse.error != null
               ? deleteVacationResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
   @override
-  Future<LeaveRequestsResponse> approveRequestLeave({
+  Future<APIResponse<LeaveRequest>> approveRequestLeave({
     required String requestId,
   }) async {
     try {
@@ -269,48 +258,43 @@ class LeaveRepository extends ILeaveRepository {
             final ParseObject leaveReq =
                 getParseObject(getUpdatedRecordResponse.results!);
 
-            return LeaveRequestsResponse(
-              leaveRequests: <LeaveRequest>[
-                LeaveRequest(
-                  id: leaveReq.objectId!,
-                  leaveId: leaveReq.get<String>(leaveRequestLeaveIdField)!,
-                  userId: leaveReq.get<String>(leaveRequestUserIdField)!,
-                  dateFiledEpoch:
-                      leaveReq.get<int>(leaveRequestDateFiledField)!,
-                  dateUsedEpoch: leaveReq.get<int>(leaveRequestDateUsedField)!,
-                  leaveType: leaveReq.get<String>(leaveRequestLeaveTypeField)!,
-                  reason: leaveReq.get<String>(leaveRequestReasonField)!,
-                  status: leaveReq.get<String>(leaveRequestStatusField)!,
-                ),
-              ],
-              status: 'success',
+            return APIResponse<LeaveRequest>(
+              success: true,
+              message: 'Successfully approved leave request.',
+              data: LeaveRequest(
+                id: leaveReq.objectId!,
+                leaveId: leaveReq.get<String>(leaveRequestLeaveIdField)!,
+                userId: leaveReq.get<String>(leaveRequestUserIdField)!,
+                dateFiledEpoch: leaveReq.get<int>(leaveRequestDateFiledField)!,
+                dateUsedEpoch: leaveReq.get<int>(leaveRequestDateUsedField)!,
+                leaveType: leaveReq.get<String>(leaveRequestLeaveTypeField)!,
+                reason: leaveReq.get<String>(leaveRequestReasonField)!,
+                status: leaveReq.get<String>(leaveRequestStatusField)!,
+              ),
+              errorCode: null,
             );
           }
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: updateReqRecordResponse.error != null
               ? updateReqRecordResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
   @override
-  Future<LeaveRequestsResponse> cancelRequestLeave({
+  Future<APIResponse<LeaveRequest>> cancelRequestLeave({
     required String requestId,
   }) async {
     try {
@@ -333,48 +317,43 @@ class LeaveRepository extends ILeaveRepository {
             final ParseObject leaveReq =
                 getParseObject(getUpdatedRecordResponse.results!);
 
-            return LeaveRequestsResponse(
-              leaveRequests: <LeaveRequest>[
-                LeaveRequest(
-                  id: leaveReq.objectId!,
-                  leaveId: leaveReq.get<String>(leaveRequestLeaveIdField)!,
-                  userId: leaveReq.get<String>(leaveRequestUserIdField)!,
-                  dateFiledEpoch:
-                      leaveReq.get<int>(leaveRequestDateFiledField)!,
-                  dateUsedEpoch: leaveReq.get<int>(leaveRequestDateUsedField)!,
-                  leaveType: leaveReq.get<String>(leaveRequestLeaveTypeField)!,
-                  reason: leaveReq.get<String>(leaveRequestReasonField)!,
-                  status: leaveReq.get<String>(leaveRequestStatusField)!,
-                ),
-              ],
-              status: 'success',
+            return APIResponse<LeaveRequest>(
+              success: true,
+              message: 'Successfully canceled leave request',
+              data: LeaveRequest(
+                id: leaveReq.objectId!,
+                leaveId: leaveReq.get<String>(leaveRequestLeaveIdField)!,
+                userId: leaveReq.get<String>(leaveRequestUserIdField)!,
+                dateFiledEpoch: leaveReq.get<int>(leaveRequestDateFiledField)!,
+                dateUsedEpoch: leaveReq.get<int>(leaveRequestDateUsedField)!,
+                leaveType: leaveReq.get<String>(leaveRequestLeaveTypeField)!,
+                reason: leaveReq.get<String>(leaveRequestReasonField)!,
+                status: leaveReq.get<String>(leaveRequestStatusField)!,
+              ),
+              errorCode: null,
             );
           }
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: updateReqRecordResponse.error != null
               ? updateReqRecordResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
   @override
-  Future<LeaveRequestsResponse> declineRequestLeave({
+  Future<APIResponse<LeaveRequest>> declineRequestLeave({
     required String requestId,
   }) async {
     try {
@@ -397,48 +376,43 @@ class LeaveRepository extends ILeaveRepository {
             final ParseObject leaveReq =
                 getParseObject(getUpdatedRecordResponse.results!);
 
-            return LeaveRequestsResponse(
-              leaveRequests: <LeaveRequest>[
-                LeaveRequest(
-                  id: leaveReq.objectId!,
-                  leaveId: leaveReq.get<String>(leaveRequestLeaveIdField)!,
-                  userId: leaveReq.get<String>(leaveRequestUserIdField)!,
-                  dateFiledEpoch:
-                      leaveReq.get<int>(leaveRequestDateFiledField)!,
-                  dateUsedEpoch: leaveReq.get<int>(leaveRequestDateUsedField)!,
-                  leaveType: leaveReq.get<String>(leaveRequestLeaveTypeField)!,
-                  reason: leaveReq.get<String>(leaveRequestReasonField)!,
-                  status: leaveReq.get<String>(leaveRequestStatusField)!,
-                ),
-              ],
-              status: 'success',
+            return APIResponse<LeaveRequest>(
+              success: true,
+              message: 'Successfully declined leave request.',
+              data: LeaveRequest(
+                id: leaveReq.objectId!,
+                leaveId: leaveReq.get<String>(leaveRequestLeaveIdField)!,
+                userId: leaveReq.get<String>(leaveRequestUserIdField)!,
+                dateFiledEpoch: leaveReq.get<int>(leaveRequestDateFiledField)!,
+                dateUsedEpoch: leaveReq.get<int>(leaveRequestDateUsedField)!,
+                leaveType: leaveReq.get<String>(leaveRequestLeaveTypeField)!,
+                reason: leaveReq.get<String>(leaveRequestReasonField)!,
+                status: leaveReq.get<String>(leaveRequestStatusField)!,
+              ),
+              errorCode: null,
             );
           }
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: updateReqRecordResponse.error != null
               ? updateReqRecordResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
   @override
-  Future<LeaveRequestsResponse> getRequestLeaves({
+  Future<APIListResponse<LeaveRequest>> getRequestLeaves({
     String? leaveRequestId,
     String? leaveId,
     String? userId,
@@ -488,30 +462,28 @@ class LeaveRepository extends ILeaveRepository {
               );
             }
           }
-          return LeaveRequestsResponse(
-            leaveRequests: leaveRequests,
-            status: 'success',
+          return APIListResponse<LeaveRequest>(
+            success: true,
+            message: 'Successfully get request leaves.',
+            data: leaveRequests,
+            errorCode: null,
           );
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: getLeaveReqResponse.error != null
               ? getLeaveReqResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
@@ -544,7 +516,7 @@ class LeaveRepository extends ILeaveRepository {
   }
 
   @override
-  Future<LeaveRequestsResponse> requestLeave({
+  Future<APIResponse<LeaveRequest>> requestLeave({
     required DateTime dateUsed,
     required String reason,
     required String leaveType,
@@ -579,41 +551,37 @@ class LeaveRepository extends ILeaveRepository {
             await leaveRequests.save();
         if (createLeaveRequestResponse.success &&
             createLeaveRequestResponse.results != null) {
-          return LeaveRequestsResponse(
-            leaveRequests: <LeaveRequest>[
-              LeaveRequest(
-                id: getResultId(createLeaveRequestResponse.results!),
-                leaveId: currentYearsId,
-                userId: usersId,
-                dateFiledEpoch: dateFiledEpoch,
-                dateUsedEpoch: dateUsedEpoch,
-                status: status,
-                leaveType: leaveType,
-                reason: reason,
-              )
-            ],
-            status: 'success',
+          return APIResponse<LeaveRequest>(
+            success: true,
+            message: 'Successfully requested leave.',
+            data: LeaveRequest(
+              id: getResultId(createLeaveRequestResponse.results!),
+              leaveId: currentYearsId,
+              userId: usersId,
+              dateFiledEpoch: dateFiledEpoch,
+              dateUsedEpoch: dateUsedEpoch,
+              status: status,
+              leaveType: leaveType,
+              reason: reason,
+            ),
+            errorCode: null,
           );
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: createLeaveRequestResponse.error != null
               ? createLeaveRequestResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 }

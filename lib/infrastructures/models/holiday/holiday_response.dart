@@ -1,13 +1,4 @@
-class HolidayResponse {
-  HolidayResponse({
-    required this.status,
-    required this.holidays,
-  });
-
-  final String status;
-  final List<Holiday> holidays;
-}
-
+/// This object will contain the necessary field for Holiday record.
 class Holiday {
   Holiday({
     required this.id,

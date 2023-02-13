@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/auth/auth_request.dart';
 import 'package:octopus/infrastructures/repository/interfaces/auth_repository.dart';
@@ -7,7 +8,7 @@ import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class AuthRepository extends IAuthRepository {
   @override
-  Future<bool> isLoggedIn() async {
+  Future<APIResponse<void>> isLoggedIn() async {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
@@ -20,36 +21,35 @@ class AuthRepository extends IAuthRepository {
             await ParseUser.getCurrentUserFromServer(sessionToken);
 
         if (sessionResponse != null && sessionResponse.success) {
-          return (sessionResponse.error?.type ?? '') != 'InvalidSessionToken';
+          return APIResponse<void>(
+            success: sessionResponse.success,
+            message: 'User already logged in.',
+            errorCode: null,
+            data: null,
+          );
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: sessionResponse != null && sessionResponse.error != null
               ? sessionResponse.error!.message
               : '',
-          data: null,
           errorCode: sessionResponse?.error != null
               ? sessionResponse?.error.toString()
               : '',
         );
-      } else if (user == null) {
-        return false;
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
   @override
-  Future<ParseResponse> loginUser(AuthLoginRequest payload) async {
+  Future<APIResponse<void>> loginUser(AuthLoginRequest payload) async {
     try {
       final ParseUser user = ParseUser(
         payload.username,
@@ -59,50 +59,57 @@ class AuthRepository extends IAuthRepository {
 
       final ParseResponse loginAccountResponse = await user.login();
       if (loginAccountResponse.success) {
-        return loginAccountResponse;
+        return APIResponse<void>(
+          success: true,
+          message: 'Login successfully.',
+          errorCode: null,
+          data: null,
+        );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: loginAccountResponse.error != null
             ? loginAccountResponse.error!.message
             : '',
-        data: null,
         errorCode: loginAccountResponse.error != null
             ? loginAccountResponse.error.toString()
             : '',
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
   @override
-  Future<ParseResponse> resetPassword({
+  Future<APIResponse<void>> resetPassword({
     required String email,
   }) async {
     try {
       final ParseResponse resetResponse =
           await ParseUser(null, null, email).requestPasswordReset();
+
       if (resetResponse.success) {
-        return resetResponse;
+        return APIResponse<void>(
+          success: resetResponse.success,
+          message: 'Successfully sent reset link to the email!',
+          data: null,
+          errorCode: null,
+        );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message:
             resetResponse.error != null ? resetResponse.error!.message : '',
-        data: null,
         errorCode:
             resetResponse.error != null ? resetResponse.error.toString() : '',
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
   @override
-  Future<ParseResponse> signUpUser(AuthRegisterRequest payload) async {
+  Future<APIResponse<void>> signUpUser(AuthRegisterRequest payload) async {
     try {
       final ParseUser user = ParseUser.createUser(
         payload.email,
@@ -116,23 +123,26 @@ class AuthRepository extends IAuthRepository {
 
       final ParseResponse signUpResponse = await user.signUp();
       if (signUpResponse.success) {
-        return signUpResponse;
+        return APIResponse<void>(
+          success: true,
+          message: 'Successfully registered.',
+          errorCode: null,
+          data: null,
+        );
       }
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message:
             signUpResponse.error != null ? signUpResponse.error!.message : '',
-        data: null,
         errorCode:
             signUpResponse.error != null ? signUpResponse.error.toString() : '',
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
   @override
-  Future<ParseResponse> logout() async {
+  Future<APIResponse<void>> logout() async {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
@@ -140,27 +150,28 @@ class AuthRepository extends IAuthRepository {
         final ParseResponse logoutResponse = await user.logout();
 
         if (logoutResponse.success) {
-          return logoutResponse;
+          return APIResponse<void>(
+            success: true,
+            message: 'Successfully logged out.',
+            errorCode: null,
+            data: null,
+          );
         }
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message:
               logoutResponse.error != null ? logoutResponse.error!.message : '',
-          data: null,
           errorCode: logoutResponse.error != null
               ? logoutResponse.error.toString()
               : '',
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 }

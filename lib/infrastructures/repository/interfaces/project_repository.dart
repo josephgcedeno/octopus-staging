@@ -1,8 +1,10 @@
+import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/project/project_response.dart';
 
 abstract class IProjectRepository {
   /// This function will simply get all the available projects from the database.
-  Future<ProjectTagResponse> getAllProjects();
+  /// This object will contain the necessary field for Leave record.
+  Future<APIListResponse<ProjectTag>> getAllProjects();
 
   /// FOR: ADMIN USE ONLY
   ///
@@ -17,7 +19,8 @@ abstract class IProjectRepository {
   /// [status] this updates the status if active or inactive.
   ///
   /// [date] this updates the date of the project.
-  Future<ProjectTagResponse> updateProject({
+  /// This object will contain the necessary field for Leave record.
+  Future<APIResponse<ProjectTag>> updateProject({
     required String id,
     String? projectName,
     String? projectColor,
@@ -30,7 +33,8 @@ abstract class IProjectRepository {
   /// This function will delete certain project.
   ///
   /// [id] this determines which project to be deleted.
-  Future<ProjectTagResponse> deleteProject({
+  /// This object will contain the necessary field for Leave record.
+  Future<APIResponse<void>> deleteProject({
     required String id,
   });
 
@@ -45,7 +49,8 @@ abstract class IProjectRepository {
   /// [status] this defines the status of the project if active or not.
   ///
   /// [date] this defines the date created of the project.
-  Future<ProjectTagResponse> addProject({
+  /// This object will contain the necessary field for Leave record.
+  Future<APIResponse<ProjectTag>> addProject({
     required String projectName,
     required String projectColor,
     String? status,

@@ -4,8 +4,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/repository/auth_repository.dart';
 import 'package:octopus/infrastructures/repository/time_in_out_repository.dart';
-import 'package:octopus/module/login/service/cubit/login_cubit.dart';
-import 'package:octopus/module/time_record/interfaces/screens/time_record_screen.dart';
+import 'package:octopus/interfaces/screens/splash_screen.dart';
+import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
+import 'package:octopus/module/login/interfaces/screens/login_screen.dart';
+import 'package:octopus/module/login/service/cubit/authentication_cubit.dart';
 import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
@@ -54,9 +56,9 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: <BlocProvider<dynamic>>[
-        BlocProvider<LoginCubit>(
+        BlocProvider<AuthenticationCubit>(
           create: (BuildContext context) =>
-              LoginCubit(authRepository: authRepository),
+              AuthenticationCubit(authRepository: authRepository),
         ),
         BlocProvider<TimeRecordCubit>(
           create: (BuildContext context) => TimeRecordCubit(
@@ -77,9 +79,42 @@ class _AppState extends State<App> {
   }
 }
 
-class _HomePageState extends StatelessWidget {
+class _HomePageState extends StatefulWidget {
+  @override
+  State<_HomePageState> createState() => _HomePageStateState();
+}
+
+class _HomePageStateState extends State<_HomePageState> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<AuthenticationCubit>().validateToken();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const TimeRecordScreen();
+    return BlocListener<AuthenticationCubit, AuthenticationState>(
+      listenWhen: (AuthenticationState previous, AuthenticationState current) =>
+          current is ValidateTokenSuccess || current is ValidateTokenFailed,
+      listener: (BuildContext context, AuthenticationState state) {
+        // TODO: implement listener
+        if (state is ValidateTokenSuccess) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute<dynamic>(
+              builder: (_) => const ControllerScreen(),
+            ),
+            (Route<dynamic> route) => false,
+          );
+        } else if (state is ValidateTokenFailed) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute<dynamic>(
+              builder: (_) => const LoginScreen(),
+            ),
+            (Route<dynamic> route) => false,
+          );
+        }
+      },
+      child: const SplashScreen(),
+    );
   }
 }

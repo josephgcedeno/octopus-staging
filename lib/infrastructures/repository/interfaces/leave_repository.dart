@@ -1,3 +1,4 @@
+import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/leaves/leaves_response.dart';
 
 abstract class ILeaveRepository {
@@ -10,7 +11,7 @@ abstract class ILeaveRepository {
   /// [startDate] this identifies when is the start date for this record.
   ///
   /// [endDate] this identifies when is the start date for this record.
-  Future<LeaveResponse> createLeave({
+  Future<APIResponse<Leave>> createLeave({
     required int noLeaves,
     required DateTime startDate,
     required DateTime endDate,
@@ -23,7 +24,7 @@ abstract class ILeaveRepository {
   /// [startDate] this identifies which start year record will be retrieved.
   ///
   /// [endDate] this identifies which end year record will be retrieved.
-  Future<LeaveResponse> getAllLeaves({
+  Future<APIListResponse<Leave>> getAllLeaves({
     DateTime? startDate,
     DateTime? endDate,
   });
@@ -39,7 +40,7 @@ abstract class ILeaveRepository {
   /// [startDate] this identifies when is the start date for this record.
   ///
   /// [endDate] this identifies when is the start date for this record.
-  Future<LeaveResponse> updateLeave({
+  Future<APIResponse<Leave>> updateLeave({
     required String id,
     int? noLeaves,
     DateTime? startDate,
@@ -51,7 +52,7 @@ abstract class ILeaveRepository {
   /// This function will delete a certain record from the leaves.
   ///
   /// [id] this identifies which record will be updated.
-  Future<LeaveResponse> deleteLeave({
+  Future<APIResponse<void>> deleteLeave({
     required String id,
   });
 
@@ -62,7 +63,7 @@ abstract class ILeaveRepository {
   /// [reason] this identifies what is the reason for the leave.
   ///
   /// [leaveType] this identifies what is the type for this leave. (SICK LEAVE, VACATION LEAVE, EMERGENCY LEAVE)
-  Future<LeaveRequestsResponse> requestLeave({
+  Future<APIResponse<LeaveRequest>> requestLeave({
     required DateTime dateUsed,
     required String reason,
     required String leaveType,
@@ -79,7 +80,7 @@ abstract class ILeaveRepository {
   /// [userId] this will retrieve all record from a certain user.
   ///
   /// [status] this will retrieve all record that matches the status. (STATUS, PENDING, DECLINED, APPROVED).
-  Future<LeaveRequestsResponse> getRequestLeaves({
+  Future<APIListResponse<LeaveRequest>> getRequestLeaves({
     String? leaveRequestId,
     String? leaveId,
     String? userId,
@@ -91,7 +92,7 @@ abstract class ILeaveRepository {
   /// This function will approve a certain leave request.
   ///
   /// [requestId] this identifies which request record will be approved.
-  Future<LeaveRequestsResponse> approveRequestLeave({
+  Future<APIResponse<LeaveRequest>> approveRequestLeave({
     required String requestId,
   });
 
@@ -100,7 +101,7 @@ abstract class ILeaveRepository {
   /// This function will declined a certain leave request.
   ///
   /// [requestId] this identifies which request record will be declined.
-  Future<LeaveRequestsResponse> declineRequestLeave({
+  Future<APIResponse<LeaveRequest>> declineRequestLeave({
     required String requestId,
   });
 
@@ -109,7 +110,7 @@ abstract class ILeaveRepository {
   /// This function will cancel a certain leave request.
   ///
   /// [requestId] this identifies which request record will be canceled.
-  Future<LeaveRequestsResponse> cancelRequestLeave({
+  Future<APIResponse<LeaveRequest>> cancelRequestLeave({
     required String requestId,
   });
 }

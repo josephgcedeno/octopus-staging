@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/time_in_out/attendance_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/time_in_out_repository.dart';
@@ -7,9 +8,9 @@ import 'package:octopus/internal/helper_function.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class TimeInOutRepository extends ITimeInOutRepository {
-  final DateTime now = DateTime.now();
+  final DateTime _now = DateTime.now();
 
-  DateTime get currentDate => DateTime(now.year, now.month, now.day);
+  DateTime get _currentDate => DateTime(_now.year, _now.month, _now.day);
 
   /// This function will check if today is holiday, if it is holiday, return the parse object for the record for this holiday such as ID.
   Future<ParseObject?> todayHoliday(
@@ -35,19 +36,20 @@ class TimeInOutRepository extends ITimeInOutRepository {
   }
 
   Future<void> createNewDate() async {
-    final DateTime date = DateTime(now.year, now.month, now.day);
+    final DateTime date = DateTime(_now.year, _now.month, _now.day);
 
     final ParseObject timeInOut = ParseObject(timeInOutsTable);
-    final QueryBuilder<ParseObject> isTodayPresent =
-        QueryBuilder<ParseObject>(timeInOut)
-          ..whereGreaterThanOrEqualsTo(
-            timeInOutDateField,
-            epochFromDateTime(date: date),
-          )
-          ..whereLessThan(
-            timeInOutDateField,
-            epochFromDateTime(date: DateTime(now.year, now.month, now.day + 1)),
-          );
+    final QueryBuilder<ParseObject> isTodayPresent = QueryBuilder<ParseObject>(
+      timeInOut,
+    )
+      ..whereGreaterThanOrEqualsTo(
+        timeInOutDateField,
+        epochFromDateTime(date: date),
+      )
+      ..whereLessThan(
+        timeInOutDateField,
+        epochFromDateTime(date: DateTime(_now.year, _now.month, _now.day + 1)),
+      );
 
     final ParseResponse responseDsr = await isTodayPresent.query();
 
@@ -58,7 +60,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
 
       final ParseObject timeINOUt = timeInOut
         ..set<String>(timeInOutsHolidayIdField, holidayToday?.objectId ?? '')
-        ..set<int>(timeInOutDateField, epochFromDateTime(date: now));
+        ..set<int>(timeInOutDateField, epochFromDateTime(date: _now));
 
       await timeINOUt.save();
     }
@@ -74,20 +76,20 @@ class TimeInOutRepository extends ITimeInOutRepository {
             timeInOutDateField,
             today
                 ? epochFromDateTime(
-                    date: currentDate,
+                    date: _currentDate,
                   )
                 : epochFromDateTime(
-                    date: DateTime(now.year, now.month, now.day - 1),
+                    date: DateTime(_now.year, _now.month, _now.day - 1),
                   ),
           )
           ..whereLessThan(
             timeInOutDateField,
             today
                 ? epochFromDateTime(
-                    date: DateTime(now.year, now.month, now.day + 1),
+                    date: DateTime(_now.year, _now.month, _now.day + 1),
                   )
                 : epochFromDateTime(
-                    date: currentDate,
+                    date: _currentDate,
                   ),
           );
     final ParseResponse queryTodayRecrod = await todayRecord.query();
@@ -110,7 +112,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
   }
 
   @override
-  Future<AttendanceResponse?> getInitialData() async {
+  Future<APIResponse<Attendance?>> getInitialData() async {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null) {
@@ -129,36 +131,41 @@ class TimeInOutRepository extends ITimeInOutRepository {
             final ParseObject attendanceInfo =
                 attendanceToday.results!.first as ParseObject;
 
-            return AttendanceResponse(
-              status: 'success',
-              attendances: <Attendance>[
-                Attendance(
-                  id: attendanceInfo.objectId!,
-                  timeInOutId: queryTodayRecrod.objectId!,
-                  timeInEpoch:
-                      attendanceInfo.get<int>(timeAttendancesTimeInField),
-                  timeOutEpoch:
-                      attendanceInfo.get<int>(timeAttendancesTimeOutField),
-                  offsetDuration: attendanceInfo
-                      .get<int>(timeAttendancesOffsetDurationField),
-                  offsetStatus: attendanceInfo
-                      .get<String>(timeAttendancesOffsetStatusField),
-                  requiredDuration: attendanceInfo
-                      .get<int>(timeAttendancesRequiredDurationField),
-                ),
-              ],
+            return APIResponse<Attendance?>(
+              success: true,
+              message: 'Successfully get initial data.',
+              data: Attendance(
+                id: attendanceInfo.objectId!,
+                timeInOutId: queryTodayRecrod.objectId!,
+                timeInEpoch:
+                    attendanceInfo.get<int>(timeAttendancesTimeInField),
+                timeOutEpoch:
+                    attendanceInfo.get<int>(timeAttendancesTimeOutField),
+                offsetDuration:
+                    attendanceInfo.get<int>(timeAttendancesOffsetDurationField),
+                offsetStatus: attendanceInfo
+                    .get<String>(timeAttendancesOffsetStatusField),
+                requiredDuration: attendanceInfo
+                    .get<int>(timeAttendancesRequiredDurationField),
+              ),
+              errorCode: null,
             );
           }
         }
       }
-      return null;
+      return APIResponse<Attendance?>(
+        success: true,
+        message: 'Successfully get initial data.',
+        data: null,
+        errorCode: null,
+      );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
   @override
-  Future<int> yesterdaysUsersOffSet() async {
+  Future<APIResponse<int>> yesterdaysUsersOffSet() async {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null) {
@@ -184,21 +191,37 @@ class TimeInOutRepository extends ITimeInOutRepository {
                 resultParseObject
                         .get<String>(timeAttendancesOffsetStatusField) ==
                     'APPROVED') {
-              return resultParseObject
-                      .get<int>(timeAttendancesOffsetDurationField) ??
-                  0;
+              return APIResponse<int>(
+                success: true,
+                message: "Successfully get yesterday's offset",
+                data: resultParseObject
+                        .get<int>(timeAttendancesOffsetDurationField) ??
+                    0,
+                errorCode: null,
+              );
             }
+          } else {
+            return APIResponse<int>(
+              success: true,
+              message: "Successfully get yesterday's offset",
+              data: 0,
+              errorCode: null,
+            );
           }
         }
       }
-      return 0;
+
+      throw APIErrorResponse(
+        message: 'Something went wrong',
+        errorCode: null,
+      );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
   @override
-  Future<AttendanceResponse> signInToday() async {
+  Future<APIResponse<Attendance>> signInToday() async {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       final ParseObject attendance = ParseObject(timeAttendancesTable);
@@ -212,12 +235,13 @@ class TimeInOutRepository extends ITimeInOutRepository {
 
         /// total minute of offset yesterday.
         final int requiredTimeDuration = const Duration(hours: 8).inMinutes;
-        final int minuteToMinus = await yesterdaysUsersOffSet();
+
+        final APIResponse<int> minuteToMinus = await yesterdaysUsersOffSet();
 
         /// Subtract the 8hr minute to the yesterday's offset.
 
         final int totalNewRequiredDuration =
-            requiredTimeDuration - minuteToMinus;
+            requiredTimeDuration - minuteToMinus.data;
 
         final ParseResponse attendanceResponse = await queryAttendance(
           attedanceId: todayRecordId,
@@ -230,10 +254,8 @@ class TimeInOutRepository extends ITimeInOutRepository {
             getParseObject(attendanceResponse.results!)
                     .get<int>(timeAttendancesTimeInField) !=
                 null) {
-          throw APIResponse<void>(
-            success: false,
+          throw APIErrorResponse(
             message: 'Already requested.',
-            data: null,
             errorCode: null,
           );
         }
@@ -253,16 +275,16 @@ class TimeInOutRepository extends ITimeInOutRepository {
             final ParseResponse res = await attendance.save();
 
             if (res.success) {
-              return AttendanceResponse(
-                status: 'success',
-                attendances: <Attendance>[
-                  Attendance(
-                    id: getResultId(res.results!),
-                    timeInOutId: todayRecordId,
-                    timeInEpoch: timeInEpoch,
-                    requiredDuration: totalNewRequiredDuration,
-                  ),
-                ],
+              return APIResponse<Attendance>(
+                success: true,
+                message: 'Successfully time in today.',
+                data: Attendance(
+                  id: getResultId(res.results!),
+                  timeInOutId: todayRecordId,
+                  timeInEpoch: timeInEpoch,
+                  requiredDuration: totalNewRequiredDuration,
+                ),
+                errorCode: null,
               );
             }
           }
@@ -295,39 +317,37 @@ class TimeInOutRepository extends ITimeInOutRepository {
               final ParseObject resultParseObject =
                   getParseObject(attendanceRecord.results!);
 
-              return AttendanceResponse(
-                status: 'success',
-                attendances: <Attendance>[
-                  Attendance(
-                    id: objectId,
-                    timeInOutId: todayRecordId,
-                    offsetDuration: resultParseObject
-                        .get<int>(timeAttendancesOffsetDurationField),
-                    offsetStatus: resultParseObject
-                        .get<String>(timeAttendancesOffsetStatusField),
-                    timeInEpoch: timeInEpoch,
-                    requiredDuration: totalNewRequiredDuration,
-                  ),
-                ],
+              return APIResponse<Attendance>(
+                success: true,
+                message: 'Successfully time in today.',
+                data: Attendance(
+                  id: objectId,
+                  timeInOutId: todayRecordId,
+                  offsetDuration: resultParseObject
+                      .get<int>(timeAttendancesOffsetDurationField),
+                  offsetStatus: resultParseObject
+                      .get<String>(timeAttendancesOffsetStatusField),
+                  timeInEpoch: timeInEpoch,
+                  requiredDuration: totalNewRequiredDuration,
+                ),
+                errorCode: null,
               );
             }
           }
         }
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
   @override
-  Future<AttendanceResponse> signOutToday() async {
+  Future<APIResponse<Attendance>> signOutToday() async {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       final ParseObject? queryTodayRecrod = await dateRecordInfo();
@@ -360,36 +380,34 @@ class TimeInOutRepository extends ITimeInOutRepository {
           final ParseResponse saveTimeOutRes = await attendance.save();
 
           if (saveTimeOutRes.success) {
-            return AttendanceResponse(
-              status: 'success',
-              attendances: <Attendance>[
-                Attendance(
-                  id: attedanceKey,
-                  timeInOutId: todayRecordId,
-                  timeInEpoch: timeInEpoch,
-                  timeOutEpoch: timeOutEpoch,
-                  requiredDuration: attendanceRow
-                      .get<int>(timeAttendancesRequiredDurationField),
-                ),
-              ],
+            return APIResponse<Attendance>(
+              success: true,
+              message: 'Successfully time out today.',
+              data: Attendance(
+                id: attedanceKey,
+                timeInOutId: todayRecordId,
+                timeInEpoch: timeInEpoch,
+                timeOutEpoch: timeOutEpoch,
+                requiredDuration: attendanceRow
+                    .get<int>(timeAttendancesRequiredDurationField),
+              ),
+              errorCode: null,
             );
           }
         }
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
   @override
-  Future<AttendanceResponse> requestOffSet({
+  Future<APIResponse<Attendance>> requestOffSet({
     required int hours,
     required int minutes,
   }) async {
@@ -421,10 +439,8 @@ class TimeInOutRepository extends ITimeInOutRepository {
                 getParseObject(attendanceResponse.results!)
                         .get<String>(timeAttendancesOffsetStatusField) !=
                     null)) {
-          throw APIResponse<void>(
-            success: false,
+          throw APIErrorResponse(
             message: 'Already requested',
-            data: null,
             errorCode: null,
           );
         }
@@ -449,16 +465,16 @@ class TimeInOutRepository extends ITimeInOutRepository {
               await attendance.save();
 
           if (attendanceRecordResponse.success) {
-            return AttendanceResponse(
-              status: 'success',
-              attendances: <Attendance>[
-                Attendance(
-                  id: getResultId(attendanceRecordResponse.results!),
-                  timeInOutId: todayRecordId,
-                  offsetDuration: getMinutesfOffset,
-                  offsetStatus: offsetStatus,
-                ),
-              ],
+            return APIResponse<Attendance>(
+              success: true,
+              message: 'Successfully requested offset.',
+              data: Attendance(
+                id: getResultId(attendanceRecordResponse.results!),
+                timeInOutId: todayRecordId,
+                offsetDuration: getMinutesfOffset,
+                offsetStatus: offsetStatus,
+              ),
+              errorCode: null,
             );
           }
         } else if (attendanceResponse.success &&
@@ -486,39 +502,37 @@ class TimeInOutRepository extends ITimeInOutRepository {
               final ParseObject resultParseObject =
                   getParseObject(attendanceRecord.results!);
 
-              return AttendanceResponse(
-                status: 'success',
-                attendances: <Attendance>[
-                  Attendance(
-                    id: objectId,
-                    timeInOutId: todayRecordId,
-                    offsetDuration: getMinutesfOffset,
-                    offsetStatus: offsetStatus,
-                    timeInEpoch:
-                        resultParseObject.get<int>(timeAttendancesTimeInField),
-                    timeOutEpoch:
-                        resultParseObject.get<int>(timeAttendancesTimeOutField),
-                  ),
-                ],
+              return APIResponse<Attendance>(
+                success: true,
+                message: 'Successfully requested offset.',
+                data: Attendance(
+                  id: objectId,
+                  timeInOutId: todayRecordId,
+                  offsetDuration: getMinutesfOffset,
+                  offsetStatus: offsetStatus,
+                  timeInEpoch:
+                      resultParseObject.get<int>(timeAttendancesTimeInField),
+                  timeOutEpoch:
+                      resultParseObject.get<int>(timeAttendancesTimeOutField),
+                ),
+                errorCode: null,
               );
             }
           }
         }
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
   @override
-  Future<AttendanceResponse> getAllOffsetRequest({
+  Future<APIListResponse<Attendance>> getAllOffsetRequest({
     DateTime? startDate,
     DateTime? endDate,
   }) async {
@@ -561,37 +575,26 @@ class TimeInOutRepository extends ITimeInOutRepository {
             }
           }
 
-          return AttendanceResponse(
-            attendances: attendances,
-            status: 'success',
-          );
-        }
-
-        /// If empty
-        if (offsetRequestResponse.success &&
-            offsetRequestResponse.results == null &&
-            offsetRequestResponse.error!.message ==
-                'Successful request, but no results found') {
-          return AttendanceResponse(
-            attendances: <Attendance>[],
-            status: 'success',
+          return APIListResponse<Attendance>(
+            success: true,
+            message: 'Successfully get all request offset.',
+            data: attendances,
+            errorCode: null,
           );
         }
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
   @override
-  Future<AttendanceResponse> approveOffset({
+  Future<APIResponse<Attendance>> approveOffset({
     required String attendanceId,
   }) async {
     try {
@@ -634,43 +637,41 @@ class TimeInOutRepository extends ITimeInOutRepository {
               final ParseObject resultParseObject =
                   getParseObject(timeInResponse.results!);
 
-              return AttendanceResponse(
-                status: 'success',
-                attendances: <Attendance>[
-                  Attendance(
-                    id: resultParseObject.objectId!,
-                    timeInOutId: '',
-                    timeInEpoch:
-                        resultParseObject.get<int>(timeAttendancesTimeInField),
-                    timeOutEpoch:
-                        resultParseObject.get<int>(timeAttendancesTimeOutField),
-                    offsetStatus: resultParseObject
-                        .get<String>(timeAttendancesOffsetStatusField),
-                    offsetDuration: resultParseObject
-                        .get<int>(timeAttendancesOffsetDurationField),
-                    requiredDuration: resultParseObject
-                        .get<int>(timeAttendancesRequiredDurationField),
-                  ),
-                ],
+              return APIResponse<Attendance>(
+                success: true,
+                message: 'Successfully approved offset.',
+                data: Attendance(
+                  id: resultParseObject.objectId!,
+                  timeInOutId: '',
+                  timeInEpoch:
+                      resultParseObject.get<int>(timeAttendancesTimeInField),
+                  timeOutEpoch:
+                      resultParseObject.get<int>(timeAttendancesTimeOutField),
+                  offsetStatus: resultParseObject
+                      .get<String>(timeAttendancesOffsetStatusField),
+                  offsetDuration: resultParseObject
+                      .get<int>(timeAttendancesOffsetDurationField),
+                  requiredDuration: resultParseObject
+                      .get<int>(timeAttendancesRequiredDurationField),
+                ),
+                errorCode: null,
               );
             }
           }
         }
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
   @override
-  Future<TimeInResponse> updateTimeInHoliday({
+  Future<APIResponse<TimeIn>> updateTimeInHoliday({
     required String id,
     required String holiday,
   }) async {
@@ -695,37 +696,35 @@ class TimeInOutRepository extends ITimeInOutRepository {
               await updateTimeInOut.getObject(objectId);
 
           if (timeInResponse.success && timeInResponse.results != null) {
-            return TimeInResponse(
-              status: 'success',
-              timeIn: TimeIn(
+            return APIResponse<TimeIn>(
+              success: true,
+              message: "Successfully updated today's record",
+              data: TimeIn(
                 dateEpoch: getParseObject(timeInResponse.results!)
                     .get<int>(timeInOutDateField)!,
                 holiday: holiday,
                 id: id,
               ),
+              errorCode: null,
             );
           }
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: updateTimeInOutResponse.error != null
               ? updateTimeInOutResponse.error!.message
               : '',
-          data: null,
           errorCode: updateTimeInOutResponse.error != null
               ? updateTimeInOutResponse.error!.code as String
               : '',
         );
       }
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 }

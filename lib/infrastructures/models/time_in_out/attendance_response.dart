@@ -1,23 +1,4 @@
-class AttendanceResponse {
-  AttendanceResponse({
-    required this.status,
-    required this.attendances,
-  });
-
-  final String status;
-  final List<Attendance> attendances;
-}
-
-class TimeInResponse {
-  TimeInResponse({
-    required this.status,
-    required this.timeIn,
-  });
-
-  final String status;
-  final TimeIn timeIn;
-}
-
+/// This object will contain the necessary field for time in record.
 class TimeIn {
   TimeIn({
     required this.id,
@@ -30,6 +11,7 @@ class TimeIn {
   final int dateEpoch;
 }
 
+/// This object will contain the necessary field for attendance record.
 class Attendance {
   Attendance({
     required this.id,

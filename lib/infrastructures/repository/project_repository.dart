@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/project/project_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/project_repository.dart';
@@ -8,7 +9,7 @@ import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class ProjectRepository extends IProjectRepository {
   @override
-  Future<ProjectTagResponse> addProject({
+  Future<APIResponse<ProjectTag>> addProject({
     required String projectName,
     required String projectColor,
     String? status,
@@ -34,43 +35,39 @@ class ProjectRepository extends IProjectRepository {
 
         final ParseResponse projectTagResponse = await projectTag.save();
         if (projectTagResponse.success) {
-          return ProjectTagResponse(
-            projects: <ProjectTag>[
-              ProjectTag(
-                dateEpoch: epochFromDateTime(date: date ?? DateTime.now()),
-                id: getResultId(projectTagResponse.results!),
-                projectName: projectName,
-                status: status ?? 'ACTIVE',
-                color: projectColor,
-              ),
-            ],
-            status: 'success',
+          return APIResponse<ProjectTag>(
+            success: true,
+            message: 'Successfull added project',
+            data: ProjectTag(
+              dateEpoch: epochFromDateTime(date: date ?? DateTime.now()),
+              id: getResultId(projectTagResponse.results!),
+              projectName: projectName,
+              status: status ?? 'ACTIVE',
+              color: projectColor,
+            ),
+            errorCode: null,
           );
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: projectTagResponse.error != null
               ? projectTagResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
   @override
-  Future<ProjectTagResponse> deleteProject({required String id}) async {
+  Future<APIResponse<void>> deleteProject({required String id}) async {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
@@ -81,35 +78,33 @@ class ProjectRepository extends IProjectRepository {
             await deleteProject.delete(id: id);
 
         if (deleteProjectResponse.success) {
-          return ProjectTagResponse(
-            projects: <ProjectTag>[],
-            status: 'success',
+          return APIResponse<void>(
+            success: true,
+            message: 'Successfully deleted project.',
+            data: null,
+            errorCode: null,
           );
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: deleteProjectResponse.error != null
               ? deleteProjectResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
   @override
-  Future<ProjectTagResponse> getAllProjects({
+  Future<APIListResponse<ProjectTag>> getAllProjects({
     String? projectName,
     String? projectColor,
     String? status,
@@ -153,27 +148,27 @@ class ProjectRepository extends IProjectRepository {
           }
         }
 
-        return ProjectTagResponse(
-          projects: projects,
-          status: 'success',
+        return APIListResponse<ProjectTag>(
+          success: true,
+          message: 'Successfully get all projects.',
+          data: projects,
+          errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: projectTagsResponse.error != null
             ? projectTagsResponse.error!.message
             : '',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 
   @override
-  Future<ProjectTagResponse> updateProject({
+  Future<APIResponse<ProjectTag>> updateProject({
     required String id,
     String? projectName,
     String? projectColor,
@@ -225,43 +220,39 @@ class ProjectRepository extends IProjectRepository {
             final ParseObject resultParseObject =
                 getParseObject(projectResponse.results!);
 
-            return ProjectTagResponse(
-              projects: <ProjectTag>[
-                ProjectTag(
-                  id: resultParseObject.objectId!,
-                  dateEpoch:
-                      resultParseObject.get<int>(projectTagsProjectDateField)!,
-                  projectName: resultParseObject
-                      .get<String>(projectTagsProjectNameField)!,
-                  status: resultParseObject
-                      .get<String>(projectTagsProjectStatusField)!,
-                  color: resultParseObject
-                      .get<String>(projectTagsProjectColorField)!,
-                ),
-              ],
-              status: 'success',
+            return APIResponse<ProjectTag>(
+              success: true,
+              message: 'Successfully updated project.',
+              data: ProjectTag(
+                id: resultParseObject.objectId!,
+                dateEpoch:
+                    resultParseObject.get<int>(projectTagsProjectDateField)!,
+                projectName:
+                    resultParseObject.get<String>(projectTagsProjectNameField)!,
+                status: resultParseObject
+                    .get<String>(projectTagsProjectStatusField)!,
+                color: resultParseObject
+                    .get<String>(projectTagsProjectColorField)!,
+              ),
+              errorCode: null,
             );
           }
         }
 
-        throw APIResponse<void>(
-          success: false,
+        throw APIErrorResponse(
           message: updateProjectTagResponse.error != null
               ? updateProjectTagResponse.error!.message
               : '',
-          data: null,
           errorCode: null,
         );
       }
 
-      throw APIResponse<void>(
-        success: false,
+      throw APIErrorResponse(
         message: 'Something went wrong',
-        data: null,
         errorCode: null,
       );
     } on SocketException {
-      throw APIResponse.socketErrorResponse();
+      throw APIErrorResponse.socketErrorResponse();
     }
   }
 }
