@@ -135,7 +135,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   child: BlocBuilder<LoginCubit, LoginState>(
                     buildWhen: (LoginState previous, LoginState current) =>
-                        current is LoginLoading,
+                        current is LoginLoading ||
+                        current is LoginFailed ||
+                        current is LoginSuccess,
                     builder: (BuildContext context, LoginState state) {
                       if (state is LoginLoading) {
                         return const LoadingIndicator();

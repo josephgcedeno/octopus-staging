@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:octopus/infrastructures/models/api_response.dart';
+import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/auth/auth_request.dart';
 import 'package:octopus/infrastructures/repository/interfaces/auth_repository.dart';
 
@@ -23,7 +23,7 @@ class LoginCubit extends Cubit<LoginState> {
       await authRepository.loginUser(payload);
       emit(const LoginSuccess());
     } catch (e) {
-      final APIResponse<dynamic> error = e as APIResponse<dynamic>;
+      final APIErrorResponse error = e as APIErrorResponse;
       emit(
         LoginFailed(errorCode: error.errorCode ?? '', message: error.message),
       );
