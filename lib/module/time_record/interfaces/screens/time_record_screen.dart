@@ -19,6 +19,15 @@ class TimeRecordScreen extends StatefulWidget {
 
 class _TimeRecordScreenState extends State<TimeRecordScreen> {
   Future<bool> timeInTimeOut(DismissDirection dir) async {
+    if (timeOutEpoch != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Already in for the day'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+
     /// This condition will check to drag is TIME IN
     if (timeInEpoch == -1) {
       context.read<TimeRecordCubit>().signInToday();
@@ -90,7 +99,7 @@ class _TimeRecordScreenState extends State<TimeRecordScreen> {
               const OffsetButton(),
               TimeInSlider(
                 onSlide: timeInTimeOut,
-                timeInEpoch: timeInEpoch,
+                timeInEpoch: timeOutEpoch != null ? -1 : timeInEpoch,
               )
             ],
           ),
