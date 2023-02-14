@@ -2,12 +2,20 @@ import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
+import 'package:octopus/internal/helper_function.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class DTRClock extends StatefulWidget {
-  const DTRClock({required this.timeInEpoch, Key? key}) : super(key: key);
+  const DTRClock({
+    required this.timeInEpoch,
+    required this.requiredTimeInMinutes,
+    this.timeOutEpoch,
+    Key? key,
+  }) : super(key: key);
 
   final int timeInEpoch;
+  final int? timeOutEpoch;
+  final int requiredTimeInMinutes;
 
   @override
   State<DTRClock> createState() => _DTRClockState();
@@ -17,7 +25,10 @@ class _DTRClockState extends State<DTRClock> {
   static Duration oneSecondDuration = const Duration(seconds: 1);
 
   /// Standard 8 hours of work
-  final int timeToRenderInMilliseconds = 28800000;
+  late final int timeToRenderInMilliseconds;
+
+  /// Display format time for the total work duration. (HH:MM:SS).
+  String? workDuration;
 
   bool ticked = false;
   Duration elapsed = Duration.zero;
@@ -56,7 +67,9 @@ class _DTRClockState extends State<DTRClock> {
   }
 
   String clockLabel() {
-    if (isOff) {
+    if (workDuration != null) {
+      return 'Work Duration';
+    } else if (isOff) {
       return 'Time In';
     } else if (isOvertime()) {
       return 'Overtime';
@@ -77,7 +90,10 @@ class _DTRClockState extends State<DTRClock> {
   }
 
   void initializeClock() {
-    if (widget.timeInEpoch == -1) {
+    if (widget.timeOutEpoch != null) {
+      /// If timeout is not null, it means that the user is time out.
+      setWorkDuration();
+    } else if (widget.timeInEpoch == -1) {
       setState(() => isOff = true);
     } else {
       if (isOvertime()) {
@@ -99,9 +115,23 @@ class _DTRClockState extends State<DTRClock> {
     });
   }
 
+  void setWorkDuration() => setState(() {
+        /// Calculates the difference between the timeout and time in record to compute the work duration rendered by the user.
+        workDuration = hourFormatFromSeconds(
+          dateTimeFromEpoch(epoch: widget.timeOutEpoch!)
+              .difference(dateTimeFromEpoch(epoch: widget.timeInEpoch))
+              .inSeconds,
+        );
+      });
+
   @override
   void initState() {
     super.initState();
+
+    /// Set time to render from x minute to inMilliseconds
+    timeToRenderInMilliseconds =
+        Duration(minutes: widget.requiredTimeInMinutes).inMilliseconds;
+
     initializeClock();
   }
 
@@ -152,7 +182,17 @@ class _DTRClockState extends State<DTRClock> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                if (isOff)
+                if (workDuration != null)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        workDuration!,
+                        style: timerTextStyle,
+                      ),
+                    ],
+                  )
+                else if (isOff)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
