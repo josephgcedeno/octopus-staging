@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
+import 'package:octopus/infrastructures/models/dsr/dsr_request.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/dsr_repository.dart';
 
@@ -38,6 +39,30 @@ class DSRCubit extends Cubit<DSRState> {
       final APIErrorResponse error = e as APIErrorResponse;
       emit(
         FetchDatesFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
+    }
+  }
+
+  Future<void> initializeDSR() async {
+    try {
+      emit(const InitializeDSRLoading());
+
+      final APIResponse<DSRRecord> response =
+          await dsrRepository.initializeDSR();
+      emit(
+        InitializeDSRSuccess(
+          doing: response.data.wip,
+          done: response.data.done,
+          blockers: response.data.blockers,
+        ),
+      );
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+      emit(
+        InitializeDSRFailed(
           errorCode: error.errorCode ?? '',
           message: error.message,
         ),
