@@ -29,7 +29,14 @@ class _TimeRecordScreenState extends State<TimeRecordScreen> {
     return false;
   }
 
+  /// Set what time did the user time in.
   int timeInEpoch = -1;
+
+  /// Set what is the required time for the user to render. Default is 8hr in Minute is 480.
+  int requiredTimeInMinutes = 480;
+
+  /// Set what time to did the user time out.
+  int? timeOutEpoch;
 
   @override
   void initState() {
@@ -52,6 +59,8 @@ class _TimeRecordScreenState extends State<TimeRecordScreen> {
         } else if (state is FetchTimeInDataSuccess) {
           setState(() {
             timeInEpoch = state.attendance.timeInEpoch ?? 0;
+            requiredTimeInMinutes = state.attendance.requiredDuration ?? 0;
+            timeOutEpoch = state.attendance.timeOutEpoch;
           });
         } else if (state is FetchTimeInDataFailed) {}
       },
@@ -73,6 +82,8 @@ class _TimeRecordScreenState extends State<TimeRecordScreen> {
               ),
               DTRClock(
                 timeInEpoch: timeInEpoch,
+                timeOutEpoch: timeOutEpoch,
+                requiredTimeInMinutes: requiredTimeInMinutes,
                 key: UniqueKey(),
               ),
               const DTRDetails(),
