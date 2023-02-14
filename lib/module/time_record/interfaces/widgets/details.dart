@@ -24,7 +24,7 @@ class _DTRDetailsState extends State<DTRDetails> {
 
   final List<String> values = <String>[
     'January 18, 2023',
-    '8:30 AM',
+    '-----',
     '-----',
     '-----',
     '8 hours'
@@ -32,9 +32,6 @@ class _DTRDetailsState extends State<DTRDetails> {
 
   void setInfo(Attendance info) {
     const String approved = 'APPROVED';
-
-    /// Get the date to day and format it.
-    final String dateToday = DateFormat('MMMM dd, yyyy').format(DateTime.now());
 
     /// Get the time in record for the day if not null.
     final String timeIn = info.timeInEpoch != null
@@ -71,12 +68,17 @@ class _DTRDetailsState extends State<DTRDetails> {
 
     /// Set all the info.
     setState(() {
-      values[0] = dateToday;
       values[1] = timeIn;
       values[2] = timeOut;
       values[3] = overTime;
       values[4] = timeToRender;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    values[0] = DateFormat('MMMM dd, yyyy').format(DateTime.now());
   }
 
   @override
