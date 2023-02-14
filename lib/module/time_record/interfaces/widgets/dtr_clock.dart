@@ -67,6 +67,7 @@ class _DTRClockState extends State<DTRClock> {
   }
 
   String clockLabel() {
+    /// If workduration is not null, it means that the time out is setted and computed for the work duration.
     if (workDuration != null) {
       return 'Work Duration';
     } else if (isOff) {
