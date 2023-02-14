@@ -92,7 +92,9 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
                       }
                       return SizedBox(
                         width: width * 0.5,
-                        child: const LinearProgressIndicator(),
+                        child: const LinearProgressIndicator(
+                          minHeight: 2,
+                        ),
                       );
                     },
                   ),
