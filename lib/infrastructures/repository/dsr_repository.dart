@@ -60,7 +60,7 @@ class DSRRepository extends IDSRRepository {
   }
 
   /// This will check if the sprint id does exist in the database.
-  Future<bool> isSprintIDExist(String sprintId) async {
+  Future<bool> isSprintIdExist(String sprintId) async {
     final ParseObject dsrs = ParseObject(sprintsTable);
     final ParseResponse doesExistSprintIdResponse =
         await dsrs.getObject(sprintId);
@@ -71,6 +71,22 @@ class DSRRepository extends IDSRRepository {
             : '',
         errorCode: doesExistSprintIdResponse.error != null
             ? doesExistSprintIdResponse.error!.code.toString()
+            : '',
+      );
+    }
+    return true;
+  }
+
+  Future<bool> isDSRIdExist(String dsrId) async {
+    final ParseObject dsrs = ParseObject(dsrsTable);
+    final ParseResponse doesExistDSRIdResponse = await dsrs.getObject(dsrId);
+    if (doesExistDSRIdResponse.count == 0) {
+      throw APIErrorResponse(
+        message: doesExistDSRIdResponse.error != null
+            ? 'There is no dsr id $dsrId exist.'
+            : '',
+        errorCode: doesExistDSRIdResponse.error != null
+            ? doesExistDSRIdResponse.error!.code.toString()
             : '',
       );
     }
@@ -183,7 +199,7 @@ class DSRRepository extends IDSRRepository {
         }
 
         /// If the sprint id does exist proceed to fetching record.
-        if (await isSprintIDExist(sprintId)) {
+        if (await isSprintIdExist(sprintId)) {
           final ParseObject dsrs = ParseObject(dsrsTable);
           final DateTime now = DateTime.now();
           final int date =
@@ -772,6 +788,11 @@ class DSRRepository extends IDSRRepository {
         final APIResponse<SprintRecord> sprintToday =
             await sprintInfoQueryToday();
 
+        /// Check if the sprint id exist in the database.
+        if (sprintId != null) await isSprintIdExist(sprintId);
+
+        if (dsrId != null) await isDSRIdExist(dsrId);
+
         final QueryBuilder<ParseObject> getAllDSRQuery =
             QueryBuilder<ParseObject>(sprints)
               ..whereEqualTo(
@@ -779,7 +800,6 @@ class DSRRepository extends IDSRRepository {
                 sprintId ?? sprintToday.data.id,
               )
               ..whereEqualTo(dsrsUserIdField, user.objectId);
-
         final ParseResponse getAllDSRQueryResponse = dsrId != null
             ? await sprints.getObject(dsrId)
             : await getAllDSRQuery.query();
