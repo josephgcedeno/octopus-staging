@@ -76,11 +76,11 @@ abstract class IDSRRepository {
     required List<DSRWorkTrack> dsrworkTrack,
   });
 
-  /// This function will update the dsr's working status (Holiday, Working, Leave, and etc.).
+  /// This function will update the dsr's working status ('WORKING', 'SICK LEAVE' ,'VACATION LEAVE','ABSENT', 'HOLIDAY').
   ///
   /// [dsrId] this determines which record will be updated.
   ///
-  /// [status] this determines what is the status of the dsr (Holiday, Working, Leave, and etc.).
+  /// [status] this determines what is the status of the dsr ('WORKING', 'SICK LEAVE' ,'VACATION LEAVE','ABSENT', 'HOLIDAY').
   Future<APIResponse<DSRRecord>> updateDSRWorkStatus({
     required String dsrId,
     required String status,

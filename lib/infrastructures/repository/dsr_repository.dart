@@ -686,6 +686,20 @@ class DSRRepository extends IDSRRepository {
     required String dsrId,
     required String status,
   }) async {
+    const List<String> statuses = <String>[
+      'WORKING',
+      'SICK LEAVE',
+      'VACATION LEAVE',
+      'ABSENT',
+      'HOLIDAY',
+    ];
+    if (!statuses.contains(status)) {
+      throw APIErrorResponse(
+        message:
+            '$status does not match to the expected value. It must be either $statuses',
+        errorCode: null,
+      );
+    }
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null) {
