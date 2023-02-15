@@ -67,7 +67,7 @@ abstract class IDSRRepository {
   ///
   /// [dsrId] this determines which record will be added, updated, or deleted.
   ///
-  /// [column] this determines which field should be modified (done, work_in_progress, blockers)
+  /// [column] this determines which field should be modified (done, work_in_progress, blockers). This variables can be use to directly use the fields from the database [dsrsDoneField, dsrsWipField, dsrsBlockersField]
   ///
   /// [dsrworkTrack] this contains the list of the item to be stored in the database.
   Future<APIResponse<DSRRecord>> updateDSREntries({
