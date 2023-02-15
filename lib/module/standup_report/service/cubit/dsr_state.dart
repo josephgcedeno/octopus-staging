@@ -49,3 +49,19 @@ class InitializeDSRFailed extends DSRState {
   final String errorCode;
   final String message;
 }
+
+class ShowStatusPane extends DSRState {
+  const ShowStatusPane();
+}
+
+class HideStatusPane extends DSRState {
+  const HideStatusPane();
+}
+
+class ShowProjectPane extends DSRState {
+  const ShowProjectPane();
+}
+
+class HideProjectPane extends DSRState {
+  const HideProjectPane();
+}

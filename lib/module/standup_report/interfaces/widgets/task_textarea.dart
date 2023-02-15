@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/expanded_textfield.dart';
-import 'package:octopus/module/standup_report/interfaces/widgets/item_list.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/mini_textfield.dart';
+import 'package:octopus/module/standup_report/interfaces/widgets/project_list.dart';
+import 'package:octopus/module/standup_report/interfaces/widgets/status_column.dart';
+import 'package:octopus/module/standup_report/interfaces/widgets/status_list.dart';
+import 'package:octopus/module/standup_report/service/cubit/dsr_cubit.dart';
 
 class TaskTextArea extends StatefulWidget {
   const TaskTextArea({Key? key}) : super(key: key);
@@ -12,27 +16,10 @@ class TaskTextArea extends StatefulWidget {
 
 class _TaskTextAreaState extends State<TaskTextArea> {
   TextEditingController textController = TextEditingController();
+  ProjectStatus? projectStatus;
   bool textBoxIsExpanded = false;
-  bool projectsAreShowing = false;
-  bool statusIsShowing = false;
 
-  void expandTextBox() {
-    setState(() => textBoxIsExpanded = true);
-  }
-
-  void toggleProjectsList() {
-    setState(() {
-      statusIsShowing = false;
-      projectsAreShowing = !projectsAreShowing;
-    });
-  }
-
-  void toggleStatusList() {
-    setState(() {
-      projectsAreShowing = false;
-      statusIsShowing = !statusIsShowing;
-    });
-  }
+  void expandTextBox() => setState(() => textBoxIsExpanded = true);
 
   @override
   Widget build(BuildContext context) {
@@ -50,15 +37,25 @@ class _TaskTextAreaState extends State<TaskTextArea> {
               child: SizedBox(
                 width: width * 0.9,
                 child: textBoxIsExpanded
-                    ? ExpandedTextField(
-                        onTapProject: toggleProjectsList,
-                        onTapStatus: toggleStatusList,
-                      )
+                    ? const ExpandedTextField()
                     : MiniTextField(onTap: expandTextBox),
               ),
             ),
-            if (projectsAreShowing || statusIsShowing)
-              ItemList(isShowProject: projectsAreShowing)
+            BlocBuilder<DSRCubit, DSRState>(
+              buildWhen: (DSRState previous, DSRState current) =>
+                  current is ShowProjectPane ||
+                  current is ShowStatusPane ||
+                  current is HideProjectPane ||
+                  current is HideStatusPane,
+              builder: (BuildContext context, DSRState state) {
+                if (state is ShowProjectPane) {
+                  return const ProjectList();
+                } else if (state is ShowStatusPane) {
+                  return const StatusList();
+                }
+                return const Positioned(bottom: 0, child: SizedBox.shrink());
+              },
+            )
           ],
         ),
       ),

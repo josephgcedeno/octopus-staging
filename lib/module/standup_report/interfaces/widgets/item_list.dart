@@ -1,27 +1,13 @@
 import 'package:flutter/material.dart';
 
 class ItemList extends StatelessWidget {
-  const ItemList({required this.isShowProject, Key? key}) : super(key: key);
+  const ItemList({required this.items, Key? key}) : super(key: key);
 
-  final bool isShowProject;
+  final List<String> items;
 
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
-
-    final List<String> projects = <String>[
-      'Project Octopus',
-      'NFTDeals-blocsport1',
-      'FrontRx',
-      'Metapad',
-      'CoinMode'
-    ];
-
-    final List<String> status = <String>[
-      'Done',
-      'Doing',
-      'Blocked',
-    ];
 
     return Positioned(
       bottom: 120,
@@ -44,18 +30,11 @@ class ItemList extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            if (isShowProject)
-              for (int i = 0; i < projects.length; i++)
-                Padding(
-                  padding: const EdgeInsets.all(9.0),
-                  child: Text(projects[i]),
-                )
-            else
-              for (int i = 0; i < status.length; i++)
-                Padding(
-                  padding: const EdgeInsets.all(9.0),
-                  child: Text(status[i]),
-                )
+            for (int i = 0; i < items.length; i++)
+              Padding(
+                padding: const EdgeInsets.all(9.0),
+                child: Text(items[i]),
+              )
           ],
         ),
       ),

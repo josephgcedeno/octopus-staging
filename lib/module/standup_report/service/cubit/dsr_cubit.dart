@@ -5,6 +5,7 @@ import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_request.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/dsr_repository.dart';
+import 'package:octopus/module/standup_report/interfaces/widgets/status_column.dart';
 
 part 'dsr_state.dart';
 
@@ -12,6 +13,23 @@ class DSRCubit extends Cubit<DSRState> {
   DSRCubit({required this.dsrRepository}) : super(const DSRState());
 
   final IDSRRepository dsrRepository;
+  String dsrID = '';
+
+  void toggleStatusPane({required bool isVisible}) {
+    if (isVisible) {
+      emit(const ShowStatusPane());
+    } else {
+      emit(const HideStatusPane());
+    }
+  }
+
+  void toggleProjectPane({required bool isVisible}) {
+    if (isVisible) {
+      emit(const ShowProjectPane());
+    } else {
+      emit(const HideProjectPane());
+    }
+  }
 
   Future<void> fetchCurrentDate() async {
     try {
@@ -33,6 +51,7 @@ class DSRCubit extends Cubit<DSRState> {
         DateTime.fromMillisecondsSinceEpoch(response.data.endDateEpoch),
       );
 
+      // FIXME: Account for how many actual days there are in a sprint. Should weekend count or not?
       final int remaining = 14 - days.ceil();
       emit(FetchDatesSuccess('$startDate - $endDate > Day $remaining of 14'));
     } catch (e) {
@@ -52,6 +71,7 @@ class DSRCubit extends Cubit<DSRState> {
 
       final APIResponse<DSRRecord> response =
           await dsrRepository.initializeDSR();
+      dsrID = response.data.id;
       emit(
         InitializeDSRSuccess(
           doing: response.data.wip,
@@ -67,6 +87,63 @@ class DSRCubit extends Cubit<DSRState> {
           message: error.message,
         ),
       );
+    }
+  }
+
+  /// FIXME: Implement add sprint on admin module
+  Future<void> addSprint() async {
+    // try {
+    await dsrRepository.addSprint(
+      startDate: DateTime(2023, 2, 13),
+      endDate: DateTime(2023, 2, 24),
+    );
+    // } catch (e) {}
+  }
+
+  String statusEnumToString(ProjectStatus status) {
+    switch (status) {
+      case ProjectStatus.done:
+        return 'done';
+      case ProjectStatus.doing:
+        return 'work_in_progress';
+      case ProjectStatus.blockers:
+        return 'blockers';
+    }
+  }
+
+  Future<void> updateTasks({
+    required String taskLabel,
+    required ProjectStatus status,
+  }) async {
+    try {
+      // emit(const InitializeDSRLoading());
+
+      // final APIResponse<DSRRecord> response =
+
+      await dsrRepository.updateDSREntries(
+        dsrId: dsrID,
+        column: statusEnumToString(status),
+        dsrworkTrack: <DSRWorkTrack>[
+          DSRWorkTrack(text: taskLabel, projectTagId: '1234')
+        ],
+      );
+
+      initializeDSR();
+      // emit(
+      //   InitializeDSRSuccess(
+      //     doing: response.data.wip,
+      //     done: response.data.done,
+      //     blockers: response.data.blockers,
+      //   ),
+      // );
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+      // emit(
+      //   InitializeDSRFailed(
+      //     errorCode: error.errorCode ?? '',
+      //     message: error.message,
+      //   ),
+      // );
     }
   }
 }

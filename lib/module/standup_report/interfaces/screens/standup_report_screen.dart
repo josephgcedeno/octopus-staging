@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:octopus/infrastructures/models/dsr/dsr_request.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/status_column.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/task_textarea.dart';
@@ -76,18 +77,26 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
           current is InitializeDSRSuccess,
       listener: (BuildContext context, DSRState state) {
         if (state is InitializeDSRSuccess) {
-          final List<List<TaskCardDTO>> projectLists = <List<TaskCardDTO>>[
+          final List<List<TaskCardDTO>> localProjectLists = <List<TaskCardDTO>>[
             doing,
             done,
             blockers
           ];
-          for (int i = 0; i < projectLists.length; i++) {
-            projectLists[i].clear();
-            for (int j = 0; j < state.doing.length; j++) {
-              doing.add(
+
+          final List<List<DSRWorkTrack>> updatedProjectList =
+              <List<DSRWorkTrack>>[
+            state.doing,
+            state.done,
+            state.blockers,
+          ];
+
+          for (int i = 0; i < localProjectLists.length; i++) {
+            localProjectLists[i].clear();
+            for (int j = 0; j < updatedProjectList[i].length; j++) {
+              localProjectLists[i].add(
                 TaskCardDTO(
-                  taskName: state.doing[j].text,
-                  taskID: state.doing[j].projectTagId,
+                  taskName: updatedProjectList[i][j].text,
+                  taskID: updatedProjectList[i][j].projectTagId,
                   status: i,
                 ),
               );

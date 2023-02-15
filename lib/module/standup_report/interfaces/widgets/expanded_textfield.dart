@@ -1,29 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/module/standup_report/service/cubit/dsr_cubit.dart';
 
 class ExpandedTextField extends StatefulWidget {
-  const ExpandedTextField({
-    required this.onTapProject,
-    required this.onTapStatus,
-    Key? key,
-  }) : super(key: key);
-
-  final void Function() onTapProject;
-  final void Function() onTapStatus;
+  const ExpandedTextField({Key? key}) : super(key: key);
 
   @override
   State<ExpandedTextField> createState() => _ExpandedTextFieldState();
 }
 
 class _ExpandedTextFieldState extends State<ExpandedTextField> {
+  TextEditingController textController = TextEditingController();
   bool projectIsActive = false;
   bool statusIsActive = false;
-
-  void setBoolsToFalse() {
-    setState(() {
-      statusIsActive = false;
-      projectIsActive = false;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +28,7 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
         children: <Widget>[
           TextField(
             autofocus: true,
-            // controller: textController,
+            controller: textController,
             decoration: InputDecoration(
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -57,15 +46,11 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
                     children: <Widget>[
                       ElevatedButton.icon(
                         onPressed: () {
-                          widget.onTapProject();
-                          if (projectIsActive) {
-                            setBoolsToFalse();
-                          } else {
-                            setState(() {
-                              statusIsActive = false;
-                              projectIsActive = true;
-                            });
-                          }
+                          statusIsActive = false;
+                          setState(() => projectIsActive = !projectIsActive);
+                          context
+                              .read<DSRCubit>()
+                              .toggleProjectPane(isVisible: projectIsActive);
                         },
                         style: ButtonStyle(
                           backgroundColor:
@@ -93,15 +78,11 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
                       ),
                       ElevatedButton.icon(
                         onPressed: () {
-                          widget.onTapStatus();
-                          if (statusIsActive) {
-                            setBoolsToFalse();
-                          } else {
-                            setState(() {
-                              projectIsActive = false;
-                              statusIsActive = true;
-                            });
-                          }
+                          projectIsActive = false;
+                          setState(() => statusIsActive = !statusIsActive);
+                          context
+                              .read<DSRCubit>()
+                              .toggleStatusPane(isVisible: statusIsActive);
                         },
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all(
@@ -134,7 +115,11 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
                   bottom: 2,
                 ),
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    // context
+                    //     .read<DSRCubit>()
+                    //     .updateTasks(taskLabel: textController.text);
+                  },
                   style: ButtonStyle(
                     elevation: MaterialStateProperty.all(0),
                     backgroundColor: MaterialStateProperty.all(
