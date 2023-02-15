@@ -13,6 +13,12 @@ class HolidayRepository extends IHoliday {
     required String holidayName,
     required DateTime holidayDate,
   }) async {
+    if (holidayName.isEmpty) {
+      throw APIErrorResponse(
+        message: 'Holiday name cannot be empty!',
+        errorCode: null,
+      );
+    }
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
