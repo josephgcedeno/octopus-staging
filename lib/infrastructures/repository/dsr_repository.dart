@@ -59,6 +59,24 @@ class DSRRepository extends IDSRRepository {
     return data;
   }
 
+  /// This will check if the sprint id does exist in the database.
+  Future<bool> isSprintIDExist(String sprintId) async {
+    final ParseObject dsrs = ParseObject(sprintsTable);
+    final ParseResponse doesExistSprintIdResponse =
+        await dsrs.getObject(sprintId);
+    if (doesExistSprintIdResponse.count == 0) {
+      throw APIErrorResponse(
+        message: doesExistSprintIdResponse.error != null
+            ? 'There is no sprint id $sprintId exist.'
+            : '',
+        errorCode: doesExistSprintIdResponse.error != null
+            ? doesExistSprintIdResponse.error!.code.toString()
+            : '',
+      );
+    }
+    return true;
+  }
+
   @override
   Future<APIResponse<AllDSRItem>> getAllDSRRecordForSprint({
     required String sprintId,
@@ -76,102 +94,116 @@ class DSRRepository extends IDSRRepository {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject dsrs = ParseObject(dsrsTable);
-        final DateTime now = DateTime.now();
-        final int date =
-            epochFromDateTime(date: DateTime(now.year, now.month, now.day));
-
-        final QueryBuilder<ParseObject> dsrQuery = QueryBuilder<ParseObject>(
-          dsrs,
-        )
-          ..whereEqualTo(dsrsSprintidField, sprintId)
-          ..whereGreaterThanOrEqualsTo(
-            dsrsDateField,
-            startDate != null && endDate != null
-                ? epochFromDateTime(date: startDate)
-                : date,
-
-            /// If no date range specified, then this Query will return the record of today's sprint.
-          )
-          ..whereLessThan(
-            dsrsDateField,
-            startDate != null && endDate != null
-                ? epochFromDateTime(
-                    date:
-                        DateTime(endDate.year, endDate.month, endDate.day + 1),
-                  )
-                : epochFromDateTime(
-                    date: DateTime(now.year, now.month, now.day + 1),
-                  ),
-
-            /// If no date range specified, then this Query will return the record of today's sprint.
-          )
-          ..keysToReturn(<String>[dsrsUserIdField, dsrsDateField, ...columns])
-          ..orderByAscending(dsrsDateField);
-
-        /// If specified user id. Just query certain user.
-        if (userId != null) dsrQuery.whereEqualTo(dsrsUserIdField, userId);
-
-        final ParseResponse dsrResponse = await dsrQuery.query();
-
-        final Map<String, List<DSRWorks>> datas = <String, List<DSRWorks>>{};
-        if (dsrResponse.success) {
-          if (dsrResponse.results != null) {
-            for (final ParseObject dsrDonePerUser
-                in dsrResponse.results! as List<ParseObject>) {
-              final String userName = ((await ParseUser.forQuery().getObject(
-                dsrDonePerUser.get<String>(dsrsUserIdField)!,
-              ))
-                      .result as ParseObject)
-                  .get(usersNameField)!;
-
-              final String date = DateFormat('EEE, MMM d, yyyy').format(
-                dateTimeFromEpoch(
-                  epoch: dsrDonePerUser.get<int>(dsrsDateField)!,
-                ),
-              );
-
-              for (final String column in columns) {
-                final List<dynamic> tasks = dsrDonePerUser.get(column)!;
-
-                if (datas.containsKey(column)) {
-                  datas[column]!.addAll(
-                    await manageData(
-                      tasks: tasks,
-                      userName: userName,
-                      filterByProjectId: projectId,
-                      date: date,
-                    ),
-                  );
-                  continue;
-                }
-
-                datas[column] = await manageData(
-                  tasks: tasks,
-                  userName: userName,
-                  filterByProjectId: projectId,
-                  date: date,
-                );
-              }
-            }
-          }
-
-          /// Return formatted data for admin.
-          return APIResponse<AllDSRItem>(
-            success: true,
-            data: AllDSRItem(
-              data: datas,
-            ),
+        /// Check if the sprint id is empty, afterward check if the sprint id does exist in the database.
+        if (sprintId.isEmpty) {
+          throw APIErrorResponse(
             errorCode: null,
-            message: 'success',
+            message: 'Sprint ID cannot be empty',
           );
         }
-        throw APIErrorResponse(
-          message: dsrResponse.error != null ? dsrResponse.error!.message : '',
-          errorCode: dsrResponse.error != null
-              ? dsrResponse.error!.code as String
-              : '',
-        );
+
+        /// If the sprint id does exist proceed to fetching record.
+        if (await isSprintIDExist(sprintId)) {
+          final ParseObject dsrs = ParseObject(dsrsTable);
+          final DateTime now = DateTime.now();
+          final int date =
+              epochFromDateTime(date: DateTime(now.year, now.month, now.day));
+
+          final QueryBuilder<ParseObject> dsrQuery = QueryBuilder<ParseObject>(
+            dsrs,
+          )
+            ..whereEqualTo(dsrsSprintidField, sprintId)
+            ..whereGreaterThanOrEqualsTo(
+              dsrsDateField,
+              startDate != null && endDate != null
+                  ? epochFromDateTime(date: startDate)
+                  : date,
+
+              /// If no date range specified, then this Query will return the record of today's sprint.
+            )
+            ..whereLessThan(
+              dsrsDateField,
+              startDate != null && endDate != null
+                  ? epochFromDateTime(
+                      date: DateTime(
+                        endDate.year,
+                        endDate.month,
+                        endDate.day + 1,
+                      ),
+                    )
+                  : epochFromDateTime(
+                      date: DateTime(now.year, now.month, now.day + 1),
+                    ),
+
+              /// If no date range specified, then this Query will return the record of today's sprint.
+            )
+            ..keysToReturn(<String>[dsrsUserIdField, dsrsDateField, ...columns])
+            ..orderByAscending(dsrsDateField);
+
+          /// If specified user id. Just query certain user.
+          if (userId != null) dsrQuery.whereEqualTo(dsrsUserIdField, userId);
+
+          final ParseResponse dsrResponse = await dsrQuery.query();
+          final Map<String, List<DSRWorks>> datas = <String, List<DSRWorks>>{};
+          if (dsrResponse.success) {
+            if (dsrResponse.results != null) {
+              for (final ParseObject dsrDonePerUser
+                  in dsrResponse.results! as List<ParseObject>) {
+                final String userName = ((await ParseUser.forQuery().getObject(
+                  dsrDonePerUser.get<String>(dsrsUserIdField)!,
+                ))
+                        .result as ParseObject)
+                    .get(usersNameField)!;
+
+                final String date = DateFormat('EEE, MMM d, yyyy').format(
+                  dateTimeFromEpoch(
+                    epoch: dsrDonePerUser.get<int>(dsrsDateField)!,
+                  ),
+                );
+
+                for (final String column in columns) {
+                  final List<dynamic> tasks = dsrDonePerUser.get(column)!;
+
+                  if (datas.containsKey(column)) {
+                    datas[column]!.addAll(
+                      await manageData(
+                        tasks: tasks,
+                        userName: userName,
+                        filterByProjectId: projectId,
+                        date: date,
+                      ),
+                    );
+                    continue;
+                  }
+
+                  datas[column] = await manageData(
+                    tasks: tasks,
+                    userName: userName,
+                    filterByProjectId: projectId,
+                    date: date,
+                  );
+                }
+              }
+            }
+
+            /// Return formatted data for admin.
+            return APIResponse<AllDSRItem>(
+              success: true,
+              data: AllDSRItem(
+                data: datas,
+              ),
+              errorCode: null,
+              message: 'success',
+            );
+          }
+          throw APIErrorResponse(
+            message:
+                dsrResponse.error != null ? dsrResponse.error!.message : '',
+            errorCode: dsrResponse.error != null
+                ? dsrResponse.error!.code as String
+                : '',
+          );
+        }
       }
 
       throw APIErrorResponse(
