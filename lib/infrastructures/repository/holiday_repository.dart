@@ -112,6 +112,12 @@ class HolidayRepository extends IHoliday {
             QueryBuilder<ParseObject>(holidays);
 
         if (holidayName != null) {
+          if (holidayName.isEmpty) {
+            throw APIErrorResponse(
+              message: 'Holiday name cannot be empty!',
+              errorCode: null,
+            );
+          }
           holidayQuery.whereContains(holidayNameField, holidayName);
         }
 
