@@ -139,6 +139,12 @@ class LeaveRepository extends ILeaveRepository {
     DateTime? startDate,
     DateTime? endDate,
   }) async {
+    if (id.isEmpty) {
+      throw APIErrorResponse(
+        message: 'ID is required to update leave.',
+        errorCode: null,
+      );
+    }
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
