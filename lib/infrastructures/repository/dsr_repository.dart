@@ -534,6 +534,15 @@ class DSRRepository extends IDSRRepository {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
+        /// Check if the sprint is 2 weeks range.
+        if (endDate != startDate.add(const Duration(days: 14))) {
+          throw APIErrorResponse(
+            message:
+                'The range between start date and end date does not match with the two weeks sprint.',
+            errorCode: null,
+          );
+        }
+
         final ParseObject sprints = ParseObject(sprintsTable);
         final QueryBuilder<ParseObject> isAlreadyExisiting =
             QueryBuilder<ParseObject>(sprints)
