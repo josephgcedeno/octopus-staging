@@ -468,6 +468,39 @@ class DSRRepository extends IDSRRepository {
     }
   }
 
+  Future<bool> doesProjectIdsExist(List<DSRWorkTrack> dsrs) async {
+    final QueryBuilder<ParseObject> queryGetActiveProject =
+        QueryBuilder<ParseObject>(
+      ParseObject(projectTagsTable),
+    )
+          ..whereEqualTo(projectTagsProjectStatusField, 'ACTIVE')
+          ..keysToReturn(<String>['objectId']);
+
+    final ParseResponse queryGetActiveProjetResponse =
+        await queryGetActiveProject.query();
+    if (queryGetActiveProjetResponse.success &&
+        queryGetActiveProjetResponse.results != null) {
+      final List<ParseObject> projects =
+          queryGetActiveProjetResponse.results! as List<ParseObject>;
+
+      for (final DSRWorkTrack dsr in dsrs) {
+        if (!projects
+            .any((ParseObject item) => item.objectId == dsr.projectTagId)) {
+          throw APIErrorResponse(
+            message: 'The project ${dsr.projectTagId} does not exist.',
+            errorCode: null,
+          );
+        }
+      }
+      return true;
+    }
+
+    throw APIErrorResponse(
+      message: 'There is no project id does not exist.',
+      errorCode: null,
+    );
+  }
+
   @override
   Future<APIResponse<DSRRecord>> updateDSREntries({
     required String dsrId,
@@ -477,51 +510,55 @@ class DSRRepository extends IDSRRepository {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null) {
-        final ParseObject dsrs = ParseObject(dsrsTable);
+        /// Check first if the project ids does exist from the database.
+        final bool isExistProjectIds = await doesProjectIdsExist(dsrworkTrack);
+        if (isExistProjectIds) {
+          final ParseObject dsrs = ParseObject(dsrsTable);
 
-        dsrs
-          ..objectId = dsrId
-          ..set<List<DSRWorkTrack>>(column, dsrworkTrack);
+          dsrs
+            ..objectId = dsrId
+            ..set<List<DSRWorkTrack>>(column, dsrworkTrack);
 
-        final ParseResponse saveDsrResponse = await dsrs.save();
+          final ParseResponse saveDsrResponse = await dsrs.save();
 
-        if (saveDsrResponse.success) {
-          final ParseResponse dsrInfoAfterAdding = await dsrs.getObject(dsrId);
+          if (saveDsrResponse.success) {
+            final ParseResponse dsrInfoAfterAdding =
+                await dsrs.getObject(dsrId);
 
-          if (dsrInfoAfterAdding.success &&
-              dsrInfoAfterAdding.results != null) {
-            final ParseObject resultParseObject =
-                getParseObject(dsrInfoAfterAdding.results!);
+            if (dsrInfoAfterAdding.success &&
+                dsrInfoAfterAdding.results != null) {
+              final ParseObject resultParseObject =
+                  getParseObject(dsrInfoAfterAdding.results!);
 
-            return APIResponse<DSRRecord>(
-              success: true,
-              message: 'Successfully added works on $column.',
-              data: DSRRecord(
-                id: resultParseObject.objectId!,
-                sprintId: resultParseObject.get<String>(dsrsSprintidField)!,
-                done: convertListDynamic(
-                  resultParseObject.get<List<dynamic>>(dsrsDoneField)!,
+              return APIResponse<DSRRecord>(
+                success: true,
+                message: 'Successfully added works on $column.',
+                data: DSRRecord(
+                  id: resultParseObject.objectId!,
+                  sprintId: resultParseObject.get<String>(dsrsSprintidField)!,
+                  done: convertListDynamic(
+                    resultParseObject.get<List<dynamic>>(dsrsDoneField)!,
+                  ),
+                  wip: convertListDynamic(
+                    resultParseObject.get<List<dynamic>>(dsrsWipField)!,
+                  ),
+                  blockers: convertListDynamic(
+                    resultParseObject.get<List<dynamic>>(dsrsBlockersField)!,
+                  ),
+                  status: resultParseObject.get<String>(dsrsStatusField)!,
+                  dateEpoch: resultParseObject.get<int>(dsrsDateField)!,
                 ),
-                wip: convertListDynamic(
-                  resultParseObject.get<List<dynamic>>(dsrsWipField)!,
-                ),
-                blockers: convertListDynamic(
-                  resultParseObject.get<List<dynamic>>(dsrsBlockersField)!,
-                ),
-                status: resultParseObject.get<String>(dsrsStatusField)!,
-                dateEpoch: resultParseObject.get<int>(dsrsDateField)!,
-              ),
-              errorCode: null,
-            );
+                errorCode: null,
+              );
+            }
           }
+          throw APIErrorResponse(
+            message: saveDsrResponse.error != null
+                ? saveDsrResponse.error!.message
+                : '',
+            errorCode: null,
+          );
         }
-
-        throw APIErrorResponse(
-          message: saveDsrResponse.error != null
-              ? saveDsrResponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(
