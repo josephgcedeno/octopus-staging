@@ -1,8 +1,11 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:octopus/configs/themes.dart';
+import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/repository/auth_repository.dart';
+import 'package:octopus/infrastructures/repository/dsr_repository.dart';
 import 'package:octopus/interfaces/screens/splash_screen.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
 import 'package:octopus/module/login/interfaces/screens/login_screen.dart';
@@ -28,13 +31,67 @@ void main() async {
   runApp(const App());
 }
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final AuthRepository authRepository = AuthRepository();
+  State<App> createState() => _AppState();
+}
 
+class _AppState extends State<App> {
+  final AuthRepository authRepository = AuthRepository();
+  final DSRRepository dsrRepository = DSRRepository();
+
+  /// This will add sprint record on every after sprint.
+  Future<void> initializeSprintRecord() async {
+    try {
+      final DateTime currentDate = DateTime.now();
+
+      final DateTime sprintStartDate = DateTime(
+        currentDate.year,
+        currentDate.month,
+        currentDate.day,
+      );
+
+      /// Get the date from this day till 2 weeks.
+      final DateTime sprintEndDate =
+          sprintStartDate.add(const Duration(days: 14));
+
+      await dsrRepository.addSprint(
+        startDate: DateTime(
+          currentDate.year,
+          currentDate.month,
+          currentDate.day,
+        ),
+        endDate: sprintEndDate,
+      );
+    } on APIErrorResponse catch (error) {
+      log(error.message);
+    }
+  }
+
+  /// This will initialize DSR Record everyday if there is no record available yet.
+  Future<void> initializeDSRRecord() async {
+    try {
+      await dsrRepository.initializeDSR();
+    } on APIErrorResponse catch (error) {
+      log(error.message);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    /// Initialize Sprint Record every after sprint.
+    initializeSprintRecord();
+
+    /// Initialize DSR record.
+    initializeDSRRecord();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: <BlocProvider<dynamic>>[
         BlocProvider<AuthenticationCubit>(
