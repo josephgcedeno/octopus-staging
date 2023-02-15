@@ -99,30 +99,54 @@ class DSRRepository extends IDSRRepository {
     return true;
   }
 
-  /// This will check if the project ID does exist.
-  Future<bool> doesProjectIdsExist(List<DSRWorkTrack> dsrs) async {
-    final QueryBuilder<ParseObject> queryGetActiveProject =
-        QueryBuilder<ParseObject>(
-      ParseObject(projectTagsTable),
-    )
-          ..whereEqualTo(projectTagsProjectStatusField, 'ACTIVE')
-          ..keysToReturn(<String>['objectId']);
+  /// This will check if the project ID/s does exist. It will only take either between multiple project id or single project id.
+  ///
+  /// [dsrRecords] this will be use to check multiple project ids.
+  ///
+  /// [projectId] this will check if the project id is exis
+  Future<bool> doesProjectIdExist({
+    List<DSRWorkTrack>? dsrRecords,
+    String? projectId,
+  }) async {
+    final ParseObject project = ParseObject(projectTagsTable);
+    if (dsrRecords != null) {
+      final QueryBuilder<ParseObject> queryGetActiveProject =
+          QueryBuilder<ParseObject>(
+        project,
+      )
+            ..whereEqualTo(projectTagsProjectStatusField, 'ACTIVE')
+            ..keysToReturn(<String>['objectId']);
 
-    final ParseResponse queryGetActiveProjetResponse =
-        await queryGetActiveProject.query();
-    if (queryGetActiveProjetResponse.success &&
-        queryGetActiveProjetResponse.results != null) {
-      final List<ParseObject> projects =
-          queryGetActiveProjetResponse.results! as List<ParseObject>;
-
-      for (final DSRWorkTrack dsr in dsrs) {
-        if (!projects
-            .any((ParseObject item) => item.objectId == dsr.projectTagId)) {
-          throw APIErrorResponse(
-            message: 'The project ${dsr.projectTagId} does not exist.',
-            errorCode: null,
-          );
+      final ParseResponse queryGetActiveProjetResponse =
+          await queryGetActiveProject.query();
+      if (queryGetActiveProjetResponse.success &&
+          queryGetActiveProjetResponse.results != null) {
+        final List<ParseObject> projects =
+            queryGetActiveProjetResponse.results! as List<ParseObject>;
+        for (final DSRWorkTrack dsr in dsrRecords) {
+          if (!projects
+              .any((ParseObject item) => item.objectId == dsr.projectTagId)) {
+            throw APIErrorResponse(
+              message: 'The project ${dsr.projectTagId} does not exist.',
+              errorCode: null,
+            );
+          }
         }
+        return true;
+      }
+    } else if (projectId != null) {
+      final ParseResponse projectIdResponse =
+          await project.getObject(projectId);
+
+      if (projectIdResponse.count == 0) {
+        throw APIErrorResponse(
+          message: projectIdResponse.error != null
+              ? 'There is no project id $projectId exist.'
+              : '',
+          errorCode: projectIdResponse.error != null
+              ? projectIdResponse.error!.code.toString()
+              : '',
+        );
       }
       return true;
     }
@@ -201,6 +225,10 @@ class DSRRepository extends IDSRRepository {
             final bool isUserExist = await isUserIdExist(userId);
             dsrQuery.whereEqualTo(dsrsUserIdField, isUserExist ? userId : '');
           }
+
+          /// Check if filter by project id does exist.
+          if (projectId != null) await doesProjectIdExist(projectId: projectId);
+
           final ParseResponse dsrResponse = await dsrQuery.query();
           final Map<String, List<DSRWorks>> datas = <String, List<DSRWorks>>{};
           if (dsrResponse.success) {
@@ -575,11 +603,14 @@ class DSRRepository extends IDSRRepository {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null) {
         /// Check first if the project ids does exist from the database.
-        final bool isExistProjectIds = await doesProjectIdsExist(dsrworkTrack);
+        final bool isExistProjectIds = await doesProjectIdExist(
+          dsrRecords: dsrworkTrack,
+        );
 
         if (!columnsEntries.contains(column)) {
           throw APIErrorResponse(
-            message: 'Column $column does not match to the specified fields.',
+            message:
+                'Column $column does not match to the specified fields. It must be either $columnsEntries',
             errorCode: null,
           );
         }
