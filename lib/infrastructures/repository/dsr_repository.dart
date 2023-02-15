@@ -77,6 +77,62 @@ class DSRRepository extends IDSRRepository {
     return true;
   }
 
+  /// This will check if the user
+  Future<bool> isUserIdExist(String userId) async {
+    const String objectIdField = 'objectId';
+    final QueryBuilder<ParseObject> queryGetUserId = QueryBuilder<ParseObject>(
+      ParseObject(usersTable),
+    )
+      ..whereEqualTo(objectIdField, userId)
+      ..keysToReturn(<String>[objectIdField]);
+    final ParseResponse queryGetUserIdResponse = await queryGetUserId.query();
+    if (queryGetUserIdResponse.count == 0) {
+      throw APIErrorResponse(
+        message: queryGetUserIdResponse.error != null
+            ? 'There is no user id $userId exist.'
+            : '',
+        errorCode: queryGetUserIdResponse.error != null
+            ? queryGetUserIdResponse.error!.code.toString()
+            : '',
+      );
+    }
+    return true;
+  }
+
+  /// This will check if the project ID does exist.
+  Future<bool> doesProjectIdsExist(List<DSRWorkTrack> dsrs) async {
+    final QueryBuilder<ParseObject> queryGetActiveProject =
+        QueryBuilder<ParseObject>(
+      ParseObject(projectTagsTable),
+    )
+          ..whereEqualTo(projectTagsProjectStatusField, 'ACTIVE')
+          ..keysToReturn(<String>['objectId']);
+
+    final ParseResponse queryGetActiveProjetResponse =
+        await queryGetActiveProject.query();
+    if (queryGetActiveProjetResponse.success &&
+        queryGetActiveProjetResponse.results != null) {
+      final List<ParseObject> projects =
+          queryGetActiveProjetResponse.results! as List<ParseObject>;
+
+      for (final DSRWorkTrack dsr in dsrs) {
+        if (!projects
+            .any((ParseObject item) => item.objectId == dsr.projectTagId)) {
+          throw APIErrorResponse(
+            message: 'The project ${dsr.projectTagId} does not exist.',
+            errorCode: null,
+          );
+        }
+      }
+      return true;
+    }
+
+    throw APIErrorResponse(
+      message: 'There is no project id does not exist.',
+      errorCode: null,
+    );
+  }
+
   @override
   Future<APIResponse<AllDSRItem>> getAllDSRRecordForSprint({
     required String sprintId,
@@ -141,8 +197,10 @@ class DSRRepository extends IDSRRepository {
             ..orderByAscending(dsrsDateField);
 
           /// If specified user id. Just query certain user.
-          if (userId != null) dsrQuery.whereEqualTo(dsrsUserIdField, userId);
-
+          if (userId != null) {
+            final bool isUserExist = await isUserIdExist(userId);
+            dsrQuery.whereEqualTo(dsrsUserIdField, isUserExist ? userId : '');
+          }
           final ParseResponse dsrResponse = await dsrQuery.query();
           final Map<String, List<DSRWorks>> datas = <String, List<DSRWorks>>{};
           if (dsrResponse.success) {
@@ -505,39 +563,6 @@ class DSRRepository extends IDSRRepository {
     } on SocketException {
       throw APIErrorResponse.socketErrorResponse();
     }
-  }
-
-  Future<bool> doesProjectIdsExist(List<DSRWorkTrack> dsrs) async {
-    final QueryBuilder<ParseObject> queryGetActiveProject =
-        QueryBuilder<ParseObject>(
-      ParseObject(projectTagsTable),
-    )
-          ..whereEqualTo(projectTagsProjectStatusField, 'ACTIVE')
-          ..keysToReturn(<String>['objectId']);
-
-    final ParseResponse queryGetActiveProjetResponse =
-        await queryGetActiveProject.query();
-    if (queryGetActiveProjetResponse.success &&
-        queryGetActiveProjetResponse.results != null) {
-      final List<ParseObject> projects =
-          queryGetActiveProjetResponse.results! as List<ParseObject>;
-
-      for (final DSRWorkTrack dsr in dsrs) {
-        if (!projects
-            .any((ParseObject item) => item.objectId == dsr.projectTagId)) {
-          throw APIErrorResponse(
-            message: 'The project ${dsr.projectTagId} does not exist.',
-            errorCode: null,
-          );
-        }
-      }
-      return true;
-    }
-
-    throw APIErrorResponse(
-      message: 'There is no project id does not exist.',
-      errorCode: null,
-    );
   }
 
   @override
