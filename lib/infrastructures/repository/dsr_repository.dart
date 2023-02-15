@@ -12,6 +12,13 @@ import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 class DSRRepository extends IDSRRepository {
   final DateTime today = DateTime.now();
 
+  /// This list down the available column to update the entries (done, work_in_progress, and blockers)
+  List<String> get columnsEntries => const <String>[
+        dsrsDoneField,
+        dsrsWipField,
+        dsrsBlockersField,
+      ];
+
   DateTime get currentDate => DateTime(today.year, today.month, today.day);
 
   Future<List<DSRWorks>> manageData({
@@ -512,6 +519,13 @@ class DSRRepository extends IDSRRepository {
       if (user != null) {
         /// Check first if the project ids does exist from the database.
         final bool isExistProjectIds = await doesProjectIdsExist(dsrworkTrack);
+
+        if (!columnsEntries.contains(column)) {
+          throw APIErrorResponse(
+            message: 'Column $column does not match to the specified fields.',
+            errorCode: null,
+          );
+        }
         if (isExistProjectIds) {
           final ParseObject dsrs = ParseObject(dsrsTable);
 
