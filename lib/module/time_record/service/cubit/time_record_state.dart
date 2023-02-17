@@ -14,7 +14,7 @@ class FetchTimeInDataSuccess extends TimeRecordState {
     required this.attendance,
   }) : super();
 
-  final Attendance attendance;
+  final Attendance? attendance;
 }
 
 class FetchTimeInDataFailed extends TimeRecordState {
