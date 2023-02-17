@@ -5,19 +5,44 @@ import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart'
 
 class TimeInSlider extends StatefulWidget {
   const TimeInSlider({
-    required this.onSlide,
-    required this.timeInEpoch,
     Key? key,
   }) : super(key: key);
-
-  final Future<bool> Function(DismissDirection) onSlide;
-  final int timeInEpoch;
 
   @override
   State<TimeInSlider> createState() => _TimeInSliderState();
 }
 
 class _TimeInSliderState extends State<TimeInSlider> {
+  Future<bool> timeInTimeOut(DismissDirection dir) async {
+    if (timeOutEpoch != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Already in for the day'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      return false;
+    }
+
+    /// This condition will check to drag is TIME IN
+    if (timeInEpoch == -1) {
+      context.read<TimeRecordCubit>().signInToday();
+    } else {
+      /// This condition will check to drag is TIME OUT
+      context.read<TimeRecordCubit>().signOutToday();
+    }
+    return false;
+  }
+
+  /// Set what time did the user time in.
+  int timeInEpoch = -1;
+
+  /// Set what is the required time for the user to render. Default is 8hr in Minute is 480.
+  int requiredTimeInMinutes = 480;
+
+  /// Set what time to did the user time out.
+  int? timeOutEpoch;
+
   bool isLoading = true;
   @override
   Widget build(BuildContext context) {
@@ -32,8 +57,20 @@ class _TimeInSliderState extends State<TimeInSlider> {
           current is FetchTimeInDataFailed,
       listener: (BuildContext context, TimeRecordState state) {
         if (state is FetchTimeInDataLoading) {
-          setState(() => isLoading = true);
+          setState(() {
+            isLoading = true;
+            timeInEpoch = -1;
+            timeOutEpoch = null;
+          });
         } else if (state is FetchTimeInDataSuccess) {
+          if (state.attendance != null) {
+            setState(() {
+              timeInEpoch = state.attendance?.timeInEpoch ?? 0;
+              requiredTimeInMinutes = state.attendance?.requiredDuration ?? 0;
+              timeOutEpoch = state.attendance?.timeOutEpoch;
+            });
+          }
+
           setState(() => isLoading = false);
         } else if (state is FetchTimeInDataFailed) {
           setState(() => isLoading = false);
@@ -73,7 +110,7 @@ class _TimeInSliderState extends State<TimeInSlider> {
             Positioned.fill(
               child: Align(
                 child: Text(
-                  widget.timeInEpoch == -1 ? 'IN' : 'OUT',
+                  timeInEpoch == -1 ? 'IN' : 'OUT',
                   style: theme.textTheme.subtitle1?.copyWith(
                     color: theme.primaryColor,
                     fontWeight: FontWeight.w600,
@@ -83,7 +120,7 @@ class _TimeInSliderState extends State<TimeInSlider> {
             ),
             Dismissible(
               direction: DismissDirection.startToEnd,
-              confirmDismiss: widget.onSlide,
+              confirmDismiss: timeInTimeOut,
               key: UniqueKey(),
               child: Align(
                 alignment: Alignment.centerLeft,
