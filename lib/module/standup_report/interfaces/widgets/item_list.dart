@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class ItemList extends StatelessWidget {
-  const ItemList({required this.items, Key? key}) : super(key: key);
+  const ItemList({required this.itemList, Key? key}) : super(key: key);
 
-  final List<String> items;
+  final List<Widget> itemList;
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +30,10 @@ class ItemList extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            for (int i = 0; i < items.length; i++)
+            for (int i = 0; i < itemList.length; i++)
               Padding(
                 padding: const EdgeInsets.all(9.0),
-                child: Text(items[i]),
+                child: itemList[i],
               )
           ],
         ),

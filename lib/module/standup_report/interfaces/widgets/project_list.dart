@@ -14,6 +14,13 @@ class ProjectList extends StatelessWidget {
       'CoinMode'
     ];
 
-    return ItemList(items: projects);
+    return ItemList(
+      itemList: <Widget>[
+        for (int i = 0; i < projects.length; i++)
+          GestureDetector(
+            child: Text(projects[i]),
+          ),
+      ],
+    );
   }
 }

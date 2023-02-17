@@ -12,6 +12,14 @@ class StatusList extends StatelessWidget {
       'Blocked',
     ];
 
-    return ItemList(items: status);
+    return ItemList(
+      itemList: <Widget>[
+        for (int i = 0; i < status.length; i++)
+          GestureDetector(
+            onTap: () {},
+            child: Text(status[i]),
+          ),
+      ],
+    );
   }
 }

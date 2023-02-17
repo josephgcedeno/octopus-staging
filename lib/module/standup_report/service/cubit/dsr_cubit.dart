@@ -11,9 +11,14 @@ part 'dsr_state.dart';
 
 class DSRCubit extends Cubit<DSRState> {
   DSRCubit({required this.dsrRepository}) : super(const DSRState());
-
   final IDSRRepository dsrRepository;
+
+  ProjectStatus? currentProjectStatus;
   String dsrID = '';
+
+  void setProjectStatus() {
+    //setting project status now
+  }
 
   void toggleStatusPane({required bool isVisible}) {
     if (isVisible) {
