@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/module/time_record/interfaces/widgets/details.dart';
 import 'package:octopus/module/time_record/interfaces/widgets/dtr_clock.dart';
 import 'package:octopus/module/time_record/interfaces/widgets/offset_button.dart';
 import 'package:octopus/module/time_record/interfaces/widgets/time_record_slider.dart';
+import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
 
 class TimeRecordScreen extends StatefulWidget {
   const TimeRecordScreen({Key? key}) : super(key: key);
@@ -16,18 +18,11 @@ class TimeRecordScreen extends StatefulWidget {
 }
 
 class _TimeRecordScreenState extends State<TimeRecordScreen> {
-  Future<bool> timeInTimeOut(DismissDirection dir) async {
-    if (timeInEpoch == -1) {
-      setState(() {
-        timeInEpoch = DateTime.now().millisecondsSinceEpoch;
-      });
-    } else {
-      setState(() => timeInEpoch = -1);
-    }
-    return false;
+  @override
+  void initState() {
+    super.initState();
+    context.read<TimeRecordCubit>().fetchAttendance();
   }
-
-  int timeInEpoch = -1;
 
   @override
   Widget build(BuildContext context) {
@@ -51,15 +46,11 @@ class _TimeRecordScreenState extends State<TimeRecordScreen> {
               ),
             ),
             DTRClock(
-              timeInEpoch: timeInEpoch,
               key: UniqueKey(),
             ),
             const DTRDetails(),
             const OffsetButton(),
-            TimeInSlider(
-              onSlide: timeInTimeOut,
-              timeInEpoch: timeInEpoch,
-            )
+            const TimeInSlider()
           ],
         ),
       ),

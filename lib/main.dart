@@ -6,10 +6,12 @@ import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/repository/auth_repository.dart';
 import 'package:octopus/infrastructures/repository/dsr_repository.dart';
+import 'package:octopus/infrastructures/repository/time_in_out_repository.dart';
 import 'package:octopus/interfaces/screens/splash_screen.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
 import 'package:octopus/module/login/interfaces/screens/login_screen.dart';
 import 'package:octopus/module/login/service/cubit/authentication_cubit.dart';
+import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 void main() async {
@@ -40,7 +42,13 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   final AuthRepository authRepository = AuthRepository();
+  final TimeInOutRepository timeInOutRepository = TimeInOutRepository();
   final DSRRepository dsrRepository = DSRRepository();
+
+  Future<void> initializeDailyTime() async {
+    /// Create daily record.
+    await timeInOutRepository.createNewDate();
+  }
 
   /// This will add sprint record on every after sprint.
   Future<void> initializeSprintRecord() async {
@@ -79,15 +87,22 @@ class _AppState extends State<App> {
     }
   }
 
+  Future<void> initializeData() async {
+    /// Initialize Daily attendance record everyday.
+    await initializeDailyTime();
+
+    /// Initialize Sprint Record every after sprint.
+    await initializeSprintRecord();
+
+    /// Initialize DSR record.
+    await initializeDSRRecord();
+  }
+
   @override
   void initState() {
     super.initState();
 
-    /// Initialize Sprint Record every after sprint.
-    initializeSprintRecord();
-
-    /// Initialize DSR record.
-    initializeDSRRecord();
+    initializeData();
   }
 
   @override
@@ -97,6 +112,11 @@ class _AppState extends State<App> {
         BlocProvider<AuthenticationCubit>(
           create: (BuildContext context) =>
               AuthenticationCubit(authRepository: authRepository),
+        ),
+        BlocProvider<TimeRecordCubit>(
+          create: (BuildContext context) => TimeRecordCubit(
+            timeInOutRepository: timeInOutRepository,
+          ),
         ),
       ],
       child: MaterialApp(
