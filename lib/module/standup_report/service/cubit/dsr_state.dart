@@ -65,3 +65,8 @@ class ShowProjectPane extends DSRState {
 class HideProjectPane extends DSRState {
   const HideProjectPane();
 }
+
+class UpdateTaskStatus extends DSRState {
+  const UpdateTaskStatus(this.status);
+  final String status;
+}

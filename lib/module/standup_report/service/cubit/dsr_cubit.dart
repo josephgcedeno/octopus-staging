@@ -13,11 +13,22 @@ class DSRCubit extends Cubit<DSRState> {
   DSRCubit({required this.dsrRepository}) : super(const DSRState());
   final IDSRRepository dsrRepository;
 
+  List<DSRWorkTrack> doneList = <DSRWorkTrack>[];
+  List<DSRWorkTrack> doingList = <DSRWorkTrack>[];
+  List<DSRWorkTrack> blockersList = <DSRWorkTrack>[];
+
   ProjectStatus? currentProjectStatus;
+
   String dsrID = '';
 
-  void setProjectStatus() {
-    //setting project status now
+  ProjectStatus? get projectStatus {
+    return currentProjectStatus;
+  }
+
+  set projectStatus(ProjectStatus? status) {
+    currentProjectStatus = status;
+    emit(const HideStatusPane());
+    emit(UpdateTaskStatus(toBeginningOfSentenceCase(status!.name) ?? ''));
   }
 
   void toggleStatusPane({required bool isVisible}) {
@@ -77,6 +88,9 @@ class DSRCubit extends Cubit<DSRState> {
       final APIResponse<DSRRecord> response =
           await dsrRepository.initializeDSR();
       dsrID = response.data.id;
+      doneList = response.data.done;
+      doingList = response.data.wip;
+      blockersList = response.data.blockers;
       emit(
         InitializeDSRSuccess(
           doing: response.data.wip,
@@ -116,9 +130,24 @@ class DSRCubit extends Cubit<DSRState> {
     }
   }
 
+  List<DSRWorkTrack> dsrWorkTrack(String taskLabel) {
+    switch (projectStatus) {
+      case ProjectStatus.done:
+        doneList.add(DSRWorkTrack(text: taskLabel, projectTagId: ''));
+        return doneList;
+      case ProjectStatus.doing:
+        doingList.add(DSRWorkTrack(text: taskLabel, projectTagId: ''));
+        return doingList;
+      case ProjectStatus.blockers:
+        blockersList.add(DSRWorkTrack(text: taskLabel, projectTagId: ''));
+        return blockersList;
+      default:
+        return <DSRWorkTrack>[];
+    }
+  }
+
   Future<void> updateTasks({
     required String taskLabel,
-    required ProjectStatus status,
   }) async {
     try {
       // emit(const InitializeDSRLoading());
@@ -127,13 +156,11 @@ class DSRCubit extends Cubit<DSRState> {
 
       await dsrRepository.updateDSREntries(
         dsrId: dsrID,
-        column: statusEnumToString(status),
-        dsrworkTrack: <DSRWorkTrack>[
-          DSRWorkTrack(text: taskLabel, projectTagId: '1234')
-        ],
+        column: statusEnumToString(projectStatus ?? ProjectStatus.done),
+        dsrworkTrack: dsrWorkTrack(taskLabel),
       );
 
-      initializeDSR();
+      // initializeDSR();
       // emit(
       //   InitializeDSRSuccess(
       //     doing: response.data.wip,
@@ -142,7 +169,7 @@ class DSRCubit extends Cubit<DSRState> {
       //   ),
       // );
     } catch (e) {
-      final APIErrorResponse error = e as APIErrorResponse;
+      // final APIErrorResponse error = e as APIErrorResponse;
       // emit(
       //   InitializeDSRFailed(
       //     errorCode: error.errorCode ?? '',

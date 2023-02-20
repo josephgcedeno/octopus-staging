@@ -78,7 +78,6 @@ class _HomePageStateState extends State<_HomePageState> {
       listenWhen: (AuthenticationState previous, AuthenticationState current) =>
           current is ValidateTokenSuccess || current is ValidateTokenFailed,
       listener: (BuildContext context, AuthenticationState state) {
-        // TODO: implement listener
         if (state is ValidateTokenSuccess) {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute<dynamic>(
