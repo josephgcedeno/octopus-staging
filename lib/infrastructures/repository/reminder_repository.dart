@@ -16,6 +16,12 @@ class ReminderRepository extends IReminderRepository {
     required DateTime endDate,
     required bool isShow,
   }) async {
+    if (announcement.isEmpty) {
+      throw APIErrorResponse(
+        message: 'Announcement field cannot be empty.',
+        errorCode: null,
+      );
+    }
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
@@ -186,6 +192,12 @@ class ReminderRepository extends IReminderRepository {
   Future<APIResponse<void>> deleteReminder({
     required String id,
   }) async {
+    if (id.isEmpty) {
+      throw APIErrorResponse(
+        message: 'ID cannot be empty.',
+        errorCode: null,
+      );
+    }
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
@@ -229,6 +241,12 @@ class ReminderRepository extends IReminderRepository {
     DateTime? endDate,
     bool? isShow,
   }) async {
+    if (id.isEmpty || (announcement != null && announcement.isEmpty)) {
+      throw APIErrorResponse(
+        message: 'This fields cannot be empty.',
+        errorCode: null,
+      );
+    }
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {

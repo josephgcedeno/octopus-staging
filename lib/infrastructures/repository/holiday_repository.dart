@@ -8,11 +8,21 @@ import 'package:octopus/internal/helper_function.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class HolidayRepository extends IHoliday {
+  void checkFieldIsEmpty(String field) {
+    if (field.isEmpty) {
+      throw APIErrorResponse(
+        message: 'ID or Holiday name cannot be empty!',
+        errorCode: null,
+      );
+    }
+  }
+
   @override
   Future<APIResponse<Holiday>> addHoliday({
     required String holidayName,
     required DateTime holidayDate,
   }) async {
+    checkFieldIsEmpty(holidayName);
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
@@ -106,6 +116,7 @@ class HolidayRepository extends IHoliday {
             QueryBuilder<ParseObject>(holidays);
 
         if (holidayName != null) {
+          checkFieldIsEmpty(holidayName);
           holidayQuery.whereContains(holidayNameField, holidayName);
         }
 
@@ -170,6 +181,7 @@ class HolidayRepository extends IHoliday {
     String? holidayName,
     DateTime? holidayDate,
   }) async {
+    checkFieldIsEmpty(id);
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
@@ -178,6 +190,7 @@ class HolidayRepository extends IHoliday {
         holidays.objectId = id;
 
         if (holidayName != null) {
+          checkFieldIsEmpty(holidayName);
           holidays.set<String>(holidayNameField, holidayName);
         }
 
