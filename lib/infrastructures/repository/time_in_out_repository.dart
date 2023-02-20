@@ -60,7 +60,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
 
       final ParseObject timeINOUt = timeInOut
         ..set<String>(timeInOutsHolidayIdField, holidayToday?.objectId ?? '')
-        ..set<int>(timeInOutDateField, epochFromDateTime(date: _now));
+        ..set<int>(timeInOutDateField, epochFromDateTime(date: date));
 
       await timeINOUt.save();
     }
