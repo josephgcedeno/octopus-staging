@@ -15,6 +15,14 @@ class ProjectRepository extends IProjectRepository {
     String? status,
     DateTime? date,
   }) async {
+    if (projectName.isEmpty ||
+        projectColor.isEmpty ||
+        (status != null && status.isEmpty)) {
+      throw APIErrorResponse(
+        message: 'This fields cannot be empty.',
+        errorCode: null,
+      );
+    }
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
@@ -68,6 +76,12 @@ class ProjectRepository extends IProjectRepository {
 
   @override
   Future<APIResponse<void>> deleteProject({required String id}) async {
+    if (id.isEmpty) {
+      throw APIErrorResponse(
+        message: 'ID cannot be empty.',
+        errorCode: null,
+      );
+    }
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
@@ -110,6 +124,14 @@ class ProjectRepository extends IProjectRepository {
     String? status,
     DateTime? date,
   }) async {
+    if ((projectName != null && projectName.isEmpty) ||
+        (projectColor != null && projectColor.isEmpty) ||
+        (status != null && status.isEmpty)) {
+      throw APIErrorResponse(
+        message: 'These fields cannot be empty.',
+        errorCode: null,
+      );
+    }
     try {
       final QueryBuilder<ParseObject> projectTags =
           QueryBuilder<ParseObject>(ParseObject(projectTagsTable));
@@ -175,6 +197,15 @@ class ProjectRepository extends IProjectRepository {
     String? status,
     DateTime? date,
   }) async {
+    if (id.isEmpty ||
+        (projectName != null && projectName.isEmpty) ||
+        (projectColor != null && projectColor.isEmpty) ||
+        (status != null && status.isEmpty)) {
+      throw APIErrorResponse(
+        message: 'These fields cannot be empty.',
+        errorCode: null,
+      );
+    }
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 

@@ -12,6 +12,13 @@ import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 class DSRRepository extends IDSRRepository {
   final DateTime today = DateTime.now();
 
+  /// This list down the available column to update the entries (done, work_in_progress, and blockers)
+  List<String> get columnsEntries => const <String>[
+        dsrsDoneField,
+        dsrsWipField,
+        dsrsBlockersField,
+      ];
+
   DateTime get currentDate => DateTime(today.year, today.month, today.day);
 
   Future<List<DSRWorks>> manageData({
@@ -52,6 +59,120 @@ class DSRRepository extends IDSRRepository {
     return data;
   }
 
+  /// This will check if the sprint id does exist in the database.
+  Future<bool> isSprintIdExist(String sprintId) async {
+    final ParseObject dsrs = ParseObject(sprintsTable);
+    final ParseResponse doesExistSprintIdResponse =
+        await dsrs.getObject(sprintId);
+    if (doesExistSprintIdResponse.count == 0) {
+      throw APIErrorResponse(
+        message: doesExistSprintIdResponse.error != null
+            ? 'There is no sprint id $sprintId exist.'
+            : '',
+        errorCode: doesExistSprintIdResponse.error != null
+            ? doesExistSprintIdResponse.error!.code.toString()
+            : '',
+      );
+    }
+    return true;
+  }
+
+  Future<bool> isDSRIdExist(String dsrId) async {
+    final ParseObject dsrs = ParseObject(dsrsTable);
+    final ParseResponse doesExistDSRIdResponse = await dsrs.getObject(dsrId);
+    if (doesExistDSRIdResponse.count == 0) {
+      throw APIErrorResponse(
+        message: doesExistDSRIdResponse.error != null
+            ? 'There is no dsr id $dsrId exist.'
+            : '',
+        errorCode: doesExistDSRIdResponse.error != null
+            ? doesExistDSRIdResponse.error!.code.toString()
+            : '',
+      );
+    }
+    return true;
+  }
+
+  /// This will check if the user
+  Future<bool> isUserIdExist(String userId) async {
+    const String objectIdField = 'objectId';
+    final QueryBuilder<ParseObject> queryGetUserId = QueryBuilder<ParseObject>(
+      ParseObject(usersTable),
+    )
+      ..whereEqualTo(objectIdField, userId)
+      ..keysToReturn(<String>[objectIdField]);
+    final ParseResponse queryGetUserIdResponse = await queryGetUserId.query();
+    if (queryGetUserIdResponse.count == 0) {
+      throw APIErrorResponse(
+        message: queryGetUserIdResponse.error != null
+            ? 'There is no user id $userId exist.'
+            : '',
+        errorCode: queryGetUserIdResponse.error != null
+            ? queryGetUserIdResponse.error!.code.toString()
+            : '',
+      );
+    }
+    return true;
+  }
+
+  /// This will check if the project ID/s does exist. It will only take either between multiple project id or single project id.
+  ///
+  /// [dsrRecords] this will be use to check multiple project ids.
+  ///
+  /// [projectId] this will check if the project id is exis
+  Future<bool> doesProjectIdExist({
+    List<DSRWorkTrack>? dsrRecords,
+    String? projectId,
+  }) async {
+    final ParseObject project = ParseObject(projectTagsTable);
+    if (dsrRecords != null) {
+      final QueryBuilder<ParseObject> queryGetActiveProject =
+          QueryBuilder<ParseObject>(
+        project,
+      )
+            ..whereEqualTo(projectTagsProjectStatusField, 'ACTIVE')
+            ..keysToReturn(<String>['objectId']);
+
+      final ParseResponse queryGetActiveProjetResponse =
+          await queryGetActiveProject.query();
+      if (queryGetActiveProjetResponse.success &&
+          queryGetActiveProjetResponse.results != null) {
+        final List<ParseObject> projects =
+            queryGetActiveProjetResponse.results! as List<ParseObject>;
+        for (final DSRWorkTrack dsr in dsrRecords) {
+          if (!projects
+              .any((ParseObject item) => item.objectId == dsr.projectTagId)) {
+            throw APIErrorResponse(
+              message: 'The project ${dsr.projectTagId} does not exist.',
+              errorCode: null,
+            );
+          }
+        }
+        return true;
+      }
+    } else if (projectId != null) {
+      final ParseResponse projectIdResponse =
+          await project.getObject(projectId);
+
+      if (projectIdResponse.count == 0) {
+        throw APIErrorResponse(
+          message: projectIdResponse.error != null
+              ? 'There is no project id $projectId exist.'
+              : '',
+          errorCode: projectIdResponse.error != null
+              ? projectIdResponse.error!.code.toString()
+              : '',
+        );
+      }
+      return true;
+    }
+
+    throw APIErrorResponse(
+      message: 'There is no project id does not exist.',
+      errorCode: null,
+    );
+  }
+
   @override
   Future<APIResponse<AllDSRItem>> getAllDSRRecordForSprint({
     required String sprintId,
@@ -69,102 +190,122 @@ class DSRRepository extends IDSRRepository {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject dsrs = ParseObject(dsrsTable);
-        final DateTime now = DateTime.now();
-        final int date =
-            epochFromDateTime(date: DateTime(now.year, now.month, now.day));
-
-        final QueryBuilder<ParseObject> dsrQuery = QueryBuilder<ParseObject>(
-          dsrs,
-        )
-          ..whereEqualTo(dsrsSprintidField, sprintId)
-          ..whereGreaterThanOrEqualsTo(
-            dsrsDateField,
-            startDate != null && endDate != null
-                ? epochFromDateTime(date: startDate)
-                : date,
-
-            /// If no date range specified, then this Query will return the record of today's sprint.
-          )
-          ..whereLessThan(
-            dsrsDateField,
-            startDate != null && endDate != null
-                ? epochFromDateTime(
-                    date:
-                        DateTime(endDate.year, endDate.month, endDate.day + 1),
-                  )
-                : epochFromDateTime(
-                    date: DateTime(now.year, now.month, now.day + 1),
-                  ),
-
-            /// If no date range specified, then this Query will return the record of today's sprint.
-          )
-          ..keysToReturn(<String>[dsrsUserIdField, dsrsDateField, ...columns])
-          ..orderByAscending(dsrsDateField);
-
-        /// If specified user id. Just query certain user.
-        if (userId != null) dsrQuery.whereEqualTo(dsrsUserIdField, userId);
-
-        final ParseResponse dsrResponse = await dsrQuery.query();
-
-        final Map<String, List<DSRWorks>> datas = <String, List<DSRWorks>>{};
-        if (dsrResponse.success) {
-          if (dsrResponse.results != null) {
-            for (final ParseObject dsrDonePerUser
-                in dsrResponse.results! as List<ParseObject>) {
-              final String userName = ((await ParseUser.forQuery().getObject(
-                dsrDonePerUser.get<String>(dsrsUserIdField)!,
-              ))
-                      .result as ParseObject)
-                  .get(usersNameField)!;
-
-              final String date = DateFormat('EEE, MMM d, yyyy').format(
-                dateTimeFromEpoch(
-                  epoch: dsrDonePerUser.get<int>(dsrsDateField)!,
-                ),
-              );
-
-              for (final String column in columns) {
-                final List<dynamic> tasks = dsrDonePerUser.get(column)!;
-
-                if (datas.containsKey(column)) {
-                  datas[column]!.addAll(
-                    await manageData(
-                      tasks: tasks,
-                      userName: userName,
-                      filterByProjectId: projectId,
-                      date: date,
-                    ),
-                  );
-                  continue;
-                }
-
-                datas[column] = await manageData(
-                  tasks: tasks,
-                  userName: userName,
-                  filterByProjectId: projectId,
-                  date: date,
-                );
-              }
-            }
-          }
-
-          /// Return formatted data for admin.
-          return APIResponse<AllDSRItem>(
-            success: true,
-            data: AllDSRItem(
-              data: datas,
-            ),
+        /// Check if the sprint id is empty, afterward check if the sprint id does exist in the database.
+        if (sprintId.isEmpty) {
+          throw APIErrorResponse(
             errorCode: null,
-            message: 'success',
+            message: 'Sprint ID cannot be empty',
           );
         }
-        throw APIErrorResponse(
-          message: dsrResponse.error != null ? dsrResponse.error!.message : '',
-          errorCode: dsrResponse.error != null
-              ? dsrResponse.error!.code as String
-              : '',
-        );
+
+        /// If the sprint id does exist proceed to fetching record.
+        if (await isSprintIdExist(sprintId)) {
+          final ParseObject dsrs = ParseObject(dsrsTable);
+          final DateTime now = DateTime.now();
+          final int date =
+              epochFromDateTime(date: DateTime(now.year, now.month, now.day));
+
+          final QueryBuilder<ParseObject> dsrQuery = QueryBuilder<ParseObject>(
+            dsrs,
+          )
+            ..whereEqualTo(dsrsSprintidField, sprintId)
+            ..whereGreaterThanOrEqualsTo(
+              dsrsDateField,
+              startDate != null && endDate != null
+                  ? epochFromDateTime(date: startDate)
+                  : date,
+
+              /// If no date range specified, then this Query will return the record of today's sprint.
+            )
+            ..whereLessThan(
+              dsrsDateField,
+              startDate != null && endDate != null
+                  ? epochFromDateTime(
+                      date: DateTime(
+                        endDate.year,
+                        endDate.month,
+                        endDate.day + 1,
+                      ),
+                    )
+                  : epochFromDateTime(
+                      date: DateTime(now.year, now.month, now.day + 1),
+                    ),
+
+              /// If no date range specified, then this Query will return the record of today's sprint.
+            )
+            ..keysToReturn(<String>[dsrsUserIdField, dsrsDateField, ...columns])
+            ..orderByAscending(dsrsDateField);
+
+          /// If specified user id. Just query certain user.
+          if (userId != null) {
+            final bool isUserExist = await isUserIdExist(userId);
+            dsrQuery.whereEqualTo(dsrsUserIdField, isUserExist ? userId : '');
+          }
+
+          /// Check if filter by project id does exist.
+          if (projectId != null) await doesProjectIdExist(projectId: projectId);
+
+          final ParseResponse dsrResponse = await dsrQuery.query();
+          final Map<String, List<DSRWorks>> datas = <String, List<DSRWorks>>{};
+          if (dsrResponse.success) {
+            if (dsrResponse.results != null) {
+              for (final ParseObject dsrDonePerUser
+                  in dsrResponse.results! as List<ParseObject>) {
+                final String userName = ((await ParseUser.forQuery().getObject(
+                  dsrDonePerUser.get<String>(dsrsUserIdField)!,
+                ))
+                        .result as ParseObject)
+                    .get(usersNameField)!;
+
+                final String date = DateFormat('EEE, MMM d, yyyy').format(
+                  dateTimeFromEpoch(
+                    epoch: dsrDonePerUser.get<int>(dsrsDateField)!,
+                  ),
+                );
+
+                for (final String column in columns) {
+                  final List<dynamic> tasks = dsrDonePerUser.get(column)!;
+
+                  if (datas.containsKey(column)) {
+                    datas[column]!.addAll(
+                      await manageData(
+                        tasks: tasks,
+                        userName: userName,
+                        filterByProjectId: projectId,
+                        date: date,
+                      ),
+                    );
+                    continue;
+                  }
+
+                  datas[column] = await manageData(
+                    tasks: tasks,
+                    userName: userName,
+                    filterByProjectId: projectId,
+                    date: date,
+                  );
+                }
+              }
+            }
+
+            /// Return formatted data for admin.
+            return APIResponse<AllDSRItem>(
+              success: true,
+              data: AllDSRItem(
+                data: datas,
+              ),
+              errorCode: null,
+              message: 'success',
+            );
+          }
+          throw APIErrorResponse(
+            message:
+                dsrResponse.error != null ? dsrResponse.error!.message : '',
+            errorCode: dsrResponse.error != null
+                ? dsrResponse.error!.code as String
+                : '',
+          );
+        }
       }
 
       throw APIErrorResponse(
@@ -409,6 +550,15 @@ class DSRRepository extends IDSRRepository {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
+        /// Check if the sprint is 2 weeks range.
+        if (endDate != startDate.add(const Duration(days: 14))) {
+          throw APIErrorResponse(
+            message:
+                'The range between start date and end date does not match with the two weeks sprint.',
+            errorCode: null,
+          );
+        }
+
         final ParseObject sprints = ParseObject(sprintsTable);
         final QueryBuilder<ParseObject> isAlreadyExisiting =
             QueryBuilder<ParseObject>(sprints)
@@ -477,51 +627,65 @@ class DSRRepository extends IDSRRepository {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null) {
-        final ParseObject dsrs = ParseObject(dsrsTable);
-
-        dsrs
-          ..objectId = dsrId
-          ..set<List<DSRWorkTrack>>(column, dsrworkTrack);
-
-        final ParseResponse saveDsrResponse = await dsrs.save();
-
-        if (saveDsrResponse.success) {
-          final ParseResponse dsrInfoAfterAdding = await dsrs.getObject(dsrId);
-
-          if (dsrInfoAfterAdding.success &&
-              dsrInfoAfterAdding.results != null) {
-            final ParseObject resultParseObject =
-                getParseObject(dsrInfoAfterAdding.results!);
-
-            return APIResponse<DSRRecord>(
-              success: true,
-              message: 'Successfully added works on $column.',
-              data: DSRRecord(
-                id: resultParseObject.objectId!,
-                sprintId: resultParseObject.get<String>(dsrsSprintidField)!,
-                done: convertListDynamic(
-                  resultParseObject.get<List<dynamic>>(dsrsDoneField)!,
-                ),
-                wip: convertListDynamic(
-                  resultParseObject.get<List<dynamic>>(dsrsWipField)!,
-                ),
-                blockers: convertListDynamic(
-                  resultParseObject.get<List<dynamic>>(dsrsBlockersField)!,
-                ),
-                status: resultParseObject.get<String>(dsrsStatusField)!,
-                dateEpoch: resultParseObject.get<int>(dsrsDateField)!,
-              ),
-              errorCode: null,
-            );
-          }
-        }
-
-        throw APIErrorResponse(
-          message: saveDsrResponse.error != null
-              ? saveDsrResponse.error!.message
-              : '',
-          errorCode: null,
+        /// Check first if the project ids does exist from the database.
+        final bool isExistProjectIds = await doesProjectIdExist(
+          dsrRecords: dsrworkTrack,
         );
+
+        if (!columnsEntries.contains(column)) {
+          throw APIErrorResponse(
+            message:
+                'Column $column does not match to the specified fields. It must be either $columnsEntries',
+            errorCode: null,
+          );
+        }
+        if (isExistProjectIds) {
+          final ParseObject dsrs = ParseObject(dsrsTable);
+
+          dsrs
+            ..objectId = dsrId
+            ..set<List<DSRWorkTrack>>(column, dsrworkTrack);
+
+          final ParseResponse saveDsrResponse = await dsrs.save();
+
+          if (saveDsrResponse.success) {
+            final ParseResponse dsrInfoAfterAdding =
+                await dsrs.getObject(dsrId);
+
+            if (dsrInfoAfterAdding.success &&
+                dsrInfoAfterAdding.results != null) {
+              final ParseObject resultParseObject =
+                  getParseObject(dsrInfoAfterAdding.results!);
+
+              return APIResponse<DSRRecord>(
+                success: true,
+                message: 'Successfully added works on $column.',
+                data: DSRRecord(
+                  id: resultParseObject.objectId!,
+                  sprintId: resultParseObject.get<String>(dsrsSprintidField)!,
+                  done: convertListDynamic(
+                    resultParseObject.get<List<dynamic>>(dsrsDoneField)!,
+                  ),
+                  wip: convertListDynamic(
+                    resultParseObject.get<List<dynamic>>(dsrsWipField)!,
+                  ),
+                  blockers: convertListDynamic(
+                    resultParseObject.get<List<dynamic>>(dsrsBlockersField)!,
+                  ),
+                  status: resultParseObject.get<String>(dsrsStatusField)!,
+                  dateEpoch: resultParseObject.get<int>(dsrsDateField)!,
+                ),
+                errorCode: null,
+              );
+            }
+          }
+          throw APIErrorResponse(
+            message: saveDsrResponse.error != null
+                ? saveDsrResponse.error!.message
+                : '',
+            errorCode: null,
+          );
+        }
       }
 
       throw APIErrorResponse(
@@ -538,6 +702,20 @@ class DSRRepository extends IDSRRepository {
     required String dsrId,
     required String status,
   }) async {
+    const List<String> statuses = <String>[
+      'WORKING',
+      'SICK LEAVE',
+      'VACATION LEAVE',
+      'ABSENT',
+      'HOLIDAY',
+    ];
+    if (!statuses.contains(status)) {
+      throw APIErrorResponse(
+        message:
+            '$status does not match to the expected value. It must be either $statuses',
+        errorCode: null,
+      );
+    }
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null) {
@@ -610,6 +788,11 @@ class DSRRepository extends IDSRRepository {
         final APIResponse<SprintRecord> sprintToday =
             await sprintInfoQueryToday();
 
+        /// Check if the sprint id exist in the database.
+        if (sprintId != null) await isSprintIdExist(sprintId);
+
+        if (dsrId != null) await isDSRIdExist(dsrId);
+
         final QueryBuilder<ParseObject> getAllDSRQuery =
             QueryBuilder<ParseObject>(sprints)
               ..whereEqualTo(
@@ -617,7 +800,6 @@ class DSRRepository extends IDSRRepository {
                 sprintId ?? sprintToday.data.id,
               )
               ..whereEqualTo(dsrsUserIdField, user.objectId);
-
         final ParseResponse getAllDSRQueryResponse = dsrId != null
             ? await sprints.getObject(dsrId)
             : await getAllDSRQuery.query();
