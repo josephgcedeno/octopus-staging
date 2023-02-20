@@ -95,9 +95,11 @@ class _DTRDetailsState extends State<DTRDetails> {
       listener: (BuildContext context, TimeRecordState state) {
         if (state is FetchTimeInDataLoading) {
         } else if (state is FetchTimeInDataSuccess) {
-          setInfo(
-            state.attendance,
-          );
+          if (state.attendance != null) {
+            setInfo(
+              state.attendance!,
+            );
+          }
         } else if (state is FetchTimeInDataFailed) {}
       },
       child: Container(
