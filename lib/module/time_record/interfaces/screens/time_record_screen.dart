@@ -18,35 +18,6 @@ class TimeRecordScreen extends StatefulWidget {
 }
 
 class _TimeRecordScreenState extends State<TimeRecordScreen> {
-  Future<bool> timeInTimeOut(DismissDirection dir) async {
-    if (timeOutEpoch != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Already in for the day'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    }
-
-    /// This condition will check to drag is TIME IN
-    if (timeInEpoch == -1) {
-      context.read<TimeRecordCubit>().signInToday();
-    } else {
-      /// This condition will check to drag is TIME OUT
-      context.read<TimeRecordCubit>().signOutToday();
-    }
-    return false;
-  }
-
-  /// Set what time did the user time in.
-  int timeInEpoch = -1;
-
-  /// Set what is the required time for the user to render. Default is 8hr in Minute is 480.
-  int requiredTimeInMinutes = 480;
-
-  /// Set what time to did the user time out.
-  int? timeOutEpoch;
-
   @override
   void initState() {
     super.initState();
@@ -58,51 +29,29 @@ class _TimeRecordScreenState extends State<TimeRecordScreen> {
     final ThemeData theme = Theme.of(context);
     final double height = MediaQuery.of(context).size.height;
 
-    return BlocListener<TimeRecordCubit, TimeRecordState>(
-      listenWhen: (TimeRecordState previous, TimeRecordState current) =>
-          current is FetchTimeInDataLoading ||
-          current is FetchTimeInDataSuccess ||
-          current is FetchTimeInDataFailed,
-      listener: (BuildContext context, TimeRecordState state) {
-        if (state is FetchTimeInDataLoading) {
-        } else if (state is FetchTimeInDataSuccess) {
-          setState(() {
-            timeInEpoch = state.attendance.timeInEpoch ?? 0;
-            requiredTimeInMinutes = state.attendance.requiredDuration ?? 0;
-            timeOutEpoch = state.attendance.timeOutEpoch;
-          });
-        } else if (state is FetchTimeInDataFailed) {}
-      },
-      child: Scaffold(
-        appBar: const GlobalAppBar(leading: LeadingButton.menu),
-        body: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.only(bottom: height * 0.03),
-                  child: Text(
-                    'Daily Time Record',
-                    style: kIsWeb
-                        ? theme.textTheme.headline6
-                        : theme.textTheme.subtitle1,
-                  ),
+    return Scaffold(
+      appBar: const GlobalAppBar(leading: LeadingButton.menu),
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Center(
+              child: Padding(
+                padding: EdgeInsets.only(bottom: height * 0.03),
+                child: Text(
+                  'Daily Time Record',
+                  style: kIsWeb
+                      ? theme.textTheme.headline6
+                      : theme.textTheme.subtitle1,
                 ),
               ),
-              DTRClock(
-                timeInEpoch: timeInEpoch,
-                timeOutEpoch: timeOutEpoch,
-                requiredTimeInMinutes: requiredTimeInMinutes,
-                key: UniqueKey(),
-              ),
-              const DTRDetails(),
-              const OffsetButton(),
-              TimeInSlider(
-                onSlide: timeInTimeOut,
-                timeInEpoch: timeOutEpoch != null ? -1 : timeInEpoch,
-              )
-            ],
-          ),
+            ),
+            DTRClock(
+              key: UniqueKey(),
+            ),
+            const DTRDetails(),
+            const OffsetButton(),
+            const TimeInSlider()
+          ],
         ),
       ),
     );
