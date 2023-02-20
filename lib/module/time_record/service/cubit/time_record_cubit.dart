@@ -17,17 +17,11 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
   Future<void> fetchAttendance() async {
     try {
       emit(FetchTimeInDataLoading());
-
       final APIResponse<Attendance?> isAlreadyIn =
           await timeInOutRepository.getInitialData();
 
-      if (isAlreadyIn.data != null) {
-        emit(
-          FetchTimeInDataSuccess(
-            attendance: isAlreadyIn.data!,
-          ),
-        );
-      }
+      /// This will emit either attendance with attendance success with attendance data or there is no attendance yet emit success but with null.
+      emit(FetchTimeInDataSuccess(attendance: isAlreadyIn.data));
     } catch (e) {
       final APIErrorResponse error = e as APIErrorResponse;
       emit(
