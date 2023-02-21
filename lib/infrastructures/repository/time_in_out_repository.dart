@@ -60,7 +60,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
 
       final ParseObject timeINOUt = timeInOut
         ..set<String>(timeInOutsHolidayIdField, holidayToday?.objectId ?? '')
-        ..set<int>(timeInOutDateField, epochFromDateTime(date: _now));
+        ..set<int>(timeInOutDateField, epochFromDateTime(date: date));
 
       await timeINOUt.save();
     }
@@ -200,15 +200,15 @@ class TimeInOutRepository extends ITimeInOutRepository {
                 errorCode: null,
               );
             }
-          } else {
-            return APIResponse<int>(
-              success: true,
-              message: "Successfully get yesterday's offset",
-              data: 0,
-              errorCode: null,
-            );
           }
         }
+
+        return APIResponse<int>(
+          success: true,
+          message: "Successfully get yesterday's offset",
+          data: 0,
+          errorCode: null,
+        );
       }
 
       throw APIErrorResponse(
@@ -597,6 +597,12 @@ class TimeInOutRepository extends ITimeInOutRepository {
   Future<APIResponse<Attendance>> approveOffset({
     required String attendanceId,
   }) async {
+    if (attendanceId.isEmpty) {
+      throw APIErrorResponse(
+        message: 'Attendance ID cannot be empty.',
+        errorCode: null,
+      );
+    }
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
@@ -675,6 +681,12 @@ class TimeInOutRepository extends ITimeInOutRepository {
     required String id,
     required String holiday,
   }) async {
+    if (id.isEmpty || holiday.isEmpty) {
+      throw APIErrorResponse(
+        message: 'This fields cannot be empty.',
+        errorCode: null,
+      );
+    }
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
