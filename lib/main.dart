@@ -11,6 +11,7 @@ import 'package:octopus/interfaces/screens/splash_screen.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
 import 'package:octopus/module/login/interfaces/screens/login_screen.dart';
 import 'package:octopus/module/login/service/cubit/authentication_cubit.dart';
+import 'package:octopus/module/standup_report/service/cubit/dsr_cubit.dart';
 import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
@@ -110,8 +111,10 @@ class _AppState extends State<App> {
     return MultiBlocProvider(
       providers: <BlocProvider<dynamic>>[
         BlocProvider<AuthenticationCubit>(
-          create: (BuildContext context) =>
-              AuthenticationCubit(authRepository: authRepository),
+          create: (_) => AuthenticationCubit(authRepository: authRepository),
+        ),
+        BlocProvider<DSRCubit>(
+          create: (_) => DSRCubit(dsrRepository: dsrRepository),
         ),
         BlocProvider<TimeRecordCubit>(
           create: (BuildContext context) => TimeRecordCubit(
@@ -150,7 +153,6 @@ class _HomePageStateState extends State<_HomePageState> {
       listenWhen: (AuthenticationState previous, AuthenticationState current) =>
           current is ValidateTokenSuccess || current is ValidateTokenFailed,
       listener: (BuildContext context, AuthenticationState state) {
-        // TODO: implement listener
         if (state is ValidateTokenSuccess) {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute<dynamic>(
