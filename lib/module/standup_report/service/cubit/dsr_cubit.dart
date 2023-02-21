@@ -130,16 +130,17 @@ class DSRCubit extends Cubit<DSRState> {
     }
   }
 
-  List<DSRWorkTrack> dsrWorkTrack(String taskLabel) {
+  List<DSRWorkTrack> dsrWorkTrackPayload(String taskLabel) {
     switch (projectStatus) {
       case ProjectStatus.done:
-        doneList.add(DSRWorkTrack(text: taskLabel, projectTagId: ''));
+        doneList.add(DSRWorkTrack(text: taskLabel, projectTagId: 'preload'));
         return doneList;
       case ProjectStatus.doing:
-        doingList.add(DSRWorkTrack(text: taskLabel, projectTagId: ''));
+        doingList.add(DSRWorkTrack(text: taskLabel, projectTagId: 'preload'));
         return doingList;
       case ProjectStatus.blockers:
-        blockersList.add(DSRWorkTrack(text: taskLabel, projectTagId: ''));
+        blockersList
+            .add(DSRWorkTrack(text: taskLabel, projectTagId: 'preload'));
         return blockersList;
       default:
         return <DSRWorkTrack>[];
@@ -150,32 +151,35 @@ class DSRCubit extends Cubit<DSRState> {
     required String taskLabel,
   }) async {
     try {
-      // emit(const InitializeDSRLoading());
-
-      // final APIResponse<DSRRecord> response =
-
-      await dsrRepository.updateDSREntries(
-        dsrId: dsrID,
-        column: statusEnumToString(projectStatus ?? ProjectStatus.done),
-        dsrworkTrack: dsrWorkTrack(taskLabel),
+      emit(
+        UpdateTaskLoading(
+          status: projectStatus ?? ProjectStatus.done,
+          taskLabel: taskLabel,
+        ),
       );
 
-      // initializeDSR();
-      // emit(
-      //   InitializeDSRSuccess(
-      //     doing: response.data.wip,
-      //     done: response.data.done,
-      //     blockers: response.data.blockers,
-      //   ),
-      // );
+      final APIResponse<DSRRecord> response =
+          await dsrRepository.updateDSREntries(
+        dsrId: dsrID,
+        column: statusEnumToString(projectStatus ?? ProjectStatus.done),
+        dsrworkTrack: dsrWorkTrackPayload(taskLabel),
+      );
+
+      emit(
+        UpdateTaskSuccess(
+          doing: response.data.wip,
+          done: response.data.done,
+          blockers: response.data.blockers,
+        ),
+      );
     } catch (e) {
-      // final APIErrorResponse error = e as APIErrorResponse;
-      // emit(
-      //   InitializeDSRFailed(
-      //     errorCode: error.errorCode ?? '',
-      //     message: error.message,
-      //   ),
-      // );
+      final APIErrorResponse error = e as APIErrorResponse;
+      emit(
+        UpdateTaskFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
     }
   }
 }

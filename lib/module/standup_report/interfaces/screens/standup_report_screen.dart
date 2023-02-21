@@ -32,6 +32,44 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
 
   Timer interval = Timer(const Duration(seconds: 1), () {});
 
+  void updateTasksLocally(ProjectStatus status, String label) {
+    switch (status) {
+      case ProjectStatus.done:
+        setState(() {
+          done.add(
+            TaskCardDTO(
+              taskName: label,
+              taskID: '',
+              status: 0,
+            ),
+          );
+        });
+        break;
+      case ProjectStatus.doing:
+        setState(() {
+          doing.add(
+            TaskCardDTO(
+              taskName: label,
+              taskID: '',
+              status: 1,
+            ),
+          );
+        });
+        break;
+      case ProjectStatus.blockers:
+        setState(() {
+          blockers.add(
+            TaskCardDTO(
+              taskName: label,
+              taskID: '',
+              status: 2,
+            ),
+          );
+        });
+        break;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -53,6 +91,14 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
     final ThemeData theme = Theme.of(context);
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
+    final List<Widget> statusWidgets = <Widget>[
+      StatusColumn(data: done, status: ProjectStatus.done),
+      StatusColumn(data: doing, status: ProjectStatus.doing),
+      StatusColumn(
+        data: blockers,
+        status: ProjectStatus.blockers,
+      ),
+    ];
 
     final List<Widget> noCardsImage = <Widget>[
       Padding(
@@ -61,22 +107,18 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
       )
     ];
 
-    final List<Widget> statusWidgets = <Widget>[
-      StatusColumn(data: doing, status: ProjectStatus.doing),
-      StatusColumn(data: done, status: ProjectStatus.done),
-      StatusColumn(
-        data: blockers,
-        status: ProjectStatus.blockers,
-      ),
-    ];
-
     return BlocListener<DSRCubit, DSRState>(
       listenWhen: (DSRState previous, DSRState current) =>
           current is InitializeDSRLoading ||
           current is InitializeDSRFailed ||
-          current is InitializeDSRSuccess,
+          current is InitializeDSRSuccess ||
+          current is UpdateTaskLoading ||
+          current is UpdateTaskSuccess,
       listener: (BuildContext context, DSRState state) {
-        if (state is InitializeDSRSuccess) {
+        interval.cancel();
+        if (state is UpdateTaskLoading) {
+          updateTasksLocally(state.status, state.taskLabel);
+        } else if (state is InitializeDSRSuccess) {
           final List<List<TaskCardDTO>> localProjectLists = <List<TaskCardDTO>>[
             doing,
             done,
@@ -112,6 +154,14 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
             isLoading = false;
             doing = doing;
           });
+        } else if (state is UpdateTaskFailed) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: theme.errorColor,
+            ),
+          );
+          context.read<DSRCubit>().initializeDSR();
         } else if (state is InitializeDSRLoading) {
           setState(() => isLoading = true);
         }

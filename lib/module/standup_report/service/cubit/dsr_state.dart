@@ -70,3 +70,32 @@ class UpdateTaskStatus extends DSRState {
   const UpdateTaskStatus(this.status);
   final String status;
 }
+
+class UpdateTaskLoading extends DSRState {
+  const UpdateTaskLoading({required this.taskLabel, required this.status});
+
+  final String taskLabel;
+  final ProjectStatus status;
+}
+
+class UpdateTaskSuccess extends DSRState {
+  const UpdateTaskSuccess({
+    required this.doing,
+    required this.done,
+    required this.blockers,
+  });
+
+  final List<DSRWorkTrack> done;
+  final List<DSRWorkTrack> doing;
+  final List<DSRWorkTrack> blockers;
+}
+
+class UpdateTaskFailed extends DSRState {
+  const UpdateTaskFailed({
+    required this.errorCode,
+    required this.message,
+  });
+
+  final String errorCode;
+  final String message;
+}

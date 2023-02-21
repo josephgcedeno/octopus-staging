@@ -112,9 +112,7 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
                                 return Text(
                                   state.status,
                                   style: theme.textTheme.bodyText2?.copyWith(
-                                    color: statusIsActive
-                                        ? theme.primaryColor
-                                        : Colors.grey,
+                                    color: theme.primaryColor,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 );
@@ -145,6 +143,7 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
                       context
                           .read<DSRCubit>()
                           .updateTasks(taskLabel: textController.text);
+                      textController.clear();
                     },
                     style: ButtonStyle(
                       elevation: MaterialStateProperty.all(0),

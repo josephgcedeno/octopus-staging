@@ -70,7 +70,9 @@ class _StatusColumnState extends State<StatusColumn> {
             child: Text(intToStatusCode()),
           ),
           for (int i = 0; i < widget.data.length; i++)
-            TaskCard(label: widget.data[i].taskName)
+            TaskCard(
+              label: widget.data[i].taskName,
+            )
         ],
       ),
     );
