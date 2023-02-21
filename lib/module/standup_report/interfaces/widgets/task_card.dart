@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:octopus/module/standup_report/interfaces/screens/edit_task_screen.dart';
+import 'package:octopus/module/standup_report/interfaces/widgets/project_chip.dart';
 
 class TaskCard extends StatelessWidget {
   const TaskCard({required this.label, Key? key}) : super(key: key);
@@ -31,7 +32,13 @@ class TaskCard extends StatelessWidget {
         width: kIsWeb ? width * 0.3 : width * 0.8,
         padding: const EdgeInsets.all(10),
         margin: const EdgeInsets.only(bottom: 10),
-        child: Text(label, style: theme.textTheme.bodyText2),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label, style: theme.textTheme.bodyText2),
+            ProjectChip(id: '', name: 'KeonMode', color: Colors.pink),
+          ],
+        ),
       ),
     );
   }
