@@ -74,7 +74,7 @@ class _StatusColumnState extends State<StatusColumn> {
     return Container(
       width: width * 0.3,
       padding: widget.status == ProjectStatus.blockers
-          ? EdgeInsets.only(bottom: height * 0.2)
+          ? EdgeInsets.only(bottom: height * 0.2, left: 8, right: 8, top: 8)
           : const EdgeInsets.all(8.0),
       child: Column(
         children: <Widget>[
