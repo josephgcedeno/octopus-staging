@@ -137,6 +137,9 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
         interval.cancel();
         if (state is UpdateTaskLoading) {
           updateTasksLocally(state.status, state.taskLabel, state.projectTagId);
+          if (noCardsYet) {
+            setState(() => noCardsYet = false);
+          }
         } else if (state is FetchProjectsSuccess) {
           projects = state.projects;
         } else if (state is InitializeDSRSuccess) {
