@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/configs/themes.dart';
 import 'package:octopus/module/standup_report/service/cubit/dsr_cubit.dart';
 
 class ExpandedTextField extends StatefulWidget {
@@ -13,6 +14,29 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
   TextEditingController textController = TextEditingController();
   bool projectIsActive = false;
   bool statusIsActive = false;
+  bool projectHasBeenSet = false;
+  bool statusHasBeenSet = false;
+
+  void save() {
+    if (projectHasBeenSet && statusHasBeenSet) {
+      context.read<DSRCubit>().updateTasks(taskLabel: textController.text);
+      textController.clear();
+    } else {
+      final String textFieldValue = textController.text.trim();
+      String errorText;
+      if (textFieldValue.isEmpty) {
+        errorText = 'Task Name cannot be empty.';
+      } else {
+        errorText = 'Project and Task Status has to be set.';
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorText),
+          backgroundColor: kRed,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +108,7 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
                                 current is SetProjectSuccess,
                             builder: (BuildContext context, DSRState state) {
                               if (state is SetProjectSuccess) {
+                                projectHasBeenSet = true;
                                 return Text(
                                   state.projectTag.projectName,
                                   style: theme.textTheme.bodyText2?.copyWith(
@@ -129,6 +154,7 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
                                 current is UpdateTaskStatus,
                             builder: (BuildContext context, DSRState state) {
                               if (state is UpdateTaskStatus) {
+                                statusHasBeenSet = true;
                                 return Text(
                                   state.status,
                                   style: theme.textTheme.bodyText2?.copyWith(
@@ -161,12 +187,7 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
                     bottom: 2,
                   ),
                   child: ElevatedButton(
-                    onPressed: () {
-                      context
-                          .read<DSRCubit>()
-                          .updateTasks(taskLabel: textController.text);
-                      textController.clear();
-                    },
+                    onPressed: save,
                     style: ButtonStyle(
                       elevation: MaterialStateProperty.all(0),
                       backgroundColor: MaterialStateProperty.all(
