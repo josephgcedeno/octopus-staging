@@ -264,6 +264,7 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
                                     noCardsYet ? noCardsImage : statusWidgets,
                               )
                             : ListView(
+                                padding: EdgeInsets.only(bottom: height * 0.2),
                                 children:
                                     noCardsYet ? noCardsImage : statusWidgets,
                               ),
