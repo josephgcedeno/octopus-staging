@@ -28,6 +28,9 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
         if (state is ShowStatusPane || state is HideStatusPane) {
           projectIsActive = false;
           setState(() => statusIsActive = !statusIsActive);
+        } else if (state is ShowProjectPane || state is HideProjectPane) {
+          statusIsActive = false;
+          setState(() => projectIsActive = !projectIsActive);
         }
       },
       child: DecoratedBox(
@@ -60,7 +63,7 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
                           onPressed: () {
                             context
                                 .read<DSRCubit>()
-                                .toggleProjectPane(isVisible: projectIsActive);
+                                .toggleProjectPane(isVisible: !projectIsActive);
                           },
                           style: ButtonStyle(
                             backgroundColor:
@@ -76,14 +79,31 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
                                   : Colors.grey,
                             ),
                           ),
-                          label: Text(
-                            'Project',
-                            style: theme.textTheme.bodyText2?.copyWith(
-                              color: projectIsActive
-                                  ? theme.primaryColor
-                                  : Colors.grey,
-                              fontWeight: FontWeight.w600,
-                            ),
+                          label: BlocBuilder<DSRCubit, DSRState>(
+                            buildWhen: (DSRState previous, DSRState current) =>
+                                current is SetProjectSuccess,
+                            builder: (BuildContext context, DSRState state) {
+                              if (state is SetProjectSuccess) {
+                                return Text(
+                                  state.projectTag.projectName,
+                                  style: theme.textTheme.bodyText2?.copyWith(
+                                    color: projectIsActive
+                                        ? theme.primaryColor
+                                        : Colors.grey,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                );
+                              }
+                              return Text(
+                                'Project',
+                                style: theme.textTheme.bodyText2?.copyWith(
+                                  color: projectIsActive
+                                      ? theme.primaryColor
+                                      : Colors.grey,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              );
+                            },
                           ),
                         ),
                         ElevatedButton.icon(
@@ -112,7 +132,9 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
                                 return Text(
                                   state.status,
                                   style: theme.textTheme.bodyText2?.copyWith(
-                                    color: theme.primaryColor,
+                                    color: statusIsActive
+                                        ? theme.primaryColor
+                                        : Colors.grey,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 );

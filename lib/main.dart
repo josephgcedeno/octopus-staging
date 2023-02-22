@@ -6,6 +6,7 @@ import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/repository/auth_repository.dart';
 import 'package:octopus/infrastructures/repository/dsr_repository.dart';
+import 'package:octopus/infrastructures/repository/project_repository.dart';
 import 'package:octopus/infrastructures/repository/time_in_out_repository.dart';
 import 'package:octopus/interfaces/screens/splash_screen.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
@@ -45,6 +46,7 @@ class _AppState extends State<App> {
   final AuthRepository authRepository = AuthRepository();
   final TimeInOutRepository timeInOutRepository = TimeInOutRepository();
   final DSRRepository dsrRepository = DSRRepository();
+  final ProjectRepository projectRepository = ProjectRepository();
 
   Future<void> initializeDailyTime() async {
     /// Create daily record.
@@ -114,7 +116,10 @@ class _AppState extends State<App> {
           create: (_) => AuthenticationCubit(authRepository: authRepository),
         ),
         BlocProvider<DSRCubit>(
-          create: (_) => DSRCubit(dsrRepository: dsrRepository),
+          create: (_) => DSRCubit(
+            dsrRepository: dsrRepository,
+            projectRepository: projectRepository,
+          ),
         ),
         BlocProvider<TimeRecordCubit>(
           create: (BuildContext context) => TimeRecordCubit(

@@ -4,14 +4,18 @@ import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_request.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
+import 'package:octopus/infrastructures/models/project/project_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/dsr_repository.dart';
+import 'package:octopus/infrastructures/repository/interfaces/project_repository.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/status_column.dart';
 
 part 'dsr_state.dart';
 
 class DSRCubit extends Cubit<DSRState> {
-  DSRCubit({required this.dsrRepository}) : super(const DSRState());
+  DSRCubit({required this.dsrRepository, required this.projectRepository})
+      : super(const DSRState());
   final IDSRRepository dsrRepository;
+  final IProjectRepository projectRepository;
 
   List<DSRWorkTrack> doneList = <DSRWorkTrack>[];
   List<DSRWorkTrack> doingList = <DSRWorkTrack>[];
@@ -20,6 +24,7 @@ class DSRCubit extends Cubit<DSRState> {
   ProjectStatus? currentProjectStatus;
 
   String dsrID = '';
+  String projectTagId = '';
 
   ProjectStatus? get projectStatus {
     return currentProjectStatus;
@@ -133,14 +138,15 @@ class DSRCubit extends Cubit<DSRState> {
   List<DSRWorkTrack> dsrWorkTrackPayload(String taskLabel) {
     switch (projectStatus) {
       case ProjectStatus.done:
-        doneList.add(DSRWorkTrack(text: taskLabel, projectTagId: 'preload'));
+        doneList.add(DSRWorkTrack(text: taskLabel, projectTagId: projectTagId));
         return doneList;
       case ProjectStatus.doing:
-        doingList.add(DSRWorkTrack(text: taskLabel, projectTagId: 'preload'));
+        doingList
+            .add(DSRWorkTrack(text: taskLabel, projectTagId: projectTagId));
         return doingList;
       case ProjectStatus.blockers:
         blockersList
-            .add(DSRWorkTrack(text: taskLabel, projectTagId: 'preload'));
+            .add(DSRWorkTrack(text: taskLabel, projectTagId: projectTagId));
         return blockersList;
       default:
         return <DSRWorkTrack>[];
@@ -155,9 +161,9 @@ class DSRCubit extends Cubit<DSRState> {
         UpdateTaskLoading(
           status: projectStatus ?? ProjectStatus.done,
           taskLabel: taskLabel,
+          projectTagId: projectTagId,
         ),
       );
-
       final APIResponse<DSRRecord> response =
           await dsrRepository.updateDSREntries(
         dsrId: dsrID,
@@ -181,5 +187,28 @@ class DSRCubit extends Cubit<DSRState> {
         ),
       );
     }
+  }
+
+  Future<void> getAllProjects() async {
+    try {
+      final APIListResponse<ProjectTag> response =
+          await projectRepository.getAllProjects(status: 'ACTIVE');
+
+      emit(FetchProjectsSuccess(projects: response.data));
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+      emit(
+        FetchProjectsFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
+    }
+  }
+
+  void setProject(ProjectTag tag) {
+    projectTagId = tag.id;
+    emit(const HideProjectPane());
+    emit(SetProjectSuccess(projectTag: tag));
   }
 }

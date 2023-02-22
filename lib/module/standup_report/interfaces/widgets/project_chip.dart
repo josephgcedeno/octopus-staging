@@ -19,7 +19,7 @@ class ProjectChip extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: color.withAlpha(80),
+        color: color.withAlpha(60),
         borderRadius: BorderRadius.circular(6),
       ),
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),

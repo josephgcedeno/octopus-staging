@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_request.dart';
+import 'package:octopus/infrastructures/models/project/project_response.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/status_column.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/task_textarea.dart';
@@ -27,19 +28,24 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
   List<TaskCardDTO> doing = <TaskCardDTO>[];
   List<TaskCardDTO> done = <TaskCardDTO>[];
   List<TaskCardDTO> blockers = <TaskCardDTO>[];
+  List<ProjectTag> projects = <ProjectTag>[];
 
   double opacityLevel = 1.0;
 
   Timer interval = Timer(const Duration(seconds: 1), () {});
 
-  void updateTasksLocally(ProjectStatus status, String label) {
+  void updateTasksLocally(
+    ProjectStatus status,
+    String label,
+    String projectId,
+  ) {
     switch (status) {
       case ProjectStatus.done:
         setState(() {
           done.add(
             TaskCardDTO(
               taskName: label,
-              taskID: '',
+              projectId: projectId,
               status: 0,
             ),
           );
@@ -50,7 +56,7 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
           doing.add(
             TaskCardDTO(
               taskName: label,
-              taskID: '',
+              projectId: projectId,
               status: 1,
             ),
           );
@@ -61,7 +67,7 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
           blockers.add(
             TaskCardDTO(
               taskName: label,
-              taskID: '',
+              projectId: projectId,
               status: 2,
             ),
           );
@@ -75,6 +81,8 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
     super.initState();
     context.read<DSRCubit>().fetchCurrentDate();
     context.read<DSRCubit>().initializeDSR();
+    context.read<DSRCubit>().getAllProjects();
+
     interval = Timer.periodic(const Duration(milliseconds: 500), (_) {
       setState(() => opacityLevel = opacityLevel == 0 ? 1.0 : 0.0);
     });
@@ -92,11 +100,20 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
     final List<Widget> statusWidgets = <Widget>[
-      StatusColumn(data: done, status: ProjectStatus.done),
-      StatusColumn(data: doing, status: ProjectStatus.doing),
+      StatusColumn(
+        data: done,
+        status: ProjectStatus.done,
+        projects: projects,
+      ),
+      StatusColumn(
+        data: doing,
+        status: ProjectStatus.doing,
+        projects: projects,
+      ),
       StatusColumn(
         data: blockers,
         status: ProjectStatus.blockers,
+        projects: projects,
       ),
     ];
 
@@ -113,11 +130,15 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
           current is InitializeDSRFailed ||
           current is InitializeDSRSuccess ||
           current is UpdateTaskLoading ||
-          current is UpdateTaskSuccess,
+          current is UpdateTaskSuccess ||
+          current is FetchProjectsSuccess ||
+          current is FetchProjectsFailed,
       listener: (BuildContext context, DSRState state) {
         interval.cancel();
         if (state is UpdateTaskLoading) {
-          updateTasksLocally(state.status, state.taskLabel);
+          updateTasksLocally(state.status, state.taskLabel, state.projectTagId);
+        } else if (state is FetchProjectsSuccess) {
+          projects = state.projects;
         } else if (state is InitializeDSRSuccess) {
           final List<List<TaskCardDTO>> localProjectLists = <List<TaskCardDTO>>[
             doing,
@@ -138,7 +159,7 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
               localProjectLists[i].add(
                 TaskCardDTO(
                   taskName: updatedProjectList[i][j].text,
-                  taskID: updatedProjectList[i][j].projectTagId,
+                  projectId: updatedProjectList[i][j].projectTagId,
                   status: i,
                 ),
               );
@@ -162,6 +183,13 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
             ),
           );
           context.read<DSRCubit>().initializeDSR();
+        } else if (state is FetchProjectsFailed) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: theme.errorColor,
+            ),
+          );
         } else if (state is InitializeDSRLoading) {
           setState(() => isLoading = true);
         }

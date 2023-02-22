@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:octopus/infrastructures/models/project/project_response.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/task_card.dart';
 import 'package:octopus/module/standup_report/service/cubit/task_card_dto.dart';
 
@@ -12,11 +13,13 @@ class StatusColumn extends StatefulWidget {
   const StatusColumn({
     required this.data,
     required this.status,
+    required this.projects,
     Key? key,
   }) : super(key: key);
 
   final List<TaskCardDTO> data;
   final ProjectStatus status;
+  final List<ProjectTag> projects;
   // final void Function() onDragEnd;
 
   @override
@@ -24,6 +27,23 @@ class StatusColumn extends StatefulWidget {
 }
 
 class _StatusColumnState extends State<StatusColumn> {
+  ProjectTag emptyProject = ProjectTag(
+    id: '-1',
+    projectName: 'Unknown',
+    dateEpoch: 0,
+    status: 'DONE',
+    color: '0x000000',
+  );
+
+  ProjectTag? getTaskProjectTag(String id) {
+    for (int i = 0; i < widget.projects.length; i++) {
+      if (id == widget.projects[i].id) {
+        return widget.projects[i];
+      }
+    }
+    return null;
+  }
+
   int statusCodeToInt() {
     switch (widget.status) {
       case ProjectStatus.doing:
@@ -71,7 +91,9 @@ class _StatusColumnState extends State<StatusColumn> {
           ),
           for (int i = 0; i < widget.data.length; i++)
             TaskCard(
-              label: widget.data[i].taskName,
+              task: widget.data[i],
+              projectTag:
+                  getTaskProjectTag(widget.data[i].projectId) ?? emptyProject,
             )
         ],
       ),
