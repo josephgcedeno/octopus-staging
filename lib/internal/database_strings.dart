@@ -52,7 +52,7 @@ const String projectTagsProjectColorField = 'color';
 /// For sprints table
 const String sprintsStartDateField = 'start_date';
 const String sprintsEndDateField = 'end_date';
-const String sprintsProjectTagIdsField = 'projects_tag_ids';
+const String sprintsProjectIdsField = 'projects_tag_ids';
 
 /// For panel reminders
 const String pannelRemindersAnnouncementField = 'announcement';

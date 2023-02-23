@@ -110,7 +110,7 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
                               if (state is SetProjectSuccess) {
                                 projectHasBeenSet = true;
                                 return Text(
-                                  state.projectTag.projectName,
+                                  state.project.projectName,
                                   style: theme.textTheme.bodyText2?.copyWith(
                                     color: projectIsActive
                                         ? theme.primaryColor

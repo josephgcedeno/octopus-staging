@@ -19,7 +19,7 @@ class _TaskTextAreaState extends State<TaskTextArea> {
   TextEditingController textController = TextEditingController();
   ProjectStatus? projectStatus;
   bool textBoxIsExpanded = false;
-  List<ProjectTag> projects = <ProjectTag>[];
+  List<Project> projects = <Project>[];
 
   void expandTextBox() => setState(() => textBoxIsExpanded = true);
 

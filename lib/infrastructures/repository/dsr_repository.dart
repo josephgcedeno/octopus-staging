@@ -117,15 +117,15 @@ class DSRRepository extends IDSRRepository {
 
   /// This will check if the project ID/s does exist. It will only take either between multiple project id or single project id.
   ///
-  /// [dsrRecords] this will be use to check multiple project ids.
+  /// [tasks] this will be use to check multiple project ids.
   ///
   /// [projectId] this will check if the project id is exis
   Future<bool> doesProjectIdExist({
-    List<DSRWorkTrack>? dsrRecords,
+    List<Task>? tasks,
     String? projectId,
   }) async {
     final ParseObject project = ParseObject(projectTagsTable);
-    if (dsrRecords != null) {
+    if (tasks != null) {
       final QueryBuilder<ParseObject> queryGetActiveProject =
           QueryBuilder<ParseObject>(
         project,
@@ -139,11 +139,11 @@ class DSRRepository extends IDSRRepository {
           queryGetActiveProjetResponse.results != null) {
         final List<ParseObject> projects =
             queryGetActiveProjetResponse.results! as List<ParseObject>;
-        for (final DSRWorkTrack dsr in dsrRecords) {
+        for (final Task task in tasks) {
           if (!projects
-              .any((ParseObject item) => item.objectId == dsr.projectTagId)) {
+              .any((ParseObject item) => item.objectId == task.projectTagId)) {
             throw APIErrorResponse(
-              message: 'The project ${dsr.projectTagId} does not exist.',
+              message: 'The project ${task.projectTagId} does not exist.',
               errorCode: null,
             );
           }
@@ -485,9 +485,9 @@ class DSRRepository extends IDSRRepository {
                   id: getResultId(createDSRResponse.results!),
                   sprintId: sprintId,
                   dateEpoch: epochDateToday,
-                  done: <DSRWorkTrack>[],
-                  wip: <DSRWorkTrack>[],
-                  blockers: <DSRWorkTrack>[],
+                  done: <Task>[],
+                  wip: <Task>[],
+                  blockers: <Task>[],
                   status: workStatus,
                 ),
                 errorCode: null,
@@ -622,14 +622,14 @@ class DSRRepository extends IDSRRepository {
   Future<APIResponse<DSRRecord>> updateDSREntries({
     required String dsrId,
     required String column,
-    required List<DSRWorkTrack> dsrworkTrack,
+    required List<Task> tasks,
   }) async {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null) {
         /// Check first if the project ids does exist from the database.
         final bool isExistProjectIds = await doesProjectIdExist(
-          dsrRecords: dsrworkTrack,
+          tasks: tasks,
         );
 
         if (!columnsEntries.contains(column)) {
@@ -644,7 +644,7 @@ class DSRRepository extends IDSRRepository {
 
           dsrs
             ..objectId = dsrId
-            ..set<List<DSRWorkTrack>>(column, dsrworkTrack);
+            ..set<List<Task>>(column, tasks);
 
           final ParseResponse saveDsrResponse = await dsrs.save();
 

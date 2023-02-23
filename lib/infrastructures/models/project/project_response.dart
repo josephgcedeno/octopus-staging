@@ -1,6 +1,6 @@
 /// This object will contain the necessary field for project record.
-class ProjectTag {
-  ProjectTag({
+class Project {
+  Project({
     required this.id,
     required this.projectName,
     required this.dateEpoch,

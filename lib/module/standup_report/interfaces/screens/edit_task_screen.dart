@@ -25,8 +25,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
 
   TextEditingController textController = TextEditingController();
   Color formBackgroundColor = const Color(0xFFf5f7f9);
-  List<ProjectTag> projectList = <ProjectTag>[];
-  ProjectTag? projectTag;
+  List<Project> projectList = <Project>[];
+  Project? projectTag;
 
   bool doingIsActive = false;
   bool doneIsActive = false;
@@ -115,7 +115,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           setState(() {
             projectList = state.projects;
             projectTag = projectList.firstWhere(
-              (ProjectTag element) => element.id == widget.task.projectId,
+              (Project element) => element.id == widget.task.projectId,
             );
           });
         }
@@ -135,7 +135,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                   borderRadius: BorderRadius.circular(8),
                   color: formBackgroundColor,
                 ),
-                child: DropdownButton<ProjectTag>(
+                child: DropdownButton<Project>(
                   isExpanded: true,
                   icon: const Icon(Icons.keyboard_arrow_down_outlined),
                   hint: LinearProgressIndicator(
@@ -147,15 +147,15 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                   borderRadius: BorderRadius.circular(10),
                   underline: const SizedBox.shrink(),
                   dropdownColor: Colors.white,
-                  onChanged: (ProjectTag? value) {
+                  onChanged: (Project? value) {
                     setState(() {
                       projectTag = value;
                     });
                   },
                   value: projectTag,
                   items: projectList
-                      .map<DropdownMenuItem<ProjectTag>>((ProjectTag value) {
-                    return DropdownMenuItem<ProjectTag>(
+                      .map<DropdownMenuItem<Project>>((Project value) {
+                    return DropdownMenuItem<Project>(
                       value: value,
                       child: Text(value.projectName),
                     );

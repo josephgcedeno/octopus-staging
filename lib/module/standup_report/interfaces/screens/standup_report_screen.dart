@@ -28,7 +28,7 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
   List<TaskCardDTO> doing = <TaskCardDTO>[];
   List<TaskCardDTO> done = <TaskCardDTO>[];
   List<TaskCardDTO> blockers = <TaskCardDTO>[];
-  List<ProjectTag> projects = <ProjectTag>[];
+  List<Project> projects = <Project>[];
 
   double opacityLevel = 1.0;
 
@@ -157,8 +157,7 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
             blockers
           ];
 
-          final List<List<DSRWorkTrack>> updatedProjectList =
-              <List<DSRWorkTrack>>[
+          final List<List<Task>> updatedProjectList = <List<Task>>[
             state.done,
             state.doing,
             state.blockers,

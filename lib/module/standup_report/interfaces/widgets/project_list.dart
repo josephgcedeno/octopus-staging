@@ -6,7 +6,7 @@ import 'package:octopus/module/standup_report/service/cubit/dsr_cubit.dart';
 
 class ProjectList extends StatelessWidget {
   const ProjectList({required this.projects, Key? key}) : super(key: key);
-  final List<ProjectTag> projects;
+  final List<Project> projects;
 
   @override
   Widget build(BuildContext context) {

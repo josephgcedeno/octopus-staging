@@ -9,7 +9,7 @@ import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class ProjectRepository extends IProjectRepository {
   @override
-  Future<APIResponse<ProjectTag>> addProject({
+  Future<APIResponse<Project>> addProject({
     required String projectName,
     required String projectColor,
     String? status,
@@ -43,10 +43,10 @@ class ProjectRepository extends IProjectRepository {
 
         final ParseResponse projectTagResponse = await projectTag.save();
         if (projectTagResponse.success) {
-          return APIResponse<ProjectTag>(
+          return APIResponse<Project>(
             success: true,
             message: 'Successfull added project',
-            data: ProjectTag(
+            data: Project(
               dateEpoch: epochFromDateTime(date: date ?? DateTime.now()),
               id: getResultId(projectTagResponse.results!),
               projectName: projectName,
@@ -118,7 +118,7 @@ class ProjectRepository extends IProjectRepository {
   }
 
   @override
-  Future<APIListResponse<ProjectTag>> getAllProjects({
+  Future<APIListResponse<Project>> getAllProjects({
     String? projectName,
     String? projectColor,
     String? status,
@@ -154,12 +154,12 @@ class ProjectRepository extends IProjectRepository {
 
       final ParseResponse projectTagsResponse = await projectTags.query();
       if (projectTagsResponse.success) {
-        final List<ProjectTag> projects = <ProjectTag>[];
+        final List<Project> projects = <Project>[];
         if (projectTagsResponse.results != null) {
           for (final ParseObject project
               in projectTagsResponse.results! as List<ParseObject>) {
             projects.add(
-              ProjectTag(
+              Project(
                 id: project.objectId!,
                 projectName: project.get<String>(projectTagsProjectNameField)!,
                 dateEpoch: project.get<int>(projectTagsProjectDateField)!,
@@ -170,7 +170,7 @@ class ProjectRepository extends IProjectRepository {
           }
         }
 
-        return APIListResponse<ProjectTag>(
+        return APIListResponse<Project>(
           success: true,
           message: 'Successfully get all projects.',
           data: projects,
@@ -190,7 +190,7 @@ class ProjectRepository extends IProjectRepository {
   }
 
   @override
-  Future<APIResponse<ProjectTag>> updateProject({
+  Future<APIResponse<Project>> updateProject({
     required String id,
     String? projectName,
     String? projectColor,
@@ -210,51 +210,51 @@ class ProjectRepository extends IProjectRepository {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject updateProjectTag = ParseObject(projectTagsTable);
+        final ParseObject updateProject = ParseObject(projectTagsTable);
 
-        updateProjectTag.objectId = id;
+        updateProject.objectId = id;
 
         if (projectName != null) {
-          updateProjectTag.set<String>(
+          updateProject.set<String>(
             projectTagsProjectNameField,
             projectName,
           );
         }
         if (status != null) {
-          updateProjectTag.set<String>(projectTagsProjectStatusField, status);
+          updateProject.set<String>(projectTagsProjectStatusField, status);
         }
         if (date != null) {
-          updateProjectTag.set<int>(
+          updateProject.set<int>(
             projectTagsProjectDateField,
             epochFromDateTime(date: date),
           );
         }
         if (projectColor != null) {
-          updateProjectTag.set<String>(
+          updateProject.set<String>(
             projectTagsProjectColorField,
             projectColor,
           );
         }
 
-        final ParseResponse updateProjectTagResponse =
-            await updateProjectTag.save();
+        final ParseResponse updateProjectResponse =
+            await updateProject.save();
 
-        if (updateProjectTagResponse.success) {
+        if (updateProjectResponse.success) {
           /// Fetch the time in out record if already set. Since not available keys for time in and time out when updating, fetch manually.
           final String objectId =
-              getResultId(updateProjectTagResponse.results!);
+              getResultId(updateProjectResponse.results!);
 
           final ParseResponse projectResponse =
-              await updateProjectTag.getObject(objectId);
+              await updateProject.getObject(objectId);
 
           if (projectResponse.success && projectResponse.results != null) {
             final ParseObject resultParseObject =
                 getParseObject(projectResponse.results!);
 
-            return APIResponse<ProjectTag>(
+            return APIResponse<Project>(
               success: true,
               message: 'Successfully updated project.',
-              data: ProjectTag(
+              data: Project(
                 id: resultParseObject.objectId!,
                 dateEpoch:
                     resultParseObject.get<int>(projectTagsProjectDateField)!,
@@ -271,8 +271,8 @@ class ProjectRepository extends IProjectRepository {
         }
 
         throw APIErrorResponse(
-          message: updateProjectTagResponse.error != null
-              ? updateProjectTagResponse.error!.message
+          message: updateProjectResponse.error != null
+              ? updateProjectResponse.error!.message
               : '',
           errorCode: null,
         );

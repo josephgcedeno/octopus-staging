@@ -18,9 +18,9 @@ class DSRCubit extends Cubit<DSRState> {
   final IDSRRepository dsrRepository;
   final IProjectRepository projectRepository;
 
-  List<DSRWorkTrack> doneList = <DSRWorkTrack>[];
-  List<DSRWorkTrack> doingList = <DSRWorkTrack>[];
-  List<DSRWorkTrack> blockersList = <DSRWorkTrack>[];
+  List<Task> doneList = <Task>[];
+  List<Task> doingList = <Task>[];
+  List<Task> blockersList = <Task>[];
 
   ProjectStatus? currentProjectStatus;
 
@@ -162,21 +162,19 @@ class DSRCubit extends Cubit<DSRState> {
     }
   }
 
-  List<DSRWorkTrack> addTaskLocally(String taskLabel) {
+  List<Task> addTaskLocally(String taskLabel) {
     switch (projectStatus) {
       case ProjectStatus.done:
-        doneList.add(DSRWorkTrack(text: taskLabel, projectTagId: projectTagId));
+        doneList.add(Task(text: taskLabel, projectTagId: projectTagId));
         return doneList;
       case ProjectStatus.doing:
-        doingList
-            .add(DSRWorkTrack(text: taskLabel, projectTagId: projectTagId));
+        doingList.add(Task(text: taskLabel, projectTagId: projectTagId));
         return doingList;
       case ProjectStatus.blockers:
-        blockersList
-            .add(DSRWorkTrack(text: taskLabel, projectTagId: projectTagId));
+        blockersList.add(Task(text: taskLabel, projectTagId: projectTagId));
         return blockersList;
       default:
-        return <DSRWorkTrack>[];
+        return <Task>[];
     }
   }
 
@@ -194,7 +192,7 @@ class DSRCubit extends Cubit<DSRState> {
       await dsrRepository.updateDSREntries(
         dsrId: dsrID,
         column: statusEnumToString(projectStatus ?? ProjectStatus.done),
-        dsrworkTrack: addTaskLocally(taskLabel),
+        tasks: addTaskLocally(taskLabel),
       );
     } catch (e) {
       final APIErrorResponse error = e as APIErrorResponse;
@@ -209,7 +207,7 @@ class DSRCubit extends Cubit<DSRState> {
 
   Future<void> deleteTask(TaskCardDTO task) async {
     try {
-      List<DSRWorkTrack> taskList = <DSRWorkTrack>[];
+      List<Task> taskList = <Task>[];
       switch (task.status) {
         case 0:
           taskList = doneList;
@@ -239,7 +237,7 @@ class DSRCubit extends Cubit<DSRState> {
       await dsrRepository.updateDSREntries(
         dsrId: dsrID,
         column: statusIntToString(task.status),
-        dsrworkTrack: taskList,
+        tasks: taskList,
       );
     } catch (e) {
       final APIErrorResponse error = e as APIErrorResponse;
@@ -262,7 +260,7 @@ class DSRCubit extends Cubit<DSRState> {
 
   Future<void> getAllProjects() async {
     try {
-      final APIListResponse<ProjectTag> response =
+      final APIListResponse<Project> response =
           await projectRepository.getAllProjects(status: 'ACTIVE');
 
       emit(FetchProjectsSuccess(projects: response.data));
@@ -277,9 +275,9 @@ class DSRCubit extends Cubit<DSRState> {
     }
   }
 
-  void setProject(ProjectTag tag) {
+  void setProject(Project tag) {
     projectTagId = tag.id;
     emit(const HideProjectPane());
-    emit(SetProjectSuccess(projectTag: tag));
+    emit(SetProjectSuccess(project: tag));
   }
 }

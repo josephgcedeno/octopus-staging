@@ -19,7 +19,7 @@ class StatusColumn extends StatefulWidget {
 
   final List<TaskCardDTO> data;
   final ProjectStatus status;
-  final List<ProjectTag> projects;
+  final List<Project> projects;
   // final void Function() onDragEnd;
 
   @override
@@ -27,7 +27,7 @@ class StatusColumn extends StatefulWidget {
 }
 
 class _StatusColumnState extends State<StatusColumn> {
-  ProjectTag emptyProject = ProjectTag(
+  Project emptyProject = Project(
     id: '-1',
     projectName: 'Unknown',
     dateEpoch: 0,
@@ -35,7 +35,7 @@ class _StatusColumnState extends State<StatusColumn> {
     color: '0x000000',
   );
 
-  ProjectTag? getTaskProjectTag(String id) {
+  Project? getTaskProject(String id) {
     for (int i = 0; i < widget.projects.length; i++) {
       if (id == widget.projects[i].id) {
         return widget.projects[i];
@@ -90,7 +90,7 @@ class _StatusColumnState extends State<StatusColumn> {
             TaskCard(
               task: widget.data[i],
               projectTag:
-                  getTaskProjectTag(widget.data[i].projectId) ?? emptyProject,
+                  getTaskProject(widget.data[i].projectId) ?? emptyProject,
             )
         ],
       ),

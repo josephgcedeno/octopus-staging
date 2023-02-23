@@ -35,9 +35,9 @@ class InitializeDSRSuccess extends DSRState {
     required this.blockers,
   });
 
-  final List<DSRWorkTrack> done;
-  final List<DSRWorkTrack> doing;
-  final List<DSRWorkTrack> blockers;
+  final List<Task> done;
+  final List<Task> doing;
+  final List<Task> blockers;
 }
 
 class InitializeDSRFailed extends DSRState {
@@ -90,9 +90,9 @@ class UpdateTaskSuccess extends DSRState {
     required this.blockers,
   });
 
-  final List<DSRWorkTrack> done;
-  final List<DSRWorkTrack> doing;
-  final List<DSRWorkTrack> blockers;
+  final List<Task> done;
+  final List<Task> doing;
+  final List<Task> blockers;
 }
 
 class UpdateTaskFailed extends DSRState {
@@ -110,7 +110,7 @@ class FetchProjectsSuccess extends DSRState {
     required this.projects,
   });
 
-  final List<ProjectTag> projects;
+  final List<Project> projects;
 }
 
 class FetchProjectsFailed extends DSRState {
@@ -128,9 +128,7 @@ class SetProjectLoading extends DSRState {
 }
 
 class SetProjectSuccess extends DSRState {
-  const SetProjectSuccess({
-    required this.projectTag,
-  });
+  const SetProjectSuccess({required this.project});
 
-  final ProjectTag projectTag;
+  final Project project;
 }

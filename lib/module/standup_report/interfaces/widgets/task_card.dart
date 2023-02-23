@@ -13,7 +13,7 @@ class TaskCard extends StatelessWidget {
   }) : super(key: key);
 
   final TaskCardDTO task;
-  final ProjectTag projectTag;
+  final Project projectTag;
 
   @override
   Widget build(BuildContext context) {
