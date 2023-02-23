@@ -125,8 +125,8 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
             blockers
           ];
 
-          final List<List<DSRWorkTrack>> updatedProjectList =
-              <List<DSRWorkTrack>>[
+          final List<List<Task>> updatedProjectList =
+              <List<Task>>[
             state.doing,
             state.done,
             state.blockers,

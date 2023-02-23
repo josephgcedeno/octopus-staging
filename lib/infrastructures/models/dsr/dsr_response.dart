@@ -35,9 +35,9 @@ class DSRRecord {
 
   final String id;
   final String sprintId;
-  final List<DSRWorkTrack> done;
-  final List<DSRWorkTrack> wip;
-  final List<DSRWorkTrack> blockers;
+  final List<Task> done;
+  final List<Task> wip;
+  final List<Task> blockers;
   final int dateEpoch;
   final String status;
 }

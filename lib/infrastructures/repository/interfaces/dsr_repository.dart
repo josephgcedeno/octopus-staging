@@ -63,17 +63,17 @@ abstract class IDSRRepository {
     String? dsrId,
   });
 
-  /// This function will add/update/delete (done, work_in_progress, blockers) as a list of DSRWorkTrack to the database within the dsr item.
+  /// This function will add/update/delete (done, work_in_progress, blockers) as a list of Task to the database within the dsr item.
   ///
   /// [dsrId] this determines which record will be added, updated, or deleted.
   ///
   /// [column] this determines which field should be modified (done, work_in_progress, blockers). This variables can be use to directly use the fields from the database [dsrsDoneField, dsrsWipField, dsrsBlockersField]
   ///
-  /// [dsrworkTrack] this contains the list of the item to be stored in the database.
+  /// [tasks] this contains the list of the item to be stored in the database.
   Future<APIResponse<DSRRecord>> updateDSREntries({
     required String dsrId,
     required String column,
-    required List<DSRWorkTrack> dsrworkTrack,
+    required List<Task> tasks,
   });
 
   /// This function will update the dsr's working status ('WORKING', 'SICK LEAVE' ,'VACATION LEAVE','ABSENT', 'HOLIDAY').
