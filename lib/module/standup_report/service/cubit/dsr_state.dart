@@ -72,10 +72,15 @@ class UpdateTaskStatus extends DSRState {
 }
 
 class UpdateTaskLoading extends DSRState {
-  const UpdateTaskLoading({required this.taskLabel, required this.status});
+  const UpdateTaskLoading({
+    required this.taskLabel,
+    required this.status,
+    required this.projectTagId,
+  });
 
   final String taskLabel;
   final ProjectStatus status;
+  final String projectTagId;
 }
 
 class UpdateTaskSuccess extends DSRState {
@@ -98,4 +103,32 @@ class UpdateTaskFailed extends DSRState {
 
   final String errorCode;
   final String message;
+}
+
+class FetchProjectsSuccess extends DSRState {
+  const FetchProjectsSuccess({
+    required this.projects,
+  });
+
+  final List<Project> projects;
+}
+
+class FetchProjectsFailed extends DSRState {
+  const FetchProjectsFailed({
+    required this.errorCode,
+    required this.message,
+  });
+
+  final String errorCode;
+  final String message;
+}
+
+class SetProjectLoading extends DSRState {
+  const SetProjectLoading();
+}
+
+class SetProjectSuccess extends DSRState {
+  const SetProjectSuccess({required this.project});
+
+  final Project project;
 }

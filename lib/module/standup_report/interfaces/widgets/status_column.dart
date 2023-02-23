@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:octopus/infrastructures/models/project/project_response.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/task_card.dart';
 import 'package:octopus/module/standup_report/service/cubit/task_card_dto.dart';
 
@@ -12,11 +13,13 @@ class StatusColumn extends StatefulWidget {
   const StatusColumn({
     required this.data,
     required this.status,
+    required this.projects,
     Key? key,
   }) : super(key: key);
 
   final List<TaskCardDTO> data;
   final ProjectStatus status;
+  final List<Project> projects;
   // final void Function() onDragEnd;
 
   @override
@@ -24,11 +27,28 @@ class StatusColumn extends StatefulWidget {
 }
 
 class _StatusColumnState extends State<StatusColumn> {
+  Project emptyProject = Project(
+    id: '-1',
+    projectName: 'Unknown',
+    dateEpoch: 0,
+    status: 'DONE',
+    color: '0x000000',
+  );
+
+  Project? getTaskProject(String id) {
+    for (int i = 0; i < widget.projects.length; i++) {
+      if (id == widget.projects[i].id) {
+        return widget.projects[i];
+      }
+    }
+    return null;
+  }
+
   int statusCodeToInt() {
     switch (widget.status) {
-      case ProjectStatus.doing:
-        return 0;
       case ProjectStatus.done:
+        return 0;
+      case ProjectStatus.doing:
         return 1;
       case ProjectStatus.blockers:
         return 2;
@@ -37,10 +57,10 @@ class _StatusColumnState extends State<StatusColumn> {
 
   String intToStatusCode() {
     switch (widget.status) {
-      case ProjectStatus.doing:
-        return 'Doing';
       case ProjectStatus.done:
         return 'Done';
+      case ProjectStatus.doing:
+        return 'Doing';
       case ProjectStatus.blockers:
         return 'Blockers';
     }
@@ -54,10 +74,7 @@ class _StatusColumnState extends State<StatusColumn> {
     return Container(
       width: width * 0.3,
       padding: widget.status == ProjectStatus.blockers
-          ? EdgeInsets.only(
-              left: 8,
-              bottom: height * 0.2,
-            )
+          ? EdgeInsets.only(bottom: height * 0.2, left: 8, right: 8, top: 8)
           : const EdgeInsets.all(8.0),
       child: Column(
         children: <Widget>[
@@ -71,7 +88,9 @@ class _StatusColumnState extends State<StatusColumn> {
           ),
           for (int i = 0; i < widget.data.length; i++)
             TaskCard(
-              label: widget.data[i].taskName,
+              task: widget.data[i],
+              projectTag:
+                  getTaskProject(widget.data[i].projectId) ?? emptyProject,
             )
         ],
       ),

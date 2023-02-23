@@ -1,11 +1,11 @@
 class TaskCardDTO {
   TaskCardDTO({
     required this.taskName,
-    required this.taskID,
+    required this.projectId,
     required this.status,
   });
 
   final String taskName;
-  final String taskID;
+  final String projectId;
   final int status;
 }

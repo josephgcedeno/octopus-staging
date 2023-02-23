@@ -4,7 +4,12 @@ import 'package:octopus/infrastructures/models/project/project_response.dart';
 abstract class IProjectRepository {
   /// This function will simply get all the available projects from the database.
   /// This object will contain the necessary field for Leave record.
-  Future<APIListResponse<Project>> getAllProjects();
+  Future<APIListResponse<Project>> getAllProjects({
+    String? projectName,
+    String? projectColor,
+    String? status,
+    DateTime? date,
+  });
 
   /// FOR: ADMIN USE ONLY
   ///
