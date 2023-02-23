@@ -35,9 +35,9 @@ class InitializeDSRSuccess extends DSRState {
     required this.blockers,
   });
 
-  final List<DSRWorkTrack> done;
-  final List<DSRWorkTrack> doing;
-  final List<DSRWorkTrack> blockers;
+  final List<Task> done;
+  final List<Task> doing;
+  final List<Task> blockers;
 }
 
 class InitializeDSRFailed extends DSRState {
@@ -85,9 +85,9 @@ class UpdateTaskSuccess extends DSRState {
     required this.blockers,
   });
 
-  final List<DSRWorkTrack> done;
-  final List<DSRWorkTrack> doing;
-  final List<DSRWorkTrack> blockers;
+  final List<Task> done;
+  final List<Task> doing;
+  final List<Task> blockers;
 }
 
 class UpdateTaskFailed extends DSRState {

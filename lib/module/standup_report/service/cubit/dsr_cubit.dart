@@ -13,9 +13,9 @@ class DSRCubit extends Cubit<DSRState> {
   DSRCubit({required this.dsrRepository}) : super(const DSRState());
   final IDSRRepository dsrRepository;
 
-  List<DSRWorkTrack> doneList = <DSRWorkTrack>[];
-  List<DSRWorkTrack> doingList = <DSRWorkTrack>[];
-  List<DSRWorkTrack> blockersList = <DSRWorkTrack>[];
+  List<Task> doneList = <Task>[];
+  List<Task> doingList = <Task>[];
+  List<Task> blockersList = <Task>[];
 
   ProjectStatus? currentProjectStatus;
 
@@ -130,20 +130,20 @@ class DSRCubit extends Cubit<DSRState> {
     }
   }
 
-  List<DSRWorkTrack> dsrWorkTrackPayload(String taskLabel) {
+  List<Task> dsrWorkTrackPayload(String taskLabel) {
     switch (projectStatus) {
       case ProjectStatus.done:
-        doneList.add(DSRWorkTrack(text: taskLabel, projectTagId: 'preload'));
+        doneList.add(Task(text: taskLabel, projectTagId: 'preload'));
         return doneList;
       case ProjectStatus.doing:
-        doingList.add(DSRWorkTrack(text: taskLabel, projectTagId: 'preload'));
+        doingList.add(Task(text: taskLabel, projectTagId: 'preload'));
         return doingList;
       case ProjectStatus.blockers:
         blockersList
-            .add(DSRWorkTrack(text: taskLabel, projectTagId: 'preload'));
+            .add(Task(text: taskLabel, projectTagId: 'preload'));
         return blockersList;
       default:
-        return <DSRWorkTrack>[];
+        return <Task>[];
     }
   }
 
@@ -162,7 +162,7 @@ class DSRCubit extends Cubit<DSRState> {
           await dsrRepository.updateDSREntries(
         dsrId: dsrID,
         column: statusEnumToString(projectStatus ?? ProjectStatus.done),
-        dsrworkTrack: dsrWorkTrackPayload(taskLabel),
+        tasks: dsrWorkTrackPayload(taskLabel),
       );
 
       emit(
