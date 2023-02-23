@@ -34,7 +34,7 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
 
   Timer interval = Timer(const Duration(seconds: 1), () {});
 
-  void updateTasksLocally(
+  void addTasksLocally(
     ProjectStatus status,
     String label,
     String projectId,
@@ -124,19 +124,27 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
       )
     ];
 
+    void errorSnackbar(String message) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: theme.errorColor,
+        ),
+      );
+    }
+
     return BlocListener<DSRCubit, DSRState>(
       listenWhen: (DSRState previous, DSRState current) =>
           current is InitializeDSRLoading ||
           current is InitializeDSRFailed ||
           current is InitializeDSRSuccess ||
           current is UpdateTaskLoading ||
-          current is UpdateTaskSuccess ||
           current is FetchProjectsSuccess ||
           current is FetchProjectsFailed,
       listener: (BuildContext context, DSRState state) {
         interval.cancel();
         if (state is UpdateTaskLoading) {
-          updateTasksLocally(state.status, state.taskLabel, state.projectTagId);
+          addTasksLocally(state.status, state.taskLabel, state.projectTagId);
           if (noCardsYet) {
             setState(() => noCardsYet = false);
           }
@@ -144,15 +152,15 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
           projects = state.projects;
         } else if (state is InitializeDSRSuccess) {
           final List<List<TaskCardDTO>> localProjectLists = <List<TaskCardDTO>>[
-            doing,
             done,
+            doing,
             blockers
           ];
 
           final List<List<DSRWorkTrack>> updatedProjectList =
               <List<DSRWorkTrack>>[
-            state.doing,
             state.done,
+            state.doing,
             state.blockers,
           ];
 
@@ -179,20 +187,12 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
             doing = doing;
           });
         } else if (state is UpdateTaskFailed) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: theme.errorColor,
-            ),
-          );
+          errorSnackbar(state.message);
           context.read<DSRCubit>().initializeDSR();
         } else if (state is FetchProjectsFailed) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: theme.errorColor,
-            ),
-          );
+          errorSnackbar(state.message);
+        } else if (state is InitializeDSRFailed) {
+          errorSnackbar(state.message);
         } else if (state is InitializeDSRLoading) {
           setState(() => isLoading = true);
         }

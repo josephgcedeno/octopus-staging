@@ -46,9 +46,9 @@ class _StatusColumnState extends State<StatusColumn> {
 
   int statusCodeToInt() {
     switch (widget.status) {
-      case ProjectStatus.doing:
-        return 0;
       case ProjectStatus.done:
+        return 0;
+      case ProjectStatus.doing:
         return 1;
       case ProjectStatus.blockers:
         return 2;
@@ -57,10 +57,10 @@ class _StatusColumnState extends State<StatusColumn> {
 
   String intToStatusCode() {
     switch (widget.status) {
-      case ProjectStatus.doing:
-        return 'Doing';
       case ProjectStatus.done:
         return 'Done';
+      case ProjectStatus.doing:
+        return 'Doing';
       case ProjectStatus.blockers:
         return 'Blockers';
     }

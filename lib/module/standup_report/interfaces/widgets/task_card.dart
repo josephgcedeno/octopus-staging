@@ -24,7 +24,7 @@ class TaskCard extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute<dynamic>(
-            builder: (_) => const EditTaskScreen(),
+            builder: (_) => EditTaskScreen(task: task),
           ),
         );
       },

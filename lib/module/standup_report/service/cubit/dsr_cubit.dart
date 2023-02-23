@@ -8,6 +8,7 @@ import 'package:octopus/infrastructures/models/project/project_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/dsr_repository.dart';
 import 'package:octopus/infrastructures/repository/interfaces/project_repository.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/status_column.dart';
+import 'package:octopus/module/standup_report/service/cubit/task_card_dto.dart';
 
 part 'dsr_state.dart';
 
@@ -135,7 +136,33 @@ class DSRCubit extends Cubit<DSRState> {
     }
   }
 
-  List<DSRWorkTrack> dsrWorkTrackPayload(String taskLabel) {
+  String statusIntToString(int status) {
+    switch (status) {
+      case 0:
+        return 'done';
+      case 1:
+        return 'work_in_progress';
+      case 2:
+        return 'blockers';
+      default:
+        return '';
+    }
+  }
+
+  ProjectStatus statusIntToEnum(int status) {
+    switch (status) {
+      case 0:
+        return ProjectStatus.done;
+      case 1:
+        return ProjectStatus.doing;
+      case 2:
+        return ProjectStatus.blockers;
+      default:
+        return ProjectStatus.done;
+    }
+  }
+
+  List<DSRWorkTrack> addTaskLocally(String taskLabel) {
     switch (projectStatus) {
       case ProjectStatus.done:
         doneList.add(DSRWorkTrack(text: taskLabel, projectTagId: projectTagId));
@@ -164,19 +191,10 @@ class DSRCubit extends Cubit<DSRState> {
           projectTagId: projectTagId,
         ),
       );
-      final APIResponse<DSRRecord> response =
-          await dsrRepository.updateDSREntries(
+      await dsrRepository.updateDSREntries(
         dsrId: dsrID,
         column: statusEnumToString(projectStatus ?? ProjectStatus.done),
-        dsrworkTrack: dsrWorkTrackPayload(taskLabel),
-      );
-
-      emit(
-        UpdateTaskSuccess(
-          doing: response.data.wip,
-          done: response.data.done,
-          blockers: response.data.blockers,
-        ),
+        dsrworkTrack: addTaskLocally(taskLabel),
       );
     } catch (e) {
       final APIErrorResponse error = e as APIErrorResponse;
@@ -187,6 +205,59 @@ class DSRCubit extends Cubit<DSRState> {
         ),
       );
     }
+  }
+
+  Future<void> deleteTask(TaskCardDTO task) async {
+    try {
+      List<DSRWorkTrack> taskList = <DSRWorkTrack>[];
+      switch (task.status) {
+        case 0:
+          taskList = doneList;
+          break;
+        case 1:
+          taskList = doingList;
+          break;
+        case 2:
+          taskList = blockersList;
+          break;
+      }
+
+      for (int i = 0; i < taskList.length; i++) {
+        if (taskList[i].projectTagId == task.projectId &&
+            taskList[i].text == task.taskName) {
+          taskList.removeAt(i);
+          break;
+        }
+      }
+      emit(
+        InitializeDSRSuccess(
+          doing: doingList,
+          done: doneList,
+          blockers: blockersList,
+        ),
+      );
+      await dsrRepository.updateDSREntries(
+        dsrId: dsrID,
+        column: statusIntToString(task.status),
+        dsrworkTrack: taskList,
+      );
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+      emit(
+        InitializeDSRFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
+    }
+  }
+
+  void editTask({
+    required TaskCardDTO oldTask,
+    required TaskCardDTO updatedTask,
+  }) {
+    updateTasks(taskLabel: updatedTask.taskName);
+    deleteTask(oldTask);
   }
 
   Future<void> getAllProjects() async {
