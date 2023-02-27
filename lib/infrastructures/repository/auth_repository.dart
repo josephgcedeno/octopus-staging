@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
@@ -75,8 +74,6 @@ class AuthRepository extends IAuthRepository {
 
       /// Check if ParseResponse is error
       if (loginAccountResponse.error != null) {
-        inspect(loginAccountResponse.error);
-
         throw APIErrorResponse(
           message: loginAccountResponse.error != null
               ? loginAccountResponse.error!.message
@@ -106,10 +103,6 @@ class AuthRepository extends IAuthRepository {
       final ParseResponse resetResponse =
           await ParseUser(null, null, email).requestPasswordReset();
 
-      print('pumasokk');
-      inspect(resetResponse);
-      print(resetResponse.error?.code);
-
       if (resetResponse.success) {
         return APIResponse<void>(
           success: resetResponse.success,
@@ -122,8 +115,9 @@ class AuthRepository extends IAuthRepository {
       throw APIErrorResponse(
         message:
             resetResponse.error != null ? resetResponse.error!.message : '',
-        errorCode:
-            resetResponse.error != null ? resetResponse.error!.code.toString() : '',
+        errorCode: resetResponse.error != null
+            ? resetResponse.error!.code.toString()
+            : '',
       );
     } on SocketException {
       throw APIErrorResponse.socketErrorResponse();
