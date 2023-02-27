@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
@@ -20,6 +21,28 @@ class AuthRepository extends IAuthRepository {
         final ParseResponse? sessionResponse =
             await ParseUser.getCurrentUserFromServer(sessionToken);
 
+        /// Check if ParseResponse is error
+        if (sessionResponse?.error != null) {
+          if (sessionResponse!.error!.code == -1) {
+            throw APIErrorResponse(
+              message: sessionResponse.error != null
+                  ? sessionResponse.error!.message
+                  : '',
+              errorCode: sessionResponse.error != null
+                  ? sessionResponse.error.toString()
+                  : '',
+            );
+          }
+          throw APIErrorResponse(
+            message: sessionResponse.error != null
+                ? sessionResponse.error!.message
+                : '',
+            errorCode: sessionResponse.error != null
+                ? sessionResponse.error.toString()
+                : '',
+          );
+        }
+
         if (sessionResponse != null && sessionResponse.success) {
           return APIResponse<void>(
             success: sessionResponse.success,
@@ -28,15 +51,6 @@ class AuthRepository extends IAuthRepository {
             data: null,
           );
         }
-
-        throw APIErrorResponse(
-          message: sessionResponse != null && sessionResponse.error != null
-              ? sessionResponse.error!.message
-              : '',
-          errorCode: sessionResponse?.error != null
-              ? sessionResponse?.error.toString()
-              : '',
-        );
       }
 
       throw APIErrorResponse(
@@ -58,22 +72,26 @@ class AuthRepository extends IAuthRepository {
       );
 
       final ParseResponse loginAccountResponse = await user.login();
-      if (loginAccountResponse.success) {
-        return APIResponse<void>(
-          success: true,
-          message: 'Login successfully.',
-          errorCode: null,
-          data: null,
+
+      /// Check if ParseResponse is error
+      if (loginAccountResponse.error != null) {
+        inspect(loginAccountResponse.error);
+
+        throw APIErrorResponse(
+          message: loginAccountResponse.error != null
+              ? loginAccountResponse.error!.message
+              : '',
+          errorCode: loginAccountResponse.error != null
+              ? loginAccountResponse.error.toString()
+              : '',
         );
       }
 
-      throw APIErrorResponse(
-        message: loginAccountResponse.error != null
-            ? loginAccountResponse.error!.message
-            : '',
-        errorCode: loginAccountResponse.error != null
-            ? loginAccountResponse.error.toString()
-            : '',
+      return APIResponse<void>(
+        success: true,
+        message: 'Login successfully.',
+        errorCode: null,
+        data: null,
       );
     } on SocketException {
       throw APIErrorResponse.socketErrorResponse();
@@ -88,6 +106,10 @@ class AuthRepository extends IAuthRepository {
       final ParseResponse resetResponse =
           await ParseUser(null, null, email).requestPasswordReset();
 
+      print('pumasokk');
+      inspect(resetResponse);
+      print(resetResponse.error?.code);
+
       if (resetResponse.success) {
         return APIResponse<void>(
           success: resetResponse.success,
@@ -101,7 +123,7 @@ class AuthRepository extends IAuthRepository {
         message:
             resetResponse.error != null ? resetResponse.error!.message : '',
         errorCode:
-            resetResponse.error != null ? resetResponse.error.toString() : '',
+            resetResponse.error != null ? resetResponse.error!.code.toString() : '',
       );
     } on SocketException {
       throw APIErrorResponse.socketErrorResponse();
