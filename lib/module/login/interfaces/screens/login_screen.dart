@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:octopus/interfaces/widgets/loading_indicator.dart';
+import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
 import 'package:octopus/module/login/interfaces/screens/temp_register_screen.dart';
 import 'package:octopus/module/login/service/cubit/authentication_cubit.dart';
@@ -37,11 +38,9 @@ class _LoginScreenState extends State<LoginScreen> {
             (Route<dynamic> route) => false,
           );
         } else if (state is LoginFailed) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: theme.errorColor,
-            ),
+          showSnackBar(
+            message: state.message,
+            snackBartState: SnackBartState.error,
           );
         }
       },
