@@ -1,22 +1,36 @@
 // initialize snackbarkey to be reusable even outside context
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:octopus/configs/themes.dart';
+
+/// This will be use to check if the status is listed in this enum.
+///
+/// [error] Show error color snackbar
+///
+/// [success] Show success color snackbar
+enum SnackBartState { error, success }
 
 /// Initialize snackbarkey to be reusable globally and even outside context
 final GlobalKey<ScaffoldMessengerState> snackbarKey =
     GlobalKey<ScaffoldMessengerState>();
 
-/// Provide globally manage snackbar
+/// Provide globally manage snackbar.
+///
+/// [message] Message show in the left side of the snackar.
+///
+/// [snackBartState] The state to be shown with the snackbar.
+///
+/// [data] This will enable copy to clipboard action.
+///
+/// [duration] This will determine how long does the snackbar will be visible. Official default duration when not set is 4 seconds.
 void showSnackBar({
   required String message,
+  SnackBartState snackBartState = SnackBartState.success,
+  Duration duration = const Duration(milliseconds: 4000),
   String? data,
-  Duration? duration,
 }) {
   final SnackBar snackBar = SnackBar(
-    duration: duration ??
-        const Duration(
-          milliseconds: 4000,
-        ), // Official default duration when not set.
+    duration: duration,
     content: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
@@ -56,7 +70,8 @@ void showSnackBar({
           ),
       ],
     ),
-    backgroundColor: Colors.green,
+    backgroundColor:
+        snackBartState == SnackBartState.success ? Colors.green : kRed,
   );
 
   /// Trigger show snackbar using snackbarKey.
