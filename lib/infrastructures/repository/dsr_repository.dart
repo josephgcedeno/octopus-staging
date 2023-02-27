@@ -426,7 +426,7 @@ class DSRRepository extends IDSRRepository {
             ? queryTodayRecord.error!.message
             : '',
         errorCode: queryTodayRecord.error != null
-            ? queryTodayRecord.error!.code as String
+            ? queryTodayRecord.error!.code.toString()
             : '',
       );
     } on SocketException {
