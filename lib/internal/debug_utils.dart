@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:octopus/configs/themes.dart';
+import 'package:octopus/infrastructures/models/api_error_response.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 /// This will be use to check if the status is listed in this enum.
 ///
@@ -76,4 +78,25 @@ void showSnackBar({
 
   /// Trigger show snackbar using snackbarKey.
   snackbarKey.currentState?.showSnackBar(snackBar);
+}
+
+void formatAPIErrorResponse({required ParseError error}) {
+  /// FIXME: Temporary check on socket exception. Improve soon if better solution is available.
+  if (error.exception.runtimeType.toString() == '_ClientSocketException') {
+    throw APIErrorResponse.socketErrorResponse();
+  }
+
+  String errorMessage = error.message;
+  String? errorCode = error.code.toString();
+
+  /// Check if Error is not related to the listed one, it will always goes to code -1.
+  if (error.code == -1) {
+    errorMessage = 'Something wrong has happened. Try restarting the app.';
+    errorCode = null;
+  }
+
+  throw APIErrorResponse(
+    message: errorMessage,
+    errorCode: errorCode,
+  );
 }
