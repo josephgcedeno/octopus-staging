@@ -1,9 +1,11 @@
 import 'dart:io';
+
 import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/time_in_out/attendance_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/time_in_out_repository.dart';
 import 'package:octopus/internal/database_strings.dart';
+import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/helper_function.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
@@ -126,6 +128,10 @@ class TimeInOutRepository extends ITimeInOutRepository {
             userId: userId,
           );
 
+          if (attendanceToday.error != null) {
+            formatAPIErrorResponse(error: attendanceToday.error!);
+          }
+
           if (attendanceToday.results != null &&
               attendanceToday.results!.isNotEmpty) {
             final ParseObject attendanceInfo =
@@ -179,6 +185,10 @@ class TimeInOutRepository extends ITimeInOutRepository {
             attedanceId: queryYesterdayRecord.objectId!,
             userId: user.objectId!,
           );
+
+          if (attendanceYesterday.error != null) {
+            formatAPIErrorResponse(error: attendanceYesterday.error!);
+          }
 
           /// Add check if there is a record yesterday
           if (attendanceYesterday.success && attendanceYesterday.count == 1) {
@@ -248,6 +258,10 @@ class TimeInOutRepository extends ITimeInOutRepository {
           userId: user.objectId!,
         );
 
+        if (attendanceResponse.error != null) {
+          formatAPIErrorResponse(error: attendanceResponse.error!);
+        }
+
         /// If there is an already made request throw error.
         if (attendanceResponse.success &&
             attendanceResponse.count == 1 &&
@@ -273,6 +287,10 @@ class TimeInOutRepository extends ITimeInOutRepository {
               );
 
             final ParseResponse res = await attendance.save();
+
+            if (res.error != null) {
+              formatAPIErrorResponse(error: res.error!);
+            }
 
             if (res.success) {
               return APIResponse<Attendance>(
@@ -305,6 +323,10 @@ class TimeInOutRepository extends ITimeInOutRepository {
 
           final ParseResponse attendanceRecordResponse =
               await attendance.save();
+
+          if (attendanceRecordResponse.error != null) {
+            formatAPIErrorResponse(error: attendanceRecordResponse.error!);
+          }
 
           if (attendanceRecordResponse.success) {
             /// Fetch the time in out record if already set. Since not available keys for time in and time out when updating, fetch manually.
@@ -363,6 +385,10 @@ class TimeInOutRepository extends ITimeInOutRepository {
               ..whereEqualTo(timeAttendancesUserIdField, user.objectId);
 
         final ParseResponse attendanceResponse = await attendanceQuery.query();
+
+        if (attendanceResponse.error != null) {
+          formatAPIErrorResponse(error: attendanceResponse.error!);
+        }
 
         if (attendanceResponse.success && attendanceResponse.results != null) {
           final ParseObject attendanceRow =
@@ -430,6 +456,10 @@ class TimeInOutRepository extends ITimeInOutRepository {
 
         final ParseResponse attendanceResponse = await attendanceQuery.query();
 
+        if (attendanceResponse.error != null) {
+          formatAPIErrorResponse(error: attendanceResponse.error!);
+        }
+
         /// If there is an already made request throw error.
         if (attendanceResponse.success &&
             attendanceResponse.count == 1 &&
@@ -464,6 +494,10 @@ class TimeInOutRepository extends ITimeInOutRepository {
           final ParseResponse attendanceRecordResponse =
               await attendance.save();
 
+          if (attendanceRecordResponse.error != null) {
+            formatAPIErrorResponse(error: attendanceRecordResponse.error!);
+          }
+
           if (attendanceRecordResponse.success) {
             return APIResponse<Attendance>(
               success: true,
@@ -490,6 +524,10 @@ class TimeInOutRepository extends ITimeInOutRepository {
 
           final ParseResponse attendanceRecordResponse =
               await attendance.save();
+
+          if (attendanceRecordResponse.error != null) {
+            formatAPIErrorResponse(error: attendanceRecordResponse.error!);
+          }
 
           if (attendanceRecordResponse.success) {
             /// Fetch the time in out record if already set. Since not available keys for time in and time out when updating, fetch manually.
@@ -553,6 +591,10 @@ class TimeInOutRepository extends ITimeInOutRepository {
         final ParseResponse offsetRequestResponse =
             await listOfRequests.query();
 
+        if (offsetRequestResponse.error != null) {
+          formatAPIErrorResponse(error: offsetRequestResponse.error!);
+        }
+
         if (offsetRequestResponse.success) {
           final List<Attendance> attendances = <Attendance>[];
           if (offsetRequestResponse.results != null) {
@@ -611,6 +653,10 @@ class TimeInOutRepository extends ITimeInOutRepository {
         final ParseResponse attedanceResponse =
             await attendance.getObject(attendanceId);
 
+        if (attedanceResponse.error != null) {
+          formatAPIErrorResponse(error: attedanceResponse.error!);
+        }
+
         if (attedanceResponse.success && attedanceResponse.results != null) {
           final ParseObject resultParseObject =
               getParseObject(attedanceResponse.results!);
@@ -633,11 +679,19 @@ class TimeInOutRepository extends ITimeInOutRepository {
 
           final ParseResponse approveResponse = await attendance.save();
 
+          if (approveResponse.error != null) {
+            formatAPIErrorResponse(error: approveResponse.error!);
+          }
+
           if (approveResponse.success && approveResponse.results != null) {
             /// Fetch the time in out record if already set. Since not available keys for time in and time out when updating, fetch manually.
             final String objectId = getResultId(approveResponse.results!);
             final ParseResponse timeInResponse =
                 await attendance.getObject(objectId);
+
+            if (timeInResponse.error != null) {
+              formatAPIErrorResponse(error: timeInResponse.error!);
+            }
 
             if (timeInResponse.success && timeInResponse.results != null) {
               final ParseObject resultParseObject =
@@ -700,12 +754,20 @@ class TimeInOutRepository extends ITimeInOutRepository {
         final ParseResponse updateTimeInOutResponse =
             await updateTimeInOut.save();
 
+        if (updateTimeInOutResponse.error != null) {
+          formatAPIErrorResponse(error: updateTimeInOutResponse.error!);
+        }
+
         if (updateTimeInOutResponse.success &&
             updateTimeInOutResponse.results != null) {
           /// Fetch the time in out record if already set. Since not available keys for time in and time out when updating, fetch manually.
           final String objectId = getResultId(updateTimeInOutResponse.results!);
           final ParseResponse timeInResponse =
               await updateTimeInOut.getObject(objectId);
+
+          if (timeInResponse.error != null) {
+            formatAPIErrorResponse(error: timeInResponse.error!);
+          }
 
           if (timeInResponse.success && timeInResponse.results != null) {
             return APIResponse<TimeIn>(
