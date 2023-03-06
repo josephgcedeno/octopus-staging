@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:intl/intl.dart';
 import 'package:octopus/infrastructures/models/time_in_out/attendance_response.dart';
+import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/internal/helper_function.dart';
 import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
 
@@ -22,47 +24,42 @@ class _DTRDetailsState extends State<DTRDetails> {
     'Time to render:'
   ];
 
-  final List<String> values = <String>[
-    'January 18, 2023',
-    '-----',
-    '-----',
-    '-----',
-    '8 hours'
-  ];
+  final List<String> values = <String>['January 18, 2023', '', '', '', ''];
 
-  void setInfo(Attendance info) {
+  void setInfo(Attendance? info) {
+
     const String approved = 'APPROVED';
 
     /// Get the time in record for the day if not null.
-    final String timeIn = info.timeInEpoch != null
+    final String timeIn = info?.timeInEpoch != null
         ? DateFormat('h:mm a').format(
             dateTimeFromEpoch(
-              epoch: info.timeInEpoch!,
+              epoch: info?.timeInEpoch! ?? 0,
             ),
           )
         : '-----';
 
     /// Get the time out record for the day if not null.
-    final String timeOut = info.timeOutEpoch != null
+    final String timeOut = info?.timeOutEpoch != null
         ? DateFormat('h:mm a').format(
             dateTimeFromEpoch(
-              epoch: info.timeOutEpoch!,
+              epoch: info?.timeOutEpoch! ?? 0,
             ),
           )
         : '-----';
 
     /// Get the over time record for the day if not null and if it is approved by the admin.
     final String overTime =
-        info.offsetDuration != null && info.offsetStatus == approved
+        info?.offsetDuration != null && info?.offsetStatus == approved
             ? printDurationFrom(
-                Duration(minutes: info.offsetDuration!),
+                Duration(minutes: info?.offsetDuration! ?? 0),
               )
             : '-----';
 
     /// Get the time to render for the day if not null.
     final String timeToRender = printDurationFrom(
       Duration(
-        minutes: info.requiredDuration ?? 0,
+        minutes: info?.requiredDuration ?? 480,
       ),
     );
 
@@ -94,12 +91,16 @@ class _DTRDetailsState extends State<DTRDetails> {
           current is FetchTimeInDataFailed,
       listener: (BuildContext context, TimeRecordState state) {
         if (state is FetchTimeInDataLoading) {
+          setState(() {
+            values[1] = '';
+            values[2] = '';
+            values[3] = '';
+            values[4] = '';
+          });
         } else if (state is FetchTimeInDataSuccess) {
-          if (state.attendance != null) {
-            setInfo(
-              state.attendance!,
-            );
-          }
+          setInfo(
+            state.attendance,
+          );
         } else if (state is FetchTimeInDataFailed) {}
       },
       child: Container(
@@ -121,10 +122,16 @@ class _DTRDetailsState extends State<DTRDetails> {
                       style: theme.textTheme.bodyText2
                           ?.copyWith(color: Colors.grey),
                     ),
-                    Text(
-                      values[i],
-                      style: theme.textTheme.bodyText2,
-                    ),
+                    if (values[i] == '')
+                      lineLoader(height: 10, width: width * 0.15)
+                    else
+                      FadeIn(
+                        duration: fadeInDuration,
+                        child: Text(
+                          values[i],
+                          style: theme.textTheme.bodyText2,
+                        ),
+                      ),
                   ],
                 ),
               ),

@@ -13,7 +13,7 @@ Widget clockLoader(BuildContext context) {
   final ThemeData theme = Theme.of(context);
   final double width = MediaQuery.of(context).size.width;
   final double height = MediaQuery.of(context).size.height;
-  
+
   return Container(
     padding: const EdgeInsets.all(8.0),
     decoration: BoxDecoration(
@@ -46,6 +46,24 @@ Widget clockLoader(BuildContext context) {
           ),
         ),
       ),
+    ),
+  );
+}
+
+Widget lineLoader({
+  required double height,
+  required double width,
+}) {
+  return Shimmer.fromColors(
+    baseColor: Colors.white,
+    highlightColor: Colors.black12,
+    child: Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: Colors.black38,
+      ),
+      width: width,
+      height: height,
     ),
   );
 }
