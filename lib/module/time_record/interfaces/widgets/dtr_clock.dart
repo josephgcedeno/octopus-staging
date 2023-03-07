@@ -249,7 +249,8 @@ class _DTRClockState extends State<DTRClock> {
                                       width: width * 0.17,
                                       child: const ClipRRect(
                                         borderRadius: BorderRadius.all(
-                                            Radius.circular(10)),
+                                          Radius.circular(10),
+                                        ),
                                         child: LinearProgressIndicator(),
                                       ),
                                     ),
