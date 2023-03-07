@@ -56,13 +56,14 @@ Widget clockLoader(BuildContext context) {
 Widget lineLoader({
   required double height,
   required double width,
+  bool withRadius = true,
 }) {
   return Shimmer.fromColors(
     baseColor: shimmerBase,
     highlightColor: shimmerGlow,
     child: Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: withRadius ? BorderRadius.circular(8) : null,
         color: Colors.black38,
       ),
       width: width,
