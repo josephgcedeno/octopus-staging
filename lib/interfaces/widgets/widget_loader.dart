@@ -71,3 +71,42 @@ Widget lineLoader({
     ),
   );
 }
+
+List<Widget> itemLoader({
+  required int outerItem,
+  required int innerItem,
+  double height = 20,
+  double width = 100,
+}) {
+  return <Widget>[
+    for (int i = 0; i < outerItem; i++)
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(
+              bottom: 15.0,
+              left: 35,
+            ),
+            child: lineLoader(
+              height: height,
+              width: 100,
+              withRadius: false,
+            ),
+          ),
+          for (int j = 0; j < innerItem; j++)
+            Padding(
+              padding: const EdgeInsets.only(
+                bottom: 8.0,
+                left: 30,
+                right: 30,
+              ),
+              child: lineLoader(
+                height: height + 10,
+                width: double.infinity,
+              ),
+            )
+        ],
+      )
+  ];
+}
