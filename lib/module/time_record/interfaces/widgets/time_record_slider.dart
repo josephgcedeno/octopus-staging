@@ -48,6 +48,23 @@ class _TimeInSliderState extends State<TimeInSlider> {
   /// Check if it is IN or OUT
   bool isIn = true;
 
+  /// Time out gradient color
+  final LinearGradient outLinearGradient = const LinearGradient(
+    colors: <Color>[
+      Colors.white,
+      Color(0xFFFFECEC),
+      Color(0xFFF88484),
+    ],
+  );
+
+  /// Time in gradient color
+  final LinearGradient inLinearGradient = const LinearGradient(
+    colors: <Color>[
+      Colors.white,
+      Color(0xFFe3f0ff),
+      Color(0xFFd4e9ff),
+    ],
+  );
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -96,17 +113,13 @@ class _TimeInSliderState extends State<TimeInSlider> {
             ? EdgeInsets.only(top: height * 0.08)
             : EdgeInsets.only(top: height * 0.02),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: <Color>[
-              Colors.white,
-              Color(0xFFe3f0ff),
-              Color(0xFFd4e9ff),
-            ],
-          ),
+          gradient: isIn ? inLinearGradient : outLinearGradient,
           borderRadius: BorderRadius.circular(50),
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color: theme.primaryColor.withAlpha(30),
+              color: isIn
+                  ? theme.primaryColor.withAlpha(30)
+                  : const Color(0xffE25252).withAlpha(30),
               blurRadius: 40,
             ),
           ],
@@ -118,18 +131,20 @@ class _TimeInSliderState extends State<TimeInSlider> {
                 child: Text(
                   isIn ? 'IN' : 'OUT',
                   style: theme.textTheme.subtitle1?.copyWith(
-                    color: theme.primaryColor,
+                    color: isIn ? theme.primaryColor : const Color(0xffE25252),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
             ),
             Dismissible(
-              direction: DismissDirection.startToEnd,
+              direction: isIn
+                  ? DismissDirection.startToEnd
+                  : DismissDirection.endToStart,
               confirmDismiss: timeInTimeOut,
               key: UniqueKey(),
               child: Align(
-                alignment: Alignment.centerLeft,
+                alignment: isIn ? Alignment.centerLeft : Alignment.centerRight,
                 child: isLoading
                     ? Container(
                         height: height * 0.1,
@@ -151,11 +166,17 @@ class _TimeInSliderState extends State<TimeInSlider> {
                         height: height * 0.1,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: theme.primaryColor,
+                          color: isIn
+                              ? theme.primaryColor
+                              : const Color(0xffE25252),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 17),
-                        child: const Icon(
-                          Icons.keyboard_double_arrow_right_rounded,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isIn ? 17 : 10,
+                        ),
+                        child: Icon(
+                          isIn
+                              ? Icons.keyboard_double_arrow_right_rounded
+                              : Icons.keyboard_double_arrow_left_rounded,
                           color: Colors.white,
                           size: 30,
                         ),
