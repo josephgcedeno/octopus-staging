@@ -25,7 +25,7 @@ class _TimeInSliderState extends State<TimeInSlider> {
     }
 
     /// This condition will check to drag is TIME IN
-    if (timeInEpoch == -1) {
+    if (isIn) {
       context.read<TimeRecordCubit>().signInToday();
     } else {
       /// This condition will check to drag is TIME OUT
@@ -44,6 +44,10 @@ class _TimeInSliderState extends State<TimeInSlider> {
   int? timeOutEpoch;
 
   bool isLoading = true;
+
+  /// Check if it is IN or OUT
+  bool isIn = true;
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -61,10 +65,12 @@ class _TimeInSliderState extends State<TimeInSlider> {
             isLoading = true;
             timeInEpoch = -1;
             timeOutEpoch = null;
+            isIn = true;
           });
         } else if (state is FetchTimeInDataSuccess) {
           if (state.attendance != null) {
             setState(() {
+              isIn = false;
               timeInEpoch = state.attendance?.timeInEpoch ?? 0;
               requiredTimeInMinutes = state.attendance?.requiredDuration ?? 0;
               timeOutEpoch = state.attendance?.timeOutEpoch;
@@ -110,7 +116,7 @@ class _TimeInSliderState extends State<TimeInSlider> {
             Positioned.fill(
               child: Align(
                 child: Text(
-                  timeInEpoch == -1 ? 'IN' : 'OUT',
+                  isIn ? 'IN' : 'OUT',
                   style: theme.textTheme.subtitle1?.copyWith(
                     color: theme.primaryColor,
                     fontWeight: FontWeight.w600,
