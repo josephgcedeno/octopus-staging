@@ -7,6 +7,9 @@ import 'package:shimmer/shimmer.dart';
 /// We use the Text Widget with dummy values to emulate the the exact dimensions of specific widgets
 /// The text values won't show up because they are overlapped by the shimmer effect. It's just for height and width purposes.
 
+const Color shimmerBase = Colors.white;
+const Color shimmerGlow = Colors.black12;
+
 const Duration fadeInDuration = Duration(milliseconds: 500);
 
 Widget clockLoader(BuildContext context) {
@@ -35,8 +38,8 @@ Widget clockLoader(BuildContext context) {
       center: ClipRRect(
         borderRadius: BorderRadius.circular(width),
         child: Shimmer.fromColors(
-          baseColor: Colors.white,
-          highlightColor: Colors.black12,
+          baseColor: shimmerBase,
+          highlightColor: shimmerGlow,
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
@@ -55,8 +58,8 @@ Widget lineLoader({
   required double width,
 }) {
   return Shimmer.fromColors(
-    baseColor: Colors.white,
-    highlightColor: Colors.black12,
+    baseColor: shimmerBase,
+    highlightColor: shimmerGlow,
     child: Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
