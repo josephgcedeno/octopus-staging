@@ -252,15 +252,15 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
                     height: isLoading ? height * 0.6 : height,
                     width: width,
                     child: isLoading
-                        ? Align(
-                            child: AnimatedOpacity(
-                              opacity: opacityLevel,
-                              duration: const Duration(milliseconds: 500),
-                              child: const Icon(
-                                Icons.blur_on_outlined,
-                                size: 60,
-                                color: Colors.black,
-                              ),
+                        ? ListView(
+                            padding: EdgeInsets.only(
+                              bottom: height * 0.2,
+                              top: 20,
+                              left: 5,
+                            ),
+                            children: itemLoader(
+                              innerItem: 2,
+                              outerItem: 3,
                             ),
                           )
                         : kIsWeb
@@ -268,10 +268,14 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
                                 children:
                                     noCardsYet ? noCardsImage : statusWidgets,
                               )
-                            : ListView(
-                                padding: EdgeInsets.only(bottom: height * 0.2),
-                                children:
-                                    noCardsYet ? noCardsImage : statusWidgets,
+                            : FadeIn(
+                                duration: fadeInDuration,
+                                child: ListView(
+                                  padding:
+                                      EdgeInsets.only(bottom: height * 0.2),
+                                  children:
+                                      noCardsYet ? noCardsImage : statusWidgets,
+                                ),
                               ),
                   )
                 ],
