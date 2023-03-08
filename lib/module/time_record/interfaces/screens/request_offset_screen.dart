@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:octopus/configs/themes.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 
 class RequestOffsetScreen extends StatefulWidget {
@@ -17,21 +18,78 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
 
   final Color blackColor = const Color(0xff1B252F).withOpacity(70 / 100);
 
+  final DateTime now = DateTime.now();
+
+  /// Store the unformatted values of the selected time.
+  late TimeOfDay fromTime;
+  late TimeOfDay toTime;
+
+  final int maximumOffset = 4;
+  final String maximumTimeText = 'Maximum time to offset is 4 hours';
+
+  TimeOfDay initialTime(int index) {
+    if (index == 0 && fromTextController.text.isNotEmpty) {
+      return fromTime;
+    } else if (index == 1 && toTextController.text.isNotEmpty) {
+      return toTime;
+    } else {
+      return TimeOfDay.now();
+    }
+  }
+
   Future<void> openTimePicker({
     required BuildContext context,
     required int index,
   }) async {
     final TimeOfDay? res = await showTimePicker(
       context: context,
-      initialTime: const TimeOfDay(hour: 10, minute: 47),
+      initialTime: initialTime(index),
     );
     if (res == null || !mounted) return;
 
     final String timeFormat = res.format(context);
 
-    index == 0
-        ? fromTextController.text = timeFormat
-        : toTextController.text = timeFormat;
+    if (index == 0) {
+      fromTextController.text = timeFormat;
+      fromTime = res;
+    } else {
+      toTextController.text = timeFormat;
+      toTime = res;
+    }
+  }
+
+  Future<void> saveOffset() async {
+    final DateTime fromDateTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      fromTime.hour,
+      fromTime.minute,
+    );
+    final DateTime toDateTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      toTime.hour,
+      toTime.minute,
+    );
+    final int hours = toDateTime.difference(fromDateTime).inHours;
+    if (hours > maximumOffset || hours < 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            hours < 0
+                ? 'The time offset ($hours) should not be less than 0!'
+                : '$maximumTimeText! ',
+          ),
+          backgroundColor: kRed,
+        ),
+      );
+      return;
+    }
+
+    /// Get the whole duration base from the result of the differnece between from and to.
+    final int minutes = toDateTime.difference(fromDateTime).inMinutes;
   }
 
   @override
@@ -152,7 +210,7 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
                         ),
                       ),
                       Text(
-                        'Maximum time to offset is 4 hours',
+                        maximumTimeText,
                         style: theme.textTheme.caption?.copyWith(
                           fontStyle: FontStyle.italic,
                         ),
@@ -198,13 +256,8 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
                       ),
                     ),
                   ),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      final String from = fromTextController.text;
-                      final String to = toTextController.text;
-                      final String reason = reasonTextController.text;
-                    }
-                  },
+                  onPressed:
+                      _formKey.currentState!.validate() ? saveOffset : () {},
                   child: Text(
                     'Request',
                     style: theme.textTheme.bodyText1?.copyWith(
