@@ -30,7 +30,7 @@ class _TimeRecordScreenState extends State<TimeRecordScreen> {
     final double height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      appBar: const GlobalAppBar(leading: LeadingButton.menu),
+      appBar: const GlobalAppBar(leading: LeadingButton.back),
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
