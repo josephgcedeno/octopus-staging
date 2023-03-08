@@ -79,18 +79,22 @@ class _TimeInSliderState extends State<TimeInSlider> {
       listener: (BuildContext context, TimeRecordState state) {
         if (state is FetchTimeInDataLoading) {
           setState(() {
+            /// This will indicate which position does the loader will be executed, either isIn or isOut.
+            isIn = timeInEpoch == -1;
+
             isLoading = true;
             timeInEpoch = -1;
             timeOutEpoch = null;
-            isIn = true;
           });
         } else if (state is FetchTimeInDataSuccess) {
           if (state.attendance != null) {
             setState(() {
-              isIn = false;
               timeInEpoch = state.attendance?.timeInEpoch ?? 0;
               requiredTimeInMinutes = state.attendance?.requiredDuration ?? 0;
               timeOutEpoch = state.attendance?.timeOutEpoch;
+
+              /// If the timeout is not null, the position of the slider would be isIn.
+              isIn = state.attendance?.timeOutEpoch != null;
             });
           }
 
@@ -160,10 +164,14 @@ class _TimeInSliderState extends State<TimeInSlider> {
                               horizontal: 15,
                               vertical: 9,
                             ),
-                            child: const SizedBox(
+                            child: SizedBox(
                               width: 30,
                               height: 30,
-                              child: CircularProgressIndicator(),
+                              child: CircularProgressIndicator(
+                                color: isIn
+                                    ? theme.primaryColor
+                                    : const Color(0xffE25252),
+                              ),
                             ),
                           )
                         : Container(
