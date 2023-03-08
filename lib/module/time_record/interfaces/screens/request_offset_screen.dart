@@ -16,6 +16,24 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final Color blackColor = const Color(0xff1B252F).withOpacity(70 / 100);
+
+  Future<void> openTimePicker({
+    required BuildContext context,
+    required int index,
+  }) async {
+    final TimeOfDay? res = await showTimePicker(
+      context: context,
+      initialTime: const TimeOfDay(hour: 10, minute: 47),
+    );
+    if (res == null || !mounted) return;
+
+    final String timeFormat = res.format(context);
+
+    index == 0
+        ? fromTextController.text = timeFormat
+        : toTextController.text = timeFormat;
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -89,6 +107,10 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
                                     SizedBox(
                                       width: constraints.maxWidth * 0.45,
                                       child: TextFormField(
+                                        onTap: () => openTimePicker(
+                                          context: context,
+                                          index: i,
+                                        ),
                                         controller: i == 0
                                             ? fromTextController
                                             : toTextController,
