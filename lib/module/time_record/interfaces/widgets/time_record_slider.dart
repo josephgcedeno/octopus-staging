@@ -48,6 +48,8 @@ class _TimeInSliderState extends State<TimeInSlider> {
   /// Check if it is IN or OUT
   bool isIn = true;
 
+  final Color bgRed = const Color(0xffE25252);
+
   /// Time out gradient color
   final LinearGradient outLinearGradient = const LinearGradient(
     colors: <Color>[
@@ -125,7 +127,7 @@ class _TimeInSliderState extends State<TimeInSlider> {
                 BoxShadow(
                   color: isIn
                       ? theme.primaryColor.withAlpha(30)
-                      : const Color(0xffE25252).withAlpha(30),
+                      : bgRed.withAlpha(30),
                   blurRadius: 40,
                 ),
               ],
@@ -137,8 +139,7 @@ class _TimeInSliderState extends State<TimeInSlider> {
                     child: Text(
                       isIn ? 'IN' : 'OUT',
                       style: theme.textTheme.subtitle1?.copyWith(
-                        color:
-                            isIn ? theme.primaryColor : const Color(0xffE25252),
+                        color: isIn ? theme.primaryColor : bgRed,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -168,9 +169,7 @@ class _TimeInSliderState extends State<TimeInSlider> {
                               width: 30,
                               height: 30,
                               child: CircularProgressIndicator(
-                                color: isIn
-                                    ? theme.primaryColor
-                                    : const Color(0xffE25252),
+                                color: isIn ? theme.primaryColor : bgRed,
                               ),
                             ),
                           )
@@ -178,9 +177,7 @@ class _TimeInSliderState extends State<TimeInSlider> {
                             height: height * 0.1,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: isIn
-                                  ? theme.primaryColor
-                                  : const Color(0xffE25252),
+                              color: isIn ? theme.primaryColor : bgRed,
                             ),
                             padding: EdgeInsets.symmetric(
                               horizontal: isIn ? 17 : 10,
