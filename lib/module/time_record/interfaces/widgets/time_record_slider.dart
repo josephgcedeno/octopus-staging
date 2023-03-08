@@ -28,10 +28,63 @@ class _TimeInSliderState extends State<TimeInSlider> {
     if (isIn) {
       context.read<TimeRecordCubit>().signInToday();
     } else {
-      /// This condition will check to drag is TIME OUT
-      context.read<TimeRecordCubit>().signOutToday();
+      showAlertDialogOnTimeOut(context);
     }
     return false;
+  }
+
+  void showAlertDialogOnTimeOut(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      barrierColor: const Color(0xffA8A8A8).withOpacity(0.40),
+      builder: (BuildContext context) {
+        final ThemeData theme = Theme.of(context);
+
+        return AlertDialog(
+          alignment: const Alignment(0.0, -0.2),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: Text(
+            'Time Out',
+            style: theme.textTheme.bodyText1
+                ?.copyWith(fontWeight: FontWeight.w600, fontSize: 16),
+          ),
+          contentPadding: const EdgeInsets.only(left: 25, top: 10),
+          content: Text(
+            'Are you done for today?',
+            style: theme.textTheme.caption?.copyWith(
+              color: const Color(0xff1B252F),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'Cancel',
+                style: theme.textTheme.caption
+                    ?.copyWith(color: const Color(0xff1B252F)),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+
+                /// This condition will check to drag is TIME OUT
+                context.read<TimeRecordCubit>().signOutToday();
+              },
+              child: Text(
+                'Confirm',
+                style: theme.textTheme.caption?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   /// Set what time did the user time in.
