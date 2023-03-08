@@ -106,85 +106,91 @@ class _TimeInSliderState extends State<TimeInSlider> {
           );
         }
       },
-      child: Container(
-        width: kIsWeb ? 370 : width * 0.8,
-        height: height * 0.07,
-        margin: kIsWeb
-            ? EdgeInsets.only(top: height * 0.08)
-            : EdgeInsets.only(top: height * 0.02),
-        decoration: BoxDecoration(
-          gradient: isIn ? inLinearGradient : outLinearGradient,
-          borderRadius: BorderRadius.circular(50),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: isIn
-                  ? theme.primaryColor.withAlpha(30)
-                  : const Color(0xffE25252).withAlpha(30),
-              blurRadius: 40,
+      child: Column(
+        children: <Widget>[
+          Container(
+            width: kIsWeb ? 370 : width * 0.8,
+            height: height * 0.07,
+            margin: kIsWeb
+                ? EdgeInsets.only(top: height * 0.08)
+                : EdgeInsets.only(top: height * 0.02),
+            decoration: BoxDecoration(
+              gradient: isIn ? inLinearGradient : outLinearGradient,
+              borderRadius: BorderRadius.circular(50),
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                  color: isIn
+                      ? theme.primaryColor.withAlpha(30)
+                      : const Color(0xffE25252).withAlpha(30),
+                  blurRadius: 40,
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Stack(
-          children: <Widget>[
-            Positioned.fill(
-              child: Align(
-                child: Text(
-                  isIn ? 'IN' : 'OUT',
-                  style: theme.textTheme.subtitle1?.copyWith(
-                    color: isIn ? theme.primaryColor : const Color(0xffE25252),
-                    fontWeight: FontWeight.w600,
+            child: Stack(
+              children: <Widget>[
+                Positioned.fill(
+                  child: Align(
+                    child: Text(
+                      isIn ? 'IN' : 'OUT',
+                      style: theme.textTheme.subtitle1?.copyWith(
+                        color:
+                            isIn ? theme.primaryColor : const Color(0xffE25252),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                Dismissible(
+                  direction: isIn
+                      ? DismissDirection.startToEnd
+                      : DismissDirection.endToStart,
+                  confirmDismiss: timeInTimeOut,
+                  key: UniqueKey(),
+                  child: Align(
+                    alignment:
+                        isIn ? Alignment.centerLeft : Alignment.centerRight,
+                    child: isLoading
+                        ? Container(
+                            height: height * 0.1,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.grey,
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 15,
+                              vertical: 9,
+                            ),
+                            child: const SizedBox(
+                              width: 30,
+                              height: 30,
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
+                        : Container(
+                            height: height * 0.1,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: isIn
+                                  ? theme.primaryColor
+                                  : const Color(0xffE25252),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isIn ? 17 : 10,
+                            ),
+                            child: Icon(
+                              isIn
+                                  ? Icons.keyboard_double_arrow_right_rounded
+                                  : Icons.keyboard_double_arrow_left_rounded,
+                              color: Colors.white,
+                              size: 30,
+                            ),
+                          ),
+                  ),
+                ),
+              ],
             ),
-            Dismissible(
-              direction: isIn
-                  ? DismissDirection.startToEnd
-                  : DismissDirection.endToStart,
-              confirmDismiss: timeInTimeOut,
-              key: UniqueKey(),
-              child: Align(
-                alignment: isIn ? Alignment.centerLeft : Alignment.centerRight,
-                child: isLoading
-                    ? Container(
-                        height: height * 0.1,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.grey,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 15,
-                          vertical: 9,
-                        ),
-                        child: const SizedBox(
-                          width: 30,
-                          height: 30,
-                          child: CircularProgressIndicator(),
-                        ),
-                      )
-                    : Container(
-                        height: height * 0.1,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: isIn
-                              ? theme.primaryColor
-                              : const Color(0xffE25252),
-                        ),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: isIn ? 17 : 10,
-                        ),
-                        child: Icon(
-                          isIn
-                              ? Icons.keyboard_double_arrow_right_rounded
-                              : Icons.keyboard_double_arrow_left_rounded,
-                          color: Colors.white,
-                          size: 30,
-                        ),
-                      ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
