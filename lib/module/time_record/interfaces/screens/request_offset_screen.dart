@@ -81,13 +81,17 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
     final Duration offsetDuration = toDateTime.difference(fromDateTime);
     final int offsetDurationInHours = offsetDuration.inHours;
 
-    if (offsetDurationInHours > maximumOffset || offsetDurationInHours < 0) {
+    if (offsetDurationInHours > maximumOffset ||
+        offsetDurationInHours < 0 ||
+        offsetDuration.inMinutes == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             offsetDurationInHours < 0
                 ? 'The time offset ($offsetDurationInHours) should not be less than 0!'
-                : '$maximumTimeText! ',
+                : offsetDuration.inMinutes == 0
+                    ? 'Request offset should not be 0!'
+                    : '$maximumTimeText! ',
           ),
           backgroundColor: kRed,
         ),
