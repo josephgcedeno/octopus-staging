@@ -146,12 +146,14 @@ class _TimeInSliderState extends State<TimeInSlider> {
         } else if (state is FetchTimeInDataSuccess) {
           if (state.attendance != null) {
             setState(() {
-              timeInEpoch = state.attendance?.timeInEpoch ?? 0;
-              requiredTimeInMinutes = state.attendance?.requiredDuration ?? 0;
+              timeInEpoch = state.attendance?.timeInEpoch ?? -1;
+              requiredTimeInMinutes =
+                  state.attendance?.requiredDuration ?? requiredTimeInMinutes;
               timeOutEpoch = state.attendance?.timeOutEpoch;
 
               /// If the timeout is not null, the position of the slider would be isIn.
-              isIn = state.attendance?.timeOutEpoch != null;
+              isIn = state.attendance?.timeInEpoch == null ||
+                  state.attendance?.timeOutEpoch != null;
             });
           }
 

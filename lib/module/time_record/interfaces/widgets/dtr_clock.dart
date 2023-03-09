@@ -177,8 +177,9 @@ class _DTRClockState extends State<DTRClock> {
         } else if (state is FetchTimeInDataSuccess) {
           if (state.attendance != null) {
             setState(() {
-              timeInEpoch = state.attendance?.timeInEpoch ?? 0;
-              requiredTimeInMinutes = state.attendance?.requiredDuration ?? 0;
+              timeInEpoch = state.attendance?.timeInEpoch ?? -1;
+              requiredTimeInMinutes =
+                  state.attendance?.requiredDuration ?? requiredTimeInMinutes;
               timeOutEpoch = state.attendance?.timeOutEpoch;
 
               /// Set time to render from x minute to inMilliseconds
