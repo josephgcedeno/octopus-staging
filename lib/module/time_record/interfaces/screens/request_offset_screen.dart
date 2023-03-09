@@ -242,6 +242,7 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
                                                 }
                                                 return null;
                                               },
+                                              readOnly: true,
                                               decoration: InputDecoration(
                                                 border: OutlineInputBorder(
                                                   borderRadius:
