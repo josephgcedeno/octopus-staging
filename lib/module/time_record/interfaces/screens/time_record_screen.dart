@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
+import 'package:octopus/interfaces/widgets/dismissible_notification.dart';
 import 'package:octopus/module/time_record/interfaces/widgets/details.dart';
 import 'package:octopus/module/time_record/interfaces/widgets/dtr_clock.dart';
 import 'package:octopus/module/time_record/interfaces/widgets/offset_button.dart';
@@ -32,25 +33,37 @@ class _TimeRecordScreenState extends State<TimeRecordScreen> {
     return Scaffold(
       appBar: const GlobalAppBar(leading: LeadingButton.back),
       body: SingleChildScrollView(
-        child: Column(
+        child: Stack(
           children: <Widget>[
-            Center(
-              child: Padding(
-                padding: EdgeInsets.only(bottom: height * 0.03),
-                child: Text(
-                  'Daily Time Record',
-                  style: kIsWeb
-                      ? theme.textTheme.headline6
-                      : theme.textTheme.subtitle1,
+            Column(
+              children: <Widget>[
+                Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(bottom: height * 0.03),
+                    child: Text(
+                      'Daily Time Record',
+                      style: kIsWeb
+                          ? theme.textTheme.headline6
+                          : theme.textTheme.subtitle1,
+                    ),
+                  ),
                 ),
+                DTRClock(
+                  key: UniqueKey(),
+                ),
+                const DTRDetails(),
+                const OffsetButton(),
+                const TimeInSlider()
+              ],
+            ),
+            Align(
+              child: notification(
+                context: context,
+                text:
+                    'Successfully submitted offset request. You’ll be notified once approved.',
+                status: NotificationStatus.error,
               ),
             ),
-            DTRClock(
-              key: UniqueKey(),
-            ),
-            const DTRDetails(),
-            const OffsetButton(),
-            const TimeInSlider()
           ],
         ),
       ),
