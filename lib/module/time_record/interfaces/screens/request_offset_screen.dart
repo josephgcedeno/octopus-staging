@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
+import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
 
 class RequestOffsetScreen extends StatefulWidget {
   const RequestOffsetScreen({Key? key}) : super(key: key);
@@ -26,6 +28,8 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
 
   final int maximumOffset = 4;
   final String maximumTimeText = 'Maximum time to offset is 4 hours';
+
+  bool isLoading = false;
 
   TimeOfDay initialTime(int index) {
     if (index == 0 && fromTextController.text.isNotEmpty) {
@@ -73,13 +77,16 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
       toTime.hour,
       toTime.minute,
     );
-    final int hours = toDateTime.difference(fromDateTime).inHours;
-    if (hours > maximumOffset || hours < 0) {
+
+    final Duration offsetDuration = toDateTime.difference(fromDateTime);
+    final int offsetDurationInHours = offsetDuration.inHours;
+
+    if (offsetDurationInHours > maximumOffset || offsetDurationInHours < 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            hours < 0
-                ? 'The time offset ($hours) should not be less than 0!'
+            offsetDurationInHours < 0
+                ? 'The time offset ($offsetDurationInHours) should not be less than 0!'
                 : '$maximumTimeText! ',
           ),
           backgroundColor: kRed,
@@ -88,8 +95,13 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
       return;
     }
 
-    /// Get the whole duration base from the result of the differnece between from and to.
-    final int minutes = toDateTime.difference(fromDateTime).inMinutes;
+    context.read<TimeRecordCubit>().requestOffset(
+          offsetDuration: offsetDuration,
+          fromTime: fromTextController.text,
+          toTime: toTextController.text,
+          reason: reasonTextController.text,
+        );
+    return;
   }
 
   @override
@@ -99,178 +111,232 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
 
     return Scaffold(
       appBar: const GlobalAppBar(leading: LeadingButton.back),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 25.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(bottom: height * 0.03, top: 20),
-                    child: Text(
-                      'Request Offset',
-                      style: kIsWeb
-                          ? theme.textTheme.headline6
-                          : theme.textTheme.subtitle1?.copyWith(
+      body: BlocListener<TimeRecordCubit, TimeRecordState>(
+        listenWhen: (TimeRecordState previous, TimeRecordState current) =>
+            current is FetchTimeInDataLoading ||
+            current is FetchTimeInDataSuccess ||
+            current is FetchTimeInDataFailed,
+        listener: (BuildContext context, TimeRecordState state) {
+          if (state is FetchTimeInDataLoading) {
+            setState(() => isLoading = true);
+            return;
+          } else if (state is FetchTimeInDataSuccess) {
+            setState(() => isLoading = false);
+            if (state.attendance != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Successfully requested offset.',
+                  ),
+                  backgroundColor: Colors.green,
+                ),
+              );
+
+              Future<void>.delayed(
+                const Duration(milliseconds: 500),
+                () => Navigator.of(context).pop(),
+              );
+              return;
+            }
+          } else if (state is FetchTimeInDataFailed) {
+            setState(() => isLoading = false);
+
+            ScaffoldMessenger.of(context)
+                .showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      state.message,
+                    ),
+                    backgroundColor: kRed,
+                  ),
+                )
+                .closed
+                .then((_) => ScaffoldMessenger.of(context).clearSnackBars());
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(bottom: height * 0.03, top: 20),
+                      child: Text(
+                        'Request Offset',
+                        style: kIsWeb
+                            ? theme.textTheme.headline6
+                            : theme.textTheme.subtitle1?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                      ),
+                    ),
+                    Text(
+                      'I’ll be away the next working day...',
+                      style: theme.textTheme.bodyText1,
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(
+                        top: 20,
+                        bottom: 13,
+                      ),
+                      width: double.infinity,
+                      child: LayoutBuilder(
+                        builder:
+                            (BuildContext context, BoxConstraints constraints) {
+                          return Row(
+                            children: <Widget>[
+                              for (int i = 0; i < 2; i++)
+                                Container(
+                                  margin: i == 0
+                                      ? EdgeInsets.only(
+                                          right: constraints.maxWidth * 0.05,
+                                        )
+                                      : null,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          bottom: 5.0,
+                                          left: 3.0,
+                                        ),
+                                        child: Text(
+                                          i == 0 ? 'From' : 'To',
+                                          style: kIsWeb
+                                              ? theme.textTheme.headline6
+                                              : theme.textTheme.subtitle1
+                                                  ?.copyWith(
+                                                  color: blackColor,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: constraints.maxWidth * 0.45,
+                                        child: TextFormField(
+                                          onTap: () => openTimePicker(
+                                            context: context,
+                                            index: i,
+                                          ),
+                                          controller: i == 0
+                                              ? fromTextController
+                                              : toTextController,
+                                          validator: (String? value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'Fields cannot be empty.';
+                                            }
+                                            return null;
+                                          },
+                                          decoration: InputDecoration(
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              borderSide: BorderSide.none,
+                                            ),
+                                            hintText: i == 0
+                                                ? 'Eg. 3:20 PM'
+                                                : 'Eg. 4:20 PM',
+                                            filled: true,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(right: 3.0),
+                          child: Icon(
+                            Icons.info,
+                            color: blackColor,
+                            size: 15,
+                          ),
+                        ),
+                        Text(
+                          maximumTimeText,
+                          style: theme.textTheme.caption?.copyWith(
+                            fontStyle: FontStyle.italic,
+                          ),
+                        )
+                      ],
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 15),
+                      child: TextFormField(
+                        controller: reasonTextController,
+                        maxLines: 8,
+                        minLines: 8,
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Fields cannot be empty.';
+                          }
+                          return null;
+                        },
+                        keyboardType: TextInputType.multiline,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          hintText:
+                              'Write reason (e.g. Process personal documents',
+                          hintStyle: theme.textTheme.caption,
+                          filled: true,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  margin: EdgeInsets.only(bottom: height * 0.03),
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      elevation: MaterialStateProperty.all(0),
+                      shape: MaterialStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                      ),
+                    ),
+                    onPressed: isLoading
+                        ? null
+                        : () {
+                            if (_formKey.currentState!.validate()) {
+                              saveOffset();
+                            }
+                          },
+                    child: isLoading
+                        ? const SizedBox(
+                            width: 25,
+                            height: 25,
+                            child: CircularProgressIndicator(),
+                          )
+                        : Text(
+                            'Request',
+                            style: theme.textTheme.bodyText1?.copyWith(
+                              color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
-                    ),
-                  ),
-                  Text(
-                    'I’ll be away the next working day...',
-                    style: theme.textTheme.bodyText1,
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(
-                      top: 20,
-                      bottom: 13,
-                    ),
-                    width: double.infinity,
-                    child: LayoutBuilder(
-                      builder:
-                          (BuildContext context, BoxConstraints constraints) {
-                        return Row(
-                          children: <Widget>[
-                            for (int i = 0; i < 2; i++)
-                              Container(
-                                margin: i == 0
-                                    ? EdgeInsets.only(
-                                        right: constraints.maxWidth * 0.05,
-                                      )
-                                    : null,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                        bottom: 5.0,
-                                        left: 3.0,
-                                      ),
-                                      child: Text(
-                                        i == 0 ? 'From' : 'To',
-                                        style: kIsWeb
-                                            ? theme.textTheme.headline6
-                                            : theme.textTheme.subtitle1
-                                                ?.copyWith(
-                                                color: blackColor,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: constraints.maxWidth * 0.45,
-                                      child: TextFormField(
-                                        onTap: () => openTimePicker(
-                                          context: context,
-                                          index: i,
-                                        ),
-                                        controller: i == 0
-                                            ? fromTextController
-                                            : toTextController,
-                                        validator: (String? value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Fields cannot be empty.';
-                                          }
-                                          return null;
-                                        },
-                                        decoration: InputDecoration(
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            borderSide: BorderSide.none,
-                                          ),
-                                          hintText: i == 0
-                                              ? 'Eg. 3:20 PM'
-                                              : 'Eg. 4:20 PM',
-                                          filled: true,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(right: 3.0),
-                        child: Icon(
-                          Icons.info,
-                          color: blackColor,
-                          size: 15,
-                        ),
-                      ),
-                      Text(
-                        maximumTimeText,
-                        style: theme.textTheme.caption?.copyWith(
-                          fontStyle: FontStyle.italic,
-                        ),
-                      )
-                    ],
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 15),
-                    child: TextFormField(
-                      controller: reasonTextController,
-                      maxLines: 8,
-                      minLines: 8,
-                      validator: (String? value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Fields cannot be empty.';
-                        }
-                        return null;
-                      },
-                      keyboardType: TextInputType.multiline,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide.none,
-                        ),
-                        hintText:
-                            'Write reason (e.g. Process personal documents',
-                        hintStyle: theme.textTheme.caption,
-                        filled: true,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                margin: EdgeInsets.only(bottom: height * 0.03),
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                    elevation: MaterialStateProperty.all(0),
-                    shape: MaterialStateProperty.all(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                    ),
-                  ),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      saveOffset();
-                    }
-                  },
-                  child: Text(
-                    'Request',
-                    style: theme.textTheme.bodyText1?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
+                          ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
