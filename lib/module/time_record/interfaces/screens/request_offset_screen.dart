@@ -154,188 +154,197 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
                 .then((_) => ScaffoldMessenger.of(context).clearSnackBars());
           }
         },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 25.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Column(
+        child: GestureDetector(
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: SingleChildScrollView(
+            child: Container(
+              height: height * 0.87,
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(bottom: height * 0.03, top: 20),
-                      child: Text(
-                        'Request Offset',
-                        style: kIsWeb
-                            ? theme.textTheme.headline6
-                            : theme.textTheme.subtitle1?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                      ),
-                    ),
-                    Text(
-                      'I’ll be away the next working day...',
-                      style: theme.textTheme.bodyText1,
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(
-                        top: 20,
-                        bottom: 13,
-                      ),
-                      width: double.infinity,
-                      child: LayoutBuilder(
-                        builder:
-                            (BuildContext context, BoxConstraints constraints) {
-                          return Row(
-                            children: <Widget>[
-                              for (int i = 0; i < 2; i++)
-                                Container(
-                                  margin: i == 0
-                                      ? EdgeInsets.only(
-                                          right: constraints.maxWidth * 0.05,
-                                        )
-                                      : null,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                          bottom: 5.0,
-                                          left: 3.0,
-                                        ),
-                                        child: Text(
-                                          i == 0 ? 'From' : 'To',
-                                          style: kIsWeb
-                                              ? theme.textTheme.headline6
-                                              : theme.textTheme.subtitle1
-                                                  ?.copyWith(
-                                                  color: blackColor,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: constraints.maxWidth * 0.45,
-                                        child: TextFormField(
-                                          onTap: () => openTimePicker(
-                                            context: context,
-                                            index: i,
-                                          ),
-                                          controller: i == 0
-                                              ? fromTextController
-                                              : toTextController,
-                                          validator: (String? value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return 'Fields cannot be empty.';
-                                            }
-                                            return null;
-                                          },
-                                          decoration: InputDecoration(
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            hintText: i == 0
-                                                ? 'Eg. 3:20 PM'
-                                                : 'Eg. 4:20 PM',
-                                            filled: true,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                    Row(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Padding(
-                          padding: const EdgeInsets.only(right: 3.0),
-                          child: Icon(
-                            Icons.info,
-                            color: blackColor,
-                            size: 15,
+                          padding:
+                              EdgeInsets.only(bottom: height * 0.03, top: 20),
+                          child: Text(
+                            'Request Offset',
+                            style: kIsWeb
+                                ? theme.textTheme.headline6
+                                : theme.textTheme.subtitle1?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                           ),
                         ),
                         Text(
-                          maximumTimeText,
-                          style: theme.textTheme.caption?.copyWith(
-                            fontStyle: FontStyle.italic,
+                          'I’ll be away the next working day...',
+                          style: theme.textTheme.bodyText1,
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(
+                            top: 20,
+                            bottom: 13,
                           ),
-                        )
+                          width: double.infinity,
+                          child: LayoutBuilder(
+                            builder: (BuildContext context,
+                                BoxConstraints constraints) {
+                              return Row(
+                                children: <Widget>[
+                                  for (int i = 0; i < 2; i++)
+                                    Container(
+                                      margin: i == 0
+                                          ? EdgeInsets.only(
+                                              right:
+                                                  constraints.maxWidth * 0.05,
+                                            )
+                                          : null,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              bottom: 5.0,
+                                              left: 3.0,
+                                            ),
+                                            child: Text(
+                                              i == 0 ? 'From' : 'To',
+                                              style: kIsWeb
+                                                  ? theme.textTheme.headline6
+                                                  : theme.textTheme.subtitle1
+                                                      ?.copyWith(
+                                                      color: blackColor,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: constraints.maxWidth * 0.45,
+                                            child: TextFormField(
+                                              onTap: () => openTimePicker(
+                                                context: context,
+                                                index: i,
+                                              ),
+                                              controller: i == 0
+                                                  ? fromTextController
+                                                  : toTextController,
+                                              validator: (String? value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return 'Fields cannot be empty.';
+                                                }
+                                                return null;
+                                              },
+                                              decoration: InputDecoration(
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  borderSide: BorderSide.none,
+                                                ),
+                                                hintText: i == 0
+                                                    ? 'Eg. 3:20 PM'
+                                                    : 'Eg. 4:20 PM',
+                                                filled: true,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(right: 3.0),
+                              child: Icon(
+                                Icons.info,
+                                color: blackColor,
+                                size: 15,
+                              ),
+                            ),
+                            Text(
+                              maximumTimeText,
+                              style: theme.textTheme.caption?.copyWith(
+                                fontStyle: FontStyle.italic,
+                              ),
+                            )
+                          ],
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 15),
+                          child: TextFormField(
+                            controller: reasonTextController,
+                            maxLines: 8,
+                            minLines: 8,
+                            validator: (String? value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Fields cannot be empty.';
+                              }
+                              return null;
+                            },
+                            keyboardType: TextInputType.multiline,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              ),
+                              hintText:
+                                  'Write reason (e.g. Process personal documents',
+                              hintStyle: theme.textTheme.caption,
+                              filled: true,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                     Container(
-                      margin: const EdgeInsets.only(top: 15),
-                      child: TextFormField(
-                        controller: reasonTextController,
-                        maxLines: 8,
-                        minLines: 8,
-                        validator: (String? value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Fields cannot be empty.';
-                          }
-                          return null;
-                        },
-                        keyboardType: TextInputType.multiline,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
+                      margin: EdgeInsets.only(bottom: height * 0.03),
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          elevation: MaterialStateProperty.all(0),
+                          shape: MaterialStateProperty.all(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
                           ),
-                          hintText:
-                              'Write reason (e.g. Process personal documents',
-                          hintStyle: theme.textTheme.caption,
-                          filled: true,
                         ),
+                        onPressed: isLoading
+                            ? null
+                            : () {
+                                if (_formKey.currentState!.validate()) {
+                                  saveOffset();
+                                }
+                              },
+                        child: isLoading
+                            ? const SizedBox(
+                                width: 25,
+                                height: 25,
+                                child: CircularProgressIndicator(),
+                              )
+                            : Text(
+                                'Request',
+                                style: theme.textTheme.bodyText1?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                       ),
                     ),
                   ],
                 ),
-                Container(
-                  margin: EdgeInsets.only(bottom: height * 0.03),
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      elevation: MaterialStateProperty.all(0),
-                      shape: MaterialStateProperty.all(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                      ),
-                    ),
-                    onPressed: isLoading
-                        ? null
-                        : () {
-                            if (_formKey.currentState!.validate()) {
-                              saveOffset();
-                            }
-                          },
-                    child: isLoading
-                        ? const SizedBox(
-                            width: 25,
-                            height: 25,
-                            child: CircularProgressIndicator(),
-                          )
-                        : Text(
-                            'Request',
-                            style: theme.textTheme.bodyText1?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         ),
