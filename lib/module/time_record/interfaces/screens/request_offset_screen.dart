@@ -256,8 +256,11 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
                       ),
                     ),
                   ),
-                  onPressed:
-                      _formKey.currentState!.validate() ? saveOffset : () {},
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      saveOffset();
+                    }
+                  },
                   child: Text(
                     'Request',
                     style: theme.textTheme.bodyText1?.copyWith(
