@@ -13,12 +13,18 @@ abstract class ITimeInOutRepository {
 
   /// This function will request an offset to the admin.
   ///
-  /// [hours] how many hours is the offset is.
+  /// [offsetDuration] the duration of the requested offset.
   ///
-  /// [minutes] how many minutes is the offset is.
+  /// [fromTime] from what time the user would like to offset. Eg 3:20 PM
+  /// 
+  /// [toTime] to what time the user would like to offset. Eg 4:20 PM
+  /// 
+  /// [reason] the reason why would the user wants to request offset
   Future<APIResponse<Attendance>> requestOffSet({
-    required int hours,
-    required int minutes,
+    required Duration offsetDuration,
+    required String fromTime,
+    required String toTime,
+    required String reason,
   });
 
   /// FOR: ADMIN USE ONLY
