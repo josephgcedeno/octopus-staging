@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
 
 class TimeInSlider extends StatefulWidget {
@@ -169,10 +171,13 @@ class _TimeInSliderState extends State<TimeInSlider> {
         children: <Widget>[
           Container(
             width: kIsWeb ? 370 : width * 0.8,
-            height: height * 0.07,
+            height: height >= smMinHeight && height <= smMaxHeight
+                ? height * 0.07
+                : 61.01,
             margin: kIsWeb
                 ? EdgeInsets.only(top: height * 0.08)
                 : EdgeInsets.only(top: height * 0.02),
+            padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
               gradient: isIn ? inLinearGradient : outLinearGradient,
               borderRadius: BorderRadius.circular(50),
@@ -185,67 +190,72 @@ class _TimeInSliderState extends State<TimeInSlider> {
                 ),
               ],
             ),
-            child: Stack(
-              children: <Widget>[
-                Positioned.fill(
-                  child: Align(
-                    child: Text(
-                      isIn ? 'IN' : 'OUT',
-                      style: theme.textTheme.subtitle1?.copyWith(
-                        color: isIn ? theme.primaryColor : bgRed,
-                        fontWeight: FontWeight.w600,
+            child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraint) {
+                return Stack(
+                  children: <Widget>[
+                    Positioned.fill(
+                      child: Align(
+                        child: Text(
+                          isIn ? 'IN' : 'OUT',
+                          style: theme.textTheme.subtitle1?.copyWith(
+                            color: isIn ? theme.primaryColor : bgRed,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                Dismissible(
-                  direction: isIn
-                      ? DismissDirection.startToEnd
-                      : DismissDirection.endToStart,
-                  confirmDismiss: timeInTimeOut,
-                  key: UniqueKey(),
-                  child: Align(
-                    alignment:
-                        isIn ? Alignment.centerLeft : Alignment.centerRight,
-                    child: isLoading
-                        ? Container(
-                            height: height * 0.1,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.grey,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 15,
-                              vertical: 9,
-                            ),
-                            child: SizedBox(
-                              width: 30,
-                              height: 30,
-                              child: CircularProgressIndicator(
-                                color: isIn ? theme.primaryColor : bgRed,
+                    Dismissible(
+                      direction: isIn
+                          ? DismissDirection.startToEnd
+                          : DismissDirection.endToStart,
+                      confirmDismiss: timeInTimeOut,
+                      dragStartBehavior: DragStartBehavior.down,
+                      key: UniqueKey(),
+                      child: Align(
+                        alignment:
+                            isIn ? Alignment.centerLeft : Alignment.centerRight,
+                        child: isLoading
+                            ? Container(
+                                height: height * 0.1,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.grey,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                  vertical: 9,
+                                ),
+                                child: SizedBox(
+                                  width: 30,
+                                  height: 30,
+                                  child: CircularProgressIndicator(
+                                    color: isIn ? theme.primaryColor : bgRed,
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                width: constraint.maxHeight,
+                                height: constraint.maxHeight,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isIn ? theme.primaryColor : bgRed,
+                                ),
+                                child: Icon(
+                                  isIn
+                                      ? Icons
+                                          .keyboard_double_arrow_right_rounded
+                                      : Icons
+                                          .keyboard_double_arrow_left_rounded,
+                                  color: Colors.white,
+                                  size: 30,
+                                ),
                               ),
-                            ),
-                          )
-                        : Container(
-                            height: height * 0.1,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: isIn ? theme.primaryColor : bgRed,
-                            ),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: isIn ? 17 : 10,
-                            ),
-                            child: Icon(
-                              isIn
-                                  ? Icons.keyboard_double_arrow_right_rounded
-                                  : Icons.keyboard_double_arrow_left_rounded,
-                              color: Colors.white,
-                              size: 30,
-                            ),
-                          ),
-                  ),
-                ),
-              ],
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ],
