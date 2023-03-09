@@ -20,7 +20,7 @@ class _DTRClockState extends State<DTRClock> {
   static Duration oneSecondDuration = const Duration(seconds: 1);
 
   /// Standard 8 hours of work
-  late final int timeToRenderInMilliseconds;
+  late int timeToRenderInMilliseconds;
 
   /// Display format time for the total work duration. (HH:MM:SS).
   String? workDuration;
@@ -180,6 +180,10 @@ class _DTRClockState extends State<DTRClock> {
               timeInEpoch = state.attendance?.timeInEpoch ?? 0;
               requiredTimeInMinutes = state.attendance?.requiredDuration ?? 0;
               timeOutEpoch = state.attendance?.timeOutEpoch;
+
+              /// Set time to render from x minute to inMilliseconds
+              timeToRenderInMilliseconds =
+                  Duration(minutes: requiredTimeInMinutes).inMilliseconds;
             });
           }
           setState(() => isLoading = false);
