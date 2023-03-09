@@ -408,8 +408,10 @@ class TimeInOutRepository extends ITimeInOutRepository {
 
   @override
   Future<APIResponse<Attendance>> requestOffSet({
-    required int hours,
-    required int minutes,
+    required Duration offsetDuration,
+    required String fromTime,
+    required String toTime,
+    required String reason,
   }) async {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
@@ -418,8 +420,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
       if (user != null && queryTodayRecord != null) {
         final String todayRecordId = queryTodayRecord.objectId!;
         final ParseObject attendance = ParseObject(timeAttendancesTable);
-        final int getMinutesfOffset =
-            Duration(hours: hours, minutes: minutes).inMinutes;
+        final int getMinutesfOffset = offsetDuration.inMinutes;
         const String offsetStatus = 'PENDING';
 
         /// Get the current time record for this day
@@ -459,7 +460,10 @@ class TimeInOutRepository extends ITimeInOutRepository {
             ..set<int>(
               timeAttendancesRequiredDurationField,
               requiredTimeDuration,
-            );
+            )
+            ..set<String>(timeAttendancesOffsetFromTimeField, fromTime)
+            ..set<String>(timeAttendancesOffsetToTimeField, toTime)
+            ..set<String>(timeAttendancesOffsetReasonField, reason);
 
           final ParseResponse attendanceRecordResponse =
               await attendance.save();
@@ -486,7 +490,10 @@ class TimeInOutRepository extends ITimeInOutRepository {
           attendance
             ..objectId = attendanceTodayId
             ..set<int>(timeAttendancesOffsetDurationField, getMinutesfOffset)
-            ..set<String>(timeAttendancesOffsetStatusField, offsetStatus);
+            ..set<String>(timeAttendancesOffsetStatusField, offsetStatus)
+            ..set<String>(timeAttendancesOffsetFromTimeField, fromTime)
+            ..set<String>(timeAttendancesOffsetToTimeField, toTime)
+            ..set<String>(timeAttendancesOffsetReasonField, reason);
 
           final ParseResponse attendanceRecordResponse =
               await attendance.save();
