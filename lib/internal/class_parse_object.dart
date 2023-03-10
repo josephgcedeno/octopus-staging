@@ -186,3 +186,26 @@ class DSRs extends ParseObject implements ParseCloneable {
   String get status => get<String>(keyStatus)!;
   set status(String status) => set<String>(keyStatus, status);
 }
+
+class Leaves extends ParseObject implements ParseCloneable {
+  Leaves() : super(_keyTableName);
+  Leaves.clone() : this();
+
+  /// Serialized response
+  @override
+  Leaves clone(Map<String, dynamic> map) => Leaves.clone()..fromJson(map);
+
+  static const String _keyTableName = 'Leaves';
+  static const String keyStartDate = 'start_date';
+  static const String keyEndDate = 'end_date';
+  static const String keyNoLeaves = 'no_leaves';
+
+  int get startDate => get<int>(keyStartDate)!;
+  set startDate(int startDate) => set<int>(keyStartDate, startDate);
+
+  int get endDate => get<int>(keyEndDate)!;
+  set endDate(int endDate) => set<int>(keyEndDate, endDate);
+
+  int get noLeaves => get<int>(keyNoLeaves)!;
+  set noLeaves(int noLeaves) => set<int>(keyNoLeaves, noLeaves);
+}
