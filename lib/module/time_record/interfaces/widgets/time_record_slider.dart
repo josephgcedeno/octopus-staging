@@ -213,18 +213,14 @@ class _TimeInSliderState extends State<TimeInSlider> {
                             isIn ? Alignment.centerLeft : Alignment.centerRight,
                         child: isLoading
                             ? Container(
-                                height: height * 0.1,
+                                width: constraint.maxHeight,
+                                height: constraint.maxHeight,
                                 decoration: const BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: Colors.grey,
                                 ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 15,
-                                  vertical: 9,
-                                ),
-                                child: SizedBox(
-                                  width: 30,
-                                  height: 30,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
                                   child: CircularProgressIndicator(
                                     color: isIn ? theme.primaryColor : bgRed,
                                   ),
