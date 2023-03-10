@@ -4,6 +4,7 @@ import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/project/project_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/project_repository.dart';
 import 'package:octopus/internal/database_strings.dart';
+import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/helper_function.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
@@ -42,6 +43,11 @@ class ProjectRepository extends IProjectRepository {
           );
 
         final ParseResponse projectTagResponse = await projectTag.save();
+
+        if (projectTagResponse.error != null) {
+          formatAPIErrorResponse(error: projectTagResponse.error!);
+        }
+
         if (projectTagResponse.success) {
           return APIResponse<Project>(
             success: true,
@@ -56,13 +62,6 @@ class ProjectRepository extends IProjectRepository {
             errorCode: null,
           );
         }
-
-        throw APIErrorResponse(
-          message: projectTagResponse.error != null
-              ? projectTagResponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(
@@ -91,6 +90,10 @@ class ProjectRepository extends IProjectRepository {
         final ParseResponse deleteProjectResponse =
             await deleteProject.delete(id: id);
 
+        if (deleteProjectResponse.error != null) {
+          formatAPIErrorResponse(error: deleteProjectResponse.error!);
+        }
+
         if (deleteProjectResponse.success) {
           return APIResponse<void>(
             success: true,
@@ -99,13 +102,6 @@ class ProjectRepository extends IProjectRepository {
             errorCode: null,
           );
         }
-
-        throw APIErrorResponse(
-          message: deleteProjectResponse.error != null
-              ? deleteProjectResponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(
@@ -153,35 +149,31 @@ class ProjectRepository extends IProjectRepository {
       }
 
       final ParseResponse projectTagsResponse = await projectTags.query();
-      if (projectTagsResponse.success) {
-        final List<Project> projects = <Project>[];
-        if (projectTagsResponse.results != null) {
-          for (final ParseObject project
-              in projectTagsResponse.results! as List<ParseObject>) {
-            projects.add(
-              Project(
-                id: project.objectId!,
-                projectName: project.get<String>(projectTagsProjectNameField)!,
-                dateEpoch: project.get<int>(projectTagsProjectDateField)!,
-                status: project.get<String>(projectTagsProjectStatusField)!,
-                color: project.get<String>(projectTagsProjectColorField)!,
-              ),
-            );
-          }
-        }
 
-        return APIListResponse<Project>(
-          success: true,
-          message: 'Successfully get all projects.',
-          data: projects,
-          errorCode: null,
-        );
+      if (projectTagsResponse.error != null) {
+        formatAPIErrorResponse(error: projectTagsResponse.error!);
       }
 
-      throw APIErrorResponse(
-        message: projectTagsResponse.error != null
-            ? projectTagsResponse.error!.message
-            : '',
+      final List<Project> projects = <Project>[];
+      if (projectTagsResponse.results != null) {
+        for (final ParseObject project
+            in projectTagsResponse.results! as List<ParseObject>) {
+          projects.add(
+            Project(
+              id: project.objectId!,
+              projectName: project.get<String>(projectTagsProjectNameField)!,
+              dateEpoch: project.get<int>(projectTagsProjectDateField)!,
+              status: project.get<String>(projectTagsProjectStatusField)!,
+              color: project.get<String>(projectTagsProjectColorField)!,
+            ),
+          );
+        }
+      }
+
+      return APIListResponse<Project>(
+        success: true,
+        message: 'Successfully get all projects.',
+        data: projects,
         errorCode: null,
       );
     } on SocketException {
@@ -236,13 +228,15 @@ class ProjectRepository extends IProjectRepository {
           );
         }
 
-        final ParseResponse updateProjectResponse =
-            await updateProject.save();
+        final ParseResponse updateProjectResponse = await updateProject.save();
+
+        if (updateProjectResponse.error != null) {
+          formatAPIErrorResponse(error: updateProjectResponse.error!);
+        }
 
         if (updateProjectResponse.success) {
           /// Fetch the time in out record if already set. Since not available keys for time in and time out when updating, fetch manually.
-          final String objectId =
-              getResultId(updateProjectResponse.results!);
+          final String objectId = getResultId(updateProjectResponse.results!);
 
           final ParseResponse projectResponse =
               await updateProject.getObject(objectId);
@@ -269,13 +263,6 @@ class ProjectRepository extends IProjectRepository {
             );
           }
         }
-
-        throw APIErrorResponse(
-          message: updateProjectResponse.error != null
-              ? updateProjectResponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(
