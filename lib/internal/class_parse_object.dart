@@ -18,3 +18,22 @@ class Holiday extends ParseObject implements ParseCloneable {
   String get name => get<String>(keyName)!;
   set name(String name) => set<String>(keyName, name);
 }
+
+class TimeInOut extends ParseObject implements ParseCloneable {
+  TimeInOut() : super(_keyTableName);
+  TimeInOut.clone() : this();
+
+  /// Serialized response
+  @override
+  TimeInOut clone(Map<String, dynamic> map) => TimeInOut.clone()..fromJson(map);
+
+  static const String _keyTableName = 'TimeInOut';
+  static const String keyDate = 'date';
+  static const String keyHoliday = 'holiday';
+
+  int get date => get<int>(keyDate)!;
+  set date(int date) => set<int>(keyDate, date);
+
+  Holiday get holiday => get<Holiday>(keyHoliday)!;
+  set holiday(Holiday holiday) => set<Holiday>(keyHoliday, holiday);
+}
