@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
 
@@ -17,12 +18,7 @@ class TimeInSlider extends StatefulWidget {
 class _TimeInSliderState extends State<TimeInSlider> {
   Future<bool> timeInTimeOut(DismissDirection dir) async {
     if (timeOutEpoch != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Already in for the day'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      showSnackBar(message: 'Already in for the day');
       return false;
     }
 
@@ -161,11 +157,9 @@ class _TimeInSliderState extends State<TimeInSlider> {
         } else if (state is FetchTimeInDataFailed) {
           setState(() => isLoading = false);
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: theme.errorColor,
-            ),
+          showSnackBar(
+            message: state.message,
+            snackBartState: SnackBartState.error,
           );
         }
       },

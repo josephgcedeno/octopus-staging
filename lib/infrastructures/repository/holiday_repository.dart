@@ -4,6 +4,7 @@ import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/holiday/holiday_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/holiday_repository.dart';
 import 'package:octopus/internal/database_strings.dart';
+import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/helper_function.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
@@ -36,6 +37,10 @@ class HolidayRepository extends IHoliday {
 
         final ParseResponse addHolidayResponse = await holidays.save();
 
+        if (addHolidayResponse.error != null) {
+          formatAPIErrorResponse(error: addHolidayResponse.error!);
+        }
+
         if (addHolidayResponse.success) {
           return APIResponse<Holiday>(
             success: true,
@@ -48,12 +53,6 @@ class HolidayRepository extends IHoliday {
             errorCode: null,
           );
         }
-        throw APIErrorResponse(
-          message: addHolidayResponse.error != null
-              ? addHolidayResponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(
@@ -76,6 +75,10 @@ class HolidayRepository extends IHoliday {
         final ParseResponse holidayDeleteResponse =
             await holidays.delete(id: id);
 
+        if (holidayDeleteResponse.error != null) {
+          formatAPIErrorResponse(error: holidayDeleteResponse.error!);
+        }
+
         if (holidayDeleteResponse.success) {
           return APIResponse<void>(
             success: true,
@@ -84,12 +87,6 @@ class HolidayRepository extends IHoliday {
             errorCode: null,
           );
         }
-        throw APIErrorResponse(
-          message: holidayDeleteResponse.error != null
-              ? holidayDeleteResponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(
@@ -136,6 +133,10 @@ class HolidayRepository extends IHoliday {
                     ? await holidays.getObject(holidayId)
                     : await holidays.getAll();
 
+        if (getHolidayResponse.error != null) {
+          formatAPIErrorResponse(error: getHolidayResponse.error!);
+        }
+
         if (getHolidayResponse.success) {
           final List<Holiday> holidays = <Holiday>[];
 
@@ -151,19 +152,7 @@ class HolidayRepository extends IHoliday {
               );
             }
           }
-          return APIListResponse<Holiday>(
-            success: true,
-            message: 'Successfully get holidays',
-            data: holidays,
-            errorCode: null,
-          );
         }
-        throw APIErrorResponse(
-          message: getHolidayResponse.error != null
-              ? getHolidayResponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(
@@ -204,6 +193,10 @@ class HolidayRepository extends IHoliday {
         }
         final ParseResponse holidayUpdateResponse = await holidays.save();
 
+        if (holidayUpdateResponse.error != null) {
+          formatAPIErrorResponse(error: holidayUpdateResponse.error!);
+        }
+
         if (holidayUpdateResponse.success) {
           final ParseResponse getUpdatedRecordResponse =
               await holidays.getObject(id);
@@ -225,12 +218,6 @@ class HolidayRepository extends IHoliday {
             );
           }
         }
-        throw APIErrorResponse(
-          message: holidayUpdateResponse.error != null
-              ? holidayUpdateResponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(

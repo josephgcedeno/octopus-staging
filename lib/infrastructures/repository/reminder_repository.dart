@@ -1,9 +1,11 @@
 import 'dart:io';
+
 import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/reminders/reminders_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/reminder_repository.dart';
 import 'package:octopus/internal/database_strings.dart';
+import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/helper_function.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
@@ -39,6 +41,10 @@ class ReminderRepository extends IReminderRepository {
 
         final ParseResponse createReminderReponse = await createReminder.save();
 
+        if (createReminderReponse.error != null) {
+          formatAPIErrorResponse(error: createReminderReponse.error!);
+        }
+
         if (createReminderReponse.success &&
             createReminderReponse.results != null) {
           return APIResponse<Reminder>(
@@ -54,13 +60,6 @@ class ReminderRepository extends IReminderRepository {
             errorCode: null,
           );
         }
-
-        throw APIErrorResponse(
-          message: createReminderReponse.error != null
-              ? createReminderReponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(
@@ -81,6 +80,10 @@ class ReminderRepository extends IReminderRepository {
       if (user != null && user.get<bool>(usersIsAdminField)!) {
         final ParseResponse remindersResponse =
             await ParseObject(panelRemindersTable).getAll();
+
+        if (remindersResponse.error != null) {
+          formatAPIErrorResponse(error: remindersResponse.error!);
+        }
 
         if (remindersResponse.success) {
           final List<Reminder> reminders = <Reminder>[];
@@ -109,13 +112,6 @@ class ReminderRepository extends IReminderRepository {
             errorCode: null,
           );
         }
-
-        throw APIErrorResponse(
-          message: remindersResponse.error != null
-              ? remindersResponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(
@@ -150,36 +146,32 @@ class ReminderRepository extends IReminderRepository {
       final ParseResponse requeryReminderResponse =
           await requeryReminder.query();
 
-      if (requeryReminderResponse.success) {
-        final List<Reminder> reminders = <Reminder>[];
-
-        if (requeryReminderResponse.results != null) {
-          for (final ParseObject result
-              in requeryReminderResponse.results! as List<ParseObject>) {
-            reminders.add(
-              Reminder(
-                id: result.objectId!,
-                announcement:
-                    result.get<String>(pannelRemindersAnnouncementField)!,
-                startDateEpoch: result.get<int>(pannelRemindersStartDateField)!,
-                endDateEpoch: result.get<int>(pannelRemindersEndDateField)!,
-                isShow: result.get<bool>(pannelRemindersIsShowField)!,
-              ),
-            );
-          }
-        }
-        return APIListResponse<Reminder>(
-          success: true,
-          message: 'Successfully get all scheduled reminder',
-          data: reminders,
-          errorCode: null,
-        );
+      if (requeryReminderResponse.error != null) {
+        formatAPIErrorResponse(error: requeryReminderResponse.error!);
       }
 
-      throw APIErrorResponse(
-        message: requeryReminderResponse.error != null
-            ? requeryReminderResponse.error!.message
-            : '',
+      final List<Reminder> reminders = <Reminder>[];
+
+      if (requeryReminderResponse.results != null) {
+        for (final ParseObject result
+            in requeryReminderResponse.results! as List<ParseObject>) {
+          reminders.add(
+            Reminder(
+              id: result.objectId!,
+              announcement:
+                  result.get<String>(pannelRemindersAnnouncementField)!,
+              startDateEpoch: result.get<int>(pannelRemindersStartDateField)!,
+              endDateEpoch: result.get<int>(pannelRemindersEndDateField)!,
+              isShow: result.get<bool>(pannelRemindersIsShowField)!,
+            ),
+          );
+        }
+      }
+
+      return APIListResponse<Reminder>(
+        success: true,
+        message: 'Successfully get all scheduled reminder',
+        data: reminders,
         errorCode: null,
       );
     } on SocketException {
@@ -206,6 +198,10 @@ class ReminderRepository extends IReminderRepository {
         final ParseResponse deleteReminderResponse =
             await deleteReminder.delete(id: id);
 
+        if (deleteReminderResponse.error != null) {
+          formatAPIErrorResponse(error: deleteReminderResponse.error!);
+        }
+
         if (deleteReminderResponse.success) {
           return APIResponse<void>(
             success: true,
@@ -214,13 +210,6 @@ class ReminderRepository extends IReminderRepository {
             errorCode: null,
           );
         }
-
-        throw APIErrorResponse(
-          message: deleteReminderResponse.error != null
-              ? deleteReminderResponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(
@@ -278,6 +267,10 @@ class ReminderRepository extends IReminderRepository {
         final ParseResponse updateReminderResponse =
             await updateReminder.save();
 
+        if (updateReminderResponse.error != null) {
+          formatAPIErrorResponse(error: updateReminderResponse.error!);
+        }
+
         if (updateReminderResponse.success) {
           /// Fetch the time in out record if already set. Since not available keys for time in and time out when updating, fetch manually.
           final String objectId = getResultId(updateReminderResponse.results!);
@@ -306,13 +299,6 @@ class ReminderRepository extends IReminderRepository {
             );
           }
         }
-
-        throw APIErrorResponse(
-          message: updateReminderResponse.error != null
-              ? updateReminderResponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(

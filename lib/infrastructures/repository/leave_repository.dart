@@ -4,6 +4,7 @@ import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/leaves/leaves_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/leave_repository.dart';
 import 'package:octopus/internal/database_strings.dart';
+import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/helper_function.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
@@ -38,6 +39,10 @@ class LeaveRepository extends ILeaveRepository {
           ..set<int>(leavesEndDateField, endDateEpoch);
         final ParseResponse createLeaveResponse = await leaves.save();
 
+        if (createLeaveResponse.error != null) {
+          formatAPIErrorResponse(error: createLeaveResponse.error!);
+        }
+
         if (createLeaveResponse.success &&
             createLeaveResponse.results != null) {
           return APIResponse<Leave>(
@@ -52,13 +57,6 @@ class LeaveRepository extends ILeaveRepository {
             errorCode: null,
           );
         }
-
-        throw APIErrorResponse(
-          message: createLeaveResponse.error != null
-              ? createLeaveResponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(
@@ -99,6 +97,10 @@ class LeaveRepository extends ILeaveRepository {
                 ? await leavesQuery.query()
                 : await leaves.getAll();
 
+        if (getAllLeaveResponse.error != null) {
+          formatAPIErrorResponse(error: getAllLeaveResponse.error!);
+        }
+
         if (getAllLeaveResponse.success) {
           final List<Leave> leaves = <Leave>[];
 
@@ -123,13 +125,6 @@ class LeaveRepository extends ILeaveRepository {
             errorCode: null,
           );
         }
-
-        throw APIErrorResponse(
-          message: getAllLeaveResponse.error != null
-              ? getAllLeaveResponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(
@@ -165,7 +160,12 @@ class LeaveRepository extends ILeaveRepository {
             ..set<int>(leavesStartDateField, epochFromDateTime(date: startDate))
             ..set<int>(leavesEndDateField, epochFromDateTime(date: endDate));
         }
+
         final ParseResponse updateVacationResponse = await leaves.save();
+
+        if (updateVacationResponse.error != null) {
+          formatAPIErrorResponse(error: updateVacationResponse.error!);
+        }
 
         if (updateVacationResponse.success) {
           final ParseResponse getVacationInfoResponse =
@@ -190,13 +190,6 @@ class LeaveRepository extends ILeaveRepository {
             );
           }
         }
-
-        throw APIErrorResponse(
-          message: updateVacationResponse.error != null
-              ? updateVacationResponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(
@@ -219,6 +212,10 @@ class LeaveRepository extends ILeaveRepository {
         final ParseResponse deleteVacationResponse =
             await leaves.delete(id: id);
 
+        if (deleteVacationResponse.error != null) {
+          formatAPIErrorResponse(error: deleteVacationResponse.error!);
+        }
+
         if (deleteVacationResponse.success) {
           return APIResponse<void>(
             success: true,
@@ -227,13 +224,6 @@ class LeaveRepository extends ILeaveRepository {
             errorCode: null,
           );
         }
-
-        throw APIErrorResponse(
-          message: deleteVacationResponse.error != null
-              ? deleteVacationResponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(
@@ -262,6 +252,10 @@ class LeaveRepository extends ILeaveRepository {
         final ParseResponse updateReqRecordResponse =
             await leaveRequests.save();
 
+        if (updateReqRecordResponse.error != null) {
+          formatAPIErrorResponse(error: updateReqRecordResponse.error!);
+        }
+
         if (updateReqRecordResponse.success) {
           final ParseResponse getUpdatedRecordResponse =
               await leaveRequests.getObject(requestId);
@@ -287,13 +281,6 @@ class LeaveRepository extends ILeaveRepository {
             );
           }
         }
-
-        throw APIErrorResponse(
-          message: updateReqRecordResponse.error != null
-              ? updateReqRecordResponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(
@@ -322,6 +309,10 @@ class LeaveRepository extends ILeaveRepository {
         final ParseResponse updateReqRecordResponse =
             await leaveRequests.save();
 
+        if (updateReqRecordResponse.error != null) {
+          formatAPIErrorResponse(error: updateReqRecordResponse.error!);
+        }
+
         if (updateReqRecordResponse.success) {
           final ParseResponse getUpdatedRecordResponse =
               await leaveRequests.getObject(requestId);
@@ -347,13 +338,6 @@ class LeaveRepository extends ILeaveRepository {
             );
           }
         }
-
-        throw APIErrorResponse(
-          message: updateReqRecordResponse.error != null
-              ? updateReqRecordResponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(
@@ -382,6 +366,10 @@ class LeaveRepository extends ILeaveRepository {
         final ParseResponse updateReqRecordResponse =
             await leaveRequests.save();
 
+        if (updateReqRecordResponse.error != null) {
+          formatAPIErrorResponse(error: updateReqRecordResponse.error!);
+        }
+
         if (updateReqRecordResponse.success) {
           final ParseResponse getUpdatedRecordResponse =
               await leaveRequests.getObject(requestId);
@@ -407,13 +395,6 @@ class LeaveRepository extends ILeaveRepository {
             );
           }
         }
-
-        throw APIErrorResponse(
-          message: updateReqRecordResponse.error != null
-              ? updateReqRecordResponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(
@@ -472,6 +453,10 @@ class LeaveRepository extends ILeaveRepository {
             ? await leaveRequests.getObject(leaveRequestId)
             : await leaveReqQuery.query();
 
+        if (getLeaveReqResponse.error != null) {
+          formatAPIErrorResponse(error: getLeaveReqResponse.error!);
+        }
+
         if (getLeaveReqResponse.success) {
           final List<LeaveRequest> leaveRequests = <LeaveRequest>[];
 
@@ -502,13 +487,6 @@ class LeaveRepository extends ILeaveRepository {
             errorCode: null,
           );
         }
-
-        throw APIErrorResponse(
-          message: getLeaveReqResponse.error != null
-              ? getLeaveReqResponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(
@@ -598,6 +576,11 @@ class LeaveRepository extends ILeaveRepository {
 
         final ParseResponse createLeaveRequestResponse =
             await leaveRequests.save();
+
+        if (createLeaveRequestResponse.error != null) {
+          formatAPIErrorResponse(error: createLeaveRequestResponse.error!);
+        }
+
         if (createLeaveRequestResponse.success &&
             createLeaveRequestResponse.results != null) {
           return APIResponse<LeaveRequest>(
@@ -616,13 +599,6 @@ class LeaveRepository extends ILeaveRepository {
             errorCode: null,
           );
         }
-
-        throw APIErrorResponse(
-          message: createLeaveRequestResponse.error != null
-              ? createLeaveRequestResponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(
