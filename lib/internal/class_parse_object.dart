@@ -96,3 +96,30 @@ class TimeAttendances extends ParseObject implements ParseCloneable {
   set offsetReason(String? offsetReason) =>
       set<String?>(keyOffsetReason, offsetReason);
 }
+
+class Projects extends ParseObject implements ParseCloneable {
+  Projects() : super(_keyTableName);
+  Projects.clone() : this();
+
+  /// Serialized response
+  @override
+  Projects clone(Map<String, dynamic> map) => Projects.clone()..fromJson(map);
+
+  static const String _keyTableName = 'Projects';
+  static const String keyDate = 'date';
+  static const String keyName = 'name';
+  static const String keyStatus = 'status';
+  static const String keyColor = 'color';
+
+  int get date => get<int>(keyDate)!;
+  set date(int name) => set<int>(keyDate, name);
+
+  String get name => get<String>(keyName)!;
+  set name(String name) => set<String>(keyName, name);
+
+  String get status => get<String>(keyStatus)!;
+  set status(String status) => set<String>(keyStatus, status);
+
+  String get color => get<String>(keyColor)!;
+  set color(String color) => get<String>(keyColor)!;
+}
