@@ -37,3 +37,62 @@ class TimeInOut extends ParseObject implements ParseCloneable {
   Holiday get holiday => get<Holiday>(keyHoliday)!;
   set holiday(Holiday holiday) => set<Holiday>(keyHoliday, holiday);
 }
+
+class TimeAttendances extends ParseObject implements ParseCloneable {
+  TimeAttendances() : super(_keyTableName);
+  TimeAttendances.clone() : this();
+
+  /// Serialized response
+  @override
+  TimeAttendances clone(Map<String, dynamic> map) =>
+      TimeAttendances.clone()..fromJson(map);
+
+  static const String _keyTableName = 'TimeAttendances';
+  static const String keyTimeIn = 'time_in';
+  static const String keyTimeOut = 'time_out';
+  static const String keyUser = 'user';
+  static const String keyTimeInOut = 'time_in_out';
+  static const String keyRequiredDuration = 'required_duration';
+  static const String keyOffsetDuration = 'offset_duration';
+  static const String keyOffsetStatus = 'offset_status';
+  static const String keyOffsetToTime = 'offset_to_time';
+  static const String keyOffsetReason = 'offset_reason';
+
+  static const String keyOffsetFromTime = 'offset_from_time';
+
+  int? get timeIn => get<int>(keyTimeIn);
+  set timeIn(int? timeIn) => set<int?>(keyTimeIn, timeIn);
+
+  int? get timeOut => get<int>(keyTimeOut);
+  set timeOut(int? timeOut) => set<int?>(keyTimeOut, timeOut);
+
+  ParseUser get user => get<ParseUser>(keyUser)!;
+  set user(ParseUser user) => set<ParseUser>(keyUser, user);
+
+  TimeInOut get timeInOut => get<TimeInOut>(keyTimeInOut)!;
+  set timeInOut(TimeInOut timeInOut) => set<TimeInOut>(keyTimeInOut, timeInOut);
+
+  int? get requiredDuration => get<int>(keyRequiredDuration);
+  set requiredDuration(int? requiredDuration) =>
+      set<int?>(keyRequiredDuration, requiredDuration);
+
+  int? get offsetDuration => get<int>(keyOffsetDuration);
+  set offsetDuration(int? offsetDuration) =>
+      set<int?>(keyOffsetDuration, offsetDuration);
+
+  String? get offsetStatus => get<String>(keyOffsetStatus);
+  set offsetStatus(String? offsetStatus) =>
+      set<String?>(keyOffsetStatus, offsetStatus);
+
+  String? get offsetFromTime => get<String>(keyOffsetFromTime);
+  set offsetFromTime(String? offsetFromTime) =>
+      set<String?>(keyOffsetFromTime, offsetFromTime);
+
+  String? get offsetToTime => get<String>(keyOffsetToTime);
+  set offsetToTime(String? offsetToTime) =>
+      set<String?>(keyOffsetToTime, offsetToTime);
+
+  String? get offsetReason => get<String>(keyOffsetReason);
+  set offsetReason(String? offsetReason) =>
+      set<String?>(keyOffsetReason, offsetReason);
+}
