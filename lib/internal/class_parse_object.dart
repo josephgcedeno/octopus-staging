@@ -1,3 +1,5 @@
+import 'package:octopus/infrastructures/models/dsr/dsr_request.dart';
+import 'package:octopus/internal/helper_function.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class Holiday extends ParseObject implements ParseCloneable {
@@ -141,4 +143,46 @@ class Sprints extends ParseObject implements ParseCloneable {
 
   int get endDate => get<int>(keyEndDate)!;
   set endDate(int endDate) => set<int>(keyEndDate, endDate);
+}
+
+class DSRs extends ParseObject implements ParseCloneable {
+  DSRs() : super(_keyTableName);
+  DSRs.clone() : this();
+
+  /// Serialized response
+  @override
+  DSRs clone(Map<String, dynamic> map) => DSRs.clone()..fromJson(map);
+
+  static const String _keyTableName = 'DSRs';
+  static const String keyUser = 'user';
+  static const String keySprint = 'sprint';
+  static const String keyDone = 'done';
+  static const String keyWIP = 'work_in_progress';
+  static const String keyBlockers = 'blockers';
+  static const String keyDate = 'date';
+  static const String keyStatus = 'status';
+
+  ParseUser get user => get<ParseUser>(keyUser)!;
+  set user(ParseUser user) => set<ParseUser>(keyUser, user);
+
+  Sprints get sprints => get<Sprints>(keySprint)!;
+  set sprints(Sprints sprints) => set<Sprints>(keySprint, sprints);
+
+  List<Task>? get done =>
+      convertListDynamic(get<List<dynamic>>(keyDone) ?? <dynamic>[]);
+  set done(List<Task>? done) => set(keyDone, done);
+
+  List<Task>? get wip =>
+      convertListDynamic(get<List<dynamic>>(keyWIP) ?? <dynamic>[]);
+  set wip(List<Task>? wip) => set(keyWIP, wip);
+
+  List<Task>? get blockers =>
+      convertListDynamic(get<List<dynamic>>(keyBlockers) ?? <dynamic>[]);
+  set blockers(List<Task>? blockers) => set(keyBlockers, blockers);
+
+  int get date => get<int>(keyDate)!;
+  set date(int date) => set<int>(keyDate, date);
+
+  String get status => get<String>(keyStatus)!;
+  set status(String status) => set<String>(keyStatus, status);
 }
