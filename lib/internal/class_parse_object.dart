@@ -123,3 +123,22 @@ class Projects extends ParseObject implements ParseCloneable {
   String get color => get<String>(keyColor)!;
   set color(String color) => get<String>(keyColor)!;
 }
+
+class Sprints extends ParseObject implements ParseCloneable {
+  Sprints() : super(_keyTableName);
+  Sprints.clone() : this();
+
+  /// Serialized response
+  @override
+  Sprints clone(Map<String, dynamic> map) => Sprints.clone()..fromJson(map);
+
+  static const String _keyTableName = 'Sprints';
+  static const String keyStartDate = 'start_date';
+  static const String keyEndDate = 'end_date';
+
+  int get startDate => get<int>(keyStartDate)!;
+  set startDate(int startDate) => set<int>(keyStartDate, startDate);
+
+  int get endDate => get<int>(keyEndDate)!;
+  set endDate(int endDate) => set<int>(keyEndDate, endDate);
+}
