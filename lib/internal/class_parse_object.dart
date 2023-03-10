@@ -209,3 +209,43 @@ class Leaves extends ParseObject implements ParseCloneable {
   int get noLeaves => get<int>(keyNoLeaves)!;
   set noLeaves(int noLeaves) => set<int>(keyNoLeaves, noLeaves);
 }
+
+class LeavesRequests extends ParseObject implements ParseCloneable {
+  LeavesRequests() : super(_keyTableName);
+  LeavesRequests.clone() : this();
+
+  /// Serialized response
+  @override
+  LeavesRequests clone(Map<String, dynamic> map) =>
+      LeavesRequests.clone()..fromJson(map);
+
+  static const String _keyTableName = 'LeavesRequests';
+  static const String keyLeave = 'leave';
+  static const String keyUser = 'user';
+  static const String keyDateFilled = 'date_filed';
+  static const String keyDateUsed = 'date_used';
+  static const String keyStatus = 'status';
+  static const String keyReason = 'reason';
+  static const String keyLeaveType = 'leave_type';
+
+  Leaves get leave => get<Leaves>(keyLeave)!;
+  set leave(Leaves leave) => set<Leaves>(keyLeave, leave);
+
+  ParseUser get user => get<ParseUser>(keyUser)!;
+  set user(ParseUser user) => set<ParseUser>(keyUser, user);
+
+  int get dateFiled => get<int>(keyDateFilled)!;
+  set dateFiled(int dateFiled) => set<int>(keyDateFilled, dateFiled);
+
+  int? get dateUsed => get<int>(keyDateUsed);
+  set dateUsed(int? dateUsed) => set<int?>(keyDateUsed, dateUsed);
+
+  String get status => get<String>(keyStatus)!;
+  set status(String status) => set<String>(keyStatus, status);
+
+  String get reason => get<String>(keyReason)!;
+  set reason(String reason) => set<String>(keyReason, reason);
+
+  String get leaveType => get<String>(keyLeaveType)!;
+  set leaveType(String leaveType) => set<String>(keyLeaveType, leaveType);
+}
