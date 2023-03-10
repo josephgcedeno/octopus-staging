@@ -196,8 +196,10 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
                           ),
                           width: double.infinity,
                           child: LayoutBuilder(
-                            builder: (BuildContext context,
-                                BoxConstraints constraints) {
+                            builder: (
+                              BuildContext context,
+                              BoxConstraints constraints,
+                            ) {
                               return Row(
                                 children: <Widget>[
                                   for (int i = 0; i < 2; i++)
