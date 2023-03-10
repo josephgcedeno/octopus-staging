@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:octopus/configs/themes.dart';
+import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/standup_report/service/cubit/dsr_cubit.dart';
 
 class ExpandedTextField extends StatefulWidget {
@@ -29,11 +29,9 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
       } else {
         errorText = 'Project and Task Status has to be set.';
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(errorText),
-          backgroundColor: kRed,
-        ),
+      showSnackBar(
+        message: errorText,
+        snackBartState: SnackBartState.error,
       );
     }
   }

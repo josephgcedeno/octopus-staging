@@ -6,6 +6,7 @@ import 'package:octopus/infrastructures/models/dsr/dsr_request.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/dsr_repository.dart';
 import 'package:octopus/internal/database_strings.dart';
+import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/helper_function.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
@@ -135,6 +136,11 @@ class DSRRepository extends IDSRRepository {
 
       final ParseResponse queryGetActiveProjetResponse =
           await queryGetActiveProject.query();
+
+      if (queryGetActiveProjetResponse.error != null) {
+        formatAPIErrorResponse(error: queryGetActiveProjetResponse.error!);
+      }
+
       if (queryGetActiveProjetResponse.success &&
           queryGetActiveProjetResponse.results != null) {
         final List<ParseObject> projects =
@@ -153,6 +159,10 @@ class DSRRepository extends IDSRRepository {
     } else if (projectId != null) {
       final ParseResponse projectIdResponse =
           await project.getObject(projectId);
+
+      if (projectIdResponse.error != null) {
+        formatAPIErrorResponse(error: projectIdResponse.error!);
+      }
 
       if (projectIdResponse.count == 0) {
         throw APIErrorResponse(
@@ -246,6 +256,11 @@ class DSRRepository extends IDSRRepository {
           if (projectId != null) await doesProjectIdExist(projectId: projectId);
 
           final ParseResponse dsrResponse = await dsrQuery.query();
+
+          if (dsrResponse.error != null) {
+            formatAPIErrorResponse(error: dsrResponse.error!);
+          }
+
           final Map<String, List<DSRWorks>> datas = <String, List<DSRWorks>>{};
           if (dsrResponse.success) {
             if (dsrResponse.results != null) {
@@ -298,13 +313,6 @@ class DSRRepository extends IDSRRepository {
               message: 'success',
             );
           }
-          throw APIErrorResponse(
-            message:
-                dsrResponse.error != null ? dsrResponse.error!.message : '',
-            errorCode: dsrResponse.error != null
-                ? dsrResponse.error!.code as String
-                : '',
-          );
         }
       }
 
@@ -348,6 +356,10 @@ class DSRRepository extends IDSRRepository {
 
         final ParseResponse sprintResponse = await sprintRecord.query();
 
+        if (sprintResponse.error != null) {
+          formatAPIErrorResponse(error: sprintResponse.error!);
+        }
+
         if (sprintResponse.success) {
           final List<SprintRecord> sprints = <SprintRecord>[];
           if (sprintResponse.results != null) {
@@ -369,14 +381,6 @@ class DSRRepository extends IDSRRepository {
             errorCode: null,
           );
         }
-
-        throw APIErrorResponse(
-          message:
-              sprintResponse.error != null ? sprintResponse.error!.message : '',
-          errorCode: sprintResponse.error != null
-              ? sprintResponse.error!.code as String
-              : '',
-        );
       }
 
       throw APIErrorResponse(
@@ -406,28 +410,21 @@ class DSRRepository extends IDSRRepository {
 
       final ParseResponse queryTodayRecord = await todayRecord.query();
 
-      if (queryTodayRecord.success && queryTodayRecord.results != null) {
-        final ParseObject sprintInfo =
-            getParseObject(queryTodayRecord.results!);
-
-        return APIResponse<SprintRecord>(
-          success: true,
-          message: 'Successfully get the sprint record for this day.',
-          data: SprintRecord(
-            id: sprintInfo.objectId!,
-            startDateEpoch: sprintInfo.get<int>(sprintsStartDateField)!,
-            endDateEpoch: sprintInfo.get<int>(sprintsEndDateField)!,
-          ),
-          errorCode: null,
-        );
+      if (queryTodayRecord.error != null) {
+        formatAPIErrorResponse(error: queryTodayRecord.error!);
       }
-      throw APIErrorResponse(
-        message: queryTodayRecord.error != null
-            ? queryTodayRecord.error!.message
-            : '',
-        errorCode: queryTodayRecord.error != null
-            ? queryTodayRecord.error!.code as String
-            : '',
+
+      final ParseObject sprintInfo = getParseObject(queryTodayRecord.results!);
+
+      return APIResponse<SprintRecord>(
+        success: true,
+        message: 'Successfully get the sprint record for this day.',
+        data: SprintRecord(
+          id: sprintInfo.objectId!,
+          startDateEpoch: sprintInfo.get<int>(sprintsStartDateField)!,
+          endDateEpoch: sprintInfo.get<int>(sprintsEndDateField)!,
+        ),
+        errorCode: null,
       );
     } on SocketException {
       throw APIErrorResponse.socketErrorResponse();
@@ -461,6 +458,10 @@ class DSRRepository extends IDSRRepository {
 
           final ParseResponse isAlreadyExisitingResponse =
               await isAlreadyExisiting.query();
+
+          if (isAlreadyExisitingResponse.error != null) {
+            formatAPIErrorResponse(error: isAlreadyExisitingResponse.error!);
+          }
 
           /// If count is 0 create dsr record
           if (isAlreadyExisitingResponse.success &&
@@ -520,15 +521,6 @@ class DSRRepository extends IDSRRepository {
               errorCode: null,
             );
           }
-
-          throw APIErrorResponse(
-            message: isAlreadyExisitingResponse.error != null
-                ? isAlreadyExisitingResponse.error!.message
-                : '',
-            errorCode: isAlreadyExisitingResponse.error != null
-                ? isAlreadyExisitingResponse.error!.code as String
-                : '',
-          );
         }
       }
 
@@ -572,6 +564,10 @@ class DSRRepository extends IDSRRepository {
               );
         final ParseResponse isAlreadyExisitingResponse =
             await isAlreadyExisiting.query();
+
+        if (isAlreadyExisitingResponse.error != null) {
+          formatAPIErrorResponse(error: isAlreadyExisitingResponse.error!);
+        }
 
         /// If count is 0 create sprint record
         if (isAlreadyExisitingResponse.success &&
@@ -648,6 +644,10 @@ class DSRRepository extends IDSRRepository {
 
           final ParseResponse saveDsrResponse = await dsrs.save();
 
+          if (saveDsrResponse.error != null) {
+            formatAPIErrorResponse(error: saveDsrResponse.error!);
+          }
+
           if (saveDsrResponse.success) {
             final ParseResponse dsrInfoAfterAdding =
                 await dsrs.getObject(dsrId);
@@ -679,12 +679,6 @@ class DSRRepository extends IDSRRepository {
               );
             }
           }
-          throw APIErrorResponse(
-            message: saveDsrResponse.error != null
-                ? saveDsrResponse.error!.message
-                : '',
-            errorCode: null,
-          );
         }
       }
 
@@ -727,6 +721,10 @@ class DSRRepository extends IDSRRepository {
 
         final ParseResponse saveDsrResponse = await dsrs.save();
 
+        if (saveDsrResponse.error != null) {
+          formatAPIErrorResponse(error: saveDsrResponse.error!);
+        }
+
         if (saveDsrResponse.success) {
           final ParseResponse dsrInfoAfterUpdating =
               await dsrs.getObject(dsrId);
@@ -758,13 +756,6 @@ class DSRRepository extends IDSRRepository {
             );
           }
         }
-
-        throw APIErrorResponse(
-          message: saveDsrResponse.error != null
-              ? saveDsrResponse.error!.message
-              : '',
-          errorCode: null,
-        );
       }
 
       throw APIErrorResponse(
@@ -800,9 +791,14 @@ class DSRRepository extends IDSRRepository {
                 sprintId ?? sprintToday.data.id,
               )
               ..whereEqualTo(dsrsUserIdField, user.objectId);
+
         final ParseResponse getAllDSRQueryResponse = dsrId != null
             ? await sprints.getObject(dsrId)
             : await getAllDSRQuery.query();
+
+        if (getAllDSRQueryResponse.error != null) {
+          formatAPIErrorResponse(error: getAllDSRQueryResponse.error!);
+        }
 
         if (getAllDSRQueryResponse.success) {
           final List<DSRRecord> dsrs = <DSRRecord>[];

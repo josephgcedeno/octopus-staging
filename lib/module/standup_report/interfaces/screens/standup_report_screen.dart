@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_request.dart';
 import 'package:octopus/infrastructures/models/project/project_response.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
+import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/status_column.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/task_textarea.dart';
 import 'package:octopus/module/standup_report/service/cubit/dsr_cubit.dart';
@@ -124,14 +125,10 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
       )
     ];
 
-    void errorSnackbar(String message) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: theme.errorColor,
-        ),
-      );
-    }
+    void errorSnackbar(String message) => showSnackBar(
+          message: message,
+          snackBartState: SnackBartState.error,
+        );
 
     return BlocListener<DSRCubit, DSRState>(
       listenWhen: (DSRState previous, DSRState current) =>

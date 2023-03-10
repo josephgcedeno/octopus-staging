@@ -4,13 +4,10 @@ class APIErrorResponse {
     required this.errorCode,
   });
 
-  static Map<String, dynamic> socketErrorResponse() {
-    return <String, dynamic>{
-      'success': false,
-      'message': 'No Internet Connection',
-      'errorCode': 'NO_INTERNET_CONNECTION',
-    };
-  }
+  factory APIErrorResponse.socketErrorResponse() => APIErrorResponse(
+        errorCode: 'NO_INTERNET_CONNECTION',
+        message: 'No Internet Connection',
+      );
 
   /// base API response
   final String message;

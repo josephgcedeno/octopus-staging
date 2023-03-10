@@ -7,6 +7,7 @@ import 'package:octopus/infrastructures/repository/dsr_repository.dart';
 import 'package:octopus/infrastructures/repository/project_repository.dart';
 import 'package:octopus/infrastructures/repository/time_in_out_repository.dart';
 import 'package:octopus/interfaces/screens/splash_screen.dart';
+import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
 import 'package:octopus/module/login/interfaces/screens/login_screen.dart';
 import 'package:octopus/module/login/service/cubit/authentication_cubit.dart';
@@ -66,6 +67,7 @@ class _AppState extends State<App> {
         ),
       ],
       child: MaterialApp(
+        scaffoldMessengerKey: snackbarKey,
         title: dotenv.get('TITLE'),
         home: _HomePageState(),
         theme: defaultTheme,

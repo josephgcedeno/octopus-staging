@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/configs/themes.dart';
+import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/helper_function.dart';
 import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -186,11 +187,9 @@ class _DTRClockState extends State<DTRClock> {
         } else if (state is FetchTimeInDataFailed) {
           setState(() => isLoading = false);
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: theme.errorColor,
-            ),
+          showSnackBar(
+            message: state.message,
+            snackBartState: SnackBartState.error,
           );
         }
 
