@@ -249,3 +249,32 @@ class LeavesRequests extends ParseObject implements ParseCloneable {
   String get leaveType => get<String>(keyLeaveType)!;
   set leaveType(String leaveType) => set<String>(keyLeaveType, leaveType);
 }
+
+class PanelReminders extends ParseObject implements ParseCloneable {
+  PanelReminders() : super(_keyTableName);
+  PanelReminders.clone() : this();
+
+  /// Serialized response
+  @override
+  PanelReminders clone(Map<String, dynamic> map) =>
+      PanelReminders.clone()..fromJson(map);
+
+  static const String _keyTableName = 'PanelReminders';
+  static const String keyAnnouncement = 'announcement';
+  static const String keyStartDate = 'start_date';
+  static const String keyEndDate = 'end_date';
+  static const String keyIsShow = 'is_show';
+
+  int get startDate => get<int>(keyStartDate)!;
+  set startDate(int startDate) => set<int>(keyStartDate, startDate);
+
+  int get endDate => get<int>(keyEndDate)!;
+  set endDate(int endDate) => set<int>(keyEndDate, endDate);
+
+  bool get isShow => get<bool>(keyIsShow)!;
+  set isShow(bool isShow) => set<bool>(keyIsShow, isShow);
+
+  String get announcement => get<String>(keyAnnouncement)!;
+  set announcement(String announcement) =>
+      set<String>(keyAnnouncement, announcement);
+}
