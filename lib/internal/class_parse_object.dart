@@ -7,8 +7,10 @@ class HolidayParseObject extends ParseObject implements ParseCloneable {
   HolidayParseObject.clone() : this();
 
   /// Convert the ParseObject to a custom parse object.
-  static HolidayParseObject toCustomParseObject(List<dynamic> data) =>
-      (data as List<ParseObject?>).first! as HolidayParseObject;
+  static HolidayParseObject toCustomParseObject({
+    required dynamic data,
+  }) =>
+      data as HolidayParseObject;
 
   /// Serialized response
   @override
@@ -31,8 +33,10 @@ class TimeInOutParseObject extends ParseObject implements ParseCloneable {
   TimeInOutParseObject.clone() : this();
 
   /// Convert the ParseObject to a custom parse object.
-  static TimeInOutParseObject toCustomParseObject(List<dynamic> data) =>
-      (data as List<ParseObject?>).first! as TimeInOutParseObject;
+  static TimeInOutParseObject toCustomParseObject({
+    required dynamic data,
+  }) =>
+      data as TimeInOutParseObject;
 
   /// Serialized response
   @override
@@ -56,8 +60,10 @@ class TimeAttendancesParseObject extends ParseObject implements ParseCloneable {
   TimeAttendancesParseObject.clone() : this();
 
   /// Convert the ParseObject to a custom parse object.
-  static TimeAttendancesParseObject toCustomParseObject(List<dynamic> data) =>
-      (data as List<ParseObject?>).first! as TimeAttendancesParseObject;
+  static TimeAttendancesParseObject toCustomParseObject({
+    required dynamic data,
+  }) =>
+      data as TimeAttendancesParseObject;
 
   /// Serialized response
   @override
@@ -121,8 +127,10 @@ class ProjectsParseObject extends ParseObject implements ParseCloneable {
   ProjectsParseObject.clone() : this();
 
   /// Convert the ParseObject to a custom parse object.
-  static ProjectsParseObject toCustomParseObject(List<dynamic> data) =>
-      (data as List<ParseObject?>).first! as ProjectsParseObject;
+  static ProjectsParseObject toCustomParseObject({
+    required dynamic data,
+  }) =>
+      data as ProjectsParseObject;
 
   /// Serialized response
   @override
@@ -153,8 +161,10 @@ class SprintsParseObject extends ParseObject implements ParseCloneable {
   SprintsParseObject.clone() : this();
 
   /// Convert the ParseObject to a custom parse object.
-  static SprintsParseObject toCustomParseObject(List<dynamic> data) =>
-      (data as List<ParseObject?>).first! as SprintsParseObject;
+  static SprintsParseObject toCustomParseObject({
+    required dynamic data,
+  }) =>
+      data as SprintsParseObject;
 
   /// Serialized response
   @override
@@ -177,8 +187,10 @@ class DSRsParseObject extends ParseObject implements ParseCloneable {
   DSRsParseObject.clone() : this();
 
   /// Convert the ParseObject to a custom parse object.
-  static DSRsParseObject toCustomParseObject(List<dynamic> data) =>
-      (data as List<ParseObject?>).first! as DSRsParseObject;
+  static DSRsParseObject toCustomParseObject({
+    required dynamic data,
+  }) =>
+      data as DSRsParseObject;
 
   /// Serialized response
   @override
@@ -225,8 +237,10 @@ class LeavesParseObject extends ParseObject implements ParseCloneable {
   LeavesParseObject.clone() : this();
 
   /// Convert the ParseObject to a custom parse object.
-  static LeavesParseObject toCustomParseObject(List<dynamic> data) =>
-      (data as List<ParseObject?>).first! as LeavesParseObject;
+  static LeavesParseObject toCustomParseObject({
+    required dynamic data,
+  }) =>
+      data as LeavesParseObject;
 
   /// Serialized response
   @override
@@ -253,8 +267,10 @@ class LeavesRequestsParseObject extends ParseObject implements ParseCloneable {
   LeavesRequestsParseObject.clone() : this();
 
   /// Convert the ParseObject to a custom parse object.
-  static LeavesRequestsParseObject toCustomParseObject(List<dynamic> data) =>
-      (data as List<ParseObject?>).first! as LeavesRequestsParseObject;
+  static LeavesRequestsParseObject toCustomParseObject({
+    required dynamic data,
+  }) =>
+      data as LeavesRequestsParseObject;
 
   /// Serialized response
   @override
@@ -297,8 +313,10 @@ class PanelRemindersParseObject extends ParseObject implements ParseCloneable {
   PanelRemindersParseObject.clone() : this();
 
   /// Convert the ParseObject to a custom parse object.
-  static PanelRemindersParseObject toCustomParseObject(List<dynamic> data) =>
-      (data as List<ParseObject?>).first! as PanelRemindersParseObject;
+  static PanelRemindersParseObject toCustomParseObject({
+    required dynamic data,
+  }) =>
+      data as PanelRemindersParseObject;
 
   /// Serialized response
   @override
