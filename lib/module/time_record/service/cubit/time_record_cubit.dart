@@ -9,7 +9,7 @@ part 'time_record_state.dart';
 /// Cubit for general Quote
 class TimeRecordCubit extends Cubit<TimeRecordState> {
   TimeRecordCubit({required this.timeInOutRepository})
-      : super(const TimeRecordState());
+      : super(TimeRecordState());
 
   final ITimeInOutRepository timeInOutRepository;
 
@@ -21,13 +21,19 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
           await timeInOutRepository.getInitialData();
 
       /// This will emit either attendance with attendance success with attendance data or there is no attendance yet emit success but with null.
-      emit(FetchTimeInDataSuccess(attendance: isAlreadyIn.data));
+      emit(
+        FetchTimeInDataSuccess(
+          attendance: isAlreadyIn.data,
+          origin: ExecutedOrigin.fetchAttendance,
+        ),
+      );
     } catch (e) {
       final APIErrorResponse error = e as APIErrorResponse;
       emit(
         FetchTimeInDataFailed(
           errorCode: error.errorCode!,
           message: error.message,
+          origin: ExecutedOrigin.fetchAttendance,
         ),
       );
     }
@@ -44,6 +50,7 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
       emit(
         FetchTimeInDataSuccess(
           attendance: signInToday.data,
+          origin: ExecutedOrigin.signIn,
         ),
       );
     } catch (e) {
@@ -53,6 +60,7 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
         FetchTimeInDataFailed(
           errorCode: error.errorCode!,
           message: error.message,
+          origin: ExecutedOrigin.signIn,
         ),
       );
     }
@@ -69,6 +77,7 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
       emit(
         FetchTimeInDataSuccess(
           attendance: signOutToday.data,
+          origin: ExecutedOrigin.signOut,
         ),
       );
     } catch (e) {
@@ -78,6 +87,7 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
         FetchTimeInDataFailed(
           errorCode: error.errorCode!,
           message: error.message,
+          origin: ExecutedOrigin.signOut,
         ),
       );
     }
@@ -103,6 +113,7 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
       emit(
         FetchTimeInDataSuccess(
           attendance: requestOffset.data,
+          origin: ExecutedOrigin.requestOffset,
         ),
       );
     } catch (e) {
@@ -112,6 +123,7 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
         FetchTimeInDataFailed(
           errorCode: error.errorCode ?? '',
           message: error.message,
+          origin: ExecutedOrigin.requestOffset,
         ),
       );
     }
