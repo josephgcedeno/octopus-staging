@@ -217,7 +217,7 @@ class _TimeInSliderState extends State<TimeInSlider> {
                                 height: constraint.maxHeight,
                                 decoration: const BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: Colors.grey,
+                                  color: Colors.black12,
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
