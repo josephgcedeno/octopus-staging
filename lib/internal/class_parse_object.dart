@@ -2,13 +2,18 @@ import 'package:octopus/infrastructures/models/dsr/dsr_request.dart';
 import 'package:octopus/internal/helper_function.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
-class Holiday extends ParseObject implements ParseCloneable {
-  Holiday() : super(_keyTableName);
-  Holiday.clone() : this();
+class HolidayParseObject extends ParseObject implements ParseCloneable {
+  HolidayParseObject() : super(_keyTableName);
+  HolidayParseObject.clone() : this();
+
+  /// Convert the ParseObject to a custom parse object.
+  static HolidayParseObject toCustomParseObject(List<dynamic> data) =>
+      (data as List<ParseObject?>).first! as HolidayParseObject;
 
   /// Serialized response
   @override
-  Holiday clone(Map<String, dynamic> map) => Holiday.clone()..fromJson(map);
+  HolidayParseObject clone(Map<String, dynamic> map) =>
+      HolidayParseObject.clone()..fromJson(map);
 
   static const String _keyTableName = 'Holiday';
   static const String keyDate = 'date';
@@ -21,13 +26,18 @@ class Holiday extends ParseObject implements ParseCloneable {
   set name(String name) => set<String>(keyName, name);
 }
 
-class TimeInOut extends ParseObject implements ParseCloneable {
-  TimeInOut() : super(_keyTableName);
-  TimeInOut.clone() : this();
+class TimeInOutParseObject extends ParseObject implements ParseCloneable {
+  TimeInOutParseObject() : super(_keyTableName);
+  TimeInOutParseObject.clone() : this();
+
+  /// Convert the ParseObject to a custom parse object.
+  static TimeInOutParseObject toCustomParseObject(List<dynamic> data) =>
+      (data as List<ParseObject?>).first! as TimeInOutParseObject;
 
   /// Serialized response
   @override
-  TimeInOut clone(Map<String, dynamic> map) => TimeInOut.clone()..fromJson(map);
+  TimeInOutParseObject clone(Map<String, dynamic> map) =>
+      TimeInOutParseObject.clone()..fromJson(map);
 
   static const String _keyTableName = 'TimeInOut';
   static const String keyDate = 'date';
@@ -36,18 +46,23 @@ class TimeInOut extends ParseObject implements ParseCloneable {
   int get date => get<int>(keyDate)!;
   set date(int date) => set<int>(keyDate, date);
 
-  Holiday get holiday => get<Holiday>(keyHoliday)!;
-  set holiday(Holiday holiday) => set<Holiday>(keyHoliday, holiday);
+  HolidayParseObject get holiday => get<HolidayParseObject>(keyHoliday)!;
+  set holiday(HolidayParseObject holiday) =>
+      set<HolidayParseObject>(keyHoliday, holiday);
 }
 
-class TimeAttendances extends ParseObject implements ParseCloneable {
-  TimeAttendances() : super(_keyTableName);
-  TimeAttendances.clone() : this();
+class TimeAttendancesParseObject extends ParseObject implements ParseCloneable {
+  TimeAttendancesParseObject() : super(_keyTableName);
+  TimeAttendancesParseObject.clone() : this();
+
+  /// Convert the ParseObject to a custom parse object.
+  static TimeAttendancesParseObject toCustomParseObject(List<dynamic> data) =>
+      (data as List<ParseObject?>).first! as TimeAttendancesParseObject;
 
   /// Serialized response
   @override
-  TimeAttendances clone(Map<String, dynamic> map) =>
-      TimeAttendances.clone()..fromJson(map);
+  TimeAttendancesParseObject clone(Map<String, dynamic> map) =>
+      TimeAttendancesParseObject.clone()..fromJson(map);
 
   static const String _keyTableName = 'TimeAttendances';
   static const String keyTimeIn = 'time_in';
@@ -71,8 +86,10 @@ class TimeAttendances extends ParseObject implements ParseCloneable {
   ParseUser get user => get<ParseUser>(keyUser)!;
   set user(ParseUser user) => set<ParseUser>(keyUser, user);
 
-  TimeInOut get timeInOut => get<TimeInOut>(keyTimeInOut)!;
-  set timeInOut(TimeInOut timeInOut) => set<TimeInOut>(keyTimeInOut, timeInOut);
+  TimeInOutParseObject get timeInOut =>
+      get<TimeInOutParseObject>(keyTimeInOut)!;
+  set timeInOut(TimeInOutParseObject timeInOut) =>
+      set<TimeInOutParseObject>(keyTimeInOut, timeInOut);
 
   int? get requiredDuration => get<int>(keyRequiredDuration);
   set requiredDuration(int? requiredDuration) =>
@@ -99,13 +116,18 @@ class TimeAttendances extends ParseObject implements ParseCloneable {
       set<String?>(keyOffsetReason, offsetReason);
 }
 
-class Projects extends ParseObject implements ParseCloneable {
-  Projects() : super(_keyTableName);
-  Projects.clone() : this();
+class ProjectsParseObject extends ParseObject implements ParseCloneable {
+  ProjectsParseObject() : super(_keyTableName);
+  ProjectsParseObject.clone() : this();
+
+  /// Convert the ParseObject to a custom parse object.
+  static ProjectsParseObject toCustomParseObject(List<dynamic> data) =>
+      (data as List<ParseObject?>).first! as ProjectsParseObject;
 
   /// Serialized response
   @override
-  Projects clone(Map<String, dynamic> map) => Projects.clone()..fromJson(map);
+  ProjectsParseObject clone(Map<String, dynamic> map) =>
+      ProjectsParseObject.clone()..fromJson(map);
 
   static const String _keyTableName = 'Projects';
   static const String keyDate = 'date';
@@ -126,13 +148,18 @@ class Projects extends ParseObject implements ParseCloneable {
   set color(String color) => get<String>(keyColor)!;
 }
 
-class Sprints extends ParseObject implements ParseCloneable {
-  Sprints() : super(_keyTableName);
-  Sprints.clone() : this();
+class SprintsParseObject extends ParseObject implements ParseCloneable {
+  SprintsParseObject() : super(_keyTableName);
+  SprintsParseObject.clone() : this();
+
+  /// Convert the ParseObject to a custom parse object.
+  static SprintsParseObject toCustomParseObject(List<dynamic> data) =>
+      (data as List<ParseObject?>).first! as SprintsParseObject;
 
   /// Serialized response
   @override
-  Sprints clone(Map<String, dynamic> map) => Sprints.clone()..fromJson(map);
+  SprintsParseObject clone(Map<String, dynamic> map) =>
+      SprintsParseObject.clone()..fromJson(map);
 
   static const String _keyTableName = 'Sprints';
   static const String keyStartDate = 'start_date';
@@ -145,13 +172,18 @@ class Sprints extends ParseObject implements ParseCloneable {
   set endDate(int endDate) => set<int>(keyEndDate, endDate);
 }
 
-class DSRs extends ParseObject implements ParseCloneable {
-  DSRs() : super(_keyTableName);
-  DSRs.clone() : this();
+class DSRsParseObject extends ParseObject implements ParseCloneable {
+  DSRsParseObject() : super(_keyTableName);
+  DSRsParseObject.clone() : this();
+
+  /// Convert the ParseObject to a custom parse object.
+  static DSRsParseObject toCustomParseObject(List<dynamic> data) =>
+      (data as List<ParseObject?>).first! as DSRsParseObject;
 
   /// Serialized response
   @override
-  DSRs clone(Map<String, dynamic> map) => DSRs.clone()..fromJson(map);
+  DSRsParseObject clone(Map<String, dynamic> map) =>
+      DSRsParseObject.clone()..fromJson(map);
 
   static const String _keyTableName = 'DSRs';
   static const String keyUser = 'user';
@@ -165,8 +197,9 @@ class DSRs extends ParseObject implements ParseCloneable {
   ParseUser get user => get<ParseUser>(keyUser)!;
   set user(ParseUser user) => set<ParseUser>(keyUser, user);
 
-  Sprints get sprints => get<Sprints>(keySprint)!;
-  set sprints(Sprints sprints) => set<Sprints>(keySprint, sprints);
+  SprintsParseObject get sprints => get<SprintsParseObject>(keySprint)!;
+  set sprints(SprintsParseObject sprints) =>
+      set<SprintsParseObject>(keySprint, sprints);
 
   List<Task>? get done =>
       convertListDynamic(get<List<dynamic>>(keyDone) ?? <dynamic>[]);
@@ -187,13 +220,18 @@ class DSRs extends ParseObject implements ParseCloneable {
   set status(String status) => set<String>(keyStatus, status);
 }
 
-class Leaves extends ParseObject implements ParseCloneable {
-  Leaves() : super(_keyTableName);
-  Leaves.clone() : this();
+class LeavesParseObject extends ParseObject implements ParseCloneable {
+  LeavesParseObject() : super(_keyTableName);
+  LeavesParseObject.clone() : this();
+
+  /// Convert the ParseObject to a custom parse object.
+  static LeavesParseObject toCustomParseObject(List<dynamic> data) =>
+      (data as List<ParseObject?>).first! as LeavesParseObject;
 
   /// Serialized response
   @override
-  Leaves clone(Map<String, dynamic> map) => Leaves.clone()..fromJson(map);
+  LeavesParseObject clone(Map<String, dynamic> map) =>
+      LeavesParseObject.clone()..fromJson(map);
 
   static const String _keyTableName = 'Leaves';
   static const String keyStartDate = 'start_date';
@@ -210,14 +248,18 @@ class Leaves extends ParseObject implements ParseCloneable {
   set noLeaves(int noLeaves) => set<int>(keyNoLeaves, noLeaves);
 }
 
-class LeavesRequests extends ParseObject implements ParseCloneable {
-  LeavesRequests() : super(_keyTableName);
-  LeavesRequests.clone() : this();
+class LeavesRequestsParseObject extends ParseObject implements ParseCloneable {
+  LeavesRequestsParseObject() : super(_keyTableName);
+  LeavesRequestsParseObject.clone() : this();
+
+  /// Convert the ParseObject to a custom parse object.
+  static LeavesRequestsParseObject toCustomParseObject(List<dynamic> data) =>
+      (data as List<ParseObject?>).first! as LeavesRequestsParseObject;
 
   /// Serialized response
   @override
-  LeavesRequests clone(Map<String, dynamic> map) =>
-      LeavesRequests.clone()..fromJson(map);
+  LeavesRequestsParseObject clone(Map<String, dynamic> map) =>
+      LeavesRequestsParseObject.clone()..fromJson(map);
 
   static const String _keyTableName = 'LeavesRequests';
   static const String keyLeave = 'leave';
@@ -228,8 +270,8 @@ class LeavesRequests extends ParseObject implements ParseCloneable {
   static const String keyReason = 'reason';
   static const String keyLeaveType = 'leave_type';
 
-  Leaves get leave => get<Leaves>(keyLeave)!;
-  set leave(Leaves leave) => set<Leaves>(keyLeave, leave);
+  LeavesParseObject get leave => get<LeavesParseObject>(keyLeave)!;
+  set leave(LeavesParseObject leave) => set<LeavesParseObject>(keyLeave, leave);
 
   ParseUser get user => get<ParseUser>(keyUser)!;
   set user(ParseUser user) => set<ParseUser>(keyUser, user);
@@ -250,14 +292,18 @@ class LeavesRequests extends ParseObject implements ParseCloneable {
   set leaveType(String leaveType) => set<String>(keyLeaveType, leaveType);
 }
 
-class PanelReminders extends ParseObject implements ParseCloneable {
-  PanelReminders() : super(_keyTableName);
-  PanelReminders.clone() : this();
+class PanelRemindersParseObject extends ParseObject implements ParseCloneable {
+  PanelRemindersParseObject() : super(_keyTableName);
+  PanelRemindersParseObject.clone() : this();
+
+  /// Convert the ParseObject to a custom parse object.
+  static PanelRemindersParseObject toCustomParseObject(List<dynamic> data) =>
+      (data as List<ParseObject?>).first! as PanelRemindersParseObject;
 
   /// Serialized response
   @override
-  PanelReminders clone(Map<String, dynamic> map) =>
-      PanelReminders.clone()..fromJson(map);
+  PanelRemindersParseObject clone(Map<String, dynamic> map) =>
+      PanelRemindersParseObject.clone()..fromJson(map);
 
   static const String _keyTableName = 'PanelReminders';
   static const String keyAnnouncement = 'announcement';
