@@ -81,6 +81,9 @@ void showSnackBar({
 }
 
 void formatAPIErrorResponse({required ParseError error}) {
+  /// If code 1 means Successful request, but no results found.
+  if (error.code == 1) return;
+
   /// FIXME: Temporary check on socket exception. Improve soon if better solution is available.
   if (error.exception.runtimeType.toString() == '_ClientSocketException') {
     throw APIErrorResponse.socketErrorResponse();
