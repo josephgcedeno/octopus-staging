@@ -58,6 +58,6 @@ abstract class ITimeInOutRepository {
   /// [holiday] determines what is the name of the holiday.
   Future<APIResponse<TimeIn>> updateTimeInHoliday({
     required String id,
-    required String holiday,
+    required String holidayId,
   });
 }

@@ -4,6 +4,7 @@ import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/time_in_out/attendance_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/time_in_out_repository.dart';
+import 'package:octopus/internal/class_parse_object.dart';
 import 'package:octopus/internal/database_strings.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/helper_function.dart';
@@ -15,67 +16,39 @@ class TimeInOutRepository extends ITimeInOutRepository {
   DateTime get _currentDate => DateTime(_now.year, _now.month, _now.day);
 
   /// This function will check if today is holiday, if it is holiday, return the parse object for the record for this holiday such as ID.
-  Future<ParseObject?> todayHoliday(
+  Future<HolidayParseObject?> todayHoliday(
     DateTime today,
   ) async {
-    final ParseObject holiday = ParseObject(holidaysTable);
-    final QueryBuilder<ParseObject> holidayTodayQuery =
-        QueryBuilder<ParseObject>(holiday)
+    final HolidayParseObject holiday = HolidayParseObject();
+    final QueryBuilder<HolidayParseObject> holidayTodayQuery =
+        QueryBuilder<HolidayParseObject>(holiday)
           ..whereEqualTo(
-            holidayDateField,
+            HolidayParseObject.keyDate,
             epochFromDateTime(date: today),
           );
+
     final ParseResponse holidayTodayQueryResponse =
         await holidayTodayQuery.query();
 
     if (holidayTodayQueryResponse.success) {
       if (holidayTodayQueryResponse.results != null) {
-        return getParseObject(holidayTodayQueryResponse.results!);
+        return HolidayParseObject.toCustomParseObject(
+          data: holidayTodayQueryResponse.results!.first,
+        );
       }
     }
 
     return null;
   }
 
-  Future<void> createNewDate() async {
-    final DateTime date = DateTime(_now.year, _now.month, _now.day);
-
-    final ParseObject timeInOut = ParseObject(timeInOutsTable);
-    final QueryBuilder<ParseObject> isTodayPresent = QueryBuilder<ParseObject>(
-      timeInOut,
-    )
-      ..whereGreaterThanOrEqualsTo(
-        timeInOutDateField,
-        epochFromDateTime(date: date),
-      )
-      ..whereLessThan(
-        timeInOutDateField,
-        epochFromDateTime(date: DateTime(_now.year, _now.month, _now.day + 1)),
-      );
-
-    final ParseResponse responseDsr = await isTodayPresent.query();
-
-    /// If empty create one.
-    if (responseDsr.count == 0) {
-      /// Check if today is holiday base from the holiday table.
-      final ParseObject? holidayToday = await todayHoliday(date);
-
-      final ParseObject timeINOUt = timeInOut
-        ..set<String>(timeInOutsHolidayIdField, holidayToday?.objectId ?? '')
-        ..set<int>(timeInOutDateField, epochFromDateTime(date: date));
-
-      await timeINOUt.save();
-    }
-  }
-
   /// Get record only from yesterday or today. If today is set to false. Get the record from yesterday. If today is true. Get the record for today.
-  Future<ParseObject?> dateRecordInfo({
+  Future<TimeInOutParseObject?> dateRecordInfo({
     bool today = true,
   }) async {
-    final QueryBuilder<ParseObject> todayRecord =
-        QueryBuilder<ParseObject>(ParseObject(timeInOutsTable))
+    final QueryBuilder<TimeInOutParseObject> todayRecord =
+        QueryBuilder<TimeInOutParseObject>(TimeInOutParseObject())
           ..whereGreaterThanOrEqualsTo(
-            timeInOutDateField,
+            TimeInOutParseObject.keyDate,
             today
                 ? epochFromDateTime(
                     date: _currentDate,
@@ -85,7 +58,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
                   ),
           )
           ..whereLessThan(
-            timeInOutDateField,
+            TimeInOutParseObject.keyDate,
             today
                 ? epochFromDateTime(
                     date: DateTime(_now.year, _now.month, _now.day + 1),
@@ -95,8 +68,11 @@ class TimeInOutRepository extends ITimeInOutRepository {
                   ),
           );
     final ParseResponse queryTodayRecrod = await todayRecord.query();
+
     if (queryTodayRecrod.success && queryTodayRecrod.results != null) {
-      return queryTodayRecrod.results!.first as ParseObject;
+      return TimeInOutParseObject.toCustomParseObject(
+        data: queryTodayRecrod.results!.first,
+      );
     }
     return null;
   }
@@ -105,10 +81,22 @@ class TimeInOutRepository extends ITimeInOutRepository {
     required String attedanceId,
     required String userId,
   }) async {
-    final QueryBuilder<ParseObject> attendanceQuery =
-        QueryBuilder<ParseObject>(ParseObject(timeAttendancesTable))
-          ..whereEqualTo(timeAttendancesTimeInOutIdField, attedanceId)
-          ..whereEqualTo(timeAttendancesUserIdField, userId);
+    final QueryBuilder<TimeAttendancesParseObject> attendanceQuery =
+        QueryBuilder<TimeAttendancesParseObject>(TimeAttendancesParseObject())
+          ..whereEqualTo(
+            TimeAttendancesParseObject.keyTimeInOut,
+            TimeInOutParseObject()..objectId = attedanceId,
+          )
+          ..whereEqualTo(
+            TimeAttendancesParseObject.keyUser,
+            ParseUser.forQuery()..objectId = userId,
+          )
+          ..includeObject(
+            <String>[
+              TimeAttendancesParseObject.keyUser,
+              TimeAttendancesParseObject.keyTimeInOut
+            ],
+          );
 
     return attendanceQuery.query();
   }
@@ -120,7 +108,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
       if (user != null) {
         final String userId = user.objectId!;
 
-        final ParseObject? queryTodayRecrod = await dateRecordInfo();
+        final TimeInOutParseObject? queryTodayRecrod = await dateRecordInfo();
 
         if (queryTodayRecrod != null) {
           final ParseResponse attendanceToday = await queryAttendance(
@@ -134,8 +122,10 @@ class TimeInOutRepository extends ITimeInOutRepository {
 
           if (attendanceToday.results != null &&
               attendanceToday.results!.isNotEmpty) {
-            final ParseObject attendanceInfo =
-                attendanceToday.results!.first as ParseObject;
+            final TimeAttendancesParseObject attendanceInfo =
+                TimeAttendancesParseObject.toCustomParseObject(
+              data: attendanceToday.results!.first,
+            );
 
             return APIResponse<Attendance?>(
               success: true,
@@ -143,16 +133,11 @@ class TimeInOutRepository extends ITimeInOutRepository {
               data: Attendance(
                 id: attendanceInfo.objectId!,
                 timeInOutId: queryTodayRecrod.objectId!,
-                timeInEpoch:
-                    attendanceInfo.get<int>(timeAttendancesTimeInField),
-                timeOutEpoch:
-                    attendanceInfo.get<int>(timeAttendancesTimeOutField),
-                offsetDuration:
-                    attendanceInfo.get<int>(timeAttendancesOffsetDurationField),
-                offsetStatus: attendanceInfo
-                    .get<String>(timeAttendancesOffsetStatusField),
-                requiredDuration: attendanceInfo
-                    .get<int>(timeAttendancesRequiredDurationField),
+                timeInEpoch: attendanceInfo.timeIn,
+                timeOutEpoch: attendanceInfo.timeOut,
+                offsetDuration: attendanceInfo.offsetDuration,
+                offsetStatus: attendanceInfo.offsetStatus,
+                requiredDuration: attendanceInfo.requiredDuration,
               ),
               errorCode: null,
             );
@@ -234,10 +219,11 @@ class TimeInOutRepository extends ITimeInOutRepository {
   Future<APIResponse<Attendance>> signInToday() async {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
-      final ParseObject attendance = ParseObject(timeAttendancesTable);
+      final TimeAttendancesParseObject attendance =
+          TimeAttendancesParseObject();
 
       /// Get the current time record for this day
-      final ParseObject? queryTodayRecrod = await dateRecordInfo();
+      final TimeInOutParseObject? queryTodayRecrod = await dateRecordInfo();
 
       if (queryTodayRecrod != null && user != null) {
         final String todayRecordId = queryTodayRecrod.objectId!;
@@ -249,7 +235,6 @@ class TimeInOutRepository extends ITimeInOutRepository {
         final APIResponse<int> minuteToMinus = await yesterdaysUsersOffSet();
 
         /// Subtract the 8hr minute to the yesterday's offset.
-
         final int totalNewRequiredDuration =
             requiredTimeDuration - minuteToMinus.data;
 
@@ -276,15 +261,12 @@ class TimeInOutRepository extends ITimeInOutRepository {
 
         if (attendanceResponse.success && attendanceResponse.count == 0) {
           if (todayRecordId.isNotEmpty && user.objectId != null) {
-            final ParseObject attendance = ParseObject(timeAttendancesTable)
-              ..set<int>(timeAttendancesTimeInField, timeInEpoch)
-              ..set<int?>(timeAttendancesTimeOutField, null)
-              ..set<String>(timeAttendancesUserIdField, user.objectId!)
-              ..set<String>(timeAttendancesTimeInOutIdField, todayRecordId)
-              ..set<int>(
-                timeAttendancesRequiredDurationField,
-                totalNewRequiredDuration,
-              );
+            attendance
+              ..timeIn = timeInEpoch
+              ..timeOut = null
+              ..user = (ParseUser.forQuery()..objectId = user.objectId)
+              ..timeInOut = (TimeInOutParseObject()..objectId = todayRecordId)
+              ..requiredDuration = totalNewRequiredDuration;
 
             final ParseResponse res = await attendance.save();
 
@@ -314,12 +296,9 @@ class TimeInOutRepository extends ITimeInOutRepository {
 
           attendance
             ..objectId = attendanceTodayId
-            ..set<int>(timeAttendancesTimeInField, timeInEpoch)
-            ..set<int?>(timeAttendancesTimeOutField, null)
-            ..set<int>(
-              timeAttendancesRequiredDurationField,
-              totalNewRequiredDuration,
-            );
+            ..timeIn = timeInEpoch
+            ..timeOut = null
+            ..requiredDuration = totalNewRequiredDuration;
 
           final ParseResponse attendanceRecordResponse =
               await attendance.save();
@@ -336,8 +315,10 @@ class TimeInOutRepository extends ITimeInOutRepository {
                 await attendance.getObject(objectId);
 
             if (attendanceRecord.success && attendanceRecord.results != null) {
-              final ParseObject resultParseObject =
-                  getParseObject(attendanceRecord.results!);
+              final TimeAttendancesParseObject resultParseObject =
+                  TimeAttendancesParseObject.toCustomParseObject(
+                data: attendanceRecord.results!.first,
+              );
 
               return APIResponse<Attendance>(
                 success: true,
@@ -345,10 +326,8 @@ class TimeInOutRepository extends ITimeInOutRepository {
                 data: Attendance(
                   id: objectId,
                   timeInOutId: todayRecordId,
-                  offsetDuration: resultParseObject
-                      .get<int>(timeAttendancesOffsetDurationField),
-                  offsetStatus: resultParseObject
-                      .get<String>(timeAttendancesOffsetStatusField),
+                  offsetDuration: resultParseObject.offsetDuration,
+                  offsetStatus: resultParseObject.offsetStatus,
                   timeInEpoch: timeInEpoch,
                   requiredDuration: totalNewRequiredDuration,
                 ),
@@ -372,17 +351,24 @@ class TimeInOutRepository extends ITimeInOutRepository {
   Future<APIResponse<Attendance>> signOutToday() async {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
-      final ParseObject? queryTodayRecrod = await dateRecordInfo();
+      final TimeInOutParseObject? queryTodayRecrod = await dateRecordInfo();
 
       if (user != null && queryTodayRecrod != null) {
         final String todayRecordId = queryTodayRecrod.objectId!;
-        final ParseObject attendance = ParseObject(timeAttendancesTable);
+        final TimeAttendancesParseObject attendance =
+            TimeAttendancesParseObject();
 
         /// Get the current time record for this day
-        final QueryBuilder<ParseObject> attendanceQuery =
-            QueryBuilder<ParseObject>(attendance)
-              ..whereEqualTo(timeAttendancesTimeInOutIdField, todayRecordId)
-              ..whereEqualTo(timeAttendancesUserIdField, user.objectId);
+        final QueryBuilder<TimeAttendancesParseObject> attendanceQuery =
+            QueryBuilder<TimeAttendancesParseObject>(attendance)
+              ..whereEqualTo(
+                TimeAttendancesParseObject.keyTimeInOut,
+                TimeInOutParseObject()..objectId = todayRecordId,
+              )
+              ..whereEqualTo(
+                TimeAttendancesParseObject.keyUser,
+                ParseUser.forQuery()..objectId = user.objectId,
+              );
 
         final ParseResponse attendanceResponse = await attendanceQuery.query();
 
@@ -391,17 +377,20 @@ class TimeInOutRepository extends ITimeInOutRepository {
         }
 
         if (attendanceResponse.success && attendanceResponse.results != null) {
-          final ParseObject attendanceRow =
-              getParseObject(attendanceResponse.results!);
+          final TimeAttendancesParseObject attendanceRow =
+              TimeAttendancesParseObject.toCustomParseObject(
+            data: attendanceResponse.results!.first,
+          );
+
           final String attedanceKey = attendanceRow.objectId!;
 
-          final int timeInEpoch =
-              attendanceRow.get<int>(timeAttendancesTimeInField)!;
+          final int timeInEpoch = attendanceRow.timeIn!;
+
           final int timeOutEpoch = epochFromDateTime(date: DateTime.now());
 
           attendance
             ..objectId = attedanceKey
-            ..set<int>(timeAttendancesTimeOutField, timeOutEpoch);
+            ..timeOut = timeOutEpoch;
 
           final ParseResponse saveTimeOutRes = await attendance.save();
 
@@ -414,8 +403,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
                 timeInOutId: todayRecordId,
                 timeInEpoch: timeInEpoch,
                 timeOutEpoch: timeOutEpoch,
-                requiredDuration: attendanceRow
-                    .get<int>(timeAttendancesRequiredDurationField),
+                requiredDuration: attendanceRow.requiredDuration,
               ),
               errorCode: null,
             );
@@ -445,15 +433,22 @@ class TimeInOutRepository extends ITimeInOutRepository {
 
       if (user != null && queryTodayRecord != null) {
         final String todayRecordId = queryTodayRecord.objectId!;
-        final ParseObject attendance = ParseObject(timeAttendancesTable);
+        final TimeAttendancesParseObject attendance =
+            TimeAttendancesParseObject();
         final int getMinutesfOffset = offsetDuration.inMinutes;
         const String offsetStatus = 'PENDING';
 
         /// Get the current time record for this day
-        final QueryBuilder<ParseObject> attendanceQuery =
-            QueryBuilder<ParseObject>(attendance)
-              ..whereEqualTo(timeAttendancesTimeInOutIdField, todayRecordId)
-              ..whereEqualTo(timeAttendancesUserIdField, user.objectId);
+        final QueryBuilder<TimeAttendancesParseObject> attendanceQuery =
+            QueryBuilder<TimeAttendancesParseObject>(attendance)
+              ..whereEqualTo(
+                TimeAttendancesParseObject.keyTimeInOut,
+                TimeInOutParseObject()..objectId = todayRecordId,
+              )
+              ..whereEqualTo(
+                TimeAttendancesParseObject.keyUser,
+                user..objectId = user.objectId,
+              );
 
         final ParseResponse attendanceResponse = await attendanceQuery.query();
 
@@ -480,20 +475,17 @@ class TimeInOutRepository extends ITimeInOutRepository {
         if (attendanceResponse.success && attendanceResponse.count == 0) {
           final int requiredTimeDuration = const Duration(hours: 8).inMinutes;
 
-          final ParseObject attendance = ParseObject(timeAttendancesTable)
-            ..set<int?>(timeAttendancesTimeInField, null)
-            ..set<int?>(timeAttendancesTimeOutField, null)
-            ..set<String>(timeAttendancesUserIdField, user.objectId!)
-            ..set<String>(timeAttendancesTimeInOutIdField, todayRecordId)
-            ..set<int>(timeAttendancesOffsetDurationField, getMinutesfOffset)
-            ..set<String>(timeAttendancesOffsetStatusField, offsetStatus)
-            ..set<int>(
-              timeAttendancesRequiredDurationField,
-              requiredTimeDuration,
-            )
-            ..set<String>(timeAttendancesOffsetFromTimeField, fromTime)
-            ..set<String>(timeAttendancesOffsetToTimeField, toTime)
-            ..set<String>(timeAttendancesOffsetReasonField, reason);
+          attendance
+            ..timeIn = null
+            ..timeOut = null
+            ..user = (user..objectId = user.objectId)
+            ..timeInOut = (TimeInOutParseObject()..objectId = todayRecordId)
+            ..offsetDuration = getMinutesfOffset
+            ..offsetStatus = offsetStatus
+            ..requiredDuration = requiredTimeDuration
+            ..offsetFromTime = fromTime
+            ..offsetToTime = toTime
+            ..offsetReason = reason;
 
           final ParseResponse attendanceRecordResponse =
               await attendance.save();
@@ -523,11 +515,11 @@ class TimeInOutRepository extends ITimeInOutRepository {
 
           attendance
             ..objectId = attendanceTodayId
-            ..set<int>(timeAttendancesOffsetDurationField, getMinutesfOffset)
-            ..set<String>(timeAttendancesOffsetStatusField, offsetStatus)
-            ..set<String>(timeAttendancesOffsetFromTimeField, fromTime)
-            ..set<String>(timeAttendancesOffsetToTimeField, toTime)
-            ..set<String>(timeAttendancesOffsetReasonField, reason);
+            ..offsetDuration = getMinutesfOffset
+            ..offsetStatus = offsetStatus
+            ..offsetFromTime = fromTime
+            ..offsetToTime = toTime
+            ..offsetReason = reason;
 
           final ParseResponse attendanceRecordResponse =
               await attendance.save();
@@ -584,10 +576,14 @@ class TimeInOutRepository extends ITimeInOutRepository {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject attendance = ParseObject(timeAttendancesTable);
-        final QueryBuilder<ParseObject> listOfRequests =
-            QueryBuilder<ParseObject>(attendance)
-              ..whereEqualTo(timeAttendancesOffsetStatusField, 'PENDING');
+        final TimeAttendancesParseObject attendance =
+            TimeAttendancesParseObject();
+        final QueryBuilder<TimeAttendancesParseObject> listOfRequests =
+            QueryBuilder<TimeAttendancesParseObject>(attendance)
+              ..whereEqualTo(
+                TimeAttendancesParseObject.keyOffsetStatus,
+                'PENDING',
+              );
 
         if (startDate != null && endDate != null) {
           listOfRequests
@@ -607,18 +603,17 @@ class TimeInOutRepository extends ITimeInOutRepository {
           if (offsetRequestResponse.results != null) {
             for (final ParseObject result
                 in offsetRequestResponse.results! as List<ParseObject>) {
+              final TimeAttendancesParseObject row =
+                  TimeAttendancesParseObject.toCustomParseObject(data: result);
               attendances.add(
                 Attendance(
                   id: result.objectId!,
                   timeInOutId: '',
-                  timeInEpoch: result.get<int>(timeAttendancesTimeInField),
-                  timeOutEpoch: result.get<int>(timeAttendancesTimeOutField),
-                  offsetStatus:
-                      result.get<String>(timeAttendancesOffsetStatusField),
-                  offsetDuration:
-                      result.get<int>(timeAttendancesOffsetDurationField),
-                  requiredDuration:
-                      result.get<int>(timeAttendancesRequiredDurationField),
+                  timeInEpoch: row.timeIn,
+                  timeOutEpoch: row.timeOut,
+                  offsetStatus: row.offsetStatus,
+                  offsetDuration: row.offsetDuration,
+                  requiredDuration: row.requiredDuration,
                 ),
               );
             }
@@ -655,7 +650,8 @@ class TimeInOutRepository extends ITimeInOutRepository {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject attendance = ParseObject(timeAttendancesTable);
+        final TimeAttendancesParseObject attendance =
+            TimeAttendancesParseObject();
 
         final ParseResponse attedanceResponse =
             await attendance.getObject(attendanceId);
@@ -665,24 +661,22 @@ class TimeInOutRepository extends ITimeInOutRepository {
         }
 
         if (attedanceResponse.success && attedanceResponse.results != null) {
-          final ParseObject resultParseObject =
-              getParseObject(attedanceResponse.results!);
+          final TimeAttendancesParseObject resultParseObject =
+              TimeAttendancesParseObject.toCustomParseObject(
+            data: attedanceResponse.results!.first,
+          );
 
-          final int requestedDurationOffset =
-              resultParseObject.get<int>(timeAttendancesOffsetDurationField)!;
-          final int requiredDuration =
-              resultParseObject.get<int>(timeAttendancesRequiredDurationField)!;
+          final int requestedDurationOffset = resultParseObject.offsetDuration!;
+
+          final int requiredDuration = resultParseObject.requiredDuration!;
 
           final int totalNewRequiredDuration =
               requestedDurationOffset + requiredDuration;
 
           attendance
             ..objectId = attendanceId
-            ..set<int>(
-              timeAttendancesRequiredDurationField,
-              totalNewRequiredDuration,
-            )
-            ..set<String>(timeAttendancesOffsetStatusField, 'APPROVED');
+            ..requiredDuration = totalNewRequiredDuration
+            ..offsetStatus = 'APPROVED';
 
           final ParseResponse approveResponse = await attendance.save();
 
@@ -701,8 +695,10 @@ class TimeInOutRepository extends ITimeInOutRepository {
             }
 
             if (timeInResponse.success && timeInResponse.results != null) {
-              final ParseObject resultParseObject =
-                  getParseObject(timeInResponse.results!);
+              final TimeAttendancesParseObject resultParseObject =
+                  TimeAttendancesParseObject.toCustomParseObject(
+                data: timeInResponse.results!.first,
+              );
 
               return APIResponse<Attendance>(
                 success: true,
@@ -710,16 +706,11 @@ class TimeInOutRepository extends ITimeInOutRepository {
                 data: Attendance(
                   id: resultParseObject.objectId!,
                   timeInOutId: '',
-                  timeInEpoch:
-                      resultParseObject.get<int>(timeAttendancesTimeInField),
-                  timeOutEpoch:
-                      resultParseObject.get<int>(timeAttendancesTimeOutField),
-                  offsetStatus: resultParseObject
-                      .get<String>(timeAttendancesOffsetStatusField),
-                  offsetDuration: resultParseObject
-                      .get<int>(timeAttendancesOffsetDurationField),
-                  requiredDuration: resultParseObject
-                      .get<int>(timeAttendancesRequiredDurationField),
+                  timeInEpoch: resultParseObject.timeIn,
+                  timeOutEpoch: resultParseObject.timeOut,
+                  offsetStatus: resultParseObject.offsetStatus,
+                  offsetDuration: resultParseObject.offsetDuration,
+                  requiredDuration: resultParseObject.requiredDuration,
                 ),
                 errorCode: null,
               );
@@ -740,9 +731,9 @@ class TimeInOutRepository extends ITimeInOutRepository {
   @override
   Future<APIResponse<TimeIn>> updateTimeInHoliday({
     required String id,
-    required String holiday,
+    required String holidayId,
   }) async {
-    if (id.isEmpty || holiday.isEmpty) {
+    if (id.isEmpty || holidayId.isEmpty) {
       throw APIErrorResponse(
         message: 'This fields cannot be empty.',
         errorCode: null,
@@ -752,11 +743,11 @@ class TimeInOutRepository extends ITimeInOutRepository {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject updateTimeInOut = ParseObject(timeInOutsTable);
+        final TimeInOutParseObject updateTimeInOut = TimeInOutParseObject();
 
         updateTimeInOut
           ..objectId = id
-          ..set(timeInOutsHolidayIdField, holiday);
+          ..holiday = (HolidayParseObject()..objectId = holidayId);
 
         final ParseResponse updateTimeInOutResponse =
             await updateTimeInOut.save();
@@ -783,7 +774,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
               data: TimeIn(
                 dateEpoch: getParseObject(timeInResponse.results!)
                     .get<int>(timeInOutDateField)!,
-                holiday: holiday,
+                holiday: holidayId,
                 id: id,
               ),
               errorCode: null,
