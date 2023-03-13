@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:octopus/module/time_record/interfaces/screens/request_offset_screen.dart';
 
 class OffsetButton extends StatelessWidget {
   const OffsetButton({Key? key}) : super(key: key);
@@ -9,7 +10,13 @@ class OffsetButton extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
 
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () {
+        Navigator.of(context).push(
+          MaterialPageRoute<dynamic>(
+            builder: (_) => const RequestOffsetScreen(),
+          ),
+        );
+      },
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all(const Color(0xFFE5F2FF)),
         elevation: MaterialStateProperty.all(0),

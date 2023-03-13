@@ -33,6 +33,9 @@ const String timeAttendancesTimeInOutIdField = 'time_in_out_id';
 const String timeAttendancesOffsetDurationField = 'offset_duration';
 const String timeAttendancesOffsetStatusField = 'offset_status';
 const String timeAttendancesRequiredDurationField = 'required_duration';
+const String timeAttendancesOffsetFromTimeField = 'offset_from_time';
+const String timeAttendancesOffsetToTimeField = 'offset_to_time';
+const String timeAttendancesOffsetReasonField = 'offset_reason';
 
 /// For dsrs table
 const String dsrsSprintidField = 'sprint_id';

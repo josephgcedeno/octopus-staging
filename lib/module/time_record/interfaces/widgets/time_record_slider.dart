@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/internal/debug_utils.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
 
 class TimeInSlider extends StatefulWidget {
@@ -21,13 +23,66 @@ class _TimeInSliderState extends State<TimeInSlider> {
     }
 
     /// This condition will check to drag is TIME IN
-    if (timeInEpoch == -1) {
+    if (isIn) {
       context.read<TimeRecordCubit>().signInToday();
     } else {
-      /// This condition will check to drag is TIME OUT
-      context.read<TimeRecordCubit>().signOutToday();
+      showAlertDialogOnTimeOut(context);
     }
     return false;
+  }
+
+  void showAlertDialogOnTimeOut(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      barrierColor: const Color(0xffA8A8A8).withOpacity(0.40),
+      builder: (BuildContext context) {
+        final ThemeData theme = Theme.of(context);
+
+        return AlertDialog(
+          alignment: const Alignment(0.0, -0.2),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: Text(
+            'Time Out',
+            style: theme.textTheme.bodyText1
+                ?.copyWith(fontWeight: FontWeight.w600, fontSize: 16),
+          ),
+          contentPadding: const EdgeInsets.only(left: 25, top: 10),
+          content: Text(
+            'Are you done for today?',
+            style: theme.textTheme.caption?.copyWith(
+              color: const Color(0xff1B252F),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'Cancel',
+                style: theme.textTheme.caption
+                    ?.copyWith(color: const Color(0xff1B252F)),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+
+                /// This condition will check to drag is TIME OUT
+                context.read<TimeRecordCubit>().signOutToday();
+              },
+              child: Text(
+                'Confirm',
+                style: theme.textTheme.caption?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   /// Set what time did the user time in.
@@ -40,6 +95,29 @@ class _TimeInSliderState extends State<TimeInSlider> {
   int? timeOutEpoch;
 
   bool isLoading = true;
+
+  /// Check if it is IN or OUT
+  bool isIn = true;
+
+  final Color bgRed = const Color(0xffE25252);
+
+  /// Time out gradient color
+  final LinearGradient outLinearGradient = const LinearGradient(
+    colors: <Color>[
+      Colors.white,
+      Color(0xFFFFECEC),
+      Color(0xFFF88484),
+    ],
+  );
+
+  /// Time in gradient color
+  final LinearGradient inLinearGradient = const LinearGradient(
+    colors: <Color>[
+      Colors.white,
+      Color(0xFFe3f0ff),
+      Color(0xFFd4e9ff),
+    ],
+  );
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -54,6 +132,9 @@ class _TimeInSliderState extends State<TimeInSlider> {
       listener: (BuildContext context, TimeRecordState state) {
         if (state is FetchTimeInDataLoading) {
           setState(() {
+            /// This will indicate which position does the loader will be executed, either isIn or isOut.
+            isIn = timeInEpoch == -1;
+
             isLoading = true;
             timeInEpoch = -1;
             timeOutEpoch = null;
@@ -61,9 +142,14 @@ class _TimeInSliderState extends State<TimeInSlider> {
         } else if (state is FetchTimeInDataSuccess) {
           if (state.attendance != null) {
             setState(() {
-              timeInEpoch = state.attendance?.timeInEpoch ?? 0;
-              requiredTimeInMinutes = state.attendance?.requiredDuration ?? 0;
+              timeInEpoch = state.attendance?.timeInEpoch ?? -1;
+              requiredTimeInMinutes =
+                  state.attendance?.requiredDuration ?? requiredTimeInMinutes;
               timeOutEpoch = state.attendance?.timeOutEpoch;
+
+              /// If the timeout is not null, the position of the slider would be isIn.
+              isIn = state.attendance?.timeInEpoch == null ||
+                  state.attendance?.timeOutEpoch != null;
             });
           }
 
@@ -77,81 +163,94 @@ class _TimeInSliderState extends State<TimeInSlider> {
           );
         }
       },
-      child: Container(
-        width: kIsWeb ? 370 : width * 0.8,
-        height: height * 0.07,
-        margin: kIsWeb
-            ? EdgeInsets.only(top: height * 0.08)
-            : EdgeInsets.only(top: height * 0.02),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: <Color>[
-              Colors.white,
-              Color(0xFFe3f0ff),
-              Color(0xFFd4e9ff),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(50),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: theme.primaryColor.withAlpha(30),
-              blurRadius: 40,
-            ),
-          ],
-        ),
-        child: Stack(
-          children: <Widget>[
-            Positioned.fill(
-              child: Align(
-                child: Text(
-                  timeInEpoch == -1 ? 'IN' : 'OUT',
-                  style: theme.textTheme.subtitle1?.copyWith(
-                    color: theme.primaryColor,
-                    fontWeight: FontWeight.w600,
-                  ),
+      child: Column(
+        children: <Widget>[
+          Container(
+            width: kIsWeb ? 370 : width * 0.8,
+            height: height >= smMinHeight && height <= smMaxHeight
+                ? height * 0.07
+                : 61.01,
+            margin: kIsWeb
+                ? EdgeInsets.only(top: height * 0.08)
+                : EdgeInsets.only(top: height * 0.02),
+            padding: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              gradient: isIn ? inLinearGradient : outLinearGradient,
+              borderRadius: BorderRadius.circular(50),
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                  color: isIn
+                      ? theme.primaryColor.withAlpha(30)
+                      : bgRed.withAlpha(30),
+                  blurRadius: 40,
                 ),
-              ),
+              ],
             ),
-            Dismissible(
-              direction: DismissDirection.startToEnd,
-              confirmDismiss: timeInTimeOut,
-              key: UniqueKey(),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: isLoading
-                    ? Container(
-                        height: height * 0.1,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.grey,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 15,
-                          vertical: 9,
-                        ),
-                        child: const SizedBox(
-                          width: 30,
-                          height: 30,
-                          child: CircularProgressIndicator(),
-                        ),
-                      )
-                    : Container(
-                        height: height * 0.1,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: theme.primaryColor,
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 17),
-                        child: const Icon(
-                          Icons.keyboard_double_arrow_right_rounded,
-                          color: Colors.white,
-                          size: 30,
+            child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraint) {
+                return Stack(
+                  children: <Widget>[
+                    Positioned.fill(
+                      child: Align(
+                        child: Text(
+                          isIn ? 'IN' : 'OUT',
+                          style: theme.textTheme.subtitle1?.copyWith(
+                            color: isIn ? theme.primaryColor : bgRed,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
-              ),
+                    ),
+                    Dismissible(
+                      direction: isIn
+                          ? DismissDirection.startToEnd
+                          : DismissDirection.endToStart,
+                      confirmDismiss: timeInTimeOut,
+                      dragStartBehavior: DragStartBehavior.down,
+                      key: UniqueKey(),
+                      child: Align(
+                        alignment:
+                            isIn ? Alignment.centerLeft : Alignment.centerRight,
+                        child: isLoading
+                            ? Container(
+                                width: constraint.maxHeight,
+                                height: constraint.maxHeight,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.grey,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: CircularProgressIndicator(
+                                    color: isIn ? theme.primaryColor : bgRed,
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                width: constraint.maxHeight,
+                                height: constraint.maxHeight,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isIn ? theme.primaryColor : bgRed,
+                                ),
+                                child: Icon(
+                                  isIn
+                                      ? Icons
+                                          .keyboard_double_arrow_right_rounded
+                                      : Icons
+                                          .keyboard_double_arrow_left_rounded,
+                                  color: Colors.white,
+                                  size: 30,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
