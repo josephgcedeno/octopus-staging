@@ -191,7 +191,8 @@ class _DTRClockState extends State<DTRClock> {
             });
           }
           setState(() => isLoading = false);
-        } else if (state is FetchTimeInDataFailed) {
+        } else if (state is FetchTimeInDataFailed &&
+            state.origin == ExecutedOrigin.fetchAttendance) {
           setState(() => isLoading = false);
 
           showSnackBar(

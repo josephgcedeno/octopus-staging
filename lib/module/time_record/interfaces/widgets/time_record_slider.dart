@@ -154,7 +154,8 @@ class _TimeInSliderState extends State<TimeInSlider> {
           }
 
           setState(() => isLoading = false);
-        } else if (state is FetchTimeInDataFailed) {
+        } else if (state is FetchTimeInDataFailed &&
+            state.origin == ExecutedOrigin.fetchAttendance) {
           setState(() => isLoading = false);
 
           showSnackBar(
