@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:octopus/configs/themes.dart';
+import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/helper_function.dart';
 import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
@@ -21,7 +23,7 @@ class _DTRClockState extends State<DTRClock> {
   static Duration oneSecondDuration = const Duration(seconds: 1);
 
   /// Standard 8 hours of work
-  late final int timeToRenderInMilliseconds;
+  late int timeToRenderInMilliseconds;
 
   /// Display format time for the total work duration. (HH:MM:SS).
   String? workDuration;
@@ -178,9 +180,14 @@ class _DTRClockState extends State<DTRClock> {
         } else if (state is FetchTimeInDataSuccess) {
           if (state.attendance != null) {
             setState(() {
-              timeInEpoch = state.attendance?.timeInEpoch ?? 0;
-              requiredTimeInMinutes = state.attendance?.requiredDuration ?? 0;
+              timeInEpoch = state.attendance?.timeInEpoch ?? -1;
+              requiredTimeInMinutes =
+                  state.attendance?.requiredDuration ?? requiredTimeInMinutes;
               timeOutEpoch = state.attendance?.timeOutEpoch;
+
+              /// Set time to render from x minute to inMilliseconds
+              timeToRenderInMilliseconds =
+                  Duration(minutes: requiredTimeInMinutes).inMilliseconds;
             });
           }
           setState(() => isLoading = false);
@@ -196,108 +203,114 @@ class _DTRClockState extends State<DTRClock> {
         /// Set initialize clock on after emit event.
         initializeClock();
       },
-      child: Container(
-        padding: const EdgeInsets.all(8.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: theme.primaryColor.withAlpha(30),
-              blurRadius: 30,
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(width),
-          child: CircularPercentIndicator(
-            fillColor: Colors.white,
-            radius: height * 0.15,
-            lineWidth: 15.0,
-            percent: clockPercentage,
-            reverse: true,
-            center: Padding(
-              padding: const EdgeInsets.only(top: 15.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  if (workDuration != null)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          workDuration!,
-                          style: timerTextStyle,
-                        ),
-                      ],
-                    )
-                  else if (isOff)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        if (isLoading)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: SizedBox(
-                              width: width * 0.17,
-                              child: const ClipRRect(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)),
-                                child: LinearProgressIndicator(),
-                              ),
-                            ),
-                          )
-                        else
-                          Text('0:00:00', style: timerTextStyle),
-                      ],
-                    )
-                  else if (isOvertime())
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text('+', style: theme.textTheme.headline5),
-                        Text(
-                          formatTimer(elapsed),
-                          style: timerTextStyle,
-                        ),
-                      ],
-                    )
-                  else
-                    TweenAnimationBuilder<Duration>(
-                      duration: remainingTime(),
-                      tween: Tween<Duration>(
-                        begin: remainingTime(),
-                        end: Duration.zero,
-                      ),
-                      builder: (
-                        BuildContext context,
-                        Duration value,
-                        Widget? child,
-                      ) {
-                        if (isOvertime()) {
-                          startTicker();
-                        }
-                        return Text(
-                          formatTimer(value),
-                          style: timerTextStyle,
-                        );
-                      },
+      child: isLoading
+          ? clockLoader(context)
+          : FadeIn(
+              duration: fadeInDuration,
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color: theme.primaryColor.withAlpha(30),
+                      blurRadius: 30,
                     ),
-                  Text(
-                    clockLabel(),
-                    style: kIsWeb
-                        ? theme.textTheme.subtitle1
-                        : theme.textTheme.caption,
-                  )
-                ],
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(width),
+                  child: CircularPercentIndicator(
+                    fillColor: Colors.white,
+                    radius: height * 0.15,
+                    lineWidth: 15.0,
+                    percent: clockPercentage,
+                    reverse: true,
+                    center: Padding(
+                      padding: const EdgeInsets.only(top: 15.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          if (workDuration != null)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  workDuration!,
+                                  style: timerTextStyle,
+                                ),
+                              ],
+                            )
+                          else if (isOff)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                if (isLoading)
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 8.0),
+                                    child: SizedBox(
+                                      width: width * 0.17,
+                                      child: const ClipRRect(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(10),
+                                        ),
+                                        child: LinearProgressIndicator(),
+                                      ),
+                                    ),
+                                  )
+                                else
+                                  Text('0:00:00', style: timerTextStyle),
+                              ],
+                            )
+                          else if (isOvertime())
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text('+', style: theme.textTheme.headline5),
+                                Text(
+                                  formatTimer(elapsed),
+                                  style: timerTextStyle,
+                                ),
+                              ],
+                            )
+                          else
+                            TweenAnimationBuilder<Duration>(
+                              duration: remainingTime(),
+                              tween: Tween<Duration>(
+                                begin: remainingTime(),
+                                end: Duration.zero,
+                              ),
+                              builder: (
+                                BuildContext context,
+                                Duration value,
+                                Widget? child,
+                              ) {
+                                if (isOvertime()) {
+                                  startTicker();
+                                }
+                                return Text(
+                                  formatTimer(value),
+                                  style: timerTextStyle,
+                                );
+                              },
+                            ),
+                          Text(
+                            clockLabel(),
+                            style: kIsWeb
+                                ? theme.textTheme.subtitle1
+                                : theme.textTheme.caption,
+                          )
+                        ],
+                      ),
+                    ),
+                    circularStrokeCap: CircularStrokeCap.round,
+                    backgroundColor: theme.primaryColor.withAlpha(15),
+                    progressColor: progressColor(),
+                  ),
+                ),
               ),
             ),
-            circularStrokeCap: CircularStrokeCap.round,
-            backgroundColor: theme.primaryColor.withAlpha(15),
-            progressColor: progressColor(),
-          ),
-        ),
-      ),
     );
   }
 }

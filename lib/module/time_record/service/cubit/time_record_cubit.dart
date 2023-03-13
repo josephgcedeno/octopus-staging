@@ -82,4 +82,38 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
       );
     }
   }
+
+  Future<void> requestOffset({
+    required Duration offsetDuration,
+    required String fromTime,
+    required String toTime,
+    required String reason,
+  }) async {
+    try {
+      emit(FetchTimeInDataLoading());
+
+      final APIResponse<Attendance> requestOffset =
+          await timeInOutRepository.requestOffSet(
+        fromTime: fromTime,
+        offsetDuration: offsetDuration,
+        reason: reason,
+        toTime: toTime,
+      );
+
+      emit(
+        FetchTimeInDataSuccess(
+          attendance: requestOffset.data,
+        ),
+      );
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+
+      emit(
+        FetchTimeInDataFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
+    }
+  }
 }

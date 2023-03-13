@@ -68,8 +68,28 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.white,
       centerTitle: false,
       title: leadingButton(),
-      actions: const <Widget>[
+      actions: <Widget>[
         Padding(
+          padding: const EdgeInsets.only(right: 15),
+          child: Stack(
+            alignment: AlignmentDirectional.center,
+            children: const <Widget>[
+              Icon(
+                Icons.notifications_none,
+                color: Colors.black,
+              ),
+              Positioned(
+                top: 19,
+                left: 12,
+                child: CircleAvatar(
+                  radius: 4,
+                  backgroundColor: Colors.red,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Padding(
           padding: EdgeInsets.only(right: 15),
           child: CircleAvatar(
             radius: 18,

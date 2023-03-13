@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_request.dart';
 import 'package:octopus/infrastructures/models/project/project_response.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
+import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/status_column.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/task_textarea.dart';
@@ -224,19 +226,20 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
                           current is FetchDatesLoading,
                       builder: (BuildContext context, DSRState state) {
                         if (state is FetchDatesSuccess) {
-                          return Text(
-                            state.dateString,
-                            style: theme.textTheme.overline?.copyWith(
-                              color: theme.primaryColor,
-                              fontWeight: FontWeight.w600,
+                          return FadeIn(
+                            duration: fadeInDuration,
+                            child: Text(
+                              state.dateString,
+                              style: theme.textTheme.overline?.copyWith(
+                                color: theme.primaryColor,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           );
                         }
                         return SizedBox(
                           width: width * 0.5,
-                          child: const LinearProgressIndicator(
-                            minHeight: 2,
-                          ),
+                          child: lineLoader(height: 10, width: double.infinity),
                         );
                       },
                     ),
@@ -246,15 +249,15 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
                     height: isLoading ? height * 0.6 : height,
                     width: width,
                     child: isLoading
-                        ? Align(
-                            child: AnimatedOpacity(
-                              opacity: opacityLevel,
-                              duration: const Duration(milliseconds: 500),
-                              child: const Icon(
-                                Icons.blur_on_outlined,
-                                size: 60,
-                                color: Colors.black,
-                              ),
+                        ? ListView(
+                            padding: EdgeInsets.only(
+                              bottom: height * 0.2,
+                              top: 20,
+                              left: 5,
+                            ),
+                            children: itemLoader(
+                              innerItem: 2,
+                              outerItem: 3,
                             ),
                           )
                         : kIsWeb
@@ -262,10 +265,14 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
                                 children:
                                     noCardsYet ? noCardsImage : statusWidgets,
                               )
-                            : ListView(
-                                padding: EdgeInsets.only(bottom: height * 0.2),
-                                children:
-                                    noCardsYet ? noCardsImage : statusWidgets,
+                            : FadeIn(
+                                duration: fadeInDuration,
+                                child: ListView(
+                                  padding:
+                                      EdgeInsets.only(bottom: height * 0.2),
+                                  children:
+                                      noCardsYet ? noCardsImage : statusWidgets,
+                                ),
                               ),
                   )
                 ],
