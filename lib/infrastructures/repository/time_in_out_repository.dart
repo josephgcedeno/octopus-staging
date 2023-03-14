@@ -8,6 +8,7 @@ import 'package:octopus/internal/class_parse_object.dart';
 import 'package:octopus/internal/database_strings.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/helper_function.dart';
+import 'package:octopus/internal/string_status.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class TimeInOutRepository extends ITimeInOutRepository {
@@ -186,7 +187,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
                 resultParseObject.get<String>(
                       TimeAttendancesParseObject.keyOffsetStatus,
                     ) ==
-                    'APPROVED') {
+                    approved) {
               return APIResponse<int>(
                 success: true,
                 message: "Successfully get yesterday's offset",
@@ -438,7 +439,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
         final TimeAttendancesParseObject attendance =
             TimeAttendancesParseObject();
         final int getMinutesfOffset = offsetDuration.inMinutes;
-        const String offsetStatus = 'PENDING';
+        const String offsetStatus = pending;
 
         /// Get the current time record for this day
         final QueryBuilder<TimeAttendancesParseObject> attendanceQuery =
@@ -586,7 +587,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
             QueryBuilder<TimeAttendancesParseObject>(attendance)
               ..whereEqualTo(
                 TimeAttendancesParseObject.keyOffsetStatus,
-                'PENDING',
+                pending,
               );
 
         if (startDate != null && endDate != null) {
@@ -680,7 +681,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
           attendance
             ..objectId = attendanceId
             ..requiredDuration = totalNewRequiredDuration
-            ..offsetStatus = 'APPROVED';
+            ..offsetStatus = approved;
 
           final ParseResponse approveResponse = await attendance.save();
 
