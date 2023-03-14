@@ -5,6 +5,7 @@ import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_request.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/dsr_repository.dart';
+import 'package:octopus/internal/class_parse_object.dart';
 import 'package:octopus/internal/database_strings.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/helper_function.dart';
@@ -41,11 +42,9 @@ class DSRRepository extends IDSRRepository {
       final String text = parseTask['text']!.toString();
 
       final String projectName =
-          ((await ParseObject(projectTagsTable).getObject(projectTagId)).result
-                  as ParseObject)
-              .get<String>(
-        projectTagsProjectNameField,
-      )!;
+          ((await ProjectsParseObject().getObject(projectTagId)).result
+                  as ProjectsParseObject)
+              .name;
 
       data.add(
         DSRWorks(
@@ -62,7 +61,7 @@ class DSRRepository extends IDSRRepository {
 
   /// This will check if the sprint id does exist in the database.
   Future<bool> isSprintIdExist(String sprintId) async {
-    final ParseObject dsrs = ParseObject(sprintsTable);
+    final SprintsParseObject dsrs = SprintsParseObject();
     final ParseResponse doesExistSprintIdResponse =
         await dsrs.getObject(sprintId);
     if (doesExistSprintIdResponse.count == 0) {
@@ -79,7 +78,7 @@ class DSRRepository extends IDSRRepository {
   }
 
   Future<bool> isDSRIdExist(String dsrId) async {
-    final ParseObject dsrs = ParseObject(dsrsTable);
+    final DSRsParseObject dsrs = DSRsParseObject();
     final ParseResponse doesExistDSRIdResponse = await dsrs.getObject(dsrId);
     if (doesExistDSRIdResponse.count == 0) {
       throw APIErrorResponse(
@@ -97,11 +96,12 @@ class DSRRepository extends IDSRRepository {
   /// This will check if the user
   Future<bool> isUserIdExist(String userId) async {
     const String objectIdField = 'objectId';
-    final QueryBuilder<ParseObject> queryGetUserId = QueryBuilder<ParseObject>(
-      ParseObject(usersTable),
+    final QueryBuilder<ParseUser> queryGetUserId = QueryBuilder<ParseUser>(
+      ParseUser.forQuery(),
     )
       ..whereEqualTo(objectIdField, userId)
       ..keysToReturn(<String>[objectIdField]);
+
     final ParseResponse queryGetUserIdResponse = await queryGetUserId.query();
     if (queryGetUserIdResponse.count == 0) {
       throw APIErrorResponse(
@@ -109,7 +109,7 @@ class DSRRepository extends IDSRRepository {
             ? 'There is no user id $userId exist.'
             : '',
         errorCode: queryGetUserIdResponse.error != null
-            ? queryGetUserIdResponse.error!.code.toString()
+            ? queryGetUserIdResponse.error?.code.toString()
             : '',
       );
     }
@@ -125,10 +125,10 @@ class DSRRepository extends IDSRRepository {
     List<Task>? tasks,
     String? projectId,
   }) async {
-    final ParseObject project = ParseObject(projectTagsTable);
+    final ProjectsParseObject project = ProjectsParseObject();
     if (tasks != null) {
-      final QueryBuilder<ParseObject> queryGetActiveProject =
-          QueryBuilder<ParseObject>(
+      final QueryBuilder<ProjectsParseObject> queryGetActiveProject =
+          QueryBuilder<ProjectsParseObject>(
         project,
       )
             ..whereEqualTo(projectTagsProjectStatusField, 'ACTIVE')
@@ -210,46 +210,65 @@ class DSRRepository extends IDSRRepository {
 
         /// If the sprint id does exist proceed to fetching record.
         if (await isSprintIdExist(sprintId)) {
-          final ParseObject dsrs = ParseObject(dsrsTable);
+          final DSRsParseObject dsrs = DSRsParseObject();
           final DateTime now = DateTime.now();
           final int date =
               epochFromDateTime(date: DateTime(now.year, now.month, now.day));
 
-          final QueryBuilder<ParseObject> dsrQuery = QueryBuilder<ParseObject>(
+          final QueryBuilder<DSRsParseObject> dsrQuery =
+              QueryBuilder<DSRsParseObject>(
             dsrs,
           )
-            ..whereEqualTo(dsrsSprintidField, sprintId)
-            ..whereGreaterThanOrEqualsTo(
-              dsrsDateField,
-              startDate != null && endDate != null
-                  ? epochFromDateTime(date: startDate)
-                  : date,
+                ..whereEqualTo(
+                  DSRsParseObject.keySprint,
+                  SprintsParseObject()..objectId = sprintId,
+                )
+                ..whereGreaterThanOrEqualsTo(
+                  DSRsParseObject.keyDate,
+                  startDate != null && endDate != null
+                      ? epochFromDateTime(date: startDate)
+                      : date,
 
-              /// If no date range specified, then this Query will return the record of today's sprint.
-            )
-            ..whereLessThan(
-              dsrsDateField,
-              startDate != null && endDate != null
-                  ? epochFromDateTime(
-                      date: DateTime(
-                        endDate.year,
-                        endDate.month,
-                        endDate.day + 1,
-                      ),
-                    )
-                  : epochFromDateTime(
-                      date: DateTime(now.year, now.month, now.day + 1),
-                    ),
+                  /// If no date range specified, then this Query will return the record of today's sprint.
+                )
+                ..whereLessThan(
+                  DSRsParseObject.keyDate,
+                  startDate != null && endDate != null
+                      ? epochFromDateTime(
+                          date: DateTime(
+                            endDate.year,
+                            endDate.month,
+                            endDate.day + 1,
+                          ),
+                        )
+                      : epochFromDateTime(
+                          date: DateTime(now.year, now.month, now.day + 1),
+                        ),
 
-              /// If no date range specified, then this Query will return the record of today's sprint.
-            )
-            ..keysToReturn(<String>[dsrsUserIdField, dsrsDateField, ...columns])
-            ..orderByAscending(dsrsDateField);
+                  /// If no date range specified, then this Query will return the record of today's sprint.
+                )
+                ..keysToReturn(
+                  <String>[
+                    DSRsParseObject.keyUser,
+                    DSRsParseObject.keySprint,
+                    DSRsParseObject.keyDate,
+                    ...columns,
+                  ],
+                )
+                ..includeObject(
+                  <String>[
+                    DSRsParseObject.keyUser,
+                  ],
+                )
+                ..orderByAscending(dsrsDateField);
 
           /// If specified user id. Just query certain user.
           if (userId != null) {
             final bool isUserExist = await isUserIdExist(userId);
-            dsrQuery.whereEqualTo(dsrsUserIdField, isUserExist ? userId : '');
+            dsrQuery.whereEqualTo(
+              DSRsParseObject.keyUser,
+              isUserExist ? (ParseUser.forQuery()..objectId = userId) : '',
+            );
           }
 
           /// Check if filter by project id does exist.
@@ -266,11 +285,10 @@ class DSRRepository extends IDSRRepository {
             if (dsrResponse.results != null) {
               for (final ParseObject dsrDonePerUser
                   in dsrResponse.results! as List<ParseObject>) {
-                final String userName = ((await ParseUser.forQuery().getObject(
-                  dsrDonePerUser.get<String>(dsrsUserIdField)!,
-                ))
-                        .result as ParseObject)
-                    .get(usersNameField)!;
+                final DSRsParseObject row =
+                    DSRsParseObject.toCustomParseObject(data: dsrDonePerUser);
+
+                final String userName = row.user.get(usersNameField)!;
 
                 final String date = DateFormat('EEE, MMM d, yyyy').format(
                   dateTimeFromEpoch(
@@ -334,10 +352,11 @@ class DSRRepository extends IDSRRepository {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject sprint = ParseObject(sprintsTable);
+        final SprintsParseObject sprint = SprintsParseObject();
 
-        final QueryBuilder<ParseObject> sprintRecord =
-            QueryBuilder<ParseObject>(sprint)..orderByAscending('createdAt');
+        final QueryBuilder<SprintsParseObject> sprintRecord =
+            QueryBuilder<SprintsParseObject>(sprint)
+              ..orderByAscending('createdAt');
 
         if (startDate != null && endDate != null) {
           /// Query the start date and end date.
@@ -345,11 +364,11 @@ class DSRRepository extends IDSRRepository {
               DateTime(endDate.year, endDate.month, endDate.day + 1);
           sprintRecord
             ..whereGreaterThanOrEqualsTo(
-              sprintsStartDateField,
+              SprintsParseObject.keyStartDate,
               epochFromDateTime(date: startDate),
             )
             ..whereLessThan(
-              sprintsEndDateField,
+              SprintsParseObject.keyEndDate,
               epochFromDateTime(date: endDateToQuery),
             );
         }
@@ -365,11 +384,13 @@ class DSRRepository extends IDSRRepository {
           if (sprintResponse.results != null) {
             for (final ParseObject result
                 in sprintResponse.results! as List<ParseObject>) {
+              final SprintsParseObject sprintRecord =
+                  SprintsParseObject.toCustomParseObject(data: result);
               sprints.add(
                 SprintRecord(
-                  id: result.objectId!,
-                  startDateEpoch: result.get<int>(sprintsStartDateField)!,
-                  endDateEpoch: result.get<int>(sprintsEndDateField)!,
+                  id: sprintRecord.objectId!,
+                  startDateEpoch: sprintRecord.startDate,
+                  endDateEpoch: sprintRecord.endDate,
                 ),
               );
             }
@@ -397,14 +418,14 @@ class DSRRepository extends IDSRRepository {
     try {
       final int fromDateTimeToEpoch = epochFromDateTime(date: currentDate);
 
-      final QueryBuilder<ParseObject> todayRecord =
-          QueryBuilder<ParseObject>(ParseObject(sprintsTable))
+      final QueryBuilder<SprintsParseObject> todayRecord =
+          QueryBuilder<SprintsParseObject>(SprintsParseObject())
             ..whereGreaterThanOrEqualsTo(
-              sprintsEndDateField,
+              SprintsParseObject.keyEndDate,
               fromDateTimeToEpoch,
             )
             ..whereLessThanOrEqualTo(
-              sprintsStartDateField,
+              SprintsParseObject.keyStartDate,
               fromDateTimeToEpoch,
             );
 
@@ -414,15 +435,18 @@ class DSRRepository extends IDSRRepository {
         formatAPIErrorResponse(error: queryTodayRecord.error!);
       }
 
-      final ParseObject sprintInfo = getParseObject(queryTodayRecord.results!);
+      final SprintsParseObject sprintInfo =
+          SprintsParseObject.toCustomParseObject(
+        data: queryTodayRecord.results!.first,
+      );
 
       return APIResponse<SprintRecord>(
         success: true,
         message: 'Successfully get the sprint record for this day.',
         data: SprintRecord(
           id: sprintInfo.objectId!,
-          startDateEpoch: sprintInfo.get<int>(sprintsStartDateField)!,
-          endDateEpoch: sprintInfo.get<int>(sprintsEndDateField)!,
+          startDateEpoch: sprintInfo.startDate,
+          endDateEpoch: sprintInfo.endDate,
         ),
         errorCode: null,
       );
@@ -437,7 +461,7 @@ class DSRRepository extends IDSRRepository {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null) {
-        final ParseObject dsrs = ParseObject(dsrsTable);
+        final DSRsParseObject dsrs = DSRsParseObject();
 
         final APIResponse<SprintRecord> sprintInfo =
             await sprintInfoQueryToday();
@@ -450,10 +474,16 @@ class DSRRepository extends IDSRRepository {
           final int epochDateToday = epochFromDateTime(date: currentDate);
 
           /// Check if there is an exsiting dsr record
-          final QueryBuilder<ParseObject> isAlreadyExisiting =
-              QueryBuilder<ParseObject>(dsrs)
-                ..whereEqualTo(dsrsSprintidField, sprintId)
-                ..whereEqualTo(dsrsUserIdField, userId)
+          final QueryBuilder<DSRsParseObject> isAlreadyExisiting =
+              QueryBuilder<DSRsParseObject>(dsrs)
+                ..whereEqualTo(
+                  DSRsParseObject.keySprint,
+                  SprintsParseObject()..objectId = sprintId,
+                )
+                ..whereEqualTo(
+                  DSRsParseObject.keyUser,
+                  ParseUser.forQuery()..objectId = userId,
+                )
                 ..whereEqualTo(dsrsDateField, epochDateToday);
 
           final ParseResponse isAlreadyExisitingResponse =
@@ -466,14 +496,13 @@ class DSRRepository extends IDSRRepository {
           /// If count is 0 create dsr record
           if (isAlreadyExisitingResponse.success &&
               isAlreadyExisitingResponse.count == 0) {
-            dsrs
-              ..set<String>(dsrsSprintidField, sprintId)
-              ..set<String>(dsrsUserIdField, userId)
-              ..set<int>(dsrsDateField, epochDateToday)
-              ..set<List<dynamic>>(dsrsDoneField, <dynamic>[])
-              ..set<List<dynamic>>(dsrsWipField, <dynamic>[])
-              ..set<List<dynamic>>(dsrsBlockersField, <dynamic>[])
-              ..set<String>(dsrsStatusField, workStatus);
+            dsrs.sprints = SprintsParseObject()..objectId = sprintId;
+            dsrs.user = ParseUser.forQuery()..objectId = userId;
+            dsrs.date = epochDateToday;
+            dsrs.done = <Task>[];
+            dsrs.wip = <Task>[];
+            dsrs.blockers = <Task>[];
+            dsrs.status = workStatus;
 
             final ParseResponse createDSRResponse = await dsrs.save();
 
@@ -497,25 +526,21 @@ class DSRRepository extends IDSRRepository {
           } else if (isAlreadyExisitingResponse.success &&
               isAlreadyExisitingResponse.count == 1) {
             /// If there is an existing sprint with this date. Return the info.
-            final ParseObject resultParseObject =
-                getParseObject(isAlreadyExisitingResponse.results!);
+            final DSRsParseObject resultParseObject =
+                DSRsParseObject.toCustomParseObject(
+              data: isAlreadyExisitingResponse.results!.first,
+            );
 
             return APIResponse<DSRRecord>(
               success: true,
               message: 'There is an already record for today.',
               data: DSRRecord(
                 id: resultParseObject.objectId!,
-                sprintId: resultParseObject.get<String>(dsrsSprintidField)!,
-                done: convertListDynamic(
-                  resultParseObject.get<List<dynamic>>(dsrsDoneField)!,
-                ),
-                wip: convertListDynamic(
-                  resultParseObject.get<List<dynamic>>(dsrsWipField)!,
-                ),
-                blockers: convertListDynamic(
-                  resultParseObject.get<List<dynamic>>(dsrsBlockersField)!,
-                ),
-                dateEpoch: resultParseObject.get<int>(dsrsDateField)!,
+                sprintId: resultParseObject.sprints.objectId!,
+                done: resultParseObject.done!,
+                wip: resultParseObject.wip!,
+                blockers: resultParseObject.blockers!,
+                dateEpoch: resultParseObject.date,
                 status: workStatus,
               ),
               errorCode: null,
@@ -551,17 +576,18 @@ class DSRRepository extends IDSRRepository {
           );
         }
 
-        final ParseObject sprints = ParseObject(sprintsTable);
-        final QueryBuilder<ParseObject> isAlreadyExisiting =
-            QueryBuilder<ParseObject>(sprints)
+        final SprintsParseObject sprints = SprintsParseObject();
+        final QueryBuilder<SprintsParseObject> isAlreadyExisiting =
+            QueryBuilder<SprintsParseObject>(sprints)
               ..whereEqualTo(
-                sprintsStartDateField,
+                SprintsParseObject.keyStartDate,
                 epochFromDateTime(date: startDate),
               )
               ..whereEqualTo(
-                sprintsEndDateField,
+                SprintsParseObject.keyEndDate,
                 epochFromDateTime(date: endDate),
               );
+
         final ParseResponse isAlreadyExisitingResponse =
             await isAlreadyExisiting.query();
 
@@ -572,14 +598,8 @@ class DSRRepository extends IDSRRepository {
         /// If count is 0 create sprint record
         if (isAlreadyExisitingResponse.success &&
             isAlreadyExisitingResponse.count == 0) {
-          sprints.set<int>(
-            sprintsStartDateField,
-            epochFromDateTime(date: startDate),
-          );
-          sprints.set<int>(
-            sprintsEndDateField,
-            epochFromDateTime(date: endDate),
-          );
+          sprints.startDate = epochFromDateTime(date: startDate);
+          sprints.endDate = epochFromDateTime(date: endDate);
 
           final ParseResponse createSprint = await sprints.save();
 
@@ -636,7 +656,7 @@ class DSRRepository extends IDSRRepository {
           );
         }
         if (isExistProjectIds) {
-          final ParseObject dsrs = ParseObject(dsrsTable);
+          final DSRsParseObject dsrs = DSRsParseObject();
 
           dsrs
             ..objectId = dsrId
@@ -654,26 +674,23 @@ class DSRRepository extends IDSRRepository {
 
             if (dsrInfoAfterAdding.success &&
                 dsrInfoAfterAdding.results != null) {
-              final ParseObject resultParseObject =
-                  getParseObject(dsrInfoAfterAdding.results!);
+              final DSRsParseObject resultParseObject =
+                  DSRsParseObject.toCustomParseObject(
+                data: dsrInfoAfterAdding.results!.first,
+              );
+              // getParseObject(dsrInfoAfterAdding.results!);
 
               return APIResponse<DSRRecord>(
                 success: true,
                 message: 'Successfully added works on $column.',
                 data: DSRRecord(
                   id: resultParseObject.objectId!,
-                  sprintId: resultParseObject.get<String>(dsrsSprintidField)!,
-                  done: convertListDynamic(
-                    resultParseObject.get<List<dynamic>>(dsrsDoneField)!,
-                  ),
-                  wip: convertListDynamic(
-                    resultParseObject.get<List<dynamic>>(dsrsWipField)!,
-                  ),
-                  blockers: convertListDynamic(
-                    resultParseObject.get<List<dynamic>>(dsrsBlockersField)!,
-                  ),
-                  status: resultParseObject.get<String>(dsrsStatusField)!,
-                  dateEpoch: resultParseObject.get<int>(dsrsDateField)!,
+                  sprintId: resultParseObject.sprints.objectId!,
+                  done: resultParseObject.done!,
+                  wip: resultParseObject.wip!,
+                  blockers: resultParseObject.blockers!,
+                  status: resultParseObject.status,
+                  dateEpoch: resultParseObject.date,
                 ),
                 errorCode: null,
               );
@@ -713,11 +730,11 @@ class DSRRepository extends IDSRRepository {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null) {
-        final ParseObject dsrs = ParseObject(dsrsTable);
+        final DSRsParseObject dsrs = DSRsParseObject();
 
         dsrs
           ..objectId = dsrId
-          ..set<String>(dsrsStatusField, status);
+          ..status = status;
 
         final ParseResponse saveDsrResponse = await dsrs.save();
 
@@ -731,26 +748,22 @@ class DSRRepository extends IDSRRepository {
 
           if (dsrInfoAfterUpdating.success &&
               dsrInfoAfterUpdating.results != null) {
-            final ParseObject resultParseObject =
-                getParseObject(dsrInfoAfterUpdating.results!);
+            final DSRsParseObject resultParseObject =
+                DSRsParseObject.toCustomParseObject(
+              data: dsrInfoAfterUpdating.results!.first,
+            );
 
             return APIResponse<DSRRecord>(
               success: true,
               message: 'Successfully update DSR record.',
               data: DSRRecord(
                 id: resultParseObject.objectId!,
-                sprintId: resultParseObject.get<String>(dsrsSprintidField)!,
-                done: convertListDynamic(
-                  resultParseObject.get<List<dynamic>>(dsrsDoneField)!,
-                ),
-                wip: convertListDynamic(
-                  resultParseObject.get<List<dynamic>>(dsrsWipField)!,
-                ),
-                blockers: convertListDynamic(
-                  resultParseObject.get<List<dynamic>>(dsrsBlockersField)!,
-                ),
-                status: resultParseObject.get<String>(dsrsStatusField)!,
-                dateEpoch: resultParseObject.get<int>(dsrsDateField)!,
+                sprintId: resultParseObject.sprints.objectId!,
+                done: resultParseObject.done!,
+                wip: resultParseObject.wip!,
+                blockers: resultParseObject.blockers!,
+                status: resultParseObject.status,
+                dateEpoch: resultParseObject.date,
               ),
               errorCode: null,
             );
@@ -775,7 +788,7 @@ class DSRRepository extends IDSRRepository {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null) {
-        final ParseObject sprints = ParseObject(dsrsTable);
+        final DSRsParseObject dsrs = DSRsParseObject();
         final APIResponse<SprintRecord> sprintToday =
             await sprintInfoQueryToday();
 
@@ -784,16 +797,20 @@ class DSRRepository extends IDSRRepository {
 
         if (dsrId != null) await isDSRIdExist(dsrId);
 
-        final QueryBuilder<ParseObject> getAllDSRQuery =
-            QueryBuilder<ParseObject>(sprints)
+        final QueryBuilder<DSRsParseObject> getAllDSRQuery =
+            QueryBuilder<DSRsParseObject>(dsrs)
               ..whereEqualTo(
-                dsrsSprintidField,
-                sprintId ?? sprintToday.data.id,
+                DSRsParseObject.keySprint,
+                SprintsParseObject()
+                  ..objectId = sprintId ?? sprintToday.data.id,
               )
-              ..whereEqualTo(dsrsUserIdField, user.objectId);
+              ..whereEqualTo(
+                DSRsParseObject.keyUser,
+                ParseUser.forQuery()..objectId = user.objectId,
+              );
 
         final ParseResponse getAllDSRQueryResponse = dsrId != null
-            ? await sprints.getObject(dsrId)
+            ? await dsrs.getObject(dsrId)
             : await getAllDSRQuery.query();
 
         if (getAllDSRQueryResponse.error != null) {
@@ -805,20 +822,17 @@ class DSRRepository extends IDSRRepository {
           if (getAllDSRQueryResponse.results != null) {
             for (final ParseObject? dsr
                 in getAllDSRQueryResponse.results! as List<ParseObject?>) {
+              final DSRsParseObject record =
+                  DSRsParseObject.toCustomParseObject(data: dsr);
               dsrs.add(
                 DSRRecord(
-                  id: dsr!.objectId!,
-                  done: convertListDynamic(
-                    dsr.get<List<dynamic>>(dsrsDoneField)!,
-                  ),
-                  wip:
-                      convertListDynamic(dsr.get<List<dynamic>>(dsrsWipField)!),
-                  blockers: convertListDynamic(
-                    dsr.get<List<dynamic>>(dsrsBlockersField)!,
-                  ),
-                  sprintId: dsr.get<String>(dsrsSprintidField)!,
-                  dateEpoch: dsr.get<int>(dsrsDateField)!,
-                  status: dsr.get<String>(dsrsStatusField)!,
+                  id: record.objectId!,
+                  done: record.done!,
+                  wip: record.wip!,
+                  blockers: record.blockers!,
+                  sprintId: record.sprints.objectId!,
+                  dateEpoch: record.date,
+                  status: record.status,
                 ),
               );
             }
