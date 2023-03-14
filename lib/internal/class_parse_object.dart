@@ -38,6 +38,17 @@ class TimeInOutParseObject extends ParseObject implements ParseCloneable {
   }) =>
       data as TimeInOutParseObject;
 
+  /// This function will be used to manually override the default conversion of ParseObject to custom parse object.
+  @override
+  TimeInOutParseObject fromJson(Map<String, dynamic> objectData) {
+    super.fromJson(objectData);
+    if (objectData.containsKey(keyHoliday)) {
+      holiday = HolidayParseObject.clone()
+        ..fromJson(objectData[keyHoliday] as Map<String, dynamic>);
+    }
+    return this;
+  }
+
   /// Serialized response
   @override
   TimeInOutParseObject clone(Map<String, dynamic> map) =>
@@ -64,6 +75,17 @@ class TimeAttendancesParseObject extends ParseObject implements ParseCloneable {
     required dynamic data,
   }) =>
       data as TimeAttendancesParseObject;
+
+  /// This function will be used to manually override the default conversion of ParseObject to custom parse object.
+  @override
+  TimeAttendancesParseObject fromJson(Map<String, dynamic> objectData) {
+    super.fromJson(objectData);
+    if (objectData.containsKey(keyTimeInOut)) {
+      timeInOut = TimeInOutParseObject.clone()
+        ..fromJson(objectData[keyTimeInOut] as Map<String, dynamic>);
+    }
+    return this;
+  }
 
   /// Serialized response
   @override
@@ -153,7 +175,7 @@ class ProjectsParseObject extends ParseObject implements ParseCloneable {
   set status(String status) => set<String>(keyStatus, status);
 
   String get color => get<String>(keyColor)!;
-  set color(String color) => get<String>(keyColor)!;
+  set color(String color) => set<String>(keyColor, color);
 }
 
 class SprintsParseObject extends ParseObject implements ParseCloneable {
@@ -185,6 +207,17 @@ class SprintsParseObject extends ParseObject implements ParseCloneable {
 class DSRsParseObject extends ParseObject implements ParseCloneable {
   DSRsParseObject() : super(_keyTableName);
   DSRsParseObject.clone() : this();
+
+  /// This function will be used to manually override the default conversion of ParseObject to custom parse object.
+  @override
+  DSRsParseObject fromJson(Map<String, dynamic> objectData) {
+    super.fromJson(objectData);
+    if (objectData.containsKey(keySprint)) {
+      sprints = SprintsParseObject.clone()
+        ..fromJson(objectData[keySprint] as Map<String, dynamic>);
+    }
+    return this;
+  }
 
   /// Convert the ParseObject to a custom parse object.
   static DSRsParseObject toCustomParseObject({
@@ -265,6 +298,17 @@ class LeavesParseObject extends ParseObject implements ParseCloneable {
 class LeavesRequestsParseObject extends ParseObject implements ParseCloneable {
   LeavesRequestsParseObject() : super(_keyTableName);
   LeavesRequestsParseObject.clone() : this();
+
+  /// This function will be used to manually override the default conversion of ParseObject to custom parse object.
+  @override
+  LeavesRequestsParseObject fromJson(Map<String, dynamic> objectData) {
+    super.fromJson(objectData);
+    if (objectData.containsKey(keyLeave)) {
+      leave = LeavesParseObject.clone()
+        ..fromJson(objectData[keyLeave] as Map<String, dynamic>);
+    }
+    return this;
+  }
 
   /// Convert the ParseObject to a custom parse object.
   static LeavesRequestsParseObject toCustomParseObject({
