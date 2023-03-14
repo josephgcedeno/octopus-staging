@@ -85,11 +85,11 @@ class LeaveRepository extends ILeaveRepository {
         if (startDate != null && endDate != null) {
           leavesQuery
             ..whereGreaterThanOrEqualsTo(
-              leavesStartDateField,
+              LeavesParseObject.keyStartDate,
               epochFromDateTime(date: startDate),
             )
             ..whereLessThan(
-              leavesEndDateField,
+              LeavesParseObject.keyEndDate,
               epochFromDateTime(date: endDate),
             );
         }
@@ -450,19 +450,25 @@ class LeaveRepository extends ILeaveRepository {
 
         final QueryBuilder<LeavesRequestsParseObject> leaveReqQuery =
             QueryBuilder<LeavesRequestsParseObject>(leaveRequests)
-              ..whereEqualTo(leaveRequestStatusField, status);
+              ..whereEqualTo(LeavesRequestsParseObject.keyStatus, status);
 
         if (leaveRequestId != null) checkFieldIsEmpty(leaveRequestId);
 
         if (leaveId != null) {
           checkFieldIsEmpty(leaveId);
 
-          leaveReqQuery.whereEqualTo(leaveRequestLeaveIdField, leaveId);
+          leaveReqQuery.whereEqualTo(
+            LeavesRequestsParseObject.keyLeave,
+            LeavesParseObject()..objectId = leaveId,
+          );
         }
         if (userId != null) {
           checkFieldIsEmpty(userId);
 
-          leaveReqQuery.whereEqualTo(leaveRequestUserIdField, userId);
+          leaveReqQuery.whereEqualTo(
+            LeavesRequestsParseObject.keyUser,
+            ParseUser.forQuery()..objectId = userId,
+          );
         }
 
         final ParseResponse getLeaveReqResponse = leaveRequestId != null
@@ -528,11 +534,11 @@ class LeaveRepository extends ILeaveRepository {
     final QueryBuilder<LeavesParseObject> queryRecordThisYear =
         QueryBuilder<LeavesParseObject>(leaves)
           ..whereGreaterThanOrEqualsTo(
-            leavesEndDateField,
+            LeavesParseObject.keyEndDate,
             dateToQueryEpoch,
           )
           ..whereLessThanOrEqualTo(
-            leavesStartDateField,
+            LeavesParseObject.keyStartDate,
             dateToQueryEpoch,
           );
     final ParseResponse data = await queryRecordThisYear.query();

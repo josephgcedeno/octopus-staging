@@ -115,12 +115,12 @@ class HolidayRepository extends IHoliday {
 
         if (holidayName != null) {
           checkFieldIsEmpty(holidayName);
-          holidayQuery.whereContains(holidayNameField, holidayName);
+          holidayQuery.whereContains(HolidayParseObject.keyName, holidayName);
         }
 
         if (holidayDate != null) {
           holidayQuery.whereEqualTo(
-            holidayDateField,
+            HolidayParseObject.keyDate,
             epochFromDateTime(
               date: holidayDate,
             ),

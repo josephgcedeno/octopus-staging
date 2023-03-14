@@ -131,7 +131,7 @@ class DSRRepository extends IDSRRepository {
           QueryBuilder<ProjectsParseObject>(
         project,
       )
-            ..whereEqualTo(projectTagsProjectStatusField, 'ACTIVE')
+            ..whereEqualTo(ProjectsParseObject.keyStatus, 'ACTIVE')
             ..keysToReturn(<String>['objectId']);
 
       final ParseResponse queryGetActiveProjetResponse =
