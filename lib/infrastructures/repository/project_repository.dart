@@ -3,6 +3,7 @@ import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/project/project_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/project_repository.dart';
+import 'package:octopus/internal/class_parse_object.dart';
 import 'package:octopus/internal/database_strings.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/helper_function.dart';
@@ -28,18 +29,12 @@ class ProjectRepository extends IProjectRepository {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject projectTag = ParseObject(projectTagsTable)
-          ..set<String>(projectTagsProjectNameField, projectName)
-          ..set<String>(projectTagsProjectColorField, projectColor)
-          ..set<String>(
-            projectTagsProjectStatusField,
-            status ?? 'ACTIVE',
-          )
-          ..set<int>(
-            projectTagsProjectDateField,
-            epochFromDateTime(
-              date: date ?? DateTime.now(),
-            ),
+        final ProjectsParseObject projectTag = ProjectsParseObject()
+          ..name = projectName
+          ..color = projectColor
+          ..status = status ?? 'ACTIVE'
+          ..date = epochFromDateTime(
+            date: date ?? DateTime.now(),
           );
 
         final ParseResponse projectTagResponse = await projectTag.save();
@@ -85,7 +80,7 @@ class ProjectRepository extends IProjectRepository {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject deleteProject = ParseObject(projectTagsTable);
+        final ProjectsParseObject deleteProject = ProjectsParseObject();
 
         final ParseResponse deleteProjectResponse =
             await deleteProject.delete(id: id);
@@ -129,23 +124,23 @@ class ProjectRepository extends IProjectRepository {
       );
     }
     try {
-      final QueryBuilder<ParseObject> projectTags =
-          QueryBuilder<ParseObject>(ParseObject(projectTagsTable));
+      final QueryBuilder<ProjectsParseObject> projectTags =
+          QueryBuilder<ProjectsParseObject>(ProjectsParseObject());
 
       if (projectName != null) {
-        projectTags.whereContains(projectTagsProjectNameField, projectName);
+        projectTags.whereContains(ProjectsParseObject.keyName, projectName);
       }
       if (status != null) {
-        projectTags.whereEqualTo(projectTagsProjectStatusField, status);
+        projectTags.whereEqualTo(ProjectsParseObject.keyStatus, status);
       }
       if (date != null) {
         projectTags.whereEqualTo(
-          projectTagsProjectDateField,
+          ProjectsParseObject.keyDate,
           epochFromDateTime(date: date),
         );
       }
       if (projectColor != null) {
-        projectTags.whereEqualTo(projectTagsProjectColorField, projectColor);
+        projectTags.whereEqualTo(ProjectsParseObject.keyColor, projectColor);
       }
 
       final ParseResponse projectTagsResponse = await projectTags.query();
@@ -158,13 +153,16 @@ class ProjectRepository extends IProjectRepository {
       if (projectTagsResponse.results != null) {
         for (final ParseObject project
             in projectTagsResponse.results! as List<ParseObject>) {
+          final ProjectsParseObject record =
+              ProjectsParseObject.toCustomParseObject(data: project);
+
           projects.add(
             Project(
-              id: project.objectId!,
-              projectName: project.get<String>(projectTagsProjectNameField)!,
-              dateEpoch: project.get<int>(projectTagsProjectDateField)!,
-              status: project.get<String>(projectTagsProjectStatusField)!,
-              color: project.get<String>(projectTagsProjectColorField)!,
+              id: record.objectId!,
+              projectName: record.name,
+              dateEpoch: record.date,
+              status: record.status,
+              color: record.color,
             ),
           );
         }
@@ -202,30 +200,21 @@ class ProjectRepository extends IProjectRepository {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject updateProject = ParseObject(projectTagsTable);
+        final ProjectsParseObject updateProject = ProjectsParseObject();
 
         updateProject.objectId = id;
 
         if (projectName != null) {
-          updateProject.set<String>(
-            projectTagsProjectNameField,
-            projectName,
-          );
+          updateProject.name = projectName;
         }
         if (status != null) {
-          updateProject.set<String>(projectTagsProjectStatusField, status);
+          updateProject.status = status;
         }
         if (date != null) {
-          updateProject.set<int>(
-            projectTagsProjectDateField,
-            epochFromDateTime(date: date),
-          );
+          updateProject.date = epochFromDateTime(date: date);
         }
         if (projectColor != null) {
-          updateProject.set<String>(
-            projectTagsProjectColorField,
-            projectColor,
-          );
+          updateProject.color = projectColor;
         }
 
         final ParseResponse updateProjectResponse = await updateProject.save();
@@ -242,22 +231,20 @@ class ProjectRepository extends IProjectRepository {
               await updateProject.getObject(objectId);
 
           if (projectResponse.success && projectResponse.results != null) {
-            final ParseObject resultParseObject =
-                getParseObject(projectResponse.results!);
+            final ProjectsParseObject resultParseObject =
+                ProjectsParseObject.toCustomParseObject(
+              data: projectResponse.results!.first,
+            );
 
             return APIResponse<Project>(
               success: true,
               message: 'Successfully updated project.',
               data: Project(
                 id: resultParseObject.objectId!,
-                dateEpoch:
-                    resultParseObject.get<int>(projectTagsProjectDateField)!,
-                projectName:
-                    resultParseObject.get<String>(projectTagsProjectNameField)!,
-                status: resultParseObject
-                    .get<String>(projectTagsProjectStatusField)!,
-                color: resultParseObject
-                    .get<String>(projectTagsProjectColorField)!,
+                dateEpoch: resultParseObject.date,
+                projectName: resultParseObject.name,
+                status: resultParseObject.status,
+                color: resultParseObject.color,
               ),
               errorCode: null,
             );
