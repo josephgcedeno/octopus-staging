@@ -183,14 +183,16 @@ class TimeInOutRepository extends ITimeInOutRepository {
             /// If there is a record yesterday and if the yesterday's offset is approved. Set the current required minute to the offset minutes yesterday.
             if (attendanceYesterday.success &&
                 attendanceYesterday.results != null &&
-                resultParseObject
-                        .get<String>(timeAttendancesOffsetStatusField) ==
+                resultParseObject.get<String>(
+                      TimeAttendancesParseObject.keyOffsetStatus,
+                    ) ==
                     'APPROVED') {
               return APIResponse<int>(
                 success: true,
                 message: "Successfully get yesterday's offset",
-                data: resultParseObject
-                        .get<int>(timeAttendancesOffsetDurationField) ??
+                data: resultParseObject.get<int>(
+                      TimeAttendancesParseObject.keyOffsetDuration,
+                    ) ??
                     0,
                 errorCode: null,
               );
@@ -251,7 +253,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
         if (attendanceResponse.success &&
             attendanceResponse.count == 1 &&
             getParseObject(attendanceResponse.results!)
-                    .get<int>(timeAttendancesTimeInField) !=
+                    .get<int>(TimeAttendancesParseObject.keyTimeIn) !=
                 null) {
           throw APIErrorResponse(
             message: 'Already requested.',
@@ -459,11 +461,13 @@ class TimeInOutRepository extends ITimeInOutRepository {
         /// If there is an already made request throw error.
         if (attendanceResponse.success &&
             attendanceResponse.count == 1 &&
-            (getParseObject(attendanceResponse.results!)
-                        .get<int>(timeAttendancesOffsetDurationField) !=
+            (getParseObject(attendanceResponse.results!).get<int>(
+                      TimeAttendancesParseObject.keyOffsetDuration,
+                    ) !=
                     null &&
-                getParseObject(attendanceResponse.results!)
-                        .get<String>(timeAttendancesOffsetStatusField) !=
+                getParseObject(attendanceResponse.results!).get<String>(
+                      TimeAttendancesParseObject.keyOffsetStatus,
+                    ) !=
                     null)) {
           throw APIErrorResponse(
             message: 'Already requested',
@@ -547,10 +551,10 @@ class TimeInOutRepository extends ITimeInOutRepository {
                   timeInOutId: todayRecordId,
                   offsetDuration: getMinutesfOffset,
                   offsetStatus: offsetStatus,
-                  timeInEpoch:
-                      resultParseObject.get<int>(timeAttendancesTimeInField),
-                  timeOutEpoch:
-                      resultParseObject.get<int>(timeAttendancesTimeOutField),
+                  timeInEpoch: resultParseObject
+                      .get<int>(TimeAttendancesParseObject.keyTimeIn),
+                  timeOutEpoch: resultParseObject
+                      .get<int>(TimeAttendancesParseObject.keyTimeOut),
                 ),
                 errorCode: null,
               );
@@ -773,7 +777,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
               message: "Successfully updated today's record",
               data: TimeIn(
                 dateEpoch: getParseObject(timeInResponse.results!)
-                    .get<int>(timeInOutDateField)!,
+                    .get<int>(TimeInOutParseObject.keyDate)!,
                 holiday: holidayId,
                 id: id,
               ),

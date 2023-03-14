@@ -16,9 +16,9 @@ class DSRRepository extends IDSRRepository {
 
   /// This list down the available column to update the entries (done, work_in_progress, and blockers)
   List<String> get columnsEntries => const <String>[
-        dsrsDoneField,
-        dsrsWipField,
-        dsrsBlockersField,
+        DSRsParseObject.keyDone,
+        DSRsParseObject.keyWIP,
+        DSRsParseObject.keyBlockers,
       ];
 
   DateTime get currentDate => DateTime(today.year, today.month, today.day);
@@ -187,9 +187,9 @@ class DSRRepository extends IDSRRepository {
   Future<APIResponse<AllDSRItem>> getAllDSRRecordForSprint({
     required String sprintId,
     List<String> columns = const <String>[
-      dsrsDoneField,
-      dsrsWipField,
-      dsrsBlockersField,
+      DSRsParseObject.keyDone,
+      DSRsParseObject.keyWIP,
+      DSRsParseObject.keyBlockers,
     ],
     String? userId,
     String? projectId,
@@ -260,7 +260,7 @@ class DSRRepository extends IDSRRepository {
                     DSRsParseObject.keyUser,
                   ],
                 )
-                ..orderByAscending(dsrsDateField);
+                ..orderByAscending(DSRsParseObject.keyDate);
 
           /// If specified user id. Just query certain user.
           if (userId != null) {
@@ -292,12 +292,12 @@ class DSRRepository extends IDSRRepository {
 
                 final String date = DateFormat('EEE, MMM d, yyyy').format(
                   dateTimeFromEpoch(
-                    epoch: dsrDonePerUser.get<int>(dsrsDateField)!,
+                    epoch: row.date,
                   ),
                 );
 
                 for (final String column in columns) {
-                  final List<dynamic> tasks = dsrDonePerUser.get(column)!;
+                  final List<dynamic> tasks = row.get(column)!;
 
                   if (datas.containsKey(column)) {
                     datas[column]!.addAll(
@@ -484,7 +484,7 @@ class DSRRepository extends IDSRRepository {
                   DSRsParseObject.keyUser,
                   ParseUser.forQuery()..objectId = userId,
                 )
-                ..whereEqualTo(dsrsDateField, epochDateToday);
+                ..whereEqualTo(DSRsParseObject.keyDate, epochDateToday);
 
           final ParseResponse isAlreadyExisitingResponse =
               await isAlreadyExisiting.query();
