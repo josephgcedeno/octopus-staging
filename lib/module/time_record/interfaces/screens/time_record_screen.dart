@@ -39,16 +39,22 @@ class _TimeRecordScreenState extends State<TimeRecordScreen> {
       late final NotificationStatus status;
       late final String notificationText;
 
-      if (offsetStatus == pending) {
-        status = NotificationStatus.success;
-        notificationText =
-            'Successfully submitted offset request. You’ll be notified once approved.';
-      } else if (offsetStatus == approved) {
-        status = NotificationStatus.success;
-        notificationText = 'Your offset request has been approved.';
-      } else if (offsetStatus == denied) {
-        status = NotificationStatus.error;
-        notificationText = 'Your offset request has been denied.';
+      switch (offsetStatus) {
+        case pending:
+          status = NotificationStatus.success;
+          notificationText =
+              'Successfully submitted offset request. You’ll be notified once approved.';
+          break;
+        case approved:
+          status = NotificationStatus.success;
+          notificationText = 'Your offset request has been approved.';
+          break;
+        case denied:
+          status = NotificationStatus.error;
+          notificationText = 'Your offset request has been denied.';
+          break;
+        default:
+          return;
       }
       setState(
         () => notificationDialog = Align(
