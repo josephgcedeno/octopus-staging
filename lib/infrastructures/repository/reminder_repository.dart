@@ -4,6 +4,7 @@ import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/reminders/reminders_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/reminder_repository.dart';
+import 'package:octopus/internal/class_parse_object.dart';
 import 'package:octopus/internal/database_strings.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/helper_function.dart';
@@ -27,17 +28,12 @@ class ReminderRepository extends IReminderRepository {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject createReminder = ParseObject(panelRemindersTable)
-          ..set<String>(pannelRemindersAnnouncementField, announcement)
-          ..set<int>(
-            pannelRemindersStartDateField,
-            epochFromDateTime(date: startDate),
-          )
-          ..set<int>(
-            pannelRemindersEndDateField,
-            epochFromDateTime(date: endDate),
-          )
-          ..set<bool>(pannelRemindersIsShowField, isShow);
+        final PanelRemindersParseObject createReminder =
+            PanelRemindersParseObject()
+              ..announcement = announcement
+              ..startDate = epochFromDateTime(date: startDate)
+              ..endDate = epochFromDateTime(date: endDate)
+              ..isShow = isShow;
 
         final ParseResponse createReminderReponse = await createReminder.save();
 
@@ -79,7 +75,7 @@ class ReminderRepository extends IReminderRepository {
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
         final ParseResponse remindersResponse =
-            await ParseObject(panelRemindersTable).getAll();
+            await PanelRemindersParseObject().getAll();
 
         if (remindersResponse.error != null) {
           formatAPIErrorResponse(error: remindersResponse.error!);
@@ -91,15 +87,16 @@ class ReminderRepository extends IReminderRepository {
           if (remindersResponse.results != null) {
             for (final ParseObject result
                 in remindersResponse.results! as List<ParseObject>) {
+              final PanelRemindersParseObject record =
+                  PanelRemindersParseObject.toCustomParseObject(data: result);
+
               reminders.add(
                 Reminder(
-                  id: result.objectId!,
-                  announcement:
-                      result.get<String>(pannelRemindersAnnouncementField)!,
-                  startDateEpoch:
-                      result.get<int>(pannelRemindersStartDateField)!,
-                  endDateEpoch: result.get<int>(pannelRemindersEndDateField)!,
-                  isShow: result.get<bool>(pannelRemindersIsShowField)!,
+                  id: record.objectId!,
+                  announcement: record.announcement,
+                  startDateEpoch: record.startDate,
+                  endDateEpoch: record.endDate,
+                  isShow: record.isShow,
                 ),
               );
             }
@@ -131,17 +128,17 @@ class ReminderRepository extends IReminderRepository {
       final int fromDateTimeToEpoch = epochFromDateTime(date: today);
 
       /// Query every reminder that is in between with start date and end date.
-      final QueryBuilder<ParseObject> requeryReminder =
-          QueryBuilder<ParseObject>(ParseObject(panelRemindersTable))
+      final QueryBuilder<PanelRemindersParseObject> requeryReminder =
+          QueryBuilder<PanelRemindersParseObject>(PanelRemindersParseObject())
             ..whereLessThanOrEqualTo(
-              pannelRemindersStartDateField,
+              PanelRemindersParseObject.keyStartDate,
               fromDateTimeToEpoch,
             )
             ..whereGreaterThanOrEqualsTo(
-              pannelRemindersEndDateField,
+              PanelRemindersParseObject.keyEndDate,
               fromDateTimeToEpoch,
             )
-            ..whereEqualTo(pannelRemindersIsShowField, true);
+            ..whereEqualTo(PanelRemindersParseObject.keyIsShow, true);
 
       final ParseResponse requeryReminderResponse =
           await requeryReminder.query();
@@ -155,14 +152,16 @@ class ReminderRepository extends IReminderRepository {
       if (requeryReminderResponse.results != null) {
         for (final ParseObject result
             in requeryReminderResponse.results! as List<ParseObject>) {
+          final PanelRemindersParseObject record =
+              PanelRemindersParseObject.toCustomParseObject(data: result);
+
           reminders.add(
             Reminder(
-              id: result.objectId!,
-              announcement:
-                  result.get<String>(pannelRemindersAnnouncementField)!,
-              startDateEpoch: result.get<int>(pannelRemindersStartDateField)!,
-              endDateEpoch: result.get<int>(pannelRemindersEndDateField)!,
-              isShow: result.get<bool>(pannelRemindersIsShowField)!,
+              id: record.objectId!,
+              announcement: record.announcement,
+              startDateEpoch: record.startDate,
+              endDateEpoch: record.endDate,
+              isShow: record.isShow,
             ),
           );
         }
@@ -193,7 +192,8 @@ class ReminderRepository extends IReminderRepository {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject deleteReminder = ParseObject(panelRemindersTable);
+        final PanelRemindersParseObject deleteReminder =
+            PanelRemindersParseObject();
 
         final ParseResponse deleteReminderResponse =
             await deleteReminder.delete(id: id);
@@ -239,30 +239,22 @@ class ReminderRepository extends IReminderRepository {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject updateReminder = ParseObject(panelRemindersTable);
+        final PanelRemindersParseObject updateReminder =
+            PanelRemindersParseObject();
 
         updateReminder.objectId = id;
 
         if (announcement != null) {
-          updateReminder.set<String>(
-            pannelRemindersAnnouncementField,
-            announcement,
-          );
+          updateReminder.announcement = announcement;
         }
         if (startDate != null) {
-          updateReminder.set<int>(
-            pannelRemindersStartDateField,
-            epochFromDateTime(date: startDate),
-          );
+          updateReminder.startDate = epochFromDateTime(date: startDate);
         }
         if (endDate != null) {
-          updateReminder.set<int>(
-            pannelRemindersEndDateField,
-            epochFromDateTime(date: endDate),
-          );
+          updateReminder.endDate = epochFromDateTime(date: endDate);
         }
         if (isShow != null) {
-          updateReminder.set<bool>(pannelRemindersIsShowField, isShow);
+          updateReminder.isShow = isShow;
         }
         final ParseResponse updateReminderResponse =
             await updateReminder.save();
@@ -278,22 +270,20 @@ class ReminderRepository extends IReminderRepository {
           final ParseResponse reminderRecord =
               await updateReminder.getObject(objectId);
           if (reminderRecord.success && reminderRecord.results != null) {
-            final ParseObject resultParseObject =
-                getParseObject(reminderRecord.results!);
+            final PanelRemindersParseObject resultParseObject =
+                PanelRemindersParseObject.toCustomParseObject(
+              data: reminderRecord.results!.first,
+            );
 
             return APIResponse<Reminder>(
               success: true,
               message: 'Successfully updated reminder.',
               data: Reminder(
                 id: resultParseObject.objectId!,
-                announcement: resultParseObject
-                    .get<String>(pannelRemindersAnnouncementField)!,
-                startDateEpoch:
-                    resultParseObject.get<int>(pannelRemindersStartDateField)!,
-                endDateEpoch:
-                    resultParseObject.get<int>(pannelRemindersEndDateField)!,
-                isShow:
-                    resultParseObject.get<bool>(pannelRemindersIsShowField)!,
+                announcement: resultParseObject.announcement,
+                startDateEpoch: resultParseObject.startDate,
+                endDateEpoch: resultParseObject.endDate,
+                isShow: resultParseObject.isShow,
               ),
               errorCode: null,
             );
