@@ -1,7 +1,11 @@
 part of 'time_record_cubit.dart';
 
+enum ExecutedOrigin { requestOffset, fetchAttendance, signIn, signOut }
+
 class TimeRecordState {
-  const TimeRecordState();
+  TimeRecordState({this.origin});
+
+  ExecutedOrigin? origin;
 }
 
 /// Event Classes
@@ -10,18 +14,20 @@ class FetchTimeInDataLoading extends TimeRecordState {
 }
 
 class FetchTimeInDataSuccess extends TimeRecordState {
-  const FetchTimeInDataSuccess({
+  FetchTimeInDataSuccess({
     required this.attendance,
-  }) : super();
+    required ExecutedOrigin origin,
+  }) : super(origin: origin);
 
   final Attendance? attendance;
 }
 
 class FetchTimeInDataFailed extends TimeRecordState {
-  const FetchTimeInDataFailed({
+  FetchTimeInDataFailed({
     required this.errorCode,
     required this.message,
-  }) : super();
+    required ExecutedOrigin origin,
+  }) : super(origin: origin);
 
   final String errorCode;
   final String message;

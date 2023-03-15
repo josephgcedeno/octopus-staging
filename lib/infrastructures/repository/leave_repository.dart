@@ -3,6 +3,7 @@ import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/leaves/leaves_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/leave_repository.dart';
+import 'package:octopus/internal/class_parse_object.dart';
 import 'package:octopus/internal/database_strings.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/helper_function.dart';
@@ -33,10 +34,11 @@ class LeaveRepository extends ILeaveRepository {
       if (user != null && user.get<bool>(usersIsAdminField)!) {
         final int startDateEpoch = epochFromDateTime(date: startDate);
         final int endDateEpoch = epochFromDateTime(date: endDate);
-        final ParseObject leaves = ParseObject(leavesTable)
-          ..set<int>(leavesNoLeavesField, noLeaves)
-          ..set<int>(leavesStartDateField, startDateEpoch)
-          ..set<int>(leavesEndDateField, endDateEpoch);
+        final LeavesParseObject leaves = LeavesParseObject()
+          ..noLeaves = noLeaves
+          ..startDate = startDateEpoch
+          ..endDate = endDateEpoch;
+
         final ParseResponse createLeaveResponse = await leaves.save();
 
         if (createLeaveResponse.error != null) {
@@ -76,18 +78,18 @@ class LeaveRepository extends ILeaveRepository {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject leaves = ParseObject(leavesTable);
-        final QueryBuilder<ParseObject> leavesQuery =
-            QueryBuilder<ParseObject>(leaves);
+        final LeavesParseObject leaves = LeavesParseObject();
+        final QueryBuilder<LeavesParseObject> leavesQuery =
+            QueryBuilder<LeavesParseObject>(leaves);
 
         if (startDate != null && endDate != null) {
           leavesQuery
             ..whereGreaterThanOrEqualsTo(
-              leavesStartDateField,
+              LeavesParseObject.keyStartDate,
               epochFromDateTime(date: startDate),
             )
             ..whereLessThan(
-              leavesEndDateField,
+              LeavesParseObject.keyEndDate,
               epochFromDateTime(date: endDate),
             );
         }
@@ -107,12 +109,15 @@ class LeaveRepository extends ILeaveRepository {
           if (getAllLeaveResponse.results != null) {
             for (final ParseObject leave
                 in getAllLeaveResponse.results! as List<ParseObject>) {
+              final LeavesParseObject record =
+                  LeavesParseObject.toCustomParseObject(data: leave);
+
               leaves.add(
                 Leave(
-                  id: leave.objectId!,
-                  startDateEpoch: leave.get<int>(leavesStartDateField)!,
-                  endDateEpoch: leave.get<int>(leavesEndDateField)!,
-                  noLeaves: leave.get<int>(leavesNoLeavesField)!,
+                  id: record.objectId!,
+                  startDateEpoch: record.startDate,
+                  endDateEpoch: record.endDate,
+                  noLeaves: record.noLeaves,
                 ),
               );
             }
@@ -148,17 +153,17 @@ class LeaveRepository extends ILeaveRepository {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject leaves = ParseObject(leavesTable);
+        final LeavesParseObject leaves = LeavesParseObject();
 
         leaves.objectId = id;
 
         if (noLeaves != null) {
-          leaves.set<int>(leavesNoLeavesField, noLeaves);
+          leaves.noLeaves = noLeaves;
         }
         if (startDate != null && endDate != null) {
           leaves
-            ..set<int>(leavesStartDateField, epochFromDateTime(date: startDate))
-            ..set<int>(leavesEndDateField, epochFromDateTime(date: endDate));
+            ..startDate = epochFromDateTime(date: startDate)
+            ..endDate = epochFromDateTime(date: endDate);
         }
 
         final ParseResponse updateVacationResponse = await leaves.save();
@@ -173,18 +178,19 @@ class LeaveRepository extends ILeaveRepository {
 
           if (getVacationInfoResponse.success &&
               getVacationInfoResponse.results != null) {
-            final ParseObject resultParseObject =
-                getParseObject(getVacationInfoResponse.results!);
+            final LeavesParseObject resultParseObject =
+                LeavesParseObject.toCustomParseObject(
+              data: getVacationInfoResponse.results!.first,
+            );
 
             return APIResponse<Leave>(
               success: true,
               message: 'Successfull updated leave',
               data: Leave(
                 id: id,
-                noLeaves: resultParseObject.get<int>(leavesNoLeavesField)!,
-                startDateEpoch:
-                    resultParseObject.get<int>(leavesStartDateField)!,
-                endDateEpoch: resultParseObject.get<int>(leavesEndDateField)!,
+                noLeaves: resultParseObject.noLeaves,
+                startDateEpoch: resultParseObject.startDate,
+                endDateEpoch: resultParseObject.endDate,
               ),
               errorCode: null,
             );
@@ -207,7 +213,7 @@ class LeaveRepository extends ILeaveRepository {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject leaves = ParseObject(leavesTable);
+        final LeavesParseObject leaves = LeavesParseObject();
 
         final ParseResponse deleteVacationResponse =
             await leaves.delete(id: id);
@@ -243,11 +249,12 @@ class LeaveRepository extends ILeaveRepository {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject leaveRequests = ParseObject(leaveRequestsTable);
+        final LeavesRequestsParseObject leaveRequests =
+            LeavesRequestsParseObject();
 
         leaveRequests
           ..objectId = requestId
-          ..set<String>(leaveRequestStatusField, 'APPROVED');
+          ..status = 'APPROVED';
 
         final ParseResponse updateReqRecordResponse =
             await leaveRequests.save();
@@ -261,21 +268,23 @@ class LeaveRepository extends ILeaveRepository {
               await leaveRequests.getObject(requestId);
 
           if (getUpdatedRecordResponse.success) {
-            final ParseObject leaveReq =
-                getParseObject(getUpdatedRecordResponse.results!);
+            final LeavesRequestsParseObject leaveReq =
+                LeavesRequestsParseObject.toCustomParseObject(
+              data: getUpdatedRecordResponse.results!.first,
+            );
 
             return APIResponse<LeaveRequest>(
               success: true,
               message: 'Successfully approved leave request.',
               data: LeaveRequest(
                 id: leaveReq.objectId!,
-                leaveId: leaveReq.get<String>(leaveRequestLeaveIdField)!,
-                userId: leaveReq.get<String>(leaveRequestUserIdField)!,
-                dateFiledEpoch: leaveReq.get<int>(leaveRequestDateFiledField)!,
-                dateUsedEpoch: leaveReq.get<int>(leaveRequestDateUsedField)!,
-                leaveType: leaveReq.get<String>(leaveRequestLeaveTypeField)!,
-                reason: leaveReq.get<String>(leaveRequestReasonField)!,
-                status: leaveReq.get<String>(leaveRequestStatusField)!,
+                leaveId: leaveReq.leave.objectId!,
+                userId: leaveReq.user.objectId!,
+                dateFiledEpoch: leaveReq.dateFiled,
+                dateUsedEpoch: leaveReq.dateUsed!,
+                leaveType: leaveReq.leaveType,
+                reason: leaveReq.reason,
+                status: leaveReq.status,
               ),
               errorCode: null,
             );
@@ -300,11 +309,12 @@ class LeaveRepository extends ILeaveRepository {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject leaveRequests = ParseObject(leaveRequestsTable);
+        final LeavesRequestsParseObject leaveRequests =
+            LeavesRequestsParseObject();
 
         leaveRequests
           ..objectId = requestId
-          ..set<String>(leaveRequestStatusField, 'CANCELLED');
+          ..status = 'CANCELLED';
 
         final ParseResponse updateReqRecordResponse =
             await leaveRequests.save();
@@ -318,21 +328,23 @@ class LeaveRepository extends ILeaveRepository {
               await leaveRequests.getObject(requestId);
 
           if (getUpdatedRecordResponse.success) {
-            final ParseObject leaveReq =
-                getParseObject(getUpdatedRecordResponse.results!);
+            final LeavesRequestsParseObject leaveReq =
+                LeavesRequestsParseObject.toCustomParseObject(
+              data: getUpdatedRecordResponse.results!.first,
+            );
 
             return APIResponse<LeaveRequest>(
               success: true,
               message: 'Successfully canceled leave request',
               data: LeaveRequest(
                 id: leaveReq.objectId!,
-                leaveId: leaveReq.get<String>(leaveRequestLeaveIdField)!,
-                userId: leaveReq.get<String>(leaveRequestUserIdField)!,
-                dateFiledEpoch: leaveReq.get<int>(leaveRequestDateFiledField)!,
-                dateUsedEpoch: leaveReq.get<int>(leaveRequestDateUsedField)!,
-                leaveType: leaveReq.get<String>(leaveRequestLeaveTypeField)!,
-                reason: leaveReq.get<String>(leaveRequestReasonField)!,
-                status: leaveReq.get<String>(leaveRequestStatusField)!,
+                leaveId: leaveReq.leave.objectId!,
+                userId: leaveReq.user.objectId!,
+                dateFiledEpoch: leaveReq.dateFiled,
+                dateUsedEpoch: leaveReq.dateUsed!,
+                leaveType: leaveReq.leaveType,
+                reason: leaveReq.reason,
+                status: leaveReq.status,
               ),
               errorCode: null,
             );
@@ -357,11 +369,12 @@ class LeaveRepository extends ILeaveRepository {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject leaveRequests = ParseObject(leaveRequestsTable);
+        final LeavesRequestsParseObject leaveRequests =
+            LeavesRequestsParseObject();
 
         leaveRequests
           ..objectId = requestId
-          ..set<String>(leaveRequestStatusField, 'DECLINED');
+          ..status = 'DECLINED';
 
         final ParseResponse updateReqRecordResponse =
             await leaveRequests.save();
@@ -375,21 +388,23 @@ class LeaveRepository extends ILeaveRepository {
               await leaveRequests.getObject(requestId);
 
           if (getUpdatedRecordResponse.success) {
-            final ParseObject leaveReq =
-                getParseObject(getUpdatedRecordResponse.results!);
+            final LeavesRequestsParseObject leaveReq =
+                LeavesRequestsParseObject.toCustomParseObject(
+              data: getUpdatedRecordResponse.results!.first,
+            );
 
             return APIResponse<LeaveRequest>(
               success: true,
               message: 'Successfully declined leave request.',
               data: LeaveRequest(
                 id: leaveReq.objectId!,
-                leaveId: leaveReq.get<String>(leaveRequestLeaveIdField)!,
-                userId: leaveReq.get<String>(leaveRequestUserIdField)!,
-                dateFiledEpoch: leaveReq.get<int>(leaveRequestDateFiledField)!,
-                dateUsedEpoch: leaveReq.get<int>(leaveRequestDateUsedField)!,
-                leaveType: leaveReq.get<String>(leaveRequestLeaveTypeField)!,
-                reason: leaveReq.get<String>(leaveRequestReasonField)!,
-                status: leaveReq.get<String>(leaveRequestStatusField)!,
+                leaveId: leaveReq.leave.objectId!,
+                userId: leaveReq.user.objectId!,
+                dateFiledEpoch: leaveReq.dateFiled,
+                dateUsedEpoch: leaveReq.dateUsed!,
+                leaveType: leaveReq.leaveType,
+                reason: leaveReq.reason,
+                status: leaveReq.status,
               ),
               errorCode: null,
             );
@@ -430,23 +445,30 @@ class LeaveRepository extends ILeaveRepository {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject leaveRequests = ParseObject(leaveRequestsTable);
+        final LeavesRequestsParseObject leaveRequests =
+            LeavesRequestsParseObject();
 
-        final QueryBuilder<ParseObject> leaveReqQuery =
-            QueryBuilder<ParseObject>(leaveRequests)
-              ..whereEqualTo(leaveRequestStatusField, status);
+        final QueryBuilder<LeavesRequestsParseObject> leaveReqQuery =
+            QueryBuilder<LeavesRequestsParseObject>(leaveRequests)
+              ..whereEqualTo(LeavesRequestsParseObject.keyStatus, status);
 
         if (leaveRequestId != null) checkFieldIsEmpty(leaveRequestId);
 
         if (leaveId != null) {
           checkFieldIsEmpty(leaveId);
 
-          leaveReqQuery.whereEqualTo(leaveRequestLeaveIdField, leaveId);
+          leaveReqQuery.whereEqualTo(
+            LeavesRequestsParseObject.keyLeave,
+            LeavesParseObject()..objectId = leaveId,
+          );
         }
         if (userId != null) {
           checkFieldIsEmpty(userId);
 
-          leaveReqQuery.whereEqualTo(leaveRequestUserIdField, userId);
+          leaveReqQuery.whereEqualTo(
+            LeavesRequestsParseObject.keyUser,
+            ParseUser.forQuery()..objectId = userId,
+          );
         }
 
         final ParseResponse getLeaveReqResponse = leaveRequestId != null
@@ -463,19 +485,21 @@ class LeaveRepository extends ILeaveRepository {
           if (getLeaveReqResponse.results != null) {
             for (final ParseObject leaveRequest
                 in getLeaveReqResponse.results! as List<ParseObject>) {
+              final LeavesRequestsParseObject record =
+                  LeavesRequestsParseObject.toCustomParseObject(
+                data: leaveRequest,
+              );
+
               leaveRequests.add(
                 LeaveRequest(
-                  id: leaveRequest.objectId!,
-                  leaveId: leaveRequest.get<String>(leaveRequestLeaveIdField)!,
-                  userId: leaveRequest.get<String>(leaveRequestUserIdField)!,
-                  dateFiledEpoch:
-                      leaveRequest.get<int>(leaveRequestDateFiledField)!,
-                  dateUsedEpoch:
-                      leaveRequest.get<int>(leaveRequestDateUsedField)!,
-                  status: leaveRequest.get<String>(leaveRequestStatusField)!,
-                  leaveType:
-                      leaveRequest.get<String>(leaveRequestLeaveTypeField)!,
-                  reason: leaveRequest.get<String>(leaveRequestReasonField)!,
+                  id: record.objectId!,
+                  leaveId: record.leave.objectId!,
+                  userId: record.user.objectId!,
+                  dateFiledEpoch: record.dateFiled,
+                  dateUsedEpoch: record.dateUsed!,
+                  status: record.status,
+                  leaveType: record.leaveType,
+                  reason: record.reason,
                 ),
               );
             }
@@ -498,29 +522,29 @@ class LeaveRepository extends ILeaveRepository {
     }
   }
 
-  Future<ParseObject> getCurrentYearInfo() async {
+  Future<LeavesParseObject> getCurrentYearInfo() async {
     /// Get the current date and query if under in the
     final DateTime datetToQuery =
         DateTime(currentDay.year, currentDay.month, currentDay.day);
 
     final int dateToQueryEpoch = epochFromDateTime(date: datetToQuery);
 
-    final ParseObject leaves = ParseObject(leavesTable);
+    final LeavesParseObject leaves = LeavesParseObject();
 
-    final QueryBuilder<ParseObject> queryRecordThisYear =
-        QueryBuilder<ParseObject>(leaves)
+    final QueryBuilder<LeavesParseObject> queryRecordThisYear =
+        QueryBuilder<LeavesParseObject>(leaves)
           ..whereGreaterThanOrEqualsTo(
-            leavesEndDateField,
+            LeavesParseObject.keyEndDate,
             dateToQueryEpoch,
           )
           ..whereLessThanOrEqualTo(
-            leavesStartDateField,
+            LeavesParseObject.keyStartDate,
             dateToQueryEpoch,
           );
     final ParseResponse data = await queryRecordThisYear.query();
 
     if (data.success && data.results != null) {
-      return data.results!.first as ParseObject;
+      return data.results!.first as LeavesParseObject;
     }
 
     throw 'No record from this day that match the year range';
@@ -551,7 +575,8 @@ class LeaveRepository extends ILeaveRepository {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null) {
-        final ParseObject leaveRequests = ParseObject(leaveRequestsTable);
+        final LeavesRequestsParseObject leaveRequests =
+            LeavesRequestsParseObject();
 
         final String currentYearsId = await getCurrentYearInfo().then(
           (ParseObject value) => value.objectId!,
@@ -566,13 +591,13 @@ class LeaveRepository extends ILeaveRepository {
         const String status = 'PENDING';
 
         leaveRequests
-          ..set<String>(leaveRequestLeaveIdField, currentYearsId)
-          ..set<String>(leaveRequestUserIdField, usersId)
-          ..set<int>(leaveRequestDateFiledField, dateFiledEpoch)
-          ..set<int>(leaveRequestDateUsedField, dateUsedEpoch)
-          ..set<String>(leaveRequestStatusField, status)
-          ..set<String>(leaveRequestReasonField, reason)
-          ..set<String>(leaveRequestLeaveTypeField, leaveType);
+          ..leave = (LeavesParseObject()..objectId = currentYearsId)
+          ..user = (ParseUser.forQuery()..objectId = usersId)
+          ..dateFiled = dateFiledEpoch
+          ..dateUsed = dateUsedEpoch
+          ..status = status
+          ..reason = reason
+          ..leaveType = leaveType;
 
         final ParseResponse createLeaveRequestResponse =
             await leaveRequests.save();

@@ -3,6 +3,7 @@ import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/holiday/holiday_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/holiday_repository.dart';
+import 'package:octopus/internal/class_parse_object.dart';
 import 'package:octopus/internal/database_strings.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/helper_function.dart';
@@ -28,12 +29,12 @@ class HolidayRepository extends IHoliday {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject holidays = ParseObject(holidaysTable);
+        final HolidayParseObject holidays = HolidayParseObject();
         final int dateEpoch = epochFromDateTime(date: holidayDate);
 
         holidays
-          ..set(holidayNameField, holidayName)
-          ..set<int>(holidayDateField, dateEpoch);
+          ..name = holidayName
+          ..date = dateEpoch;
 
         final ParseResponse addHolidayResponse = await holidays.save();
 
@@ -70,7 +71,7 @@ class HolidayRepository extends IHoliday {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject holidays = ParseObject(holidaysTable);
+        final HolidayParseObject holidays = HolidayParseObject();
 
         final ParseResponse holidayDeleteResponse =
             await holidays.delete(id: id);
@@ -108,18 +109,18 @@ class HolidayRepository extends IHoliday {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject holidays = ParseObject(holidaysTable);
-        final QueryBuilder<ParseObject> holidayQuery =
-            QueryBuilder<ParseObject>(holidays);
+        final HolidayParseObject holidays = HolidayParseObject();
+        final QueryBuilder<HolidayParseObject> holidayQuery =
+            QueryBuilder<HolidayParseObject>(holidays);
 
         if (holidayName != null) {
           checkFieldIsEmpty(holidayName);
-          holidayQuery.whereContains(holidayNameField, holidayName);
+          holidayQuery.whereContains(HolidayParseObject.keyName, holidayName);
         }
 
         if (holidayDate != null) {
           holidayQuery.whereEqualTo(
-            holidayDateField,
+            HolidayParseObject.keyDate,
             epochFromDateTime(
               date: holidayDate,
             ),
@@ -143,11 +144,14 @@ class HolidayRepository extends IHoliday {
           if (getHolidayResponse.results != null) {
             for (final ParseObject result
                 in getHolidayResponse.results! as List<ParseObject>) {
+              final HolidayParseObject record =
+                  HolidayParseObject.toCustomParseObject(data: result);
+
               holidays.add(
                 Holiday(
-                  id: result.objectId!,
-                  holiday: result.get<String>(holidayNameField)!,
-                  dateEpoch: result.get<int>(holidayDateField)!,
+                  id: record.objectId!,
+                  holiday: record.name,
+                  dateEpoch: record.date,
                 ),
               );
             }
@@ -175,22 +179,18 @@ class HolidayRepository extends IHoliday {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseObject holidays = ParseObject(holidaysTable);
+        final HolidayParseObject holidays = HolidayParseObject();
         holidays.objectId = id;
 
         if (holidayName != null) {
           checkFieldIsEmpty(holidayName);
-          holidays.set<String>(holidayNameField, holidayName);
+          holidays.name = holidayName;
         }
 
         if (holidayDate != null) {
-          holidays.set<int>(
-            holidayDateField,
-            epochFromDateTime(
-              date: holidayDate,
-            ),
-          );
+          holidays.date = epochFromDateTime(date: holidayDate);
         }
+
         final ParseResponse holidayUpdateResponse = await holidays.save();
 
         if (holidayUpdateResponse.error != null) {
@@ -203,16 +203,18 @@ class HolidayRepository extends IHoliday {
 
           if (getUpdatedRecordResponse.success &&
               getUpdatedRecordResponse.results != null) {
-            final ParseObject updatedRecord =
-                getParseObject(getUpdatedRecordResponse.results!);
+            final HolidayParseObject updatedRecord =
+                HolidayParseObject.toCustomParseObject(
+              data: getUpdatedRecordResponse.results!.first,
+            );
 
             return APIResponse<Holiday>(
               success: true,
               message: 'Successfully updated holiday.',
               data: Holiday(
                 id: updatedRecord.objectId!,
-                holiday: updatedRecord.get<String>(holidayNameField)!,
-                dateEpoch: updatedRecord.get<int>(holidayDateField)!,
+                holiday: updatedRecord.name,
+                dateEpoch: updatedRecord.date,
               ),
               errorCode: null,
             );

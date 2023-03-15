@@ -142,7 +142,8 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
               );
               return;
             }
-          } else if (state is FetchTimeInDataFailed) {
+          } else if (state is FetchTimeInDataFailed &&
+              state.origin == ExecutedOrigin.requestOffset) {
             setState(() => isLoading = false);
 
             ScaffoldMessenger.of(context)
