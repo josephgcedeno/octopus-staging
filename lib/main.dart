@@ -25,10 +25,13 @@ void main() async {
   final String serverUrl = dotenv.get('SERVER_URL');
   final String masterKey = dotenv.get('MASTER_KEY');
 
+  final String liveQueryUrl = 'ws://${serverUrl.split('/')[2]}/';
+
   await Parse().initialize(
     appId,
     serverUrl,
     masterKey: masterKey,
+    liveQueryUrl: liveQueryUrl,
   );
 
   runApp(const App());
