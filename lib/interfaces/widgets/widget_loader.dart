@@ -48,13 +48,15 @@ Widget lineLoader({
   required double height,
   required double width,
   bool withRadius = true,
+  BorderRadiusGeometry? borderRadius,
 }) {
   return Shimmer.fromColors(
     baseColor: shimmerBase,
     highlightColor: shimmerGlow,
     child: Container(
       decoration: BoxDecoration(
-        borderRadius: withRadius ? BorderRadius.circular(8) : null,
+        borderRadius:
+            withRadius ? borderRadius ?? BorderRadius.circular(8) : null,
         color: shimmerBase,
       ),
       width: width,
