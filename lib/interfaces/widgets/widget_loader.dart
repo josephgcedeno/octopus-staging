@@ -64,7 +64,7 @@ Widget lineLoader({
     child: Container(
       decoration: BoxDecoration(
         borderRadius: withRadius ? BorderRadius.circular(8) : null,
-        color: Colors.black38,
+        color: Colors.white12,
       ),
       width: width,
       height: height,
