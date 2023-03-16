@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
@@ -164,70 +165,69 @@ class _TimeInSliderState extends State<TimeInSlider> {
           );
         }
       },
-      child: Column(
-        children: <Widget>[
-          Container(
-            width: kIsWeb ? 370 : width * 0.8,
-            height: height >= smMinHeight && height <= smMaxHeight
-                ? height * 0.07
-                : 61.01,
-            margin: kIsWeb
-                ? EdgeInsets.only(top: height * 0.08)
-                : EdgeInsets.only(top: height * 0.02),
-            padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              gradient: isIn ? inLinearGradient : outLinearGradient,
-              borderRadius: BorderRadius.circular(50),
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                  color: isIn
-                      ? theme.primaryColor.withAlpha(30)
-                      : bgRed.withAlpha(30),
-                  blurRadius: 40,
-                ),
-              ],
-            ),
-            child: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraint) {
-                return Stack(
-                  children: <Widget>[
-                    Positioned.fill(
-                      child: Align(
-                        child: Text(
-                          isIn ? 'IN' : 'OUT',
-                          style: theme.textTheme.subtitle1?.copyWith(
-                            color: isIn ? theme.primaryColor : bgRed,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+      child: isLoading
+          ? Container(
+              margin: kIsWeb
+                  ? EdgeInsets.only(top: height * 0.08)
+                  : EdgeInsets.only(top: height * 0.02),
+              child: lineLoader(
+                height: height >= smMinHeight && height <= smMaxHeight
+                    ? height * 0.07
+                    : 61.01,
+                width: kIsWeb ? 370 : width * 0.8,
+                borderRadius: BorderRadius.circular(50),
+              ),
+            )
+          : Column(
+              children: <Widget>[
+                Container(
+                  width: kIsWeb ? 370 : width * 0.8,
+                  height: height >= smMinHeight && height <= smMaxHeight
+                      ? height * 0.07
+                      : 61.01,
+                  margin: kIsWeb
+                      ? EdgeInsets.only(top: height * 0.08)
+                      : EdgeInsets.only(top: height * 0.02),
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    gradient: isIn ? inLinearGradient : outLinearGradient,
+                    borderRadius: BorderRadius.circular(50),
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        color: isIn
+                            ? theme.primaryColor.withAlpha(30)
+                            : bgRed.withAlpha(30),
+                        blurRadius: 40,
                       ),
-                    ),
-                    Dismissible(
-                      direction: isIn
-                          ? DismissDirection.startToEnd
-                          : DismissDirection.endToStart,
-                      confirmDismiss: timeInTimeOut,
-                      dragStartBehavior: DragStartBehavior.down,
-                      key: UniqueKey(),
-                      child: Align(
-                        alignment:
-                            isIn ? Alignment.centerLeft : Alignment.centerRight,
-                        child: isLoading
-                            ? Container(
-                                width: constraint.maxHeight,
-                                height: constraint.maxHeight,
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.black12,
+                    ],
+                  ),
+                  child: LayoutBuilder(
+                    builder: (BuildContext context, BoxConstraints constraint) {
+                      return Stack(
+                        children: <Widget>[
+                          Positioned.fill(
+                            child: Align(
+                              child: Text(
+                                isIn ? 'IN' : 'OUT',
+                                style: theme.textTheme.subtitle1?.copyWith(
+                                  color: isIn ? theme.primaryColor : bgRed,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: CircularProgressIndicator(
-                                    color: isIn ? theme.primaryColor : bgRed,
-                                  ),
-                                ),
-                              )
-                            : Container(
+                              ),
+                            ),
+                          ),
+                          Dismissible(
+                            direction: isIn
+                                ? DismissDirection.startToEnd
+                                : DismissDirection.endToStart,
+                            confirmDismiss: timeInTimeOut,
+                            dragStartBehavior: DragStartBehavior.down,
+                            key: UniqueKey(),
+                            child: Align(
+                              alignment: isIn
+                                  ? Alignment.centerLeft
+                                  : Alignment.centerRight,
+                              child: Container(
                                 width: constraint.maxHeight,
                                 height: constraint.maxHeight,
                                 decoration: BoxDecoration(
@@ -244,15 +244,15 @@ class _TimeInSliderState extends State<TimeInSlider> {
                                   size: 30,
                                 ),
                               ),
-                      ),
-                    ),
-                  ],
-                );
-              },
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }
