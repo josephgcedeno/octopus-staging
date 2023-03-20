@@ -18,7 +18,7 @@ class TimeInSlider extends StatefulWidget {
 class _TimeInSliderState extends State<TimeInSlider> {
   Future<bool> timeInTimeOut(DismissDirection dir) async {
     if (timeOutEpoch != null) {
-      showSnackBar(message: 'Already in for the day');
+      showSnackBar(message: 'You have already ended work for the day.');
       return false;
     }
 

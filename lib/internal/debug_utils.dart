@@ -73,7 +73,7 @@ void showSnackBar({
       ],
     ),
     backgroundColor:
-        snackBartState == SnackBartState.success ? Colors.green : kRed,
+        snackBartState == SnackBartState.success ? Colors.blue : kRed,
   );
 
   /// Trigger show snackbar using snackbarKey.
