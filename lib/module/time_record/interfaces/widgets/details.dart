@@ -121,8 +121,14 @@ class _DTRDetailsState extends State<DTRDetails> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            lineLoader(height: 20, width: width * 0.3),
-                            lineLoader(height: 20, width: width * 0.3),
+                            lineLoader(
+                              height: 20,
+                              width: kIsWeb ? 350 * 0.48 : width * 0.3,
+                            ),
+                            lineLoader(
+                              height: 20,
+                              width: kIsWeb ? 350 * 0.48 : width * 0.3,
+                            ),
                           ],
                         ),
                       ),
