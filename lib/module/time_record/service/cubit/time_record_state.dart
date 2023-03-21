@@ -10,7 +10,9 @@ class TimeRecordState {
 
 /// Event Classes
 class FetchTimeInDataLoading extends TimeRecordState {
-  FetchTimeInDataLoading() : super();
+  FetchTimeInDataLoading({
+    required ExecutedOrigin origin,
+  }) : super(origin: origin);
 }
 
 class FetchTimeInDataSuccess extends TimeRecordState {
