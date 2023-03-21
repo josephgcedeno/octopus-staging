@@ -308,7 +308,7 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
                                 borderSide: BorderSide.none,
                               ),
                               hintText:
-                                  'Write reason (e.g. Process personal documents',
+                                  'Write reason (e.g. Process personal documents)',
                               hintStyle: theme.textTheme.caption,
                               filled: true,
                             ),
