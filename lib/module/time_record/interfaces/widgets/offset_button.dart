@@ -15,7 +15,9 @@ class OffsetButton extends StatelessWidget {
 
     return BlocBuilder<TimeRecordCubit, TimeRecordState>(
       builder: (BuildContext context, TimeRecordState state) {
-        if (state is FetchTimeInDataLoading) {
+        if (state is FetchTimeInDataLoading &&
+            (state.origin != ExecutedOrigin.signIn &&
+                state.origin != ExecutedOrigin.signOut)) {
           return lineLoader(
             height: 35,
             width: kIsWeb ? 370 / 2 : width * 0.40,
