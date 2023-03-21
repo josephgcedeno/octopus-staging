@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:intl/intl.dart';
 import 'package:octopus/infrastructures/models/time_in_out/attendance_response.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
@@ -16,6 +15,8 @@ class DTRDetails extends StatefulWidget {
 }
 
 class _DTRDetailsState extends State<DTRDetails> {
+  bool isLoading = true;
+
   final List<String> labels = <String>[
     'Date today:',
     'Time In:',
@@ -27,7 +28,6 @@ class _DTRDetailsState extends State<DTRDetails> {
   final List<String> values = <String>['January 18, 2023', '', '', '', ''];
 
   void setInfo(Attendance? info) {
-
     const String approved = 'APPROVED';
 
     /// Get the time in record for the day if not null.
@@ -69,6 +69,7 @@ class _DTRDetailsState extends State<DTRDetails> {
       values[2] = timeOut;
       values[3] = overTime;
       values[4] = timeToRender;
+      isLoading = false;
     });
   }
 
@@ -92,10 +93,7 @@ class _DTRDetailsState extends State<DTRDetails> {
       listener: (BuildContext context, TimeRecordState state) {
         if (state is FetchTimeInDataLoading) {
           setState(() {
-            values[1] = '';
-            values[2] = '';
-            values[3] = '';
-            values[4] = '';
+            isLoading = true;
           });
         } else if (state is FetchTimeInDataSuccess) {
           setInfo(
@@ -111,30 +109,51 @@ class _DTRDetailsState extends State<DTRDetails> {
         width: kIsWeb ? 350 : width * 0.7,
         child: Column(
           children: <Widget>[
-            for (int i = 0; i < 5; i++)
+            if (isLoading)
               Padding(
                 padding: EdgeInsets.only(bottom: height * 0.01),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      labels[i],
-                      style: theme.textTheme.bodyText2
-                          ?.copyWith(color: Colors.grey),
-                    ),
-                    if (values[i] == '')
-                      lineLoader(height: 10, width: width * 0.15)
-                    else
-                      FadeIn(
-                        duration: fadeInDuration,
-                        child: Text(
-                          values[i],
-                          style: theme.textTheme.bodyText2,
+                    for (int i = 0; i < 5; i++)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            lineLoader(
+                              height: 20,
+                              width: kIsWeb ? 350 * 0.48 : width * 0.3,
+                            ),
+                            lineLoader(
+                              height: 20,
+                              width: kIsWeb ? 350 * 0.48 : width * 0.3,
+                            ),
+                          ],
                         ),
                       ),
                   ],
                 ),
-              ),
+              )
+            else
+              for (int i = 0; i < 5; i++)
+                Padding(
+                  padding: EdgeInsets.only(bottom: height * 0.01),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        labels[i],
+                        style: theme.textTheme.bodyText2
+                            ?.copyWith(color: Colors.grey),
+                      ),
+                      Text(
+                        values[i],
+                        style: theme.textTheme.bodyText2,
+                      ),
+                    ],
+                  ),
+                ),
           ],
         ),
       ),
