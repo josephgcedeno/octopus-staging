@@ -90,8 +90,8 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
             offsetDurationInHours < 0
                 ? 'The time offset ($offsetDurationInHours) should not be less than 0!'
                 : offsetDuration.inMinutes == 0
-                    ? 'Request offset should not be 0!'
-                    : '$maximumTimeText! ',
+                    ? 'Request offset should not be 0.'
+                    : '$maximumTimeText.',
           ),
           backgroundColor: kRed,
         ),
