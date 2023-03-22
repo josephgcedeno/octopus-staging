@@ -16,7 +16,8 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
   /// Get initial data.
   Future<void> fetchAttendance() async {
     try {
-      emit(FetchTimeInDataLoading());
+      emit(FetchTimeInDataLoading(origin: ExecutedOrigin.fetchAttendance));
+
       final APIResponse<Attendance?> isAlreadyIn =
           await timeInOutRepository.getInitialData();
 
@@ -42,7 +43,7 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
   /// Time in today
   Future<void> signInToday() async {
     try {
-      emit(FetchTimeInDataLoading());
+      emit(FetchTimeInDataLoading(origin: ExecutedOrigin.signIn));
 
       final APIResponse<Attendance> signInToday =
           await timeInOutRepository.signInToday();
@@ -69,7 +70,7 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
   /// Time out today
   Future<void> signOutToday() async {
     try {
-      emit(FetchTimeInDataLoading());
+      emit(FetchTimeInDataLoading(origin: ExecutedOrigin.signOut));
 
       final APIResponse<Attendance> signOutToday =
           await timeInOutRepository.signOutToday();
@@ -100,7 +101,7 @@ class TimeRecordCubit extends Cubit<TimeRecordState> {
     required String reason,
   }) async {
     try {
-      emit(FetchTimeInDataLoading());
+      emit(FetchTimeInDataLoading(origin: ExecutedOrigin.requestOffset));
 
       final APIResponse<Attendance> requestOffset =
           await timeInOutRepository.requestOffSet(

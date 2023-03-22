@@ -91,7 +91,9 @@ class _DTRDetailsState extends State<DTRDetails> {
           current is FetchTimeInDataSuccess ||
           current is FetchTimeInDataFailed,
       listener: (BuildContext context, TimeRecordState state) {
-        if (state is FetchTimeInDataLoading) {
+        if (state is FetchTimeInDataLoading &&
+            (state.origin != ExecutedOrigin.signIn &&
+                state.origin != ExecutedOrigin.signOut)) {
           setState(() {
             isLoading = true;
           });
