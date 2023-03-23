@@ -10,6 +10,7 @@ import 'package:octopus/infrastructures/models/project/project_response.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/internal/debug_utils.dart';
+import 'package:octopus/module/standup_report/interfaces/widgets/date_card.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/status_column.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/task_textarea.dart';
 import 'package:octopus/module/standup_report/service/cubit/dsr_cubit.dart';
@@ -210,40 +211,7 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
                         ? theme.textTheme.headline6
                         : theme.textTheme.subtitle1,
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(6),
-                      color: theme.primaryColor.withOpacity(0.1),
-                    ),
-                    margin: const EdgeInsets.only(top: 8),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 10,
-                      horizontal: 20,
-                    ),
-                    child: BlocBuilder<DSRCubit, DSRState>(
-                      buildWhen: (DSRState previous, DSRState current) =>
-                          current is FetchDatesSuccess ||
-                          current is FetchDatesLoading,
-                      builder: (BuildContext context, DSRState state) {
-                        if (state is FetchDatesSuccess) {
-                          return FadeIn(
-                            duration: fadeInDuration,
-                            child: Text(
-                              state.dateString,
-                              style: theme.textTheme.overline?.copyWith(
-                                color: theme.primaryColor,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          );
-                        }
-                        return SizedBox(
-                          width: width * 0.5,
-                          child: lineLoader(height: 10, width: double.infinity),
-                        );
-                      },
-                    ),
-                  ),
+                  const DateCard(),
                   Container(
                     padding: EdgeInsets.only(top: height * 0.02),
                     height: isLoading ? height * 0.6 : height,
