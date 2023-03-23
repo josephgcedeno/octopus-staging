@@ -127,6 +127,24 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              Text(
+                'Task Information',
+                style: theme.textTheme.headline6?.copyWith(fontSize: 17),
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 10),
+                child: TextField(
+                  controller: textController,
+                  decoration: InputDecoration(
+                    hintText: 'Description ',
+                    fillColor: formBackgroundColor,
+                    filled: true,
+                    enabledBorder: descriptionBorder,
+                    border: descriptionBorder,
+                    focusedBorder: descriptionBorder,
+                  ),
+                ),
+              ),
               Container(
                 margin: const EdgeInsets.only(top: 10),
                 padding:
@@ -187,21 +205,16 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                   ),
                 ],
               ),
-              Container(
-                margin: const EdgeInsets.only(top: 10),
-                child: TextField(
-                  controller: textController,
-                  maxLines: 8,
-                  minLines: 8,
-                  decoration: InputDecoration(
-                    hintText: 'Description',
-                    fillColor: formBackgroundColor,
-                    filled: true,
-                    enabledBorder: descriptionBorder,
-                    border: descriptionBorder,
-                    focusedBorder: descriptionBorder,
-                  ),
+              Padding(
+                padding: const EdgeInsets.only(top: 15),
+                child: Text(
+                  'Remove Task',
+                  style: theme.textTheme.bodyMedium?.copyWith(fontSize: 13),
                 ),
+              ),
+              Text(
+                'This task will be permanently removed from your Daily Standup Report.',
+                style: theme.textTheme.caption,
               ),
               SizedBox(
                 width: width,
