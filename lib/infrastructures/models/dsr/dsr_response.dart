@@ -50,6 +50,7 @@ class DSRWorks {
     required this.user,
     required this.projectName,
     required this.date,
+    required this.color,
   });
 
   final String text;
@@ -57,4 +58,5 @@ class DSRWorks {
   final String user;
   final String projectName;
   final String date;
+  final String color;
 }
