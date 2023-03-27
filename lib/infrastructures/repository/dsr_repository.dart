@@ -41,10 +41,12 @@ class DSRRepository extends IDSRRepository {
       }
       final String text = parseTask['text']!.toString();
 
-      final String projectName =
-          ((await ProjectsParseObject().getObject(projectTagId)).result
-                  as ProjectsParseObject)
-              .name;
+      final ProjectsParseObject project =
+          (await ProjectsParseObject().getObject(projectTagId)).result
+              as ProjectsParseObject;
+
+      final String projectName = project.name;
+      final String projectColor = project.color;
 
       data.add(
         DSRWorks(
@@ -53,6 +55,7 @@ class DSRRepository extends IDSRRepository {
           user: userName,
           projectName: projectName,
           date: date,
+          color: projectColor,
         ),
       );
     }
