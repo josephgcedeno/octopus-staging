@@ -23,11 +23,11 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
         children: <TextSpan>[
           TextSpan(
             text: 'Good Morning!\n',
-            style: theme.textTheme.bodyText2?.copyWith(
+            style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
-          TextSpan(text: 'Angel', style: theme.textTheme.caption),
+          TextSpan(text: 'Angel', style: theme.textTheme.bodySmall),
         ],
       ),
     );

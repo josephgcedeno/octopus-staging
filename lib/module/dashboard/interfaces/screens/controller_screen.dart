@@ -45,7 +45,7 @@ class _ControllerScreenState extends State<ControllerScreen> {
                   child: Center(
                     child: Text(
                       'Today is a special holiday.',
-                      style: theme.textTheme.subtitle1
+                      style: theme.textTheme.titleMedium
                           ?.copyWith(color: Colors.white),
                     ),
                   ),
@@ -54,7 +54,7 @@ class _ControllerScreenState extends State<ControllerScreen> {
                 margin: EdgeInsets.symmetric(vertical: height * 0.02),
                 child: Text(
                   'Tools',
-                  style: theme.textTheme.bodyText2
+                  style: theme.textTheme.bodyMedium
                       ?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ),

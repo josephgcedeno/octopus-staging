@@ -10,28 +10,28 @@ ThemeData _buildDefaultTheme() {
     textTheme: _buildDefaultTextTheme(base.textTheme),
     scaffoldBackgroundColor: Colors.white,
     primaryColor: kBlue,
-    errorColor: kRed,
     colorScheme: base.colorScheme.copyWith(
       secondary: Colors.orange,
+      error: kRed,
     ),
   );
 }
 
 TextTheme _buildDefaultTextTheme(TextTheme base) {
   return base.copyWith(
-    headline6: base.headline6?.copyWith(fontFamily: 'Gilroy'),
-    headline5: base.headline5?.copyWith(fontFamily: 'Gilroy'),
-    headline4: base.headline4?.copyWith(fontFamily: 'Gilroy'),
-    headline3: base.headline3?.copyWith(fontFamily: 'Gilroy'),
-    headline2: base.headline2?.copyWith(fontFamily: 'Gilroy'),
-    headline1: base.headline1?.copyWith(fontFamily: 'Gilroy'),
-    subtitle2: base.subtitle2?.copyWith(fontFamily: 'Gilroy'),
-    subtitle1: base.subtitle1?.copyWith(fontFamily: 'Gilroy'),
-    bodyText2: base.bodyText2?.copyWith(fontFamily: 'Gilroy'),
-    bodyText1: base.bodyText1?.copyWith(fontFamily: 'Gilroy'),
-    caption: base.caption?.copyWith(fontFamily: 'Gilroy'),
-    button: base.button?.copyWith(fontFamily: 'Gilroy'),
-    overline: base.overline?.copyWith(fontFamily: 'Gilroy'),
+    titleLarge: base.titleLarge?.copyWith(fontFamily: 'Gilroy'),
+    headlineSmall: base.headlineSmall?.copyWith(fontFamily: 'Gilroy'),
+    headlineMedium: base.headlineMedium?.copyWith(fontFamily: 'Gilroy'),
+    displaySmall: base.displaySmall?.copyWith(fontFamily: 'Gilroy'),
+    displayMedium: base.displayMedium?.copyWith(fontFamily: 'Gilroy'),
+    displayLarge: base.displayLarge?.copyWith(fontFamily: 'Gilroy'),
+    titleSmall: base.titleSmall?.copyWith(fontFamily: 'Gilroy'),
+    titleMedium: base.titleMedium?.copyWith(fontFamily: 'Gilroy'),
+    bodyMedium: base.bodyMedium?.copyWith(fontFamily: 'Gilroy'),
+    bodyLarge: base.bodyLarge?.copyWith(fontFamily: 'Gilroy'),
+    bodySmall: base.bodySmall?.copyWith(fontFamily: 'Gilroy'),
+    labelLarge: base.labelLarge?.copyWith(fontFamily: 'Gilroy'),
+    labelSmall: base.labelSmall?.copyWith(fontFamily: 'Gilroy'),
   );
 }
 

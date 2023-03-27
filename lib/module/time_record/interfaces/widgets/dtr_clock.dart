@@ -156,11 +156,11 @@ class _DTRClockState extends State<DTRClock> {
     final double height = MediaQuery.of(context).size.height;
 
     final TextStyle? timerTextStyle = kIsWeb
-        ? theme.textTheme.headline3?.copyWith(
+        ? theme.textTheme.displaySmall?.copyWith(
             color: Colors.black,
             fontWeight: FontWeight.w600,
           )
-        : theme.textTheme.headline4?.copyWith(
+        : theme.textTheme.headlineMedium?.copyWith(
             color: Colors.black,
             fontWeight: FontWeight.w600,
           );
@@ -270,7 +270,7 @@ class _DTRClockState extends State<DTRClock> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                Text('+', style: theme.textTheme.headline5),
+                                Text('+', style: theme.textTheme.headlineSmall),
                                 Text(
                                   formatTimer(elapsed),
                                   style: timerTextStyle,
@@ -301,8 +301,8 @@ class _DTRClockState extends State<DTRClock> {
                           Text(
                             clockLabel(),
                             style: kIsWeb
-                                ? theme.textTheme.subtitle1
-                                : theme.textTheme.caption,
+                                ? theme.textTheme.titleMedium
+                                : theme.textTheme.bodySmall,
                           )
                         ],
                       ),

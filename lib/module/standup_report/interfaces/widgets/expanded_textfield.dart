@@ -109,7 +109,7 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
                                 projectHasBeenSet = true;
                                 return Text(
                                   state.project.projectName,
-                                  style: theme.textTheme.bodyText2?.copyWith(
+                                  style: theme.textTheme.bodyMedium?.copyWith(
                                     color: projectIsActive
                                         ? theme.primaryColor
                                         : Colors.grey,
@@ -119,7 +119,7 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
                               }
                               return Text(
                                 'Project',
-                                style: theme.textTheme.bodyText2?.copyWith(
+                                style: theme.textTheme.bodyMedium?.copyWith(
                                   color: projectIsActive
                                       ? theme.primaryColor
                                       : Colors.grey,
@@ -155,7 +155,7 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
                                 statusHasBeenSet = true;
                                 return Text(
                                   state.status,
-                                  style: theme.textTheme.bodyText2?.copyWith(
+                                  style: theme.textTheme.bodyMedium?.copyWith(
                                     color: statusIsActive
                                         ? theme.primaryColor
                                         : Colors.grey,
@@ -165,7 +165,7 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
                               }
                               return Text(
                                 'Status',
-                                style: theme.textTheme.bodyText2?.copyWith(
+                                style: theme.textTheme.bodyMedium?.copyWith(
                                   color: statusIsActive
                                       ? theme.primaryColor
                                       : Colors.grey,

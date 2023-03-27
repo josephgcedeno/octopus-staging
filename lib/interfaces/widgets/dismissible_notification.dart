@@ -38,7 +38,7 @@ Widget notification({
         width: width ?? widthDefault * 0.80,
         child: Text(
           text,
-          style: theme.textTheme.bodyText1,
+          style: theme.textTheme.bodyLarge,
         ),
       ),
     ),

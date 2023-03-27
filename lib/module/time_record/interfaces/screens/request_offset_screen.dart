@@ -180,15 +180,15 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
                           child: Text(
                             'Request Offset',
                             style: kIsWeb
-                                ? theme.textTheme.headline6
-                                : theme.textTheme.subtitle1?.copyWith(
+                                ? theme.textTheme.titleLarge
+                                : theme.textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
                           ),
                         ),
                         Text(
                           'I’ll be away the next working day...',
-                          style: theme.textTheme.bodyText1,
+                          style: theme.textTheme.bodyLarge,
                         ),
                         Container(
                           margin: const EdgeInsets.only(
@@ -223,8 +223,8 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
                                             child: Text(
                                               i == 0 ? 'From' : 'To',
                                               style: kIsWeb
-                                                  ? theme.textTheme.headline6
-                                                  : theme.textTheme.subtitle1
+                                                  ? theme.textTheme.titleLarge
+                                                  : theme.textTheme.titleMedium
                                                       ?.copyWith(
                                                       color: blackColor,
                                                       fontWeight:
@@ -283,7 +283,7 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
                             ),
                             Text(
                               maximumTimeText,
-                              style: theme.textTheme.caption?.copyWith(
+                              style: theme.textTheme.bodySmall?.copyWith(
                                 fontStyle: FontStyle.italic,
                               ),
                             )
@@ -309,7 +309,7 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
                               ),
                               hintText:
                                   'Write reason (e.g. Process personal documents)',
-                              hintStyle: theme.textTheme.caption,
+                              hintStyle: theme.textTheme.bodySmall,
                               filled: true,
                             ),
                           ),
@@ -343,7 +343,7 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
                               )
                             : Text(
                                 'Request',
-                                style: theme.textTheme.bodyText1?.copyWith(
+                                style: theme.textTheme.bodyLarge?.copyWith(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                 ),

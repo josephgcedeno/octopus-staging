@@ -146,12 +146,12 @@ class _DTRDetailsState extends State<DTRDetails> {
                     children: <Widget>[
                       Text(
                         labels[i],
-                        style: theme.textTheme.bodyText2
+                        style: theme.textTheme.bodyMedium
                             ?.copyWith(color: Colors.grey),
                       ),
                       Text(
                         values[i],
-                        style: theme.textTheme.bodyText2,
+                        style: theme.textTheme.bodyMedium,
                       ),
                     ],
                   ),

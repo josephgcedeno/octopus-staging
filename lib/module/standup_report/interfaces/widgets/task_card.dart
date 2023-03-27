@@ -42,7 +42,7 @@ class TaskCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text(task.taskName, style: theme.textTheme.bodyText2),
+            Text(task.taskName, style: theme.textTheme.bodyMedium),
             ProjectChip(
               id: projectTag.id,
               name: projectTag.projectName,
