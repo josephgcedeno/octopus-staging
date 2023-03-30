@@ -46,13 +46,13 @@ class _TimeInSliderState extends State<TimeInSlider> {
           ),
           title: Text(
             'Time Out',
-            style: theme.textTheme.bodyText1
+            style: theme.textTheme.bodyLarge
                 ?.copyWith(fontWeight: FontWeight.w600, fontSize: 16),
           ),
           contentPadding: const EdgeInsets.only(left: 25, top: 10),
           content: Text(
             'Are you done for today?',
-            style: theme.textTheme.caption?.copyWith(
+            style: theme.textTheme.bodySmall?.copyWith(
               color: const Color(0xff1B252F),
             ),
           ),
@@ -61,7 +61,7 @@ class _TimeInSliderState extends State<TimeInSlider> {
               onPressed: () => Navigator.of(context).pop(),
               child: Text(
                 'Cancel',
-                style: theme.textTheme.caption
+                style: theme.textTheme.bodySmall
                     ?.copyWith(color: const Color(0xff1B252F)),
               ),
             ),
@@ -74,7 +74,7 @@ class _TimeInSliderState extends State<TimeInSlider> {
               },
               child: Text(
                 'Confirm',
-                style: theme.textTheme.caption?.copyWith(
+                style: theme.textTheme.bodySmall?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.w300,
                 ),
@@ -209,7 +209,7 @@ class _TimeInSliderState extends State<TimeInSlider> {
                             child: Align(
                               child: Text(
                                 isIn ? 'IN' : 'OUT',
-                                style: theme.textTheme.subtitle1?.copyWith(
+                                style: theme.textTheme.titleMedium?.copyWith(
                                   color: isIn ? theme.primaryColor : bgRed,
                                   fontWeight: FontWeight.w600,
                                 ),

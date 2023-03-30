@@ -99,8 +99,8 @@ class _TimeRecordScreenState extends State<TimeRecordScreen> {
                     child: Text(
                       'Daily Time Record',
                       style: kIsWeb
-                          ? theme.textTheme.headline6
-                          : theme.textTheme.subtitle1,
+                          ? theme.textTheme.titleLarge
+                          : theme.textTheme.titleMedium,
                     ),
                   ),
                 ),

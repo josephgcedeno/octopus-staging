@@ -61,7 +61,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 child: Text(
                   'Development',
                   style:
-                      theme.textTheme.bodyText2?.copyWith(color: Colors.grey),
+                      theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
                 ),
               ),
             ),

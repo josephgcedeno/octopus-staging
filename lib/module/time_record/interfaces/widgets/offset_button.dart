@@ -49,11 +49,11 @@ class OffsetButton extends StatelessWidget {
           child: Text(
             'Request for offset',
             style: kIsWeb
-                ? theme.textTheme.bodyText2?.copyWith(
+                ? theme.textTheme.bodyMedium?.copyWith(
                     color: theme.primaryColor,
                     fontWeight: FontWeight.w600,
                   )
-                : theme.textTheme.caption?.copyWith(
+                : theme.textTheme.bodySmall?.copyWith(
                     color: theme.primaryColor,
                     fontWeight: FontWeight.w600,
                   ),

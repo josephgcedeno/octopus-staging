@@ -32,7 +32,7 @@ class StatusChips extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 17),
       child: Text(
         toBeginningOfSentenceCase(status.name) ?? '',
-        style: theme.textTheme.caption
+        style: theme.textTheme.bodySmall
             ?.copyWith(color: isActive ? theme.primaryColor : Colors.black),
       ),
     );

@@ -208,8 +208,8 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
                   Text(
                     'Daily Stand-Up Report',
                     style: kIsWeb
-                        ? theme.textTheme.headline6
-                        : theme.textTheme.subtitle1,
+                        ? theme.textTheme.titleLarge
+                        : theme.textTheme.titleMedium,
                   ),
                   const DateCard(),
                   Container(

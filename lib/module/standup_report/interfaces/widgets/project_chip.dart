@@ -25,7 +25,7 @@ class ProjectChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
       child: Text(
         toBeginningOfSentenceCase(name) ?? '',
-        style: theme.textTheme.caption?.copyWith(color: color, fontSize: 10),
+        style: theme.textTheme.bodySmall?.copyWith(color: color, fontSize: 10),
       ),
     );
   }

@@ -129,7 +129,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             children: <Widget>[
               Text(
                 'Task Information',
-                style: theme.textTheme.headline6?.copyWith(fontSize: 17),
+                style: theme.textTheme.titleLarge?.copyWith(fontSize: 17),
               ),
               Container(
                 margin: const EdgeInsets.only(top: 10),
@@ -214,7 +214,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               ),
               Text(
                 'This task will be permanently removed from your Daily Standup Report.',
-                style: theme.textTheme.caption,
+                style: theme.textTheme.bodySmall,
               ),
               SizedBox(
                 width: width,
@@ -222,7 +222,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                   style: ButtonStyle(
                     elevation: MaterialStateProperty.all(0),
                     backgroundColor: MaterialStateProperty.all(
-                      theme.errorColor.withAlpha(40),
+                      theme.colorScheme.error.withAlpha(40),
                     ),
                     shape: MaterialStateProperty.all(
                       RoundedRectangleBorder(
@@ -236,8 +236,8 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                   },
                   child: Text(
                     'Delete Task',
-                    style: theme.textTheme.bodyText2
-                        ?.copyWith(color: theme.errorColor),
+                    style: theme.textTheme.bodyMedium
+                        ?.copyWith(color: theme.colorScheme.error),
                   ),
                 ),
               ),

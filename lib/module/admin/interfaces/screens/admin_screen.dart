@@ -81,7 +81,7 @@ class _AdminScreenState extends State<AdminScreen> {
               padding: const EdgeInsets.only(bottom: 5.0),
               child: Text(
                 'Admin Panel',
-                style: theme.textTheme.headline5
+                style: theme.textTheme.headlineSmall
                     ?.copyWith(fontWeight: FontWeight.w800, color: Colors.grey),
               ),
             ),
@@ -111,7 +111,7 @@ class _AdminScreenState extends State<AdminScreen> {
                             ),
                             Text(
                               actionLabel[i],
-                              style: theme.textTheme.caption
+                              style: theme.textTheme.bodySmall
                                   ?.copyWith(color: Colors.white),
                             )
                           ],

@@ -31,7 +31,7 @@ class DateCard extends StatelessWidget {
               duration: fadeInDuration,
               child: Text(
                 state.dateString,
-                style: theme.textTheme.overline?.copyWith(
+                style: theme.textTheme.labelSmall?.copyWith(
                   color: theme.primaryColor,
                   fontWeight: FontWeight.w600,
                 ),

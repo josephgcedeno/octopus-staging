@@ -62,7 +62,7 @@ class _TempRegisterScreenState extends State<TempRegisterScreen> {
                     },
                     child: Text(
                       'Forgotten?',
-                      style: theme.textTheme.bodyText2
+                      style: theme.textTheme.bodyMedium
                           ?.copyWith(color: theme.primaryColor),
                     ),
                   ),
