@@ -73,7 +73,7 @@ class _LeaveStatusIndicatorState extends State<LeaveStatusIndicator> {
         color: currentStatus().color.withOpacity(0.1),
       ),
       width: kIsWeb ? width * 0.3 : width * 0.9,
-      height: kIsWeb ? height * 0.15 : height * 0.13,
+      height: kIsWeb ? height * 0.15 : height * 0.12,
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.only(bottom: 10),
       child: Column(
@@ -81,15 +81,24 @@ class _LeaveStatusIndicatorState extends State<LeaveStatusIndicator> {
         children: <Widget>[
           Text(
             'Your leave request has been',
-            style: theme.textTheme.bodyMedium?.copyWith(fontSize: 18),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontSize: kIsWeb ? 15 : width * 0.04,
+            ),
           ),
           const SizedBox(
             height: 10,
           ),
           Text(
             currentStatus().statusName,
-            style: theme.textTheme.headlineMedium
-                ?.copyWith(color: currentStatus().color),
+            style: kIsWeb
+                ? theme.textTheme.headlineMedium?.copyWith(
+                    color: currentStatus().color,
+                    fontSize: 20,
+                  )
+                : theme.textTheme.headlineMedium?.copyWith(
+                    color: currentStatus().color,
+                    fontSize: width * 0.06,
+                  ),
           ),
         ],
       ),

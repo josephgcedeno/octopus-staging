@@ -24,6 +24,7 @@ class LeavesDetailsScreen extends StatelessWidget {
           children: <Widget>[
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.only(bottom: height * 0.03, top: 20),
@@ -38,8 +39,10 @@ class LeavesDetailsScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                const LeaveStatusIndicator(
-                  status: LeaveStatus.approved,
+                const Center(
+                  child: LeaveStatusIndicator(
+                    status: LeaveStatus.approved,
+                  ),
                 ),
                 const LeaveDetails()
               ],
