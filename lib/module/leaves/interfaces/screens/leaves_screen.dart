@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
+import 'package:octopus/module/leaves/interfaces/screens/leaves_details_screen.dart';
 import 'package:octopus/module/leaves/interfaces/widgets/leave_duaration.dart';
 import 'package:octopus/module/leaves/interfaces/widgets/number_of_leaves.dart';
 
@@ -34,7 +35,7 @@ class _LeavesScreenState extends State<LeavesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+            children: <Widget>[
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -75,7 +76,7 @@ class _LeavesScreenState extends State<LeavesScreen> {
                   ),
                   Padding(
                     padding: EdgeInsets.only(bottom: height * 0.01, top: 20),
-                    child: const Text('Ill be taking a leave...'),
+                    child: const Text("I'll be taking a leave..."),
                   ),
                   Container(
                     margin: EdgeInsets.only(
@@ -111,7 +112,7 @@ class _LeavesScreenState extends State<LeavesScreen> {
                           borderRadius: BorderRadius.circular(8),
                           color: formBackgroundColor,
                         ),
-                        child: DropdownButton(
+                        child: DropdownButton<Placeholder>(
                           isExpanded: true,
                           icon: const Icon(Icons.keyboard_arrow_down_outlined),
                           hint: const Text('Select Type of Leave'),
@@ -180,7 +181,13 @@ class _LeavesScreenState extends State<LeavesScreen> {
                           ),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<dynamic>(
+                            builder: (_) => const LeavesDetailsScreen(),
+                          ),
+                        );
+                      },
                       child: const Text('Request'),
                     ),
                   ),
