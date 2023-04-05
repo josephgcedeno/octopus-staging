@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 final ThemeData defaultTheme = _buildDefaultTheme();
 const Color kBlue = Color(0xFF017BFF);
 const Color kRed = Color(0xFFE63462);
+const Color kBlack = Color(0xFF000000);
 
 ThemeData _buildDefaultTheme() {
   final ThemeData base = ThemeData.light();
@@ -19,7 +20,10 @@ ThemeData _buildDefaultTheme() {
 
 TextTheme _buildDefaultTextTheme(TextTheme base) {
   return base.copyWith(
-    titleLarge: base.titleLarge?.copyWith(fontFamily: 'Gilroy'),
+    titleLarge: base.titleLarge?.copyWith(
+      fontFamily: 'Gilroy',
+      fontWeight: FontWeight.w900,
+    ),
     headlineSmall: base.headlineSmall?.copyWith(fontFamily: 'Gilroy'),
     headlineMedium: base.headlineMedium?.copyWith(fontFamily: 'Gilroy'),
     displaySmall: base.displaySmall?.copyWith(fontFamily: 'Gilroy'),
@@ -37,3 +41,9 @@ TextTheme _buildDefaultTextTheme(TextTheme base) {
 
 const Color shimmerBase = Colors.white38;
 const Color shimmerGlow = Colors.white60;
+const Color gradient1 = Color(0xFF57A6FC);
+const Color gradient2 = Color(0xFF017BFF);
+
+const String logoSVG = 'assets/images/projectoctopus_logo.svg';
+const String whitelogoSVG = 'assets/images/projectoctopus_logo_white.svg';
+const String logoPNG = 'assets/images/projectoctopus_logo.png';
