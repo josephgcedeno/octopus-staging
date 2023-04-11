@@ -33,7 +33,7 @@ TextTheme _buildDefaultTextTheme(TextTheme base) {
       fontSize: 34,
       height: 1.5,
       color: kBlack,
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.w600,
     ),
     titleSmall: base.titleSmall?.copyWith(fontFamily: 'Gilroy'),
     titleMedium: base.titleMedium?.copyWith(fontFamily: 'Gilroy'),
