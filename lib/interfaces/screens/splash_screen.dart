@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:octopus/configs/themes.dart';
-import '../widgets/gradient_bg.dart';
+import 'package:octopus/interfaces/widgets/gradient_bg.dart';
 
 /// Splash screen, only shows for a few milliseconds. fades out to authentication_screen afterwards.
 class SplashScreen extends StatefulWidget {
