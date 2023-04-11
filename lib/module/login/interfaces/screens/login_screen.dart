@@ -78,49 +78,21 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: <TextSpan>[
                             TextSpan(
                               text: 'Hi there!',
-                              style: TextStyle(
-                                color: kBlack,
-                                fontFamily:
-                                    theme.textTheme.titleLarge?.fontFamily,
-                                fontWeight:
-                                    theme.textTheme.titleLarge?.fontWeight,
-                                fontSize: 34,
-                                height: 1.5,
-                              ),
+                              style: theme.textTheme.displayLarge,
                             ),
                             TextSpan(
                               text: "\nLet's get you ",
-                              style: TextStyle(
-                                color: kBlack,
-                                fontFamily:
-                                    theme.textTheme.titleLarge?.fontFamily,
-                                fontWeight:
-                                    theme.textTheme.titleLarge?.fontWeight,
-                                fontSize: 34,
-                                height: 1.5,
-                              ),
+                              style: theme.textTheme.displayLarge,
                             ),
                             TextSpan(
                               text: 'prepared',
-                              style: TextStyle(
+                              style: theme.textTheme.displayLarge?.copyWith(
                                 color: theme.primaryColor,
-                                fontFamily:
-                                    theme.textTheme.titleLarge?.fontFamily,
-                                fontSize: 34,
-                                fontWeight:
-                                    theme.textTheme.titleLarge?.fontWeight,
-                                height: 1.5,
                               ),
                             ),
                             TextSpan(
                               text: '.',
-                              style: TextStyle(
-                                color: kBlack,
-                                fontFamily:
-                                    theme.textTheme.titleLarge?.fontFamily,
-                                fontSize: 34,
-                                height: 1.5,
-                              ),
+                              style: theme.textTheme.displayLarge,
                             ),
                           ],
                         ),
