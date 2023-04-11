@@ -54,17 +54,6 @@ class _LeaveStatusIndicatorState extends State<LeaveStatusIndicator> {
     )
   };
 
-  LeaveStatusDetails? status() {
-    switch (widget.status) {
-      case LeaveStatus.approved:
-        return currentStatus[LeaveStatus.approved];
-      case LeaveStatus.denied:
-        return currentStatus[LeaveStatus.denied];
-      case LeaveStatus.pending:
-        return currentStatus[LeaveStatus.pending];
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -72,9 +61,9 @@ class _LeaveStatusIndicatorState extends State<LeaveStatusIndicator> {
     final double width = MediaQuery.of(context).size.width;
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: status()!.color),
+        border: Border.all(color: currentStatus[widget.status]!.color),
         borderRadius: BorderRadius.circular(15),
-        color: status()!.color.withOpacity(0.1),
+        color: currentStatus[widget.status]!.color.withOpacity(0.1),
       ),
       width: kIsWeb ? width * 0.3 : width * 0.9,
       height: kIsWeb ? height * 0.15 : height * 0.12,
@@ -93,14 +82,14 @@ class _LeaveStatusIndicatorState extends State<LeaveStatusIndicator> {
             height: 10,
           ),
           Text(
-            status()!.statusName,
+            currentStatus[widget.status]!.statusName,
             style: kIsWeb
                 ? theme.textTheme.headlineMedium?.copyWith(
-                    color: status()!.color,
+                    color: currentStatus[widget.status]!.color,
                     fontSize: 20,
                   )
                 : theme.textTheme.headlineMedium?.copyWith(
-                    color: status()!.color,
+                    color: currentStatus[widget.status]!.color,
                     fontSize: width * 0.06,
                   ),
           ),
