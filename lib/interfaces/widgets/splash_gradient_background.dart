@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
 
-class GradientBG extends StatelessWidget {
-  const GradientBG({required this.body, Key? key}) : super(key: key);
+class SplashGradientBackground extends StatelessWidget {
+  const SplashGradientBackground({required this.body, Key? key})
+      : super(key: key);
 
   final Widget body;
 

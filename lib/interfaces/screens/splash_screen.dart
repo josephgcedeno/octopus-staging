@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:octopus/configs/themes.dart';
-import 'package:octopus/interfaces/widgets/gradient_bg.dart';
+import 'package:octopus/interfaces/widgets/splash_gradient_background.dart';
 
 /// Splash screen, only shows for a few milliseconds. fades out to authentication_screen afterwards.
 class SplashScreen extends StatefulWidget {
@@ -39,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
     final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
 
-    return GradientBG(
+    return SplashGradientBackground(
       body: Center(
         child: Container(
           margin: EdgeInsets.only(top: height * 0.05),
