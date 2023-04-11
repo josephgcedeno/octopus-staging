@@ -46,7 +46,7 @@ class _SplashScreenState extends State<SplashScreen> {
           margin: EdgeInsets.only(top: height * 0.05),
           width: width * 0.35,
           height: height * 0.20,
-          child: SvgPicture.asset(whitelogoSVG),
+          child: SvgPicture.asset(whiteLogoSvg),
         ),
       ),
     );

@@ -44,6 +44,6 @@ const Color shimmerGlow = Colors.white60;
 const Color gradient1 = Color(0xFF57A6FC);
 const Color gradient2 = Color(0xFF017BFF);
 
-const String logoSVG = 'assets/images/app_logo.svg';
-const String whitelogoSVG = 'assets/images/app_logo_white.svg';
-const String logoPNG = 'assets/images/app_logo.png';
+const String logoSvg = 'assets/images/app_logo.svg';
+const String whiteLogoSvg = 'assets/images/app_logo_white.svg';
+const String logoPng = 'assets/images/app_logo.png';

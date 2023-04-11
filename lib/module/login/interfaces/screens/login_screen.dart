@@ -63,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     margin: EdgeInsets.only(top: height * 0.05),
                     width: width * 0.35,
                     height: height * 0.20,
-                    child: SvgPicture.asset(logoSVG),
+                    child: SvgPicture.asset(logoSvg),
                   ),
                 ),
                 Padding(
