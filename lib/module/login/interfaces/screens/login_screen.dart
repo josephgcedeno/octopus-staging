@@ -47,15 +47,14 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       },
       child: Scaffold(
-        body: Container(
-          height: height,
-          margin: EdgeInsets.symmetric(
-            vertical: height * 0.06,
-            horizontal: width * 0.1,
-          ),
-          child: SingleChildScrollView(
+        body: SingleChildScrollView(
+          child: Container(
+            height: height,
+            margin: EdgeInsets.symmetric(
+              horizontal: width * 0.1,
+            ),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Center(
@@ -66,39 +65,37 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: SvgPicture.asset(logoSvg),
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: height * 0.02),
-                  child: Column(
+                RichText(
+                  textAlign: TextAlign.left,
+                  text: TextSpan(
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: 'Hi there!',
+                        style: theme.textTheme.displayLarge,
+                      ),
+                      TextSpan(
+                        text: "\nLet's get you ",
+                        style: theme.textTheme.displayLarge,
+                      ),
+                      TextSpan(
+                        text: 'prepared',
+                        style: theme.textTheme.displayLarge?.copyWith(
+                          color: theme.primaryColor,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '.',
+                        style: theme.textTheme.displayLarge,
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      RichText(
-                        textAlign: TextAlign.left,
-                        text: TextSpan(
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: 'Hi there!',
-                              style: theme.textTheme.displayLarge,
-                            ),
-                            TextSpan(
-                              text: "\nLet's get you ",
-                              style: theme.textTheme.displayLarge,
-                            ),
-                            TextSpan(
-                              text: 'prepared',
-                              style: theme.textTheme.displayLarge?.copyWith(
-                                color: theme.primaryColor,
-                              ),
-                            ),
-                            TextSpan(
-                              text: '.',
-                              style: theme.textTheme.displayLarge,
-                            ),
-                          ],
-                        ),
-                      ),
                       Padding(
-                        padding: EdgeInsets.only(top: height * 0.05),
+                        padding: EdgeInsets.symmetric(vertical: height * 0.02),
                         child: const Text('Email'),
                       ),
                       TextField(
@@ -114,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        padding: EdgeInsets.symmetric(vertical: height * 0.02),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
@@ -186,8 +183,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 current is LoginLoading ||
                                 current is LoginFailed ||
                                 current is LoginSuccess,
-                            builder: (BuildContext context,
-                                AuthenticationState state,) {
+                            builder: (
+                              BuildContext context,
+                              AuthenticationState state,
+                            ) {
                               if (state is LoginLoading) {
                                 return const LoadingIndicator();
                               }
@@ -198,7 +197,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-                )
               ],
             ),
           ),
