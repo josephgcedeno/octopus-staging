@@ -104,7 +104,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     TextField(
                       controller: emailController,
-                      onTap: () {},
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -139,7 +138,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     TextField(
                       controller: passwordController,
-                      onTap: () {},
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
