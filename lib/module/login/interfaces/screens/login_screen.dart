@@ -199,10 +199,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             }
                             if (emailController.text.isEmpty ||
                                 passwordController.text.isEmpty) {
-                              showSnackBar(
-                                message: 'Missing credentials detected.',
-                                snackBartState: SnackBartState.error,
-                              );
                               return;
                             }
                           },
