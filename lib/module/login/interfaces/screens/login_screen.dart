@@ -172,6 +172,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         onPressed: () {
+                          if (emailController.text.isEmpty ||
+                              passwordController.text.isEmpty) {
+                            showSnackBar(
+                              message: 'Missing credentials detected.',
+                              snackBartState: SnackBartState.error,
+                            );
+                            return;
+                          }
                           context.read<AuthenticationCubit>().login(
                                 email: emailController.text,
                                 password: passwordController.text,
