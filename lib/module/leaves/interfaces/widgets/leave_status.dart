@@ -32,32 +32,36 @@ class LeaveStatusIndicator extends StatefulWidget {
 }
 
 class _LeaveStatusIndicatorState extends State<LeaveStatusIndicator> {
-  LeaveStatusDetails currentStatus() {
-    final LeaveStatusDetails approved = LeaveStatusDetails(
+  Map<LeaveStatus, LeaveStatusDetails> currentStatus =
+      <LeaveStatus, LeaveStatusDetails>{
+    LeaveStatus.approved: LeaveStatusDetails(
       id: '0',
       statusName: 'APPROVED',
       status: LeaveStatus.approved,
       color: const Color(0XFF39C0C7),
-    );
-    final LeaveStatusDetails denied = LeaveStatusDetails(
+    ),
+    LeaveStatus.denied: LeaveStatusDetails(
       id: '1',
       statusName: 'DENIED',
       status: LeaveStatus.denied,
       color: const Color(0xeee25252),
-    );
-    final LeaveStatusDetails pending = LeaveStatusDetails(
+    ),
+    LeaveStatus.pending: LeaveStatusDetails(
       id: '2',
       statusName: 'PENDING',
       status: LeaveStatus.pending,
       color: const Color(0XEEEC8D71),
-    );
+    )
+  };
+
+  LeaveStatusDetails? status() {
     switch (widget.status) {
       case LeaveStatus.approved:
-        return approved;
+        return currentStatus[LeaveStatus.approved];
       case LeaveStatus.denied:
-        return denied;
+        return currentStatus[LeaveStatus.denied];
       case LeaveStatus.pending:
-        return pending;
+        return currentStatus[LeaveStatus.pending];
     }
   }
 
@@ -68,9 +72,9 @@ class _LeaveStatusIndicatorState extends State<LeaveStatusIndicator> {
     final double width = MediaQuery.of(context).size.width;
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: currentStatus().color),
+        border: Border.all(color: status()!.color),
         borderRadius: BorderRadius.circular(15),
-        color: currentStatus().color.withOpacity(0.1),
+        color: status()!.color.withOpacity(0.1),
       ),
       width: kIsWeb ? width * 0.3 : width * 0.9,
       height: kIsWeb ? height * 0.15 : height * 0.12,
@@ -89,14 +93,14 @@ class _LeaveStatusIndicatorState extends State<LeaveStatusIndicator> {
             height: 10,
           ),
           Text(
-            currentStatus().statusName,
+            status()!.statusName,
             style: kIsWeb
                 ? theme.textTheme.headlineMedium?.copyWith(
-                    color: currentStatus().color,
+                    color: status()!.color,
                     fontSize: 20,
                   )
                 : theme.textTheme.headlineMedium?.copyWith(
-                    color: currentStatus().color,
+                    color: status()!.color,
                     fontSize: width * 0.06,
                   ),
           ),
