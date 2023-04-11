@@ -20,6 +20,9 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final RegExp _emailRegex = RegExp(
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 
   bool showPassword = false;
   @override
@@ -94,117 +97,138 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: height * 0.02),
-                      child: const Text('Email'),
-                    ),
-                    TextField(
-                      controller: emailController,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xFFf5f7f9),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: height * 0.02),
+                        child: const Text('Email'),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: height * 0.02),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          const Text('Password'),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute<dynamic>(
-                                  builder: (_) => const TempRegisterScreen(),
-                                ),
-                              );
-                            },
-                            child: Text(
-                              'Forgotten?',
-                              style: theme.textTheme.bodyMedium
-                                  ?.copyWith(color: theme.primaryColor),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    TextField(
-                      controller: passwordController,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xFFf5f7f9),
-                        suffixIcon: GestureDetector(
-                          onTap: () =>
-                              setState(() => showPassword = !showPassword),
-                          child: Icon(
-                            Icons.remove_red_eye_outlined,
-                            color:
-                                showPassword ? theme.primaryColor : Colors.grey,
-                          ),
-                        ),
-                      ),
-                      obscureText: !showPassword,
-                    ),
-                    Container(
-                      width: width,
-                      margin: EdgeInsets.only(top: height * 0.03),
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                          elevation: MaterialStateProperty.all(0),
-                          shape: MaterialStateProperty.all(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                          ),
-                        ),
-                        onPressed: () {
-                          if (emailController.text.isEmpty ||
-                              passwordController.text.isEmpty) {
-                            showSnackBar(
-                              message: 'Missing credentials detected.',
-                              snackBartState: SnackBartState.error,
-                            );
-                            return;
+                      TextFormField(
+                        controller: emailController,
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your email.';
                           }
-                          context.read<AuthenticationCubit>().login(
-                                email: emailController.text,
-                                password: passwordController.text,
-                              );
+                          if (!_emailRegex.hasMatch(value)) {
+                            return 'Invalid email format.';
+                          }
+                          return null;
                         },
-                        child: BlocBuilder<AuthenticationCubit,
-                            AuthenticationState>(
-                          buildWhen: (
-                            AuthenticationState previous,
-                            AuthenticationState current,
-                          ) =>
-                              current is LoginLoading ||
-                              current is LoginFailed ||
-                              current is LoginSuccess,
-                          builder: (
-                            BuildContext context,
-                            AuthenticationState state,
-                          ) {
-                            if (state is LoginLoading) {
-                              return const LoadingIndicator();
-                            }
-                            return const Text('Sign In');
-                          },
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xFFf5f7f9),
                         ),
                       ),
-                    ),
-                  ],
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: height * 0.02),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            const Text('Password'),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute<dynamic>(
+                                    builder: (_) => const TempRegisterScreen(),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                'Forgotten?',
+                                style: theme.textTheme.bodyMedium
+                                    ?.copyWith(color: theme.primaryColor),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      TextFormField(
+                        controller: passwordController,
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your password.';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xFFf5f7f9),
+                          suffixIcon: GestureDetector(
+                            onTap: () =>
+                                setState(() => showPassword = !showPassword),
+                            child: Icon(
+                              Icons.remove_red_eye_outlined,
+                              color: showPassword
+                                  ? theme.primaryColor
+                                  : Colors.grey,
+                            ),
+                          ),
+                        ),
+                        obscureText: !showPassword,
+                      ),
+                      Container(
+                        width: width,
+                        margin: EdgeInsets.only(top: height * 0.03),
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            elevation: MaterialStateProperty.all(0),
+                            shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                            ),
+                          ),
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              context.read<AuthenticationCubit>().login(
+                                    email: emailController.text,
+                                    password: passwordController.text,
+                                  );
+                            }
+                            if (emailController.text.isEmpty ||
+                                passwordController.text.isEmpty) {
+                              showSnackBar(
+                                message: 'Missing credentials detected.',
+                                snackBartState: SnackBartState.error,
+                              );
+                              return;
+                            }
+                          },
+                          child: BlocBuilder<AuthenticationCubit,
+                              AuthenticationState>(
+                            buildWhen: (
+                              AuthenticationState previous,
+                              AuthenticationState current,
+                            ) =>
+                                current is LoginLoading ||
+                                current is LoginFailed ||
+                                current is LoginSuccess,
+                            builder: (
+                              BuildContext context,
+                              AuthenticationState state,
+                            ) {
+                              if (state is LoginLoading) {
+                                return const LoadingIndicator();
+                              }
+                              return const Text('Sign In');
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
