@@ -4,6 +4,7 @@ final ThemeData defaultTheme = _buildDefaultTheme();
 const Color kBlue = Color(0xFF017BFF);
 const Color kRed = Color(0xFFE63462);
 const Color kBlack = Color(0xFF000000);
+const Color kDarkGrey = Color(0xFF8d9297);
 
 ThemeData _buildDefaultTheme() {
   final ThemeData base = ThemeData.light();
@@ -27,7 +28,11 @@ TextTheme _buildDefaultTextTheme(TextTheme base) {
     headlineSmall: base.headlineSmall?.copyWith(fontFamily: 'Gilroy'),
     headlineMedium: base.headlineMedium?.copyWith(fontFamily: 'Gilroy'),
     displaySmall: base.displaySmall?.copyWith(fontFamily: 'Gilroy'),
-    displayMedium: base.displayMedium?.copyWith(fontFamily: 'Gilroy'),
+    displayMedium: base.displayMedium?.copyWith(
+      fontFamily: 'Gilroy',
+      fontSize: 17,
+      color: kDarkGrey,
+    ),
     displayLarge: base.displayLarge?.copyWith(
       fontFamily: 'Gilroy',
       fontSize: 34,
