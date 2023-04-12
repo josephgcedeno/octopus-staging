@@ -83,8 +83,9 @@ class _LeavesScreenState extends State<LeavesScreen> {
                       top: height * 0.01,
                       bottom: height * 0.02,
                     ),
-                    child: const DateTimePicker(
+                    child: DateTimePicker<DateTime>(
                       type: PickerType.date,
+                      callBack: (DateTime from, DateTime to) {},
                     ),
                   ),
                   Column(
