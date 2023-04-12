@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:octopus/configs/themes.dart';
 import 'package:octopus/interfaces/widgets/loading_indicator.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
@@ -18,6 +20,9 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final RegExp _emailRegex = RegExp(
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 
   bool showPassword = false;
   @override
@@ -45,111 +50,184 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       },
       child: Scaffold(
-        body: Container(
-          // padding: EdgeInsets.symmetric(horizontal: width * 0.1),
-          margin: EdgeInsets.symmetric(
-            vertical: height * 0.06,
-            horizontal: width * 0.1,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const Padding(
-                padding: EdgeInsets.only(bottom: 4.0),
-                child: Text('Email'),
-              ),
-              TextField(
-                controller: emailController,
-                onTap: () {},
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide.none,
+        body: SingleChildScrollView(
+          child: Container(
+            height: height,
+            margin: EdgeInsets.symmetric(
+              horizontal: width * 0.1,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Center(
+                  child: Container(
+                    margin: EdgeInsets.only(top: height * 0.05),
+                    width: width * 0.35,
+                    height: height * 0.20,
+                    child: SvgPicture.asset(logoSvg),
                   ),
-                  filled: true,
-                  fillColor: const Color(0xFFf5f7f9),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    const Text('Password'),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<dynamic>(
-                            builder: (_) => const TempRegisterScreen(),
+                RichText(
+                  textAlign: TextAlign.left,
+                  text: TextSpan(
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: 'Hi there!',
+                        style: theme.textTheme.displayLarge
+                            ?.copyWith(fontSize: height * 0.05),
+                      ),
+                      TextSpan(
+                        text: "\nLet's get you ",
+                        style: theme.textTheme.displayLarge
+                            ?.copyWith(fontSize: height * 0.05),
+                      ),
+                      TextSpan(
+                        text: 'prepared',
+                        style: theme.textTheme.displayLarge?.copyWith(
+                          color: theme.primaryColor,
+                          fontSize: height * 0.05,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '.',
+                        style: theme.textTheme.displayLarge
+                            ?.copyWith(fontSize: height * 0.05),
+                      ),
+                    ],
+                  ),
+                ),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: height * 0.02),
+                        child: const Text('Email'),
+                      ),
+                      TextFormField(
+                        controller: emailController,
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your email.';
+                          }
+                          if (!_emailRegex.hasMatch(value)) {
+                            return 'Invalid email format.';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
                           ),
-                        );
-                      },
-                      child: Text(
-                        'Forgotten?',
-                        style: theme.textTheme.bodyMedium
-                            ?.copyWith(color: theme.primaryColor),
+                          filled: true,
+                          fillColor: const Color(0xFFf5f7f9),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              TextField(
-                controller: passwordController,
-                onTap: () {},
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  fillColor: const Color(0xFFf5f7f9),
-                  suffixIcon: GestureDetector(
-                    onTap: () => setState(() => showPassword = !showPassword),
-                    child: Icon(
-                      Icons.remove_red_eye_outlined,
-                      color: showPassword ? theme.primaryColor : Colors.grey,
-                    ),
-                  ),
-                ),
-                obscureText: !showPassword,
-              ),
-              Container(
-                width: width,
-                margin: EdgeInsets.only(top: height * 0.03),
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                    elevation: MaterialStateProperty.all(0),
-                    shape: MaterialStateProperty.all(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: height * 0.02),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            const Text('Password'),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute<dynamic>(
+                                    builder: (_) => const TempRegisterScreen(),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                'Forgotten?',
+                                style: theme.textTheme.bodyMedium
+                                    ?.copyWith(color: theme.primaryColor),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ),
-                  onPressed: () {
-                    context.read<AuthenticationCubit>().login(
-                          email: emailController.text,
-                          password: passwordController.text,
-                        );
-                  },
-                  child: BlocBuilder<AuthenticationCubit, AuthenticationState>(
-                    buildWhen: (
-                      AuthenticationState previous,
-                      AuthenticationState current,
-                    ) =>
-                        current is LoginLoading ||
-                        current is LoginFailed ||
-                        current is LoginSuccess,
-                    builder: (BuildContext context, AuthenticationState state) {
-                      if (state is LoginLoading) {
-                        return const LoadingIndicator();
-                      }
-                      return const Text('Sign In');
-                    },
+                      TextFormField(
+                        controller: passwordController,
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your password.';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xFFf5f7f9),
+                          suffixIcon: GestureDetector(
+                            onTap: () =>
+                                setState(() => showPassword = !showPassword),
+                            child: Icon(
+                              Icons.remove_red_eye_outlined,
+                              color: showPassword
+                                  ? theme.primaryColor
+                                  : Colors.grey,
+                            ),
+                          ),
+                        ),
+                        obscureText: !showPassword,
+                      ),
+                      Container(
+                        width: width,
+                        margin: EdgeInsets.only(top: height * 0.03),
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            elevation: MaterialStateProperty.all(0),
+                            shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                            ),
+                          ),
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              context.read<AuthenticationCubit>().login(
+                                    email: emailController.text,
+                                    password: passwordController.text,
+                                  );
+                            }
+                            if (emailController.text.isEmpty ||
+                                passwordController.text.isEmpty) {
+                              return;
+                            }
+                          },
+                          child: BlocBuilder<AuthenticationCubit,
+                              AuthenticationState>(
+                            buildWhen: (
+                              AuthenticationState previous,
+                              AuthenticationState current,
+                            ) =>
+                                current is LoginLoading ||
+                                current is LoginFailed ||
+                                current is LoginSuccess,
+                            builder: (
+                              BuildContext context,
+                              AuthenticationState state,
+                            ) {
+                              if (state is LoginLoading) {
+                                return const LoadingIndicator();
+                              }
+                              return const Text('Sign In');
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
