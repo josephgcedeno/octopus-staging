@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
+import 'package:octopus/interfaces/widgets/date_and_time_picker.dart';
 import 'package:octopus/module/leaves/interfaces/screens/leaves_details_screen.dart';
-import 'package:octopus/module/leaves/interfaces/widgets/leave_duaration.dart';
 import 'package:octopus/module/leaves/interfaces/widgets/number_of_leaves.dart';
 
 class LeavesScreen extends StatefulWidget {
@@ -83,7 +83,9 @@ class _LeavesScreenState extends State<LeavesScreen> {
                       top: height * 0.01,
                       bottom: height * 0.02,
                     ),
-                    child: const LeaveDuration(),
+                    child: const DateTimePicker(
+                      type: PickerType.date,
+                    ),
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
