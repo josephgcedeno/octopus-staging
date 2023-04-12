@@ -26,19 +26,16 @@ class _DateTimePickerState<T> extends State<DateTimePicker<T>> {
   final TextEditingController fromTextController = TextEditingController();
   final TextEditingController toTextController = TextEditingController();
 
-  late T fromTime;
-  late T toTime;
+  late T from;
+  late T to;
 
-  late T fromDate;
-  late T toDate;
-
-  T initialTime(int index) {
+  TimeOfDay initialTime(int index) {
     if (index == 0 && fromTextController.text.isNotEmpty) {
-      return fromTime;
+      return from as TimeOfDay;
     } else if (index == 1 && toTextController.text.isNotEmpty) {
-      return toTime;
+      return to as TimeOfDay;
     } else {
-      return TimeOfDay.now() as T;
+      return TimeOfDay.now();
     }
   }
 
@@ -59,16 +56,16 @@ class _DateTimePickerState<T> extends State<DateTimePicker<T>> {
 
     if (index == 0) {
       fromTextController.text = dateFormat;
-      fromDate = res as T;
+      from = res as T;
     } else {
       toTextController.text = dateFormat;
-      toDate = res as T;
+      to = res as T;
     }
 
     /// Trigger callback if both fields are filled.
     if (fromTextController.text.isNotEmpty &&
         toTextController.text.isNotEmpty) {
-      widget.callBack.call(fromDate, toDate);
+      widget.callBack.call(from, to);
     }
   }
 
@@ -78,7 +75,7 @@ class _DateTimePickerState<T> extends State<DateTimePicker<T>> {
   }) async {
     final TimeOfDay? res = await showTimePicker(
       context: context,
-      initialTime: initialTime(index) as TimeOfDay,
+      initialTime: initialTime(index),
     );
     if (res == null || !mounted) return;
 
@@ -86,16 +83,16 @@ class _DateTimePickerState<T> extends State<DateTimePicker<T>> {
 
     if (index == 0) {
       fromTextController.text = timeFormat;
-      fromTime = res as T;
+      from = res as T;
     } else {
       toTextController.text = timeFormat;
-      toTime = res as T;
+      to = res as T;
     }
 
     /// Trigger callback if both fields are filled.
     if (fromTextController.text.isNotEmpty &&
         toTextController.text.isNotEmpty) {
-      widget.callBack.call(fromTime, toTime);
+      widget.callBack.call(from, to);
     }
   }
 
