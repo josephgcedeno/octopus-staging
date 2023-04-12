@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
+import 'package:octopus/interfaces/widgets/date_and_time_picker.dart';
+import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
 
 class RequestOffsetScreen extends StatefulWidget {
@@ -13,8 +15,6 @@ class RequestOffsetScreen extends StatefulWidget {
 }
 
 class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
-  final TextEditingController fromTextController = TextEditingController();
-  final TextEditingController toTextController = TextEditingController();
   final TextEditingController reasonTextController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -30,37 +30,6 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
   final String maximumTimeText = 'Maximum time to offset is 4 hours';
 
   bool isLoading = false;
-
-  TimeOfDay initialTime(int index) {
-    if (index == 0 && fromTextController.text.isNotEmpty) {
-      return fromTime;
-    } else if (index == 1 && toTextController.text.isNotEmpty) {
-      return toTime;
-    } else {
-      return TimeOfDay.now();
-    }
-  }
-
-  Future<void> openTimePicker({
-    required BuildContext context,
-    required int index,
-  }) async {
-    final TimeOfDay? res = await showTimePicker(
-      context: context,
-      initialTime: initialTime(index),
-    );
-    if (res == null || !mounted) return;
-
-    final String timeFormat = res.format(context);
-
-    if (index == 0) {
-      fromTextController.text = timeFormat;
-      fromTime = res;
-    } else {
-      toTextController.text = timeFormat;
-      toTime = res;
-    }
-  }
 
   Future<void> saveOffset() async {
     final DateTime fromDateTime = DateTime(
@@ -84,25 +53,21 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
     if (offsetDurationInHours > maximumOffset ||
         offsetDurationInHours < 0 ||
         offsetDuration.inMinutes == 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            offsetDurationInHours < 0
-                ? 'The time offset ($offsetDurationInHours) should not be less than 0!'
-                : offsetDuration.inMinutes == 0
-                    ? 'Request offset should not be 0.'
-                    : '$maximumTimeText.',
-          ),
-          backgroundColor: kRed,
-        ),
+      showSnackBar(
+        message: offsetDurationInHours < 0
+            ? 'The time offset ($offsetDurationInHours) should not be less than 0!'
+            : offsetDuration.inMinutes == 0
+                ? 'Request offset should not be 0.'
+                : '$maximumTimeText.',
+        snackBartState: SnackBartState.error,
       );
       return;
     }
 
     context.read<TimeRecordCubit>().requestOffset(
           offsetDuration: offsetDuration,
-          fromTime: fromTextController.text,
-          toTime: toTextController.text,
+          fromTime: fromTime.format(context),
+          toTime: toTime.format(context),
           reason: reasonTextController.text,
         );
     return;
@@ -196,78 +161,11 @@ class _RequestOffsetScreenState extends State<RequestOffsetScreen> {
                             bottom: 13,
                           ),
                           width: double.infinity,
-                          child: LayoutBuilder(
-                            builder: (
-                              BuildContext context,
-                              BoxConstraints constraints,
-                            ) {
-                              return Row(
-                                children: <Widget>[
-                                  for (int i = 0; i < 2; i++)
-                                    Container(
-                                      margin: i == 0
-                                          ? EdgeInsets.only(
-                                              right:
-                                                  constraints.maxWidth * 0.05,
-                                            )
-                                          : null,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                              bottom: 5.0,
-                                              left: 3.0,
-                                            ),
-                                            child: Text(
-                                              i == 0 ? 'From' : 'To',
-                                              style: kIsWeb
-                                                  ? theme.textTheme.titleLarge
-                                                  : theme.textTheme.titleMedium
-                                                      ?.copyWith(
-                                                      color: blackColor,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: constraints.maxWidth * 0.45,
-                                            child: TextFormField(
-                                              onTap: () => openTimePicker(
-                                                context: context,
-                                                index: i,
-                                              ),
-                                              controller: i == 0
-                                                  ? fromTextController
-                                                  : toTextController,
-                                              validator: (String? value) {
-                                                if (value == null ||
-                                                    value.isEmpty) {
-                                                  return 'Fields cannot be empty.';
-                                                }
-                                                return null;
-                                              },
-                                              readOnly: true,
-                                              decoration: InputDecoration(
-                                                border: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  borderSide: BorderSide.none,
-                                                ),
-                                                hintText: i == 0
-                                                    ? 'Eg. 3:20 PM'
-                                                    : 'Eg. 4:20 PM',
-                                                filled: true,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                ],
-                              );
+                          child: DateTimePicker<TimeOfDay>(
+                            type: PickerType.time,
+                            callBack: (TimeOfDay from, TimeOfDay to) {
+                              fromTime = from;
+                              toTime = to;
                             },
                           ),
                         ),
