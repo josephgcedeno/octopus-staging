@@ -7,34 +7,38 @@ enum PickerType {
   time,
 }
 
-class DateTimePicker extends StatefulWidget {
+class DateTimePicker<T> extends StatefulWidget {
   const DateTimePicker({
     required this.type,
+    required this.callBack,
     Key? key,
   }) : super(key: key);
   final PickerType type;
+  final void Function(T from, T to) callBack;
+
   @override
-  State<DateTimePicker> createState() => _DateTimePickerState();
+  State<DateTimePicker<T>> createState() => _DateTimePickerState<T>();
 }
 
 final Color blackColor = const Color(0xff1B252F).withOpacity(70 / 100);
 
-class _DateTimePickerState extends State<DateTimePicker> {
+class _DateTimePickerState<T> extends State<DateTimePicker<T>> {
   final TextEditingController fromTextController = TextEditingController();
   final TextEditingController toTextController = TextEditingController();
 
-  late TimeOfDay fromTime;
-  late TimeOfDay toTime;
+  late T fromTime;
+  late T toTime;
 
-  late DateTime fromDate;
-  late DateTime toDate;
-  TimeOfDay initialTime(int index) {
+  late T fromDate;
+  late T toDate;
+
+  T initialTime(int index) {
     if (index == 0 && fromTextController.text.isNotEmpty) {
       return fromTime;
     } else if (index == 1 && toTextController.text.isNotEmpty) {
       return toTime;
     } else {
-      return TimeOfDay.now();
+      return TimeOfDay.now() as T;
     }
   }
 
@@ -55,10 +59,16 @@ class _DateTimePickerState extends State<DateTimePicker> {
 
     if (index == 0) {
       fromTextController.text = dateFormat;
-      fromDate = res;
+      fromDate = res as T;
     } else {
       toTextController.text = dateFormat;
-      toDate = res;
+      toDate = res as T;
+    }
+
+    /// Trigger callback if both fields are filled.
+    if (fromTextController.text.isNotEmpty &&
+        toTextController.text.isNotEmpty) {
+      widget.callBack.call(fromDate, toDate);
     }
   }
 
@@ -68,7 +78,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
   }) async {
     final TimeOfDay? res = await showTimePicker(
       context: context,
-      initialTime: initialTime(index),
+      initialTime: initialTime(index) as TimeOfDay,
     );
     if (res == null || !mounted) return;
 
@@ -76,10 +86,16 @@ class _DateTimePickerState extends State<DateTimePicker> {
 
     if (index == 0) {
       fromTextController.text = timeFormat;
-      fromTime = res;
+      fromTime = res as T;
     } else {
       toTextController.text = timeFormat;
-      toTime = res;
+      toTime = res as T;
+    }
+
+    /// Trigger callback if both fields are filled.
+    if (fromTextController.text.isNotEmpty &&
+        toTextController.text.isNotEmpty) {
+      widget.callBack.call(fromTime, toTime);
     }
   }
 
