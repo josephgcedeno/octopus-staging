@@ -107,7 +107,7 @@ class _ControllerScreenState extends State<ControllerScreen> {
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute<dynamic>(
-                              builder: (_) => const HRFiles(),
+                              builder: (_) => const HRFilesScreen(),
                             ),
                           );
                         },

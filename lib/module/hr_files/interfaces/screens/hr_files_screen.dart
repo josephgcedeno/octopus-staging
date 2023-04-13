@@ -4,8 +4,8 @@ import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/module/hr_files/interfaces/widgets/hr_menu_button.dart';
 
 // iask si sir about ani sa naming conventions
-class HRFiles extends StatelessWidget {
-  const HRFiles({Key? key}) : super(key: key);
+class HRFilesScreen extends StatelessWidget {
+  const HRFilesScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
