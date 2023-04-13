@@ -4,7 +4,6 @@ import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/module/hr_files/interfaces/screens/credential_list_screen.dart';
 import 'package:octopus/module/hr_files/interfaces/widgets/hr_menu_button.dart';
 
-// iask si sir about ani sa naming conventions
 class HRFilesScreen extends StatelessWidget {
   const HRFilesScreen({Key? key}) : super(key: key);
 
