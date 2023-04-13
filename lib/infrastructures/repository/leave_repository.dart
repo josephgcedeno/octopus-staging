@@ -687,6 +687,29 @@ class LeaveRepository extends ILeaveRepository {
     }
   }
 
+  Future<ParseResponse> getLeaveRequestsStatusRecords(
+    String userId,
+    String leaveYearId,
+    String status,
+  ) async {
+    final LeavesRequestsParseObject leaveRequests = LeavesRequestsParseObject();
+
+    final QueryBuilder<LeavesRequestsParseObject>
+        queryGetLeaveRequestForLeaveId =
+        QueryBuilder<LeavesRequestsParseObject>(leaveRequests)
+          ..whereEqualTo(
+            LeavesRequestsParseObject.keyLeave,
+            LeavesParseObject()..objectId = leaveYearId,
+          )
+          ..whereEqualTo(
+            LeavesRequestsParseObject.keyUser,
+            ParseUser.forQuery()..objectId = userId,
+          )
+          ..whereEqualTo(LeavesRequestsParseObject.keyStatus, status);
+
+    return queryGetLeaveRequestForLeaveId.query();
+  }
+
   @override
   Future<APIResponse<LeaveRemaining>> getRemainingLeaves({
     required String userId,
@@ -697,8 +720,6 @@ class LeaveRepository extends ILeaveRepository {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null) {
-        final LeavesRequestsParseObject leaveRequests =
-            LeavesRequestsParseObject();
         late int numberOfLeaves;
         late String leaveYearId;
 
@@ -726,21 +747,8 @@ class LeaveRepository extends ILeaveRepository {
           numberOfLeaves = leaveQuery.noLeaves;
         }
 
-        final QueryBuilder<LeavesRequestsParseObject>
-            queryGetLeaveRequestForLeaveId =
-            QueryBuilder<LeavesRequestsParseObject>(leaveRequests)
-              ..whereEqualTo(
-                LeavesRequestsParseObject.keyLeave,
-                LeavesParseObject()..objectId = leaveYearId,
-              )
-              ..whereEqualTo(
-                LeavesRequestsParseObject.keyUser,
-                ParseUser.forQuery()..objectId = userId,
-              )
-              ..whereEqualTo(LeavesRequestsParseObject.keyStatus, approved);
-
         final ParseResponse getAllLeaveRequestForLeaveId =
-            await queryGetLeaveRequestForLeaveId.query();
+            await getLeaveRequestsStatusRecords(userId, leaveYearId, approved);
 
         if (getAllLeaveRequestForLeaveId.error != null) {
           formatAPIErrorResponse(error: getAllLeaveRequestForLeaveId.error!);
