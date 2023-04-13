@@ -586,6 +586,8 @@ class LeaveRepository extends ILeaveRepository {
     required DateTime dateUsed,
     required String reason,
     required String leaveType,
+    required DateTime from,
+    required DateTime to,
   }) async {
     checkFieldIsEmpty(reason);
 

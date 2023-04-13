@@ -63,10 +63,16 @@ abstract class ILeaveRepository {
   /// [reason] this identifies what is the reason for the leave.
   ///
   /// [leaveType] this identifies what is the type for this leave. (SICK LEAVE, VACATION LEAVE, EMERGENCY LEAVE)
+  ///
+  /// [from] this identifies start date of leave request.
+  ///
+  /// [to] this identifies end date of leave request.
   Future<APIResponse<LeaveRequest>> requestLeave({
     required DateTime dateUsed,
     required String reason,
     required String leaveType,
+    required DateTime from,
+    required DateTime to,
   });
 
   /// FOR: ADMIN USE ONLY
