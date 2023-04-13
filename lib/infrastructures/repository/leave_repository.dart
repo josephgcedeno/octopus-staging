@@ -6,6 +6,7 @@ import 'package:octopus/infrastructures/repository/interfaces/leave_repository.d
 import 'package:octopus/internal/class_parse_object.dart';
 import 'package:octopus/internal/database_strings.dart';
 import 'package:octopus/internal/debug_utils.dart';
+import 'package:octopus/internal/error_message_string.dart';
 import 'package:octopus/internal/helper_function.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
@@ -61,8 +62,12 @@ class LeaveRepository extends ILeaveRepository {
         }
       }
 
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
       throw APIErrorResponse(
-        message: 'Something went wrong',
+        message: errorMessage,
         errorCode: null,
       );
     } on SocketException {
@@ -132,8 +137,14 @@ class LeaveRepository extends ILeaveRepository {
         }
       }
 
+      String errorMessage = errorSomethingWentWrong;
+
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
+
       throw APIErrorResponse(
-        message: 'Something went wrong',
+        message: errorMessage,
         errorCode: null,
       );
     } on SocketException {
@@ -198,8 +209,12 @@ class LeaveRepository extends ILeaveRepository {
         }
       }
 
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
       throw APIErrorResponse(
-        message: 'Something went wrong',
+        message: errorMessage,
         errorCode: null,
       );
     } on SocketException {
@@ -232,8 +247,12 @@ class LeaveRepository extends ILeaveRepository {
         }
       }
 
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
       throw APIErrorResponse(
-        message: 'Something went wrong',
+        message: errorMessage,
         errorCode: null,
       );
     } on SocketException {
@@ -292,8 +311,12 @@ class LeaveRepository extends ILeaveRepository {
         }
       }
 
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
       throw APIErrorResponse(
-        message: 'Something went wrong',
+        message: errorMessage,
         errorCode: null,
       );
     } on SocketException {
@@ -308,7 +331,7 @@ class LeaveRepository extends ILeaveRepository {
     checkFieldIsEmpty(requestId);
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
-      if (user != null && user.get<bool>(usersIsAdminField)!) {
+      if (user != null) {
         final LeavesRequestsParseObject leaveRequests =
             LeavesRequestsParseObject();
 
@@ -412,8 +435,12 @@ class LeaveRepository extends ILeaveRepository {
         }
       }
 
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
       throw APIErrorResponse(
-        message: 'Something went wrong',
+        message: errorMessage,
         errorCode: null,
       );
     } on SocketException {
@@ -513,8 +540,12 @@ class LeaveRepository extends ILeaveRepository {
         }
       }
 
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
       throw APIErrorResponse(
-        message: 'Something went wrong',
+        message: errorMessage,
         errorCode: null,
       );
     } on SocketException {
