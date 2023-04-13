@@ -119,4 +119,14 @@ abstract class ILeaveRepository {
   Future<APIResponse<LeaveRequest>> cancelRequestLeave({
     required String requestId,
   });
+
+  /// This function will get the leave number of the user base from the fiscal year leave.
+  /// 
+  /// [userId] this identifies which user we will be getting no leave.
+  /// 
+  /// [leaveId] this identifies which leave record will be referenced.
+  Future<APIResponse<LeaveRemaining>> getRemainingLeaves({
+    required String userId,
+     String? leaveId,
+  });
 }

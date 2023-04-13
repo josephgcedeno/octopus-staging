@@ -8,6 +8,7 @@ import 'package:octopus/internal/database_strings.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/error_message_string.dart';
 import 'package:octopus/internal/helper_function.dart';
+import 'package:octopus/internal/string_status.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class LeaveRepository extends ILeaveRepository {
@@ -675,6 +676,91 @@ class LeaveRepository extends ILeaveRepository {
             errorCode: null,
           );
         }
+      }
+
+      throw APIErrorResponse(
+        message: 'Something went wrong',
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
+    }
+  }
+
+  @override
+  Future<APIResponse<LeaveRemaining>> getRemainingLeaves({
+    required String userId,
+    String? leaveId,
+  }) async {
+    checkFieldIsEmpty(<String>[userId, leaveId ?? 'na']);
+
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+      if (user != null) {
+        final LeavesRequestsParseObject leaveRequests =
+            LeavesRequestsParseObject();
+        late int numberOfLeaves;
+        late String leaveYearId;
+
+        if (leaveId != null) {
+          leaveYearId = leaveId;
+
+          final LeavesParseObject leaveQuery = LeavesParseObject();
+          final ParseResponse leaveRes =
+              await leaveQuery.getObject(leaveYearId);
+
+          if (leaveRes.error != null) {
+            formatAPIErrorResponse(error: leaveRes.error!);
+          }
+          if (leaveRes.success && leaveRes.results != null) {
+            final LeavesParseObject result =
+                leaveRes.results!.first as LeavesParseObject;
+
+            leaveYearId = result.objectId!;
+            numberOfLeaves = result.noLeaves;
+          }
+        } else {
+          final LeavesParseObject leaveQuery = await getCurrentYearInfo();
+
+          leaveYearId = leaveQuery.objectId!;
+          numberOfLeaves = leaveQuery.noLeaves;
+        }
+
+        final QueryBuilder<LeavesRequestsParseObject>
+            queryGetLeaveRequestForLeaveId =
+            QueryBuilder<LeavesRequestsParseObject>(leaveRequests)
+              ..whereEqualTo(
+                LeavesRequestsParseObject.keyLeave,
+                LeavesParseObject()..objectId = leaveYearId,
+              )
+              ..whereEqualTo(
+                LeavesRequestsParseObject.keyUser,
+                ParseUser.forQuery()..objectId = userId,
+              )
+              ..whereEqualTo(LeavesRequestsParseObject.keyStatus, approved);
+
+        final ParseResponse getAllLeaveRequestForLeaveId =
+            await queryGetLeaveRequestForLeaveId.query();
+
+        if (getAllLeaveRequestForLeaveId.error != null) {
+          formatAPIErrorResponse(error: getAllLeaveRequestForLeaveId.error!);
+        }
+
+        int approvedRequestsLeaves = 0;
+        if (getAllLeaveRequestForLeaveId.success &&
+            getAllLeaveRequestForLeaveId.results != null) {
+          approvedRequestsLeaves = getAllLeaveRequestForLeaveId.count;
+        }
+        return APIResponse<LeaveRemaining>(
+          success: true,
+          message: 'Successfully requested leave.',
+          data: LeaveRemaining(
+            leaveId: leaveYearId,
+            consumedLeave: approvedRequestsLeaves,
+            remaningLeave: numberOfLeaves - approvedRequestsLeaves,
+          ),
+          errorCode: null,
+        );
       }
 
       throw APIErrorResponse(

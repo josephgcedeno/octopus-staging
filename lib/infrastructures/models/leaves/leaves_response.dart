@@ -39,3 +39,15 @@ class LeaveRequest {
   final int dateFromEpoch;
   final int dateToEpoch;
 }
+
+class LeaveRemaining {
+  LeaveRemaining({
+    required this.leaveId,
+    required this.remaningLeave,
+    required this.consumedLeave,
+  });
+
+  final String leaveId;
+  final int remaningLeave;
+  final int consumedLeave;
+}
