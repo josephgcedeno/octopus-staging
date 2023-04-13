@@ -11,12 +11,14 @@ import 'package:octopus/internal/helper_function.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class LeaveRepository extends ILeaveRepository {
-  void checkFieldIsEmpty(String field) {
-    if (field.isEmpty) {
-      throw APIErrorResponse(
-        message: 'This field cannot be empty!',
-        errorCode: null,
-      );
+  void checkFieldIsEmpty(List<String> fields) {
+    for (final String field in fields) {
+      if (field.isEmpty) {
+        throw APIErrorResponse(
+          message: 'This field cannot be empty!',
+          errorCode: null,
+        );
+      }
     }
   }
 
@@ -159,7 +161,7 @@ class LeaveRepository extends ILeaveRepository {
     DateTime? startDate,
     DateTime? endDate,
   }) async {
-    checkFieldIsEmpty(id);
+    checkFieldIsEmpty(<String>[id]);
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
@@ -224,7 +226,7 @@ class LeaveRepository extends ILeaveRepository {
 
   @override
   Future<APIResponse<void>> deleteLeave({required String id}) async {
-    checkFieldIsEmpty(id);
+    checkFieldIsEmpty(<String>[id]);
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
@@ -264,7 +266,7 @@ class LeaveRepository extends ILeaveRepository {
   Future<APIResponse<LeaveRequest>> approveRequestLeave({
     required String requestId,
   }) async {
-    checkFieldIsEmpty(requestId);
+    checkFieldIsEmpty(<String>[requestId]);
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
@@ -330,7 +332,7 @@ class LeaveRepository extends ILeaveRepository {
   Future<APIResponse<LeaveRequest>> cancelRequestLeave({
     required String requestId,
   }) async {
-    checkFieldIsEmpty(requestId);
+    checkFieldIsEmpty(<String>[requestId]);
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null) {
@@ -392,7 +394,7 @@ class LeaveRepository extends ILeaveRepository {
   Future<APIResponse<LeaveRequest>> declineRequestLeave({
     required String requestId,
   }) async {
-    checkFieldIsEmpty(requestId);
+    checkFieldIsEmpty(<String>[requestId]);
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
@@ -485,10 +487,10 @@ class LeaveRepository extends ILeaveRepository {
             QueryBuilder<LeavesRequestsParseObject>(leaveRequests)
               ..whereEqualTo(LeavesRequestsParseObject.keyStatus, status);
 
-        if (leaveRequestId != null) checkFieldIsEmpty(leaveRequestId);
+        if (leaveRequestId != null) checkFieldIsEmpty(<String>[leaveRequestId]);
 
         if (leaveId != null) {
-          checkFieldIsEmpty(leaveId);
+          checkFieldIsEmpty(<String>[leaveId]);
 
           leaveReqQuery.whereEqualTo(
             LeavesRequestsParseObject.keyLeave,
@@ -496,7 +498,7 @@ class LeaveRepository extends ILeaveRepository {
           );
         }
         if (userId != null) {
-          checkFieldIsEmpty(userId);
+          checkFieldIsEmpty(<String>[userId]);
 
           leaveReqQuery.whereEqualTo(
             LeavesRequestsParseObject.keyUser,
@@ -597,7 +599,7 @@ class LeaveRepository extends ILeaveRepository {
     required DateTime from,
     required DateTime to,
   }) async {
-    checkFieldIsEmpty(reason);
+    checkFieldIsEmpty(<String>[reason]);
 
     const List<String> leaveTypes = <String>[
       'SICK LEAVE',
