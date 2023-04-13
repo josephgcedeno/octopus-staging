@@ -622,10 +622,38 @@ class LeaveRepository extends ILeaveRepository {
         final LeavesRequestsParseObject leaveRequests =
             LeavesRequestsParseObject();
 
-        final String currentYearsId = await getCurrentYearInfo().then(
-          (ParseObject value) => value.objectId!,
-        );
+        final LeavesParseObject currentYearLeaveDetails =
+            await getCurrentYearInfo();
+
+        final int noLeaves = currentYearLeaveDetails.noLeaves;
+
+        final String currentYearsId = currentYearLeaveDetails.objectId!;
+
         final String usersId = user.objectId!;
+
+        final ParseResponse getAllLeaveRequestCurrentYear =
+            await getLeaveRequestsStatusRecords(
+          usersId,
+          currentYearsId,
+          approved,
+        );
+
+        if (getAllLeaveRequestCurrentYear.error != null) {
+          formatAPIErrorResponse(error: getAllLeaveRequestCurrentYear.error!);
+        }
+
+        if (getAllLeaveRequestCurrentYear.success &&
+            getAllLeaveRequestCurrentYear.results != null) {
+          final int noLeavesApproved = getAllLeaveRequestCurrentYear.count;
+          if (noLeavesApproved >= noLeaves) {
+            throw APIErrorResponse(
+              message:
+                  "You've already reach your maximum number of leaves for this year which is $noLeavesApproved out of $noLeaves.",
+              errorCode: null,
+            );
+          }
+        }
+
         final int dateFiledEpoch = epochFromDateTime(
           date: DateTime(currentDay.year, currentDay.month, currentDay.day),
         );
