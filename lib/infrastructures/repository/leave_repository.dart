@@ -304,6 +304,8 @@ class LeaveRepository extends ILeaveRepository {
                 leaveType: leaveReq.leaveType,
                 reason: leaveReq.reason,
                 status: leaveReq.status,
+                dateFromEpoch: leaveReq.leaveDateFrom,
+                dateToEpoch: leaveReq.leaveDateTo,
               ),
               errorCode: null,
             );
@@ -368,6 +370,8 @@ class LeaveRepository extends ILeaveRepository {
                 leaveType: leaveReq.leaveType,
                 reason: leaveReq.reason,
                 status: leaveReq.status,
+                dateFromEpoch: leaveReq.leaveDateFrom,
+                dateToEpoch: leaveReq.leaveDateTo,
               ),
               errorCode: null,
             );
@@ -428,6 +432,8 @@ class LeaveRepository extends ILeaveRepository {
                 leaveType: leaveReq.leaveType,
                 reason: leaveReq.reason,
                 status: leaveReq.status,
+                dateFromEpoch: leaveReq.leaveDateFrom,
+                dateToEpoch: leaveReq.leaveDateTo,
               ),
               errorCode: null,
             );
@@ -527,6 +533,8 @@ class LeaveRepository extends ILeaveRepository {
                   status: record.status,
                   leaveType: record.leaveType,
                   reason: record.reason,
+                  dateFromEpoch: record.leaveDateFrom,
+                  dateToEpoch: record.leaveDateTo,
                 ),
               );
             }
@@ -621,6 +629,10 @@ class LeaveRepository extends ILeaveRepository {
 
         final int dateUsedEpoch = epochFromDateTime(date: dateUsed);
 
+        final int dateFromEpoch = epochFromDateTime(date: from);
+
+        final int dateToEpoch = epochFromDateTime(date: to);
+
         const String status = 'PENDING';
 
         leaveRequests
@@ -630,7 +642,9 @@ class LeaveRepository extends ILeaveRepository {
           ..dateUsed = dateUsedEpoch
           ..status = status
           ..reason = reason
-          ..leaveType = leaveType;
+          ..leaveType = leaveType
+          ..leaveDateFrom = dateFromEpoch
+          ..leaveDateTo = dateToEpoch;
 
         final ParseResponse createLeaveRequestResponse =
             await leaveRequests.save();
@@ -653,6 +667,8 @@ class LeaveRepository extends ILeaveRepository {
               status: status,
               leaveType: leaveType,
               reason: reason,
+              dateFromEpoch: dateFromEpoch,
+              dateToEpoch: dateToEpoch,
             ),
             errorCode: null,
           );
