@@ -69,7 +69,7 @@ class HRFilesScreen extends StatelessWidget {
                             icon: Icons.note_alt_outlined,
                             title: 'Credentials List',
                             isDropdown: false,
-                            functioncall: navigateToCredentialList,
+                            functionCall: navigateToCredentialList,
                           ),
                         ],
                       ),

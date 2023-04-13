@@ -7,13 +7,13 @@ class HrMenuButton extends StatefulWidget {
     required this.icon,
     this.isDropdown = true,
     Key? key,
-    this.functioncall,
+    this.functionCall,
   }) : super(key: key);
 
   final String title;
   final bool isDropdown;
   final IconData icon;
-  final VoidCallback? functioncall;
+  final VoidCallback? functionCall;
 
   @override
   State<HrMenuButton> createState() => _HrMenuButtonState();
@@ -77,7 +77,7 @@ class _HrMenuButtonState extends State<HrMenuButton> {
                 isClicked = !isClicked;
               });
               if (!widget.isDropdown) {
-                widget.functioncall!();
+                widget.functionCall!();
               }
             },
             child: Container(
