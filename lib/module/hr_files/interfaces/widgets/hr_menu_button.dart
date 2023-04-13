@@ -7,11 +7,13 @@ class HrMenuButton extends StatefulWidget {
     required this.icon,
     this.isDropdown = true,
     Key? key,
+    this.functioncall,
   }) : super(key: key);
 
   final String title;
   final bool isDropdown;
   final IconData icon;
+  final VoidCallback? functioncall;
 
   @override
   State<HrMenuButton> createState() => _HrMenuButtonState();
@@ -60,8 +62,10 @@ class _HrMenuButtonState extends State<HrMenuButton> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
                       const Text('PDF File'),
-                      Icon(Icons.keyboard_arrow_right,
-                          color: theme.primaryColor,),
+                      Icon(
+                        Icons.keyboard_arrow_right,
+                        color: theme.primaryColor,
+                      ),
                     ],
                   ),
                 ),
@@ -72,6 +76,9 @@ class _HrMenuButtonState extends State<HrMenuButton> {
               setState(() {
                 isClicked = !isClicked;
               });
+              if (!widget.isDropdown) {
+                widget.functioncall!();
+              }
             },
             child: Container(
               padding:
@@ -83,10 +90,8 @@ class _HrMenuButtonState extends State<HrMenuButton> {
                     ? <BoxShadow>[
                         BoxShadow(
                           color: kBlue.withOpacity(0.17),
-                          spreadRadius: 5,
-                          blurRadius: 7,
-                          offset:
-                              const Offset(0, 3), // changes position of shadow
+                          spreadRadius: 3,
+                          blurRadius: 5,
                         ),
                       ]
                     : null,
@@ -124,7 +129,8 @@ class _HrMenuButtonState extends State<HrMenuButton> {
                   Expanded(
                     child: Icon(
                       widget.isDropdown
-                          ? Icons.expand_more_outlined : Icons.keyboard_arrow_right,
+                          ? Icons.expand_more_outlined
+                          : Icons.keyboard_arrow_right,
                       color: isClicked
                           ? theme.primaryColor
                           : kDarkGrey.withOpacity(0),

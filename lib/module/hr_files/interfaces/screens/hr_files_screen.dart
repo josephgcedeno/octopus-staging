@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
+import 'package:octopus/module/hr_files/interfaces/screens/credential_list_screen.dart';
 import 'package:octopus/module/hr_files/interfaces/widgets/hr_menu_button.dart';
 
 // iask si sir about ani sa naming conventions
@@ -12,6 +13,14 @@ class HRFilesScreen extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
+
+    void navigateToCredentialList() {
+      Navigator.of(context).push(
+        MaterialPageRoute<dynamic>(
+          builder: (_) => const CredentialListScreen(),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: const GlobalAppBar(leading: LeadingButton.back),
@@ -40,20 +49,20 @@ class HRFilesScreen extends StatelessWidget {
                       height: height,
                       width: width,
                       child: Column(
-                        children: const <Widget>[
-                          HrMenuButton(
+                        children: <Widget>[
+                          const HrMenuButton(
                             icon: Icons.policy_outlined,
                             title: 'Company Policies',
                           ),
-                          HrMenuButton(
+                          const HrMenuButton(
                             icon: Icons.task_outlined,
                             title: 'Company Guidelines',
                           ),
-                          HrMenuButton(
+                          const HrMenuButton(
                             icon: Icons.corporate_fare_outlined,
                             title: 'Company Background',
                           ),
-                          HrMenuButton(
+                          const HrMenuButton(
                             icon: Icons.legend_toggle_outlined,
                             title: 'Organization Chart',
                           ),
@@ -61,6 +70,7 @@ class HRFilesScreen extends StatelessWidget {
                             icon: Icons.note_alt_outlined,
                             title: 'Credentials List',
                             isDropdown: false,
+                            functioncall: navigateToCredentialList,
                           ),
                         ],
                       ),
