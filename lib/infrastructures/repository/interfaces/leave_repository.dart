@@ -75,8 +75,6 @@ abstract class ILeaveRepository {
     required DateTime to,
   });
 
-  /// FOR: ADMIN USE ONLY
-  ///
   /// This function will get the list of request leaves.
   ///
   /// [leaveRequestId] this identifies which certain record will be retrieved.

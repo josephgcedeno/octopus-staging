@@ -478,85 +478,77 @@ class LeaveRepository extends ILeaveRepository {
       );
     }
     try {
-      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+      final LeavesRequestsParseObject leaveRequests =
+          LeavesRequestsParseObject();
 
-      if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final LeavesRequestsParseObject leaveRequests =
-            LeavesRequestsParseObject();
+      final QueryBuilder<LeavesRequestsParseObject> leaveReqQuery =
+          QueryBuilder<LeavesRequestsParseObject>(leaveRequests)
+            ..whereEqualTo(LeavesRequestsParseObject.keyStatus, status);
 
-        final QueryBuilder<LeavesRequestsParseObject> leaveReqQuery =
-            QueryBuilder<LeavesRequestsParseObject>(leaveRequests)
-              ..whereEqualTo(LeavesRequestsParseObject.keyStatus, status);
+      if (leaveRequestId != null) checkFieldIsEmpty(<String>[leaveRequestId]);
 
-        if (leaveRequestId != null) checkFieldIsEmpty(<String>[leaveRequestId]);
+      if (leaveId != null) {
+        checkFieldIsEmpty(<String>[leaveId]);
 
-        if (leaveId != null) {
-          checkFieldIsEmpty(<String>[leaveId]);
+        leaveReqQuery.whereEqualTo(
+          LeavesRequestsParseObject.keyLeave,
+          LeavesParseObject()..objectId = leaveId,
+        );
+      }
+      if (userId != null) {
+        checkFieldIsEmpty(<String>[userId]);
 
-          leaveReqQuery.whereEqualTo(
-            LeavesRequestsParseObject.keyLeave,
-            LeavesParseObject()..objectId = leaveId,
-          );
-        }
-        if (userId != null) {
-          checkFieldIsEmpty(<String>[userId]);
+        leaveReqQuery.whereEqualTo(
+          LeavesRequestsParseObject.keyUser,
+          ParseUser.forQuery()..objectId = userId,
+        );
+      }
 
-          leaveReqQuery.whereEqualTo(
-            LeavesRequestsParseObject.keyUser,
-            ParseUser.forQuery()..objectId = userId,
-          );
-        }
+      final ParseResponse getLeaveReqResponse = leaveRequestId != null
+          ? await leaveRequests.getObject(leaveRequestId)
+          : await leaveReqQuery.query();
 
-        final ParseResponse getLeaveReqResponse = leaveRequestId != null
-            ? await leaveRequests.getObject(leaveRequestId)
-            : await leaveReqQuery.query();
+      if (getLeaveReqResponse.error != null) {
+        formatAPIErrorResponse(error: getLeaveReqResponse.error!);
+      }
 
-        if (getLeaveReqResponse.error != null) {
-          formatAPIErrorResponse(error: getLeaveReqResponse.error!);
-        }
+      if (getLeaveReqResponse.success) {
+        final List<LeaveRequest> leaveRequests = <LeaveRequest>[];
 
-        if (getLeaveReqResponse.success) {
-          final List<LeaveRequest> leaveRequests = <LeaveRequest>[];
+        if (getLeaveReqResponse.results != null) {
+          for (final ParseObject leaveRequest
+              in getLeaveReqResponse.results! as List<ParseObject>) {
+            final LeavesRequestsParseObject record =
+                LeavesRequestsParseObject.toCustomParseObject(
+              data: leaveRequest,
+            );
 
-          if (getLeaveReqResponse.results != null) {
-            for (final ParseObject leaveRequest
-                in getLeaveReqResponse.results! as List<ParseObject>) {
-              final LeavesRequestsParseObject record =
-                  LeavesRequestsParseObject.toCustomParseObject(
-                data: leaveRequest,
-              );
-
-              leaveRequests.add(
-                LeaveRequest(
-                  id: record.objectId!,
-                  leaveId: record.leave.objectId!,
-                  userId: record.user.objectId!,
-                  dateFiledEpoch: record.dateFiled,
-                  dateUsedEpoch: record.dateUsed!,
-                  status: record.status,
-                  leaveType: record.leaveType,
-                  reason: record.reason,
-                  dateFromEpoch: record.leaveDateFrom,
-                  dateToEpoch: record.leaveDateTo,
-                ),
-              );
-            }
+            leaveRequests.add(
+              LeaveRequest(
+                id: record.objectId!,
+                leaveId: record.leave.objectId!,
+                userId: record.user.objectId!,
+                dateFiledEpoch: record.dateFiled,
+                dateUsedEpoch: record.dateUsed!,
+                status: record.status,
+                leaveType: record.leaveType,
+                reason: record.reason,
+                dateFromEpoch: record.leaveDateFrom,
+                dateToEpoch: record.leaveDateTo,
+              ),
+            );
           }
-          return APIListResponse<LeaveRequest>(
-            success: true,
-            message: 'Successfully get request leaves.',
-            data: leaveRequests,
-            errorCode: null,
-          );
         }
+        return APIListResponse<LeaveRequest>(
+          success: true,
+          message: 'Successfully get request leaves.',
+          data: leaveRequests,
+          errorCode: null,
+        );
       }
 
-      String errorMessage = errorSomethingWentWrong;
-      if (user != null && !user.get<bool>(usersIsAdminField)!) {
-        errorMessage = errorInvalidPermission;
-      }
       throw APIErrorResponse(
-        message: errorMessage,
+        message: errorSomethingWentWrong,
         errorCode: null,
       );
     } on SocketException {
