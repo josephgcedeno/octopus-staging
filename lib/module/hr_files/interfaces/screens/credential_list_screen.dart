@@ -3,21 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/module/hr_files/interfaces/widgets/credentials_card.dart';
 
-class CredentialListScreen extends StatefulWidget {
+class CredentialListScreen extends StatelessWidget {
   const CredentialListScreen({Key? key}) : super(key: key);
 
-  @override
-  State<CredentialListScreen> createState() => _CredentialListScreenState();
-
-  void initState() {
-        isClicked = false;
-    }
-
-}
-
-bool isClicked = false;
-
-class _CredentialListScreenState extends State<CredentialListScreen> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
