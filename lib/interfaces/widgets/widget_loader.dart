@@ -44,6 +44,39 @@ Widget clockLoader(BuildContext context) {
   );
 }
 
+Widget leaveLoader(BuildContext context) {
+  final double width = MediaQuery.of(context).size.width;
+  final double height = MediaQuery.of(context).size.height;
+
+  return DecoratedBox(
+    decoration: const BoxDecoration(
+      color: Colors.white,
+      shape: BoxShape.circle,
+    ),
+    child: CircularPercentIndicator(
+      radius: 60,
+      lineWidth: 15.0,
+      backgroundColor: Colors.transparent,
+      progressColor: Colors.transparent,
+      reverse: true,
+      center: ClipRRect(
+        borderRadius: BorderRadius.circular(width),
+        child: Shimmer.fromColors(
+          baseColor: shimmerBase,
+          highlightColor: shimmerGlow,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: shimmerGlow,
+            ),
+            height: height,
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
 Widget lineLoader({
   required double height,
   required double width,
