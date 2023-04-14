@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/internal/debug_utils.dart';
 
@@ -18,10 +19,31 @@ class CredentialsCard extends StatefulWidget {
   State<CredentialsCard> createState() => _CredentialsCardState();
 }
 
-bool isClicked = false;
-bool showPassword = false;
-
 class _CredentialsCardState extends State<CredentialsCard> {
+  bool isClicked = false;
+  bool showPassword = false;
+  FocusNode emailFocusNode = FocusNode();
+  FocusNode passwordFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    emailFocusNode.addListener(() {
+      if (emailFocusNode.hasFocus) {
+        isClicked = true;
+      }
+    });
+
+    passwordFocusNode.addListener(() {
+      if (passwordFocusNode.hasFocus) {
+        isClicked = true;
+      } else if (!passwordFocusNode.hasFocus) {
+        isClicked = false;
+        showPassword = false;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -48,11 +70,8 @@ class _CredentialsCardState extends State<CredentialsCard> {
         ),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: isClicked
-                ? kBlue.withOpacity(0.17)
-                : (showPassword
-                    ? kBlue.withOpacity(0.17)
-                    : kBlack.withOpacity(0.06)),
+            color:
+                isClicked ? kBlue.withOpacity(0.17) : kBlack.withOpacity(0.06),
             spreadRadius: 5,
             blurRadius: 7,
           ),
@@ -75,7 +94,6 @@ class _CredentialsCardState extends State<CredentialsCard> {
             child: Text('Email'),
           ),
           TextField(
-            
             readOnly: true,
             controller: emailController,
             decoration: InputDecoration(
@@ -85,13 +103,23 @@ class _CredentialsCardState extends State<CredentialsCard> {
               ),
               filled: true,
               fillColor: const Color(0xFFf5f7f9),
-              suffixIcon: GestureDetector(
-                onTap: () {
+              suffixIcon: InkWell(
+                focusNode: emailFocusNode,
+                onFocusChange: (bool hasFocus) {
                   setState(() {
-                    isClicked = !isClicked;
+                    if (hasFocus) {
+                      isClicked = true;
+                    } else {
+                      isClicked = false;
+                    }
                   });
+                },
+                onTap: () {
+                  FocusScope.of(context).requestFocus(emailFocusNode);
+
+                  Clipboard.setData(ClipboardData(text: emailController.text));
                   showSnackBar(
-                    message: 'Copied to clipboard.',
+                    message: 'Copied to clipboard',
                   );
                 },
                 child: const Icon(
@@ -116,8 +144,19 @@ class _CredentialsCardState extends State<CredentialsCard> {
               ),
               filled: true,
               fillColor: const Color(0xFFf5f7f9),
-              suffixIcon: GestureDetector(
+              suffixIcon: InkWell(
+                focusNode: passwordFocusNode,
+                onFocusChange: (bool hasFocus) {
+                  setState(() {
+                    if (hasFocus) {
+                      isClicked = true;
+                    } else {
+                      isClicked = false;
+                    }
+                  });
+                },
                 onTap: () {
+                  FocusScope.of(context).requestFocus(passwordFocusNode);
                   setState(() {
                     showPassword = !showPassword;
                   });
