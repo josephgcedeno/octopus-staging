@@ -5,6 +5,7 @@ const Color kBlue = Color(0xFF017BFF);
 const Color kRed = Color(0xFFE63462);
 const Color kBlack = Color(0xFF000000);
 const Color kDarkGrey = Color(0xFF8d9297);
+const Color kLightGrey = Color(0xFFF5F7F9);
 const Color kWhite = Color(0xFFFFFFFF);
 
 ThemeData _buildDefaultTheme() {
