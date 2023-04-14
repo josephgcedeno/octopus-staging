@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
+import 'package:octopus/module/hr_files/interfaces/screens/pdf_viewer_screen.dart';
 
 class HrMenuButton extends StatefulWidget {
   const HrMenuButton({
@@ -19,9 +20,9 @@ class HrMenuButton extends StatefulWidget {
   State<HrMenuButton> createState() => _HrMenuButtonState();
 }
 
-bool isClicked = false;
-
 class _HrMenuButtonState extends State<HrMenuButton> {
+  bool isClicked = false;
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -41,32 +42,44 @@ class _HrMenuButtonState extends State<HrMenuButton> {
               child: AnimatedOpacity(
                 opacity: isClicked ? 1 : 0,
                 duration: const Duration(milliseconds: 250),
-                child: Container(
-                  width: isPortrait ? width * 0.887 : width * 0.880,
-                  margin: isPortrait
-                      ? EdgeInsets.symmetric(horizontal: width * 0.015)
-                      : EdgeInsets.symmetric(horizontal: width * 0.02),
-                  padding: EdgeInsets.symmetric(
-                    vertical: height * 0.025,
-                    horizontal: width * 0.053,
-                  ),
-                  decoration: BoxDecoration(
-                    color: theme.primaryColor.withOpacity(0.06),
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(15),
-                      bottomRight: Radius.circular(15),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: <Widget>[
-                      const Text('PDF File'),
-                      Icon(
-                        Icons.keyboard_arrow_right,
-                        color: theme.primaryColor,
+                child: GestureDetector(
+                  onTap: () async {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<dynamic>(
+                        builder: (_) => PDFViewerScreen(
+                          title: widget.title,
+                          icon: widget.icon,
+                        ),
                       ),
-                    ],
+                    );
+                  },
+                  child: Container(
+                    width: isPortrait ? width * 0.887 : width * 0.880,
+                    margin: isPortrait
+                        ? EdgeInsets.symmetric(horizontal: width * 0.015)
+                        : EdgeInsets.symmetric(horizontal: width * 0.02),
+                    padding: EdgeInsets.symmetric(
+                      vertical: height * 0.025,
+                      horizontal: width * 0.053,
+                    ),
+                    decoration: BoxDecoration(
+                      color: theme.primaryColor.withOpacity(0.06),
+                      borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(15),
+                        bottomRight: Radius.circular(15),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        const Text('PDF File'),
+                        Icon(
+                          Icons.keyboard_arrow_right,
+                          color: theme.primaryColor,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -75,10 +88,13 @@ class _HrMenuButtonState extends State<HrMenuButton> {
             onTap: () {
               setState(() {
                 isClicked = !isClicked;
+                if (!widget.isDropdown) {
+                  Future<void>.delayed(const Duration(milliseconds: 500), () {
+                    isClicked = !isClicked;
+                  });
+                  widget.functionCall!();
+                }
               });
-              if (!widget.isDropdown) {
-                widget.functionCall!();
-              }
             },
             child: Container(
               padding:
