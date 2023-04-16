@@ -84,7 +84,7 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                     ),
                     SizedBox(
                       width: width,
-                      height: height * 0.78,
+                      height: height * 0.765,
                       child: Stack(
                         children: <Widget>[
                           SfPdfViewerTheme(
@@ -104,9 +104,11 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                           Visibility(
                             visible: isLoading,
                             child: Container(
+                              width: double.infinity,
                               color: kLightGrey,
                               padding: EdgeInsets.all(width * 0.035),
                               child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: <Widget>[
