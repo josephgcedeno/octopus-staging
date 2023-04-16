@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class PDFViewerScreen extends StatefulWidget {
@@ -86,13 +87,19 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                       height: height * 0.78,
                       child: Stack(
                         children: <Widget>[
-                          SfPdfViewer.network(
-                            'https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf',
-                            onDocumentLoaded: (_) {
+                          SfPdfViewerTheme(
+                            data: SfPdfViewerThemeData(
+                              progressBarColor: ktransparent,
+                            ),
+                            child: SfPdfViewer.network(
+                              'https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf',
+                              onDocumentLoaded:
+                                  (_) {
                                 setState(() {
                                   isLoading = false;
                                 });
-                            },
+                              },
+                            ),
                           ),
                           Visibility(
                             visible: isLoading,
