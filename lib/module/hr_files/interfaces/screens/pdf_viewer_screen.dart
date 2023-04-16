@@ -21,6 +21,7 @@ class PDFViewerScreen extends StatefulWidget {
 
 class _PDFViewerScreenState extends State<PDFViewerScreen> {
   bool isLoading = true;
+  bool isNotLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +100,11 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                                   isLoading = false;
                                 });
                               },
+                              onDocumentLoadFailed: (_) {
+                                setState(() {
+                                  isNotLoading = true;
+                                });
+                              },
                             ),
                           ),
                           Visibility(
@@ -126,7 +132,27 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                                 ],
                               ),
                             ),
-                          )
+                          ),
+                          Visibility(
+                            visible: isNotLoading,
+                            child: Container(
+                              width: double.infinity,
+                              color: kLightGrey,
+                              padding: EdgeInsets.all(width * 0.035),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: EdgeInsets.all(height * 0.015),
+                                    child: const Icon(
+                                      Icons.error_outline_outlined,
+                                    ),
+                                  ),
+                                  const Text('Document failed to load'),
+                                ],
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
