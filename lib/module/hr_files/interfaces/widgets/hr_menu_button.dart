@@ -52,6 +52,9 @@ class _HrMenuButtonState extends State<HrMenuButton> {
                         ),
                       ),
                     );
+                    setState(() {
+                      isClicked = false;
+                    });
                   },
                   child: Container(
                     width: isPortrait ? width * 0.887 : width * 0.880,
@@ -90,9 +93,11 @@ class _HrMenuButtonState extends State<HrMenuButton> {
                 isClicked = !isClicked;
                 if (!widget.isDropdown) {
                   Future<void>.delayed(const Duration(milliseconds: 500), () {
-                    isClicked = !isClicked;
+                    setState(() {
+                    isClicked = false;
+                    });
+                    widget.functionCall!();
                   });
-                  widget.functionCall!();
                 }
               });
             },
