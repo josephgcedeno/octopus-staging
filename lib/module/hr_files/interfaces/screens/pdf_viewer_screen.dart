@@ -89,12 +89,9 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                           SfPdfViewer.network(
                             'https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf',
                             onDocumentLoaded: (_) {
-                              // Future<void>.delayed(
-                              //     const Duration(milliseconds: 2000), () {
                                 setState(() {
                                   isLoading = false;
                                 });
-                              // });
                             },
                           ),
                           Visibility(
@@ -120,8 +117,6 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                                 ],
                               ),
                             ),
-                            // child:
-                            //     lineLoader(height: 3, width: double.infinity),
                           )
                         ],
                       ),
