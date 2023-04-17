@@ -63,7 +63,7 @@ class _LeavesScreenState extends State<LeavesScreen> {
           current is SubmitLeavesRequestFailed,
       listener: (BuildContext context, LeavesState state) {
         if (state is SubmitLeaveRequestSuccess) {
-          Navigator.of(context).push(
+          Navigator.of(context).pushReplacement(
             MaterialPageRoute<dynamic>(
               builder: (_) => LeavesDetailsScreen(
                 leaveRequest: state.leaveRequest,
@@ -251,7 +251,8 @@ class _LeavesScreenState extends State<LeavesScreen> {
                         ),
                         child: BlocBuilder<LeavesCubit, LeavesState>(
                           builder: (BuildContext context, LeavesState state) {
-                            if (state is SubmitLeaveRequestLoading) {
+                            if (state is SubmitLeaveRequestLoading ||
+                                state is FetchAllLeavesDataLoading) {
                               return ElevatedButton(
                                 style: ButtonStyle(
                                   elevation: MaterialStateProperty.all(0),
