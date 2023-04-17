@@ -10,10 +10,7 @@ class HRFilesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
-    final bool isPortrait =
-        MediaQuery.of(context).orientation == Orientation.portrait;
 
     void navigateToCredentialList() {
       Navigator.of(context).push(
