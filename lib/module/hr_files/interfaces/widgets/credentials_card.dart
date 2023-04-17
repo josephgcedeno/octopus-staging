@@ -54,6 +54,8 @@ class _CredentialsCardState extends State<CredentialsCard> {
   void dispose() {
     emailFocusNode.dispose();
     passwordFocusNode.dispose();
+    emailController.dispose();
+    passwordController.dispose();
 
     super.dispose();
   }
