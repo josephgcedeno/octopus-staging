@@ -24,9 +24,10 @@ class _LeaveDetailsState extends State<LeaveDetails> {
 
   late LeaveRequest leaveRequest;
   late DateTime fromDateEpoch =
-      dateTimeFromEpoch(epoch: leaveRequest.dateToEpoch);
-  late DateTime toDateEpoch =
       dateTimeFromEpoch(epoch: leaveRequest.dateFromEpoch);
+  late DateTime toDateEpoch =
+      dateTimeFromEpoch(epoch: leaveRequest.dateToEpoch);
+
   late String fromDate = DateFormat.yMMMMEEEEd('en-us').format(fromDateEpoch);
   late String toDate = DateFormat.yMMMMEEEEd('en-us').format(toDateEpoch);
   late List<String> values = <String>[
