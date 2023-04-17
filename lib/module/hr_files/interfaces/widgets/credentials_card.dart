@@ -118,11 +118,7 @@ class _CredentialsCardState extends State<CredentialsCard> {
                 focusNode: emailFocusNode,
                 onFocusChange: (bool hasFocus) {
                   setState(() {
-                    if (hasFocus) {
-                      isClicked = true;
-                    } else {
-                      isClicked = false;
-                    }
+                    isClicked = hasFocus;
                   });
                 },
                 onTap: () {
@@ -158,11 +154,7 @@ class _CredentialsCardState extends State<CredentialsCard> {
                 focusNode: passwordFocusNode,
                 onFocusChange: (bool hasFocus) {
                   setState(() {
-                    if (hasFocus) {
-                      isClicked = true;
-                    } else {
-                      isClicked = false;
-                    }
+                    isClicked = hasFocus;
                   });
                 },
                 onTap: () {
