@@ -96,7 +96,7 @@ class _HrMenuButtonState extends State<HrMenuButton> {
                     setState(() {
                     isClicked = false;
                     });
-                    widget.functionCall!();
+                    widget.functionCall?.call();
                   });
                 }
               });
