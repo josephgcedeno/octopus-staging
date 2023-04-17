@@ -6,6 +6,7 @@ import 'package:octopus/infrastructures/repository/interfaces/project_repository
 import 'package:octopus/internal/class_parse_object.dart';
 import 'package:octopus/internal/database_strings.dart';
 import 'package:octopus/internal/debug_utils.dart';
+import 'package:octopus/internal/error_message_string.dart';
 import 'package:octopus/internal/helper_function.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
@@ -59,8 +60,12 @@ class ProjectRepository extends IProjectRepository {
         }
       }
 
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
       throw APIErrorResponse(
-        message: 'Something went wrong',
+        message: errorMessage,
         errorCode: null,
       );
     } on SocketException {
@@ -99,8 +104,12 @@ class ProjectRepository extends IProjectRepository {
         }
       }
 
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
       throw APIErrorResponse(
-        message: 'Something went wrong',
+        message: errorMessage,
         errorCode: null,
       );
     } on SocketException {
@@ -252,8 +261,12 @@ class ProjectRepository extends IProjectRepository {
         }
       }
 
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
       throw APIErrorResponse(
-        message: 'Something went wrong',
+        message: errorMessage,
         errorCode: null,
       );
     } on SocketException {

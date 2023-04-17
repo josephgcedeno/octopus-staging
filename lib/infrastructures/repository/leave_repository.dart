@@ -6,16 +6,20 @@ import 'package:octopus/infrastructures/repository/interfaces/leave_repository.d
 import 'package:octopus/internal/class_parse_object.dart';
 import 'package:octopus/internal/database_strings.dart';
 import 'package:octopus/internal/debug_utils.dart';
+import 'package:octopus/internal/error_message_string.dart';
 import 'package:octopus/internal/helper_function.dart';
+import 'package:octopus/internal/string_status.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class LeaveRepository extends ILeaveRepository {
-  void checkFieldIsEmpty(String field) {
-    if (field.isEmpty) {
-      throw APIErrorResponse(
-        message: 'This field cannot be empty!',
-        errorCode: null,
-      );
+  void checkFieldIsEmpty(List<String> fields) {
+    for (final String field in fields) {
+      if (field.isEmpty) {
+        throw APIErrorResponse(
+          message: 'This field cannot be empty!',
+          errorCode: null,
+        );
+      }
     }
   }
 
@@ -61,8 +65,12 @@ class LeaveRepository extends ILeaveRepository {
         }
       }
 
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
       throw APIErrorResponse(
-        message: 'Something went wrong',
+        message: errorMessage,
         errorCode: null,
       );
     } on SocketException {
@@ -132,8 +140,14 @@ class LeaveRepository extends ILeaveRepository {
         }
       }
 
+      String errorMessage = errorSomethingWentWrong;
+
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
+
       throw APIErrorResponse(
-        message: 'Something went wrong',
+        message: errorMessage,
         errorCode: null,
       );
     } on SocketException {
@@ -148,7 +162,7 @@ class LeaveRepository extends ILeaveRepository {
     DateTime? startDate,
     DateTime? endDate,
   }) async {
-    checkFieldIsEmpty(id);
+    checkFieldIsEmpty(<String>[id]);
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
@@ -198,8 +212,12 @@ class LeaveRepository extends ILeaveRepository {
         }
       }
 
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
       throw APIErrorResponse(
-        message: 'Something went wrong',
+        message: errorMessage,
         errorCode: null,
       );
     } on SocketException {
@@ -209,7 +227,7 @@ class LeaveRepository extends ILeaveRepository {
 
   @override
   Future<APIResponse<void>> deleteLeave({required String id}) async {
-    checkFieldIsEmpty(id);
+    checkFieldIsEmpty(<String>[id]);
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
@@ -232,8 +250,12 @@ class LeaveRepository extends ILeaveRepository {
         }
       }
 
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
       throw APIErrorResponse(
-        message: 'Something went wrong',
+        message: errorMessage,
         errorCode: null,
       );
     } on SocketException {
@@ -245,7 +267,7 @@ class LeaveRepository extends ILeaveRepository {
   Future<APIResponse<LeaveRequest>> approveRequestLeave({
     required String requestId,
   }) async {
-    checkFieldIsEmpty(requestId);
+    checkFieldIsEmpty(<String>[requestId]);
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
@@ -285,6 +307,8 @@ class LeaveRepository extends ILeaveRepository {
                 leaveType: leaveReq.leaveType,
                 reason: leaveReq.reason,
                 status: leaveReq.status,
+                dateFromEpoch: leaveReq.leaveDateFrom,
+                dateToEpoch: leaveReq.leaveDateTo,
               ),
               errorCode: null,
             );
@@ -292,8 +316,12 @@ class LeaveRepository extends ILeaveRepository {
         }
       }
 
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
       throw APIErrorResponse(
-        message: 'Something went wrong',
+        message: errorMessage,
         errorCode: null,
       );
     } on SocketException {
@@ -305,10 +333,10 @@ class LeaveRepository extends ILeaveRepository {
   Future<APIResponse<LeaveRequest>> cancelRequestLeave({
     required String requestId,
   }) async {
-    checkFieldIsEmpty(requestId);
+    checkFieldIsEmpty(<String>[requestId]);
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
-      if (user != null && user.get<bool>(usersIsAdminField)!) {
+      if (user != null) {
         final LeavesRequestsParseObject leaveRequests =
             LeavesRequestsParseObject();
 
@@ -345,6 +373,8 @@ class LeaveRepository extends ILeaveRepository {
                 leaveType: leaveReq.leaveType,
                 reason: leaveReq.reason,
                 status: leaveReq.status,
+                dateFromEpoch: leaveReq.leaveDateFrom,
+                dateToEpoch: leaveReq.leaveDateTo,
               ),
               errorCode: null,
             );
@@ -365,7 +395,7 @@ class LeaveRepository extends ILeaveRepository {
   Future<APIResponse<LeaveRequest>> declineRequestLeave({
     required String requestId,
   }) async {
-    checkFieldIsEmpty(requestId);
+    checkFieldIsEmpty(<String>[requestId]);
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
@@ -405,6 +435,8 @@ class LeaveRepository extends ILeaveRepository {
                 leaveType: leaveReq.leaveType,
                 reason: leaveReq.reason,
                 status: leaveReq.status,
+                dateFromEpoch: leaveReq.leaveDateFrom,
+                dateToEpoch: leaveReq.leaveDateTo,
               ),
               errorCode: null,
             );
@@ -412,8 +444,12 @@ class LeaveRepository extends ILeaveRepository {
         }
       }
 
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
       throw APIErrorResponse(
-        message: 'Something went wrong',
+        message: errorMessage,
         errorCode: null,
       );
     } on SocketException {
@@ -442,79 +478,77 @@ class LeaveRepository extends ILeaveRepository {
       );
     }
     try {
-      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+      final LeavesRequestsParseObject leaveRequests =
+          LeavesRequestsParseObject();
 
-      if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final LeavesRequestsParseObject leaveRequests =
-            LeavesRequestsParseObject();
+      final QueryBuilder<LeavesRequestsParseObject> leaveReqQuery =
+          QueryBuilder<LeavesRequestsParseObject>(leaveRequests)
+            ..whereEqualTo(LeavesRequestsParseObject.keyStatus, status);
 
-        final QueryBuilder<LeavesRequestsParseObject> leaveReqQuery =
-            QueryBuilder<LeavesRequestsParseObject>(leaveRequests)
-              ..whereEqualTo(LeavesRequestsParseObject.keyStatus, status);
+      if (leaveRequestId != null) checkFieldIsEmpty(<String>[leaveRequestId]);
 
-        if (leaveRequestId != null) checkFieldIsEmpty(leaveRequestId);
+      if (leaveId != null) {
+        checkFieldIsEmpty(<String>[leaveId]);
 
-        if (leaveId != null) {
-          checkFieldIsEmpty(leaveId);
+        leaveReqQuery.whereEqualTo(
+          LeavesRequestsParseObject.keyLeave,
+          LeavesParseObject()..objectId = leaveId,
+        );
+      }
+      if (userId != null) {
+        checkFieldIsEmpty(<String>[userId]);
 
-          leaveReqQuery.whereEqualTo(
-            LeavesRequestsParseObject.keyLeave,
-            LeavesParseObject()..objectId = leaveId,
-          );
-        }
-        if (userId != null) {
-          checkFieldIsEmpty(userId);
+        leaveReqQuery.whereEqualTo(
+          LeavesRequestsParseObject.keyUser,
+          ParseUser.forQuery()..objectId = userId,
+        );
+      }
 
-          leaveReqQuery.whereEqualTo(
-            LeavesRequestsParseObject.keyUser,
-            ParseUser.forQuery()..objectId = userId,
-          );
-        }
+      final ParseResponse getLeaveReqResponse = leaveRequestId != null
+          ? await leaveRequests.getObject(leaveRequestId)
+          : await leaveReqQuery.query();
 
-        final ParseResponse getLeaveReqResponse = leaveRequestId != null
-            ? await leaveRequests.getObject(leaveRequestId)
-            : await leaveReqQuery.query();
+      if (getLeaveReqResponse.error != null) {
+        formatAPIErrorResponse(error: getLeaveReqResponse.error!);
+      }
 
-        if (getLeaveReqResponse.error != null) {
-          formatAPIErrorResponse(error: getLeaveReqResponse.error!);
-        }
+      if (getLeaveReqResponse.success) {
+        final List<LeaveRequest> leaveRequests = <LeaveRequest>[];
 
-        if (getLeaveReqResponse.success) {
-          final List<LeaveRequest> leaveRequests = <LeaveRequest>[];
+        if (getLeaveReqResponse.results != null) {
+          for (final ParseObject leaveRequest
+              in getLeaveReqResponse.results! as List<ParseObject>) {
+            final LeavesRequestsParseObject record =
+                LeavesRequestsParseObject.toCustomParseObject(
+              data: leaveRequest,
+            );
 
-          if (getLeaveReqResponse.results != null) {
-            for (final ParseObject leaveRequest
-                in getLeaveReqResponse.results! as List<ParseObject>) {
-              final LeavesRequestsParseObject record =
-                  LeavesRequestsParseObject.toCustomParseObject(
-                data: leaveRequest,
-              );
-
-              leaveRequests.add(
-                LeaveRequest(
-                  id: record.objectId!,
-                  leaveId: record.leave.objectId!,
-                  userId: record.user.objectId!,
-                  dateFiledEpoch: record.dateFiled,
-                  dateUsedEpoch: record.dateUsed!,
-                  status: record.status,
-                  leaveType: record.leaveType,
-                  reason: record.reason,
-                ),
-              );
-            }
+            leaveRequests.add(
+              LeaveRequest(
+                id: record.objectId!,
+                leaveId: record.leave.objectId!,
+                userId: record.user.objectId!,
+                dateFiledEpoch: record.dateFiled,
+                dateUsedEpoch: record.dateUsed!,
+                status: record.status,
+                leaveType: record.leaveType,
+                reason: record.reason,
+                dateFromEpoch: record.leaveDateFrom,
+                dateToEpoch: record.leaveDateTo,
+              ),
+            );
           }
-          return APIListResponse<LeaveRequest>(
-            success: true,
-            message: 'Successfully get request leaves.',
-            data: leaveRequests,
-            errorCode: null,
-          );
         }
+        return APIListResponse<LeaveRequest>(
+          success: true,
+          message: 'Successfully get request leaves.',
+          data: leaveRequests,
+          errorCode: null,
+        );
       }
 
       throw APIErrorResponse(
-        message: 'Something went wrong',
+        message: errorSomethingWentWrong,
         errorCode: null,
       );
     } on SocketException {
@@ -555,8 +589,10 @@ class LeaveRepository extends ILeaveRepository {
     required DateTime dateUsed,
     required String reason,
     required String leaveType,
+    required DateTime from,
+    required DateTime to,
   }) async {
-    checkFieldIsEmpty(reason);
+    checkFieldIsEmpty(<String>[reason]);
 
     const List<String> leaveTypes = <String>[
       'SICK LEAVE',
@@ -578,15 +614,47 @@ class LeaveRepository extends ILeaveRepository {
         final LeavesRequestsParseObject leaveRequests =
             LeavesRequestsParseObject();
 
-        final String currentYearsId = await getCurrentYearInfo().then(
-          (ParseObject value) => value.objectId!,
-        );
+        final LeavesParseObject currentYearLeaveDetails =
+            await getCurrentYearInfo();
+
+        final int noLeaves = currentYearLeaveDetails.noLeaves;
+
+        final String currentYearsId = currentYearLeaveDetails.objectId!;
+
         final String usersId = user.objectId!;
+
+        final ParseResponse getAllLeaveRequestCurrentYear =
+            await getLeaveRequestsStatusRecords(
+          usersId,
+          currentYearsId,
+          approved,
+        );
+
+        if (getAllLeaveRequestCurrentYear.error != null) {
+          formatAPIErrorResponse(error: getAllLeaveRequestCurrentYear.error!);
+        }
+
+        if (getAllLeaveRequestCurrentYear.success &&
+            getAllLeaveRequestCurrentYear.results != null) {
+          final int noLeavesApproved = getAllLeaveRequestCurrentYear.count;
+          if (noLeavesApproved >= noLeaves) {
+            throw APIErrorResponse(
+              message:
+                  "You've already reach your maximum number of leaves for this year which is $noLeavesApproved out of $noLeaves.",
+              errorCode: null,
+            );
+          }
+        }
+
         final int dateFiledEpoch = epochFromDateTime(
           date: DateTime(currentDay.year, currentDay.month, currentDay.day),
         );
 
         final int dateUsedEpoch = epochFromDateTime(date: dateUsed);
+
+        final int dateFromEpoch = epochFromDateTime(date: from);
+
+        final int dateToEpoch = epochFromDateTime(date: to);
 
         const String status = 'PENDING';
 
@@ -597,7 +665,9 @@ class LeaveRepository extends ILeaveRepository {
           ..dateUsed = dateUsedEpoch
           ..status = status
           ..reason = reason
-          ..leaveType = leaveType;
+          ..leaveType = leaveType
+          ..leaveDateFrom = dateFromEpoch
+          ..leaveDateTo = dateToEpoch;
 
         final ParseResponse createLeaveRequestResponse =
             await leaveRequests.save();
@@ -620,10 +690,105 @@ class LeaveRepository extends ILeaveRepository {
               status: status,
               leaveType: leaveType,
               reason: reason,
+              dateFromEpoch: dateFromEpoch,
+              dateToEpoch: dateToEpoch,
             ),
             errorCode: null,
           );
         }
+      }
+
+      throw APIErrorResponse(
+        message: 'Something went wrong',
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
+    }
+  }
+
+  Future<ParseResponse> getLeaveRequestsStatusRecords(
+    String userId,
+    String leaveYearId,
+    String status,
+  ) async {
+    final LeavesRequestsParseObject leaveRequests = LeavesRequestsParseObject();
+
+    final QueryBuilder<LeavesRequestsParseObject>
+        queryGetLeaveRequestForLeaveId =
+        QueryBuilder<LeavesRequestsParseObject>(leaveRequests)
+          ..whereEqualTo(
+            LeavesRequestsParseObject.keyLeave,
+            LeavesParseObject()..objectId = leaveYearId,
+          )
+          ..whereEqualTo(
+            LeavesRequestsParseObject.keyUser,
+            ParseUser.forQuery()..objectId = userId,
+          )
+          ..whereEqualTo(LeavesRequestsParseObject.keyStatus, status);
+
+    return queryGetLeaveRequestForLeaveId.query();
+  }
+
+  @override
+  Future<APIResponse<LeaveRemaining>> getRemainingLeaves({
+    required String userId,
+    String? leaveId,
+  }) async {
+    checkFieldIsEmpty(<String>[userId, leaveId ?? 'na']);
+
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+      if (user != null) {
+        late int numberOfLeaves;
+        late String leaveYearId;
+
+        if (leaveId != null) {
+          leaveYearId = leaveId;
+
+          final LeavesParseObject leaveQuery = LeavesParseObject();
+          final ParseResponse leaveRes =
+              await leaveQuery.getObject(leaveYearId);
+
+          if (leaveRes.error != null) {
+            formatAPIErrorResponse(error: leaveRes.error!);
+          }
+          if (leaveRes.success && leaveRes.results != null) {
+            final LeavesParseObject result =
+                leaveRes.results!.first as LeavesParseObject;
+
+            leaveYearId = result.objectId!;
+            numberOfLeaves = result.noLeaves;
+          }
+        } else {
+          final LeavesParseObject leaveQuery = await getCurrentYearInfo();
+
+          leaveYearId = leaveQuery.objectId!;
+          numberOfLeaves = leaveQuery.noLeaves;
+        }
+
+        final ParseResponse getAllLeaveRequestForLeaveId =
+            await getLeaveRequestsStatusRecords(userId, leaveYearId, approved);
+
+        if (getAllLeaveRequestForLeaveId.error != null) {
+          formatAPIErrorResponse(error: getAllLeaveRequestForLeaveId.error!);
+        }
+
+        int approvedRequestsLeaves = 0;
+        if (getAllLeaveRequestForLeaveId.success &&
+            getAllLeaveRequestForLeaveId.results != null) {
+          approvedRequestsLeaves = getAllLeaveRequestForLeaveId.count;
+        }
+        return APIResponse<LeaveRemaining>(
+          success: true,
+          message: 'Successfully requested leave.',
+          data: LeaveRemaining(
+            leaveId: leaveYearId,
+            consumedLeave: approvedRequestsLeaves,
+            remaningLeave: numberOfLeaves - approvedRequestsLeaves,
+          ),
+          errorCode: null,
+        );
       }
 
       throw APIErrorResponse(
