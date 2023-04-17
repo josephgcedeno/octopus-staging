@@ -45,6 +45,14 @@ class _CredentialsCardState extends State<CredentialsCard> {
   }
 
   @override
+  void dispose() {
+    emailFocusNode.dispose();
+    passwordFocusNode.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final double height = MediaQuery.of(context).size.height;
