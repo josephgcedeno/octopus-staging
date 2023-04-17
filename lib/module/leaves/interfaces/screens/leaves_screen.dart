@@ -1,13 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:octopus/infrastructures/models/leaves/leaves_response.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/interfaces/widgets/date_and_time_picker.dart';
 import 'package:octopus/interfaces/widgets/loading_indicator.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/leaves/interfaces/screens/leaves_details_screen.dart';
-import 'package:octopus/module/leaves/interfaces/widgets/leave_details.dart';
 import 'package:octopus/module/leaves/interfaces/widgets/number_of_leaves.dart';
 import 'package:octopus/module/leaves/service/cubit/leaves_cubit.dart';
 
@@ -24,20 +22,19 @@ class _LeavesScreenState extends State<LeavesScreen> {
     borderRadius: BorderRadius.circular(10),
   );
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+  final TextEditingController reasonTextController = TextEditingController();
+  final Color blackColor = const Color(0xff1B252F).withOpacity(70 / 100);
   List<String> leaveTypes = <String>[
     'SICK LEAVE',
     'VACATION LEAVE',
     'EMERGENCY LEAVE'
   ];
+
   late DateTime fromDate;
   late DateTime toDate;
   late bool isLoading = false;
   String? leaveType;
-  final TextEditingController reasonTextController = TextEditingController();
-
   Color formBackgroundColor = const Color(0xFFf5f7f9);
-  final Color blackColor = const Color(0xff1B252F).withOpacity(70 / 100);
 
   void save() {
     context.read<LeavesCubit>().submitLeaveRequest(
@@ -51,7 +48,6 @@ class _LeavesScreenState extends State<LeavesScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     context.read<LeavesCubit>().fetchAllLeaves();
   }
@@ -72,20 +68,18 @@ class _LeavesScreenState extends State<LeavesScreen> {
             isLoading = true;
           });
         } else if (state is SubmitLeaveRequestSuccess) {
-          if (state.leaveRequest != null) {
-            setState(() {
-              isLoading = false;
-              Navigator.of(context).push(
-                MaterialPageRoute<dynamic>(
-                  builder: (_) => LeavesDetailsScreen(
-                    leaveRequest: state.leaveRequest,
-                  ),
+          setState(() {
+            isLoading = false;
+            Navigator.of(context).push(
+              MaterialPageRoute<dynamic>(
+                builder: (_) => LeavesDetailsScreen(
+                  leaveRequest: state.leaveRequest,
                 ),
-              );
+              ),
+            );
 
-              showSnackBar(message: 'Saved');
-            });
-          }
+            showSnackBar(message: 'Saved');
+          });
         } else if (state is SubmitLeavesRequestFailed) {
           setState(() {
             isLoading = false;
@@ -190,7 +184,8 @@ class _LeavesScreenState extends State<LeavesScreen> {
                               ),
                               isExpanded: true,
                               icon: const Icon(
-                                  Icons.keyboard_arrow_down_outlined),
+                                Icons.keyboard_arrow_down_outlined,
+                              ),
                               hint: const Text('Select Type of Leave'),
                               elevation: 2,
                               borderRadius: BorderRadius.circular(10),

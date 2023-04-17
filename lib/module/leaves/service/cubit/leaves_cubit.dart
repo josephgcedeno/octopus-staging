@@ -3,7 +3,6 @@ import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/leaves/leaves_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/leave_repository.dart';
-import 'package:octopus/module/leaves/interfaces/widgets/leave_status.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 part 'leaves_state.dart';
@@ -23,7 +22,7 @@ class LeavesCubit extends Cubit<LeavesState> {
         final APIResponse<LeaveRemaining> response =
             await leaveRepository.getRemainingLeaves(userId: userId);
         emit(
-          FetchAllLeavesDataSuccess(leaveRemaining: response.data),
+          FetchAllLeavesDataSuccess(leaveCount: response.data),
         );
       }
     } catch (e) {

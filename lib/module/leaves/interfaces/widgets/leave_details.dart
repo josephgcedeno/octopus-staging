@@ -15,22 +15,20 @@ class LeaveDetails extends StatefulWidget {
 }
 
 class _LeaveDetailsState extends State<LeaveDetails> {
-  late LeaveRequest leaveRequest;
+  final TextEditingController reasonTextController = TextEditingController();
+  final List<String> labels = <String>[
+    'Date From:',
+    'Date To:',
+    'Classification:',
+  ];
 
+  late LeaveRequest leaveRequest;
   late DateTime fromDateEpoch =
       dateTimeFromEpoch(epoch: leaveRequest.dateToEpoch);
   late DateTime toDateEpoch =
       dateTimeFromEpoch(epoch: leaveRequest.dateFromEpoch);
   late String fromDate = DateFormat.yMMMMEEEEd('en-us').format(fromDateEpoch);
   late String toDate = DateFormat.yMMMMEEEEd('en-us').format(toDateEpoch);
-
-  final TextEditingController reasonTextController = TextEditingController();
-
-  final List<String> labels = <String>[
-    'Date From:',
-    'Date To:',
-    'Classification:',
-  ];
   late List<String> values = <String>[
     fromDate,
     toDate,
@@ -39,7 +37,6 @@ class _LeaveDetailsState extends State<LeaveDetails> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     leaveRequest = widget.leaveRequest;
     reasonTextController.text = widget.leaveRequest.reason;

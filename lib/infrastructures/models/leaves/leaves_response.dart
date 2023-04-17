@@ -43,11 +43,11 @@ class LeaveRequest {
 class LeaveRemaining {
   LeaveRemaining({
     required this.leaveId,
-    required this.remaningLeave,
+    required this.remainingLeave,
     required this.consumedLeave,
   });
 
   final String leaveId;
-  final int remaningLeave;
+  final int remainingLeave;
   final int consumedLeave;
 }

@@ -785,7 +785,7 @@ class LeaveRepository extends ILeaveRepository {
           data: LeaveRemaining(
             leaveId: leaveYearId,
             consumedLeave: approvedRequestsLeaves,
-            remaningLeave: numberOfLeaves - approvedRequestsLeaves,
+            remainingLeave: numberOfLeaves - approvedRequestsLeaves,
           ),
           errorCode: null,
         );

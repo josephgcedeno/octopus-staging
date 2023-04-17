@@ -9,9 +9,9 @@ class FetchAllLeavesDataLoading extends LeavesState {
 }
 
 class FetchAllLeavesDataSuccess extends LeavesState {
-  FetchAllLeavesDataSuccess({required this.leaveRemaining});
+  FetchAllLeavesDataSuccess({required this.leaveCount});
 
-  final LeaveRemaining? leaveRemaining;
+  final LeaveRemaining? leaveCount;
 }
 
 class FetchAllLeavesDataFailed extends LeavesState {
