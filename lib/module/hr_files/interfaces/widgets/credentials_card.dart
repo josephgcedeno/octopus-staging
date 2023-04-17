@@ -25,6 +25,9 @@ class _CredentialsCardState extends State<CredentialsCard> {
   FocusNode emailFocusNode = FocusNode();
   FocusNode passwordFocusNode = FocusNode();
 
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -42,6 +45,9 @@ class _CredentialsCardState extends State<CredentialsCard> {
         showPassword = false;
       }
     });
+
+    emailController.text = widget.email;
+    passwordController.text = widget.password;
   }
 
   @override
@@ -57,11 +63,6 @@ class _CredentialsCardState extends State<CredentialsCard> {
     final ThemeData theme = Theme.of(context);
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
-
-    final TextEditingController emailController =
-        TextEditingController(text: widget.email);
-    final TextEditingController passwordController =
-        TextEditingController(text: widget.password);
 
     return Container(
       padding: EdgeInsets.all(width * 0.04),
