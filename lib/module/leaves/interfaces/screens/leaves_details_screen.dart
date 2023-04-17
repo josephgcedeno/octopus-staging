@@ -1,11 +1,29 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:octopus/infrastructures/models/leaves/leaves_response.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/module/leaves/interfaces/widgets/leave_details.dart';
 import 'package:octopus/module/leaves/interfaces/widgets/leave_status.dart';
 
 class LeavesDetailsScreen extends StatelessWidget {
-  const LeavesDetailsScreen({Key? key}) : super(key: key);
+  const LeavesDetailsScreen({
+    required this.leaveRequest,
+    Key? key,
+  }) : super(key: key);
+  final LeaveRequest leaveRequest;
+
+  LeaveStatus getLeaveRequst() {
+    switch (leaveRequest.status) {
+      case 'APPROVED':
+        return LeaveStatus.approved;
+      case 'PENDING':
+        return LeaveStatus.pending;
+      case 'DENIED':
+        return LeaveStatus.denied;
+      default:
+        return LeaveStatus.pending;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,12 +57,14 @@ class LeavesDetailsScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                const Center(
+                Center(
                   child: LeaveStatusIndicator(
-                    status: LeaveStatus.approved,
+                    status: getLeaveRequst(),
                   ),
                 ),
-                const LeaveDetails()
+                LeaveDetails(
+                  leaveRequest: leaveRequest,
+                )
               ],
             ),
           ],
