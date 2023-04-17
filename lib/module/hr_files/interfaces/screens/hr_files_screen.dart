@@ -27,60 +27,49 @@ class HRFilesScreen extends StatelessWidget {
       appBar: const GlobalAppBar(leading: LeadingButton.back),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        child: SizedBox(
-          height: isPortrait ? height * 0.765 : height,
-          width: width,
-          child: Stack(
-            children: <Widget>[
-              Positioned(
-                top: 0,
-                child: Column(
-                  children: <Widget>[
-                    Text(
-                      'HR Files',
-                      style: kIsWeb
-                          ? theme.textTheme.titleLarge
-                          : theme.textTheme.titleMedium,
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(
-                        left: width * 0.04,
-                        right: width * 0.04,
-                      ),
-                      height: height,
-                      width: width,
-                      child: Column(
-                        children: <Widget>[
-                          const HrMenuButton(
-                            icon: Icons.policy_outlined,
-                            title: 'Company Policies',
-                          ),
-                          const HrMenuButton(
-                            icon: Icons.task_outlined,
-                            title: 'Company Guidelines',
-                          ),
-                          const HrMenuButton(
-                            icon: Icons.corporate_fare_outlined,
-                            title: 'Company Background',
-                          ),
-                          const HrMenuButton(
-                            icon: Icons.legend_toggle_outlined,
-                            title: 'Organization Chart',
-                          ),
-                          HrMenuButton(
-                            icon: Icons.note_alt_outlined,
-                            title: 'Credentials List',
-                            isDropdown: false,
-                            functionCall: navigateToCredentialList,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text(
+              'HR Files',
+              style: kIsWeb
+                  ? theme.textTheme.titleLarge
+                  : theme.textTheme.titleMedium,
+            ),
+            Container(
+              padding: EdgeInsets.only(
+                left: width * 0.04,
+                right: width * 0.04,
               ),
-            ],
-          ),
+              width: width,
+              child: Column(
+                children: <Widget>[
+                  const HrMenuButton(
+                    icon: Icons.policy_outlined,
+                    title: 'Company Policies',
+                  ),
+                  const HrMenuButton(
+                    icon: Icons.task_outlined,
+                    title: 'Company Guidelines',
+                  ),
+                  const HrMenuButton(
+                    icon: Icons.corporate_fare_outlined,
+                    title: 'Company Background',
+                  ),
+                  const HrMenuButton(
+                    icon: Icons.legend_toggle_outlined,
+                    title: 'Organization Chart',
+                  ),
+                  HrMenuButton(
+                    icon: Icons.note_alt_outlined,
+                    title: 'Credentials List',
+                    isDropdown: false,
+                    functionCall: navigateToCredentialList,
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

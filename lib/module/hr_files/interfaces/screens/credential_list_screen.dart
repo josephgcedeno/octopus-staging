@@ -19,51 +19,43 @@ class CredentialListScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: SizedBox(
-          height: isPortrait ? height * 0.765 : height,
           width: width,
-          child: Stack(
-            children: <Widget>[
-              Positioned(
-                top: 0,
-                child: Container(
-                  width: width,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: width * 0.055,
-                    vertical: height * 0.02,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          const Icon(Icons.note_alt_outlined),
-                          Padding(
-                            padding: EdgeInsets.only(left: width * 0.03),
-                            child: Text(
-                              'Credentials List',
-                              textAlign: TextAlign.left,
-                              style: kIsWeb
-                                  ? theme.textTheme.titleLarge
-                                  : theme.textTheme.titleMedium,
-                            ),
-                          ),
-                        ],
+          child: Container(
+            width: width,
+            padding: EdgeInsets.symmetric(
+              horizontal: width * 0.055,
+              vertical: height * 0.02,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    const Icon(Icons.note_alt_outlined),
+                    Padding(
+                      padding: EdgeInsets.only(left: width * 0.03),
+                      child: Text(
+                        'Credentials List',
+                        textAlign: TextAlign.left,
+                        style: kIsWeb
+                            ? theme.textTheme.titleLarge
+                            : theme.textTheme.titleMedium,
                       ),
-                      const CredentialsCard(
-                        appTitle: 'Udemy',
-                        email: 'emailaddress@tech',
-                        password: 'password123',
-                      ),
-                      const CredentialsCard(
-                        appTitle: 'Figma',
-                        email: 'emailaddress@tech',
-                        password: 'password123',
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
+                const CredentialsCard(
+                  appTitle: 'Udemy',
+                  email: 'emailaddress@tech',
+                  password: 'password123',
+                ),
+                const CredentialsCard(
+                  appTitle: 'Figma',
+                  email: 'emailaddress@tech',
+                  password: 'password123',
+                ),
+              ],
+            ),
           ),
         ),
       ),
