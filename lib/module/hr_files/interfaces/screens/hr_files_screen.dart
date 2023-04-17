@@ -12,6 +12,8 @@ class HRFilesScreen extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
+    final bool isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
 
     void navigateToCredentialList() {
       Navigator.of(context).push(
@@ -26,7 +28,7 @@ class HRFilesScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: SizedBox(
-          height: height,
+          height: isPortrait ? height * 0.765 : height,
           width: width,
           child: Stack(
             children: <Widget>[

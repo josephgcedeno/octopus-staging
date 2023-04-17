@@ -11,13 +11,15 @@ class CredentialListScreen extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
+    final bool isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
 
     return Scaffold(
       appBar: const GlobalAppBar(leading: LeadingButton.back),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: SizedBox(
-          height: height,
+          height: isPortrait ? height * 0.765 : height,
           width: width,
           child: Stack(
             children: <Widget>[
