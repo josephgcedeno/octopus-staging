@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/module/dashboard/interfaces/widgets/dashboard_button.dart';
+import 'package:octopus/module/hr_files/interfaces/screens/hr_files_screen.dart';
 import 'package:octopus/module/leaves/interfaces/screens/leaves_screen.dart';
 import 'package:octopus/module/standup_report/interfaces/screens/standup_report_screen.dart';
 import 'package:octopus/module/time_record/interfaces/screens/time_record_screen.dart';
@@ -110,7 +111,13 @@ class _ControllerScreenState extends State<ControllerScreen> {
                       DashboardButton(
                         icon: Icons.collections_bookmark_outlined,
                         label: 'HR Files',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute<dynamic>(
+                              builder: (_) => const HRFilesScreen(),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
