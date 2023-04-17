@@ -32,7 +32,6 @@ class _LeavesScreenState extends State<LeavesScreen> {
 
   late DateTime fromDate;
   late DateTime toDate;
-  late bool isLoading = false;
   String? leaveType;
   Color formBackgroundColor = const Color(0xFFf5f7f9);
 
@@ -63,27 +62,17 @@ class _LeavesScreenState extends State<LeavesScreen> {
           current is SubmitLeaveRequestSuccess ||
           current is SubmitLeavesRequestFailed,
       listener: (BuildContext context, LeavesState state) {
-        if (state is SubmitLeaveRequestLoading) {
-          setState(() {
-            isLoading = true;
-          });
-        } else if (state is SubmitLeaveRequestSuccess) {
-          setState(() {
-            isLoading = false;
-            Navigator.of(context).push(
-              MaterialPageRoute<dynamic>(
-                builder: (_) => LeavesDetailsScreen(
-                  leaveRequest: state.leaveRequest,
-                ),
+        if (state is SubmitLeaveRequestSuccess) {
+          Navigator.of(context).push(
+            MaterialPageRoute<dynamic>(
+              builder: (_) => LeavesDetailsScreen(
+                leaveRequest: state.leaveRequest,
               ),
-            );
+            ),
+          );
 
-            showSnackBar(message: 'Saved');
-          });
+          showSnackBar(message: 'Request Sent');
         } else if (state is SubmitLeavesRequestFailed) {
-          setState(() {
-            isLoading = false;
-          });
           showSnackBar(
             message: state.message,
             snackBartState: SnackBartState.error,
@@ -260,25 +249,40 @@ class _LeavesScreenState extends State<LeavesScreen> {
                           bottom: height * 0.02,
                           top: height * 0.02,
                         ),
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            elevation: MaterialStateProperty.all(0),
-                            shape: MaterialStateProperty.all(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                            ),
-                          ),
-                          onPressed: isLoading
-                              ? null
-                              : () {
+                        child: BlocBuilder<LeavesCubit, LeavesState>(
+                          builder: (BuildContext context, LeavesState state) {
+                            if (state is SubmitLeaveRequestLoading) {
+                              return ElevatedButton(
+                                style: ButtonStyle(
+                                  elevation: MaterialStateProperty.all(0),
+                                  shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                  ),
+                                ),
+                                onPressed: null,
+                                child: const LoadingIndicator(),
+                              );
+                            } else {
+                              return ElevatedButton(
+                                style: ButtonStyle(
+                                  elevation: MaterialStateProperty.all(0),
+                                  shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () {
                                   if (_formKey.currentState!.validate()) {
                                     save();
                                   }
                                 },
-                          child: isLoading
-                              ? const LoadingIndicator()
-                              : const Text('Request'),
+                                child: const Text('Request'),
+                              );
+                            }
+                          },
                         ),
                       ),
                     ],
