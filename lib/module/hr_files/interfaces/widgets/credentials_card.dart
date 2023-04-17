@@ -116,7 +116,6 @@ class _CredentialsCardState extends State<CredentialsCard> {
                 },
                 onTap: () {
                   FocusScope.of(context).requestFocus(emailFocusNode);
-
                   Clipboard.setData(ClipboardData(text: emailController.text));
                   showSnackBar(
                     message: 'Copied to clipboard',
