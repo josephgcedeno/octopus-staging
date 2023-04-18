@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 final ThemeData defaultTheme = _buildDefaultTheme();
 const Color kBlue = Color(0xFF017BFF);
 const Color kRed = Color(0xFFE63462);
+const Color kLightRed = Color(0xFFE25252);
 const Color kBlack = Color(0xFF000000);
+const Color kLightBlack = Color(0xFF1B252F);
 const Color kDarkGrey = Color(0xFF8d9297);
 const Color kLightGrey = Color(0xFFF5F7F9);
 const Color kWhite = Color(0xFFFFFFFF);
 const Color ktransparent = Colors.transparent;
+const Color kAqua = Color(0xFF39C0C7);
 
 ThemeData _buildDefaultTheme() {
   final ThemeData base = ThemeData.light();
