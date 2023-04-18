@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_projects_slider.dart';
+import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_tasks_list.dart';
 
 class AccomplishmentsGeneratorScreen extends StatelessWidget {
   const AccomplishmentsGeneratorScreen({Key? key}) : super(key: key);
@@ -36,6 +37,7 @@ class AccomplishmentsGeneratorScreen extends StatelessWidget {
                       ),
                     ),
                     const AccomplishmentsProjectSlider(),
+                    const AccomplishmentsTasksList(),
                   ],
                 ),
                 Container(
