@@ -27,8 +27,6 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
   Map<String, List<Map<String, String>>> selectedTasks =
       <String, List<Map<String, String>>>{};
 
-  List<Map<String, String>> selectedKeyTasks = <Map<String, String>>[];
-
   Map<String, List<Map<String, String>>> tasks =
       <String, List<Map<String, String>>>{
     'done': <Map<String, String>>[
@@ -129,10 +127,14 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery.of(context).size.height;
 
     final String formattedDate = DateFormat('EEE, MMM d').format(_selectedDate);
+    final bool showSelectedTasks = selectedTasks.isNotEmpty &&
+        selectedTasks.values.any(
+          (List<Map<String, String>> list) => list.isNotEmpty,
+        );
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: width * 0.05),
@@ -217,6 +219,11 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
                   ),
                 ],
               ),
+              if (showSelectedTasks)
+                Padding(
+                  padding: EdgeInsets.only(top: height * 0.010),
+                  child: const Text('Added tasks'),
+                ),
               ...selectedTasks.entries
                   .expand(
                     (MapEntry<String, List<Map<String, String>>> entry) =>
@@ -236,6 +243,22 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
                     }),
                   )
                   .toList(),
+              Visibility(
+                visible: showSelectedTasks,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(bottom: height * 0.02),
+                      child: const Divider(
+                        height: 4,
+                        color: kDarkGrey,
+                      ),
+                    ),
+                    const Text('Select tasks to add'),
+                  ],
+                ),
+              ),
               ...tasks.entries
                   .expand(
                     (MapEntry<String, List<Map<String, String>>> entry) =>
