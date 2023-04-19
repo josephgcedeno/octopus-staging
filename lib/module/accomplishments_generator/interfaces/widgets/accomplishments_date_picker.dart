@@ -22,7 +22,7 @@ class _AccomplishmentsDatePickerState extends State<AccomplishmentsDatePicker> {
         context: context,
         initialDate: DateTime.now(),
         firstDate: DateTime(2015, 8),
-        lastDate: DateTime(2101));
+        lastDate: DateTime(2101),);
     if (picked != null && picked != _selectedDate) {
       setState(() {
         _selectedDate = picked;
