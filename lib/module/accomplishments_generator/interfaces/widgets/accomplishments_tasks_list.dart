@@ -142,7 +142,7 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
               Wrap(
                 spacing: 10,
                 children: <Widget>[
-                  InkWell(
+                  GestureDetector(
                     onTap: () {
                       toggleCategory('done');
                     },
@@ -151,7 +151,7 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
                       isClicked: selectedCategories.contains('done'),
                     ),
                   ),
-                  InkWell(
+                  GestureDetector(
                     onTap: () {
                       toggleCategory('doing');
                     },
@@ -160,7 +160,7 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
                       isClicked: selectedCategories.contains('doing'),
                     ),
                   ),
-                  InkWell(
+                  GestureDetector(
                     onTap: () {
                       toggleCategory('blockers');
                     },
