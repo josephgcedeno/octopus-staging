@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_date_picker.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_task_button.dart';
+import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_tasks_checker.dart';
 
 class AccomplishmentsTasksList extends StatefulWidget {
   const AccomplishmentsTasksList({Key? key}) : super(key: key);
@@ -22,6 +23,32 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
   final DateTime _today = DateTime.now();
 
   List<String> selectedCategories = <String>[];
+
+  Map<String, List<Map<String, String>>> selectedTasks =
+      <String, List<Map<String, String>>>{};
+
+  List<Map<String, String>> selectedKeyTasks = <Map<String, String>>[];
+
+  Map<String, List<Map<String, String>>> tasks =
+      <String, List<Map<String, String>>>{
+    'done': <Map<String, String>>[
+      <String, String>{'text': 'Deploy eleven minions'},
+      <String, String>{'text': 'Deploy nine minions'},
+      <String, String>{'text': 'Deploy two minions'},
+      <String, String>{'text': 'Deploy eight minions'},
+      <String, String>{'text': 'Deploy eleven minions'},
+      <String, String>{'text': 'Deploy ten minions'}
+    ],
+    'doing': <Map<String, String>>[
+      <String, String>{'text': 'Deploy eight minions'},
+      <String, String>{'text': 'Deploy seven minions'},
+      <String, String>{'text': 'Deploy two minions'},
+    ],
+    'blockers': <Map<String, String>>[
+      <String, String>{'text': 'Deploy four minions'},
+      <String, String>{'text': 'Deploy six minions'}
+    ],
+  };
 
   void _selectDateToday() {
     setState(() {
@@ -45,7 +72,45 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
     });
   }
 
+  void toggleTask(String task, String entry) {
+    setState(() {
+      if (selectedTasks.isNotEmpty) {
+        final bool containsText = selectedTasks[entry]!.any(
+          (Map<String, String> item) => item['text'] == task,
+        );
+
+        if (containsText) {
+          selectedTasks[entry]
+              ?.removeWhere((Map<String, String> item) => item['text'] == task);
+          tasks[entry]!.add(<String, String>{'text': task});
+        } else {
+          selectedTasks[entry]?.add(<String, String>{'text': task});
+          tasks[entry]!
+              .removeWhere((Map<String, String> item) => item['text'] == task);
+        }
+      } else {
+        selectedTasks.putIfAbsent(
+          entry,
+          () => <Map<String, String>>[
+            <String, String>{'text': task},
+          ],
+        );
+        tasks[entry]!
+            .removeWhere((Map<String, String> item) => item['text'] == task);
+      }
+    });
+  }
+
   bool shouldShowTask(Map<String, String> task) {
+    for (final String category in selectedCategories) {
+      if (tasks[category]!.contains(task)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool shouldShowSelectedTask(Map<String, String> task) {
     for (final String category in selectedCategories) {
       if (tasks[category]!.contains(task)) {
         return true;
@@ -53,27 +118,6 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
     }
     return false;
   }
-
-  final Map<String, List<Map<String, String>>> tasks =
-      const <String, List<Map<String, String>>>{
-    'done': <Map<String, String>>[
-      <String, String>{'text': 'Deploy eleven minions'},
-      <String, String>{'text': 'Deploy nine minions'},
-      <String, String>{'text': 'Deploy two minions'},
-      <String, String>{'text': 'Deploy eight minions'},
-      <String, String>{'text': 'Deploy eleven minions'},
-      <String, String>{'text': 'Deploy ten minions'}
-    ],
-    'doing': <Map<String, String>>[
-      <String, String>{'text': 'Deploy eight minions'},
-      <String, String>{'text': 'Deploy seven minions'},
-      <String, String>{'text': 'Deploy two minions'},
-    ],
-    'blockers': <Map<String, String>>[
-      <String, String>{'text': 'Deploy four minions'},
-      <String, String>{'text': 'Deploy six minions'}
-    ],
-  };
 
   @override
   void initState() {
@@ -131,7 +175,9 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
                       color: kDarkGrey,
                     ),
                   ),
-                  AccomplishmentsDatePicker(onDateSelected: _handleDateSelection),
+                  AccomplishmentsDatePicker(
+                    onDateSelected: _handleDateSelection,
+                  ),
                 ],
               ),
             ],
@@ -171,53 +217,39 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
                   ),
                 ],
               ),
+              ...selectedTasks.entries
+                  .expand(
+                    (MapEntry<String, List<Map<String, String>>> entry) =>
+                        entry.value.map((Map<String, String> selectedtask) {
+                      if (shouldShowSelectedTask(selectedtask)) {
+                        return const SizedBox.shrink();
+                      }
+                      return GestureDetector(
+                        onTap: () {
+                          toggleTask(selectedtask['text']!, entry.key);
+                        },
+                        child: AccomplishmentsTaskChecker(
+                          title: selectedtask['text']!,
+                          type: CheckerType.selected,
+                        ),
+                      );
+                    }),
+                  )
+                  .toList(),
               ...tasks.entries
                   .expand(
                     (MapEntry<String, List<Map<String, String>>> entry) =>
                         entry.value.map((Map<String, String> task) {
-                      if (!shouldShowTask(task)) {
+                      if (shouldShowTask(task)) {
                         return const SizedBox.shrink();
                       }
-                      return Container(
-                        margin: EdgeInsets.symmetric(vertical: height * 0.015),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                CircleAvatar(
-                                  minRadius: width * 0.04,
-                                  maxRadius: width * 0.04,
-                                  backgroundImage: const NetworkImage(
-                                    'https://cdn-icons-png.flaticon.com/512/201/201634.png',
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(left: width * 0.03),
-                                  child: Text(task['text']!),
-                                ),
-                              ],
-                            ),
-                            InkWell(
-                              onTap: () {
-                                setState(() {
-                                  isClicked = !isClicked;
-                                });
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(width * 0.01),
-                                decoration: BoxDecoration(
-                                  color: isClicked
-                                      ? kLightRed.withOpacity(0.08)
-                                      : kAqua.withOpacity(0.08),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: isClicked
-                                    ? const Icon(Icons.close, color: kLightRed)
-                                    : const Icon(Icons.check, color: kAqua),
-                              ),
-                            ),
-                          ],
+                      return GestureDetector(
+                        onTap: () {
+                          toggleTask(task['text']!, entry.key);
+                        },
+                        child: AccomplishmentsTaskChecker(
+                          title: task['text']!,
+                          type: CheckerType.unselected,
                         ),
                       );
                     }),
