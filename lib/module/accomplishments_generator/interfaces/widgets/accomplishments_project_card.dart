@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:octopus/configs/themes.dart';
 
 class AccomplishmentsProjectCard extends StatelessWidget {
   const AccomplishmentsProjectCard({
