@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:octopus/configs/themes.dart';
+import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_date_picker.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_task_button.dart';
 
 class AccomplishmentsTasksList extends StatefulWidget {
@@ -22,15 +23,15 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
 
   List<String> selectedCategories = <String>[];
 
-  void _selectPreviousDate() {
+  void _selectDateToday() {
     setState(() {
-      _selectedDate = _selectedDate.subtract(const Duration(days: 1));
+      _selectedDate = DateTime.now();
     });
   }
 
-  void _selectNextDate() {
+  void _handleDateSelection(DateTime date) {
     setState(() {
-      _selectedDate = _selectedDate.add(const Duration(days: 1));
+      _selectedDate = date;
     });
   }
 
@@ -124,19 +125,13 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   GestureDetector(
-                    onTap: _selectPreviousDate,
+                    onTap: _selectDateToday,
                     child: const Icon(
-                      Icons.chevron_left_outlined,
+                      Icons.today_outlined,
                       color: kDarkGrey,
                     ),
                   ),
-                  GestureDetector(
-                    onTap: _selectNextDate,
-                    child: const Icon(
-                      Icons.chevron_right_outlined,
-                      color: kDarkGrey,
-                    ),
-                  ),
+                  AccomplishmentsDatePicker(onDateSelected: _handleDateSelection),
                 ],
               ),
             ],
@@ -184,7 +179,6 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
                       if (!shouldShowTask(task)) {
                         return const SizedBox.shrink();
                       }
-
                       return Container(
                         margin: EdgeInsets.symmetric(vertical: height * 0.015),
                         child: Row(
