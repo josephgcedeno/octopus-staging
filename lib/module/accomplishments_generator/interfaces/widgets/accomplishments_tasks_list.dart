@@ -6,7 +6,12 @@ import 'package:octopus/module/accomplishments_generator/interfaces/widgets/acco
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_tasks_checker.dart';
 
 class AccomplishmentsTasksList extends StatefulWidget {
-  const AccomplishmentsTasksList({Key? key}) : super(key: key);
+  const AccomplishmentsTasksList({
+    required this.reportTask,
+    Key? key,
+  }) : super(key: key);
+
+  final void Function(Map<String, List<Map<String, String>>>) reportTask;
 
   @override
   State<AccomplishmentsTasksList> createState() =>
@@ -173,6 +178,15 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
   }
 
   @override
+  void didChangeDependencies() {
+    setState(() {
+      widget.reportTask(selectedTasks);
+    });
+
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final double width = MediaQuery.of(context).size.width;
@@ -188,7 +202,7 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
 
     for (final MapEntry<String, List<Map<String, String>>> entry
         in selectedTasks.entries) {
-      if (showSelectedTasks) {
+      if (showSelectedTasks && selectedTasks[entry.key]!.isNotEmpty) {
         selectedTaskWidgets.add(
           Text(
             entry.key.toUpperCase(),
