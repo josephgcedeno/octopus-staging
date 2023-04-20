@@ -25,7 +25,11 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
   List<String> selectedCategories = <String>[];
 
   Map<String, List<Map<String, String>>> selectedTasks =
-      <String, List<Map<String, String>>>{};
+      <String, List<Map<String, String>>>{
+    'done': <Map<String, String>>[],
+    'doing': <Map<String, String>>[],
+    'blockers': <Map<String, String>>[]
+  };
 
   Map<String, List<Map<String, String>>> tasks =
       <String, List<Map<String, String>>>{
@@ -72,7 +76,7 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
 
   void toggleTask(String task, String entry) {
     setState(() {
-      if (selectedTasks.isNotEmpty) {
+      if (selectedTasks.isNotEmpty && selectedTasks.containsKey(entry)) {
         final bool containsText = selectedTasks[entry]!.any(
           (Map<String, String> item) => item['text'] == task,
         );
@@ -112,6 +116,18 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
     for (final String category in selectedCategories) {
       if (tasks[category]!.contains(task)) {
         return true;
+      }
+    }
+    return false;
+  }
+
+  bool shouldShowTaskstoAdd() {
+    if (selectedCategories.isNotEmpty) {
+      for (int i = 0; i < selectedCategories.length; i++) {
+        final String selectedCategory = selectedCategories[i];
+        if (tasks[selectedCategory]!.isNotEmpty) {
+          return true;
+        }
       }
     }
     return false;
@@ -244,7 +260,7 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
                   )
                   .toList(),
               Visibility(
-                visible: showSelectedTasks,
+                visible: showSelectedTasks & shouldShowTaskstoAdd(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
