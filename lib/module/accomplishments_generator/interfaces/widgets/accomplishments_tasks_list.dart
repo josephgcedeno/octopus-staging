@@ -27,11 +27,7 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
   ];
 
   Map<String, List<Map<String, String>>> selectedTasks =
-      <String, List<Map<String, String>>>{
-    'done': <Map<String, String>>[],
-    'doing': <Map<String, String>>[],
-    'blockers': <Map<String, String>>[]
-  };
+      <String, List<Map<String, String>>>{};
 
   Map<String, List<Map<String, String>>> tasks =
       <String, List<Map<String, String>>>{};
