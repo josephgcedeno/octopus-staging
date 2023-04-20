@@ -76,7 +76,8 @@ class DailyAccomplishmentReportScreen extends StatelessWidget {
                             decoration: InputDecoration(
                               focusColor: theme.primaryColor,
                               contentPadding: EdgeInsets.symmetric(
-                                  vertical: height * 0.009,),
+                                vertical: height * 0.009,
+                              ),
                               border: UnderlineInputBorder(
                                 borderSide:
                                     BorderSide(color: theme.primaryColor),
@@ -139,26 +140,25 @@ class DailyAccomplishmentReportScreen extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: width * 0.06,
-                      vertical: height * 0.02,
-                    ),
-                    margin: EdgeInsets.only(top: width * 0.06),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: theme.primaryColor.withOpacity(0.10),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<dynamic>(
-                            builder: (_) =>
-                                const DailyAccomplishmentPDFScreen(),
-                          ),
-                        );
-                      },
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute<dynamic>(
+                          builder: (_) => const DailyAccomplishmentPDFScreen(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: width * 0.06,
+                        vertical: height * 0.02,
+                      ),
+                      margin: EdgeInsets.only(top: width * 0.06),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: theme.primaryColor.withOpacity(0.10),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
