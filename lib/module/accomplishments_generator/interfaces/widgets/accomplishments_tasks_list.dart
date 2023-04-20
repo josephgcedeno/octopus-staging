@@ -59,7 +59,7 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
   }
 
   void _setOtherDayData() {
-    tasks = {};
+    tasks = <String, List<Map<String, String>>>{};
   }
 
   void _selectDateToday() {
