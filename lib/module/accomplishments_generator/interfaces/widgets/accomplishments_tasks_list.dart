@@ -100,12 +100,14 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
 
           if (containsText) {
             selectedTasks[entry]?.removeWhere(
-                (Map<String, String> item) => item['text'] == task);
+              (Map<String, String> item) => item['text'] == task,
+            );
             tasks[entry]!.add(<String, String>{'text': task});
           } else {
             selectedTasks[entry]?.add(<String, String>{'text': task});
             tasks[entry]!.removeWhere(
-                (Map<String, String> item) => item['text'] == task);
+              (Map<String, String> item) => item['text'] == task,
+            );
           }
         } else {
           selectedTasks.putIfAbsent(
