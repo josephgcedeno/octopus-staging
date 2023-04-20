@@ -329,6 +329,21 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
                       }),
                     )
                     .toList(),
+              if (tasks.isEmpty)
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.all(height * 0.015),
+                        child: const Icon(
+                          Icons.error_outline_outlined,
+                        ),
+                      ),
+                      const Text('No data available'),
+                    ],
+                  ),
+                ),
             ],
           ),
         ],
