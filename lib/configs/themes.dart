@@ -50,7 +50,7 @@ TextTheme _buildDefaultTextTheme(TextTheme base) {
     titleMedium: base.titleMedium?.copyWith(fontFamily: 'Gilroy'),
     bodyMedium: base.bodyMedium?.copyWith(fontFamily: 'Gilroy'),
     bodyLarge: base.bodyLarge?.copyWith(fontFamily: 'Gilroy'),
-    bodySmall: base.bodySmall?.copyWith(fontFamily: 'Gilroy'),
+    bodySmall: base.bodySmall?.copyWith(fontFamily: 'Gilroy',),
     labelLarge: base.labelLarge?.copyWith(fontFamily: 'Gilroy'),
     labelSmall: base.labelSmall?.copyWith(fontFamily: 'Gilroy'),
   );
@@ -66,4 +66,3 @@ const String whiteLogoSvg = 'assets/images/app_logo_white.svg';
 const String logoPng = 'assets/images/app_logo.png';
 const String nuxifyLogoSvg = 'assets/images/nuxify_logo_text.svg';
 const String nuxifyLogoPng = 'assets/images/nuxify_logo_text.png';
-
