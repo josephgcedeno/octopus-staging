@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
+import 'package:octopus/module/accomplishments_generator/interfaces/screens/daily_accomplishment_pdf_screen.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/daily_accomplishment_tabs.dart';
 
 class DailyAccomplishmentReportScreen extends StatelessWidget {
@@ -74,7 +75,8 @@ class DailyAccomplishmentReportScreen extends StatelessWidget {
                             ),
                             decoration: InputDecoration(
                               focusColor: theme.primaryColor,
-                              contentPadding: EdgeInsets.symmetric(vertical: height * 0.009),
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: height * 0.009,),
                               border: UnderlineInputBorder(
                                 borderSide:
                                     BorderSide(color: theme.primaryColor),
@@ -148,21 +150,31 @@ class DailyAccomplishmentReportScreen extends StatelessWidget {
                       color: theme.primaryColor.withOpacity(0.10),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          'Generate Accomplishment',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<dynamic>(
+                            builder: (_) =>
+                                const DailyAccomplishmentPDFScreen(),
+                          ),
+                        );
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text(
+                            'Generate Accomplishment',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: theme.primaryColor,
+                            ),
+                          ),
+                          Icon(
+                            Icons.chevron_right,
                             color: theme.primaryColor,
                           ),
-                        ),
-                        Icon(
-                          Icons.chevron_right,
-                          color: theme.primaryColor,
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],
