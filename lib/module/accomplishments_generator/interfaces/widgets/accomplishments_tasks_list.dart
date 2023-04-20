@@ -188,14 +188,16 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
 
     for (final MapEntry<String, List<Map<String, String>>> entry
         in selectedTasks.entries) {
-      selectedTaskWidgets.add(
-        Text(
-          entry.key.toUpperCase(),
-          style: theme.textTheme.bodySmall?.copyWith(
-            fontWeight: FontWeight.w600,
+      if (showSelectedTasks) {
+        selectedTaskWidgets.add(
+          Text(
+            entry.key.toUpperCase(),
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
           ),
-        ),
-      );
+        );
+      }
       for (final Map<String, String> selectedTask in entry.value) {
         if (shouldShowSelectedTask(selectedTask)) {
           selectedTaskWidgets.add(const SizedBox.shrink());
