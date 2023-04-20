@@ -22,7 +22,9 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
   DateTime _selectedDate = DateTime.now();
   final DateTime _today = DateTime.now();
 
-  List<String> selectedCategories = <String>[];
+  List<String> selectedCategories = <String>[
+    'done',
+  ];
 
   Map<String, List<Map<String, String>>> selectedTasks =
       <String, List<Map<String, String>>>{
@@ -67,7 +69,9 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
   void toggleCategory(String category) {
     setState(() {
       if (selectedCategories.contains(category)) {
-        selectedCategories.remove(category);
+        if (selectedCategories.length != 1) {
+          selectedCategories.remove(category);
+        }
       } else {
         selectedCategories.add(category);
       }
@@ -130,6 +134,21 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
         }
       }
     }
+    return false;
+  }
+
+  bool shouldHighlightButton(String category) {
+    if (selectedCategories.isNotEmpty) {
+      if (selectedCategories.contains(category)) {
+        if (selectedCategories.length == 1) {
+          return true;
+        }
+        return true;
+      } else if (selectedCategories.contains(category)) {
+        return true;
+      }
+    }
+
     return false;
   }
 
@@ -212,7 +231,7 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
                     },
                     child: AccomplishmentTaskButton(
                       title: 'Done',
-                      isClicked: selectedCategories.contains('done'),
+                      isClicked: shouldHighlightButton('done'),
                     ),
                   ),
                   GestureDetector(
@@ -221,7 +240,7 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
                     },
                     child: AccomplishmentTaskButton(
                       title: 'Doing',
-                      isClicked: selectedCategories.contains('doing'),
+                      isClicked: shouldHighlightButton('doing'),
                     ),
                   ),
                   GestureDetector(
@@ -230,7 +249,7 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
                     },
                     child: AccomplishmentTaskButton(
                       title: 'Blocked',
-                      isClicked: selectedCategories.contains('blockers'),
+                      isClicked: shouldHighlightButton('blockers'),
                     ),
                   ),
                 ],
