@@ -64,3 +64,6 @@ const Color gradient2 = Color(0xFF017BFF);
 const String logoSvg = 'assets/images/app_logo.svg';
 const String whiteLogoSvg = 'assets/images/app_logo_white.svg';
 const String logoPng = 'assets/images/app_logo.png';
+const String nuxifyLogoSvg = 'assets/images/nuxify_logo_text.svg';
+const String nuxifyLogoPng = 'assets/images/nuxify_logo_text.png';
+
