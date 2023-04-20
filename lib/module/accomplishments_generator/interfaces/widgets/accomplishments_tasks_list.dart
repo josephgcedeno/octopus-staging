@@ -188,6 +188,37 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
           (List<Map<String, String>> list) => list.isNotEmpty,
         );
 
+    final List<Widget> selectedTaskWidgets = <Widget>[];
+
+    for (final MapEntry<String, List<Map<String, String>>> entry
+        in selectedTasks.entries) {
+      selectedTaskWidgets.add(
+        Text(
+          entry.key.toUpperCase(),
+          style: theme.textTheme.bodySmall?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      );
+      for (final Map<String, String> selectedTask in entry.value) {
+        if (shouldShowSelectedTask(selectedTask)) {
+          selectedTaskWidgets.add(const SizedBox.shrink());
+        } else {
+          selectedTaskWidgets.add(
+            GestureDetector(
+              onTap: () {
+                toggleTask(selectedTask['text']!, entry.key);
+              },
+              child: AccomplishmentsTaskChecker(
+                title: selectedTask['text']!,
+                type: CheckerType.selected,
+              ),
+            ),
+          );
+        }
+      }
+    }
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: width * 0.05),
       child: Column(
@@ -273,28 +304,14 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
               ),
               if (showSelectedTasks)
                 Padding(
-                  padding: EdgeInsets.only(top: height * 0.010),
+                  padding: EdgeInsets.symmetric(vertical: height * 0.010),
                   child: const Text('Added tasks'),
                 ),
-              ...selectedTasks.entries
-                  .expand(
-                    (MapEntry<String, List<Map<String, String>>> entry) =>
-                        entry.value.map((Map<String, String> selectedtask) {
-                      if (shouldShowSelectedTask(selectedtask)) {
-                        return const SizedBox.shrink();
-                      }
-                      return GestureDetector(
-                        onTap: () {
-                          toggleTask(selectedtask['text']!, entry.key);
-                        },
-                        child: AccomplishmentsTaskChecker(
-                          title: selectedtask['text']!,
-                          type: CheckerType.selected,
-                        ),
-                      );
-                    }),
-                  )
-                  .toList(),
+              if (selectedTasks.isNotEmpty)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: selectedTaskWidgets.toList(),
+                ),
               Visibility(
                 visible: showSelectedTasks & shouldShowTaskstoAdd(),
                 child: Column(
