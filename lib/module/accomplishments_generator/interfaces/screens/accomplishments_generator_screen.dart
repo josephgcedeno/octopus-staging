@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
+import 'package:octopus/module/accomplishments_generator/interfaces/screens/daily_accomplishment_report_screen.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_projects_slider.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_tasks_list.dart';
 
@@ -40,25 +41,34 @@ class AccomplishmentsGeneratorScreen extends StatelessWidget {
                     const AccomplishmentsTasksList(),
                   ],
                 ),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: width * 0.06,
-                    vertical: height * 0.02,
-                  ),
-                  margin: EdgeInsets.symmetric(
-                    vertical: height * 0.02,
-                    horizontal: width * 0.04,
-                  ),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: theme.primaryColor,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Text(
-                    'Proceed',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: kWhite,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<dynamic>(
+                        builder: (_) => const DailyAccomplishmentReportScreen(),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: width * 0.06,
+                      vertical: height * 0.02,
+                    ),
+                    margin: EdgeInsets.symmetric(
+                      vertical: height * 0.02,
+                      horizontal: width * 0.04,
+                    ),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: theme.primaryColor,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Text(
+                      'Proceed',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: kWhite,
+                      ),
                     ),
                   ),
                 ),
