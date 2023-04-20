@@ -34,35 +34,47 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
   };
 
   Map<String, List<Map<String, String>>> tasks =
-      <String, List<Map<String, String>>>{
-    'done': <Map<String, String>>[
-      <String, String>{'text': 'Deploy eleven minions'},
-      <String, String>{'text': 'Deploy nine minions'},
-      <String, String>{'text': 'Deploy two minions'},
-      <String, String>{'text': 'Deploy eight minions'},
-      <String, String>{'text': 'Deploy eleven minions'},
-      <String, String>{'text': 'Deploy ten minions'}
-    ],
-    'doing': <Map<String, String>>[
-      <String, String>{'text': 'Deploy eight minions'},
-      <String, String>{'text': 'Deploy seven minions'},
-      <String, String>{'text': 'Deploy two minions'},
-    ],
-    'blockers': <Map<String, String>>[
-      <String, String>{'text': 'Deploy four minions'},
-      <String, String>{'text': 'Deploy six minions'}
-    ],
-  };
+      <String, List<Map<String, String>>>{};
+
+  void _setTodayData() {
+    tasks = <String, List<Map<String, String>>>{
+      'done': <Map<String, String>>[
+        <String, String>{'text': 'Deploy eleven minions'},
+        <String, String>{'text': 'Deploy nine minions'},
+        <String, String>{'text': 'Deploy two minions'},
+        <String, String>{'text': 'Deploy eight minions'},
+        <String, String>{'text': 'Deploy eleven minions'},
+        <String, String>{'text': 'Deploy ten minions'}
+      ],
+      'doing': <Map<String, String>>[
+        <String, String>{'text': 'Deploy eight minions'},
+        <String, String>{'text': 'Deploy seven minions'},
+        <String, String>{'text': 'Deploy two minions'},
+      ],
+      'blockers': <Map<String, String>>[
+        <String, String>{'text': 'Deploy four minions'},
+        <String, String>{'text': 'Deploy six minions'}
+      ],
+    };
+  }
+
+  void _setOtherDayData() {
+    tasks = {};
+  }
 
   void _selectDateToday() {
     setState(() {
       _selectedDate = DateTime.now();
+      isToday = true;
+      _setTodayData();
     });
   }
 
   void _handleDateSelection(DateTime date) {
     setState(() {
+      isToday = false;
       _selectedDate = date;
+      _setOtherDayData();
     });
   }
 
@@ -80,36 +92,38 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
 
   void toggleTask(String task, String entry) {
     setState(() {
-      if (selectedTasks.isNotEmpty && selectedTasks.containsKey(entry)) {
-        final bool containsText = selectedTasks[entry]!.any(
-          (Map<String, String> item) => item['text'] == task,
-        );
+      if (tasks.isNotEmpty) {
+        if (selectedTasks.isNotEmpty && selectedTasks.containsKey(entry)) {
+          final bool containsText = selectedTasks[entry]!.any(
+            (Map<String, String> item) => item['text'] == task,
+          );
 
-        if (containsText) {
-          selectedTasks[entry]
-              ?.removeWhere((Map<String, String> item) => item['text'] == task);
-          tasks[entry]!.add(<String, String>{'text': task});
+          if (containsText) {
+            selectedTasks[entry]?.removeWhere(
+                (Map<String, String> item) => item['text'] == task);
+            tasks[entry]!.add(<String, String>{'text': task});
+          } else {
+            selectedTasks[entry]?.add(<String, String>{'text': task});
+            tasks[entry]!.removeWhere(
+                (Map<String, String> item) => item['text'] == task);
+          }
         } else {
-          selectedTasks[entry]?.add(<String, String>{'text': task});
+          selectedTasks.putIfAbsent(
+            entry,
+            () => <Map<String, String>>[
+              <String, String>{'text': task},
+            ],
+          );
           tasks[entry]!
               .removeWhere((Map<String, String> item) => item['text'] == task);
         }
-      } else {
-        selectedTasks.putIfAbsent(
-          entry,
-          () => <Map<String, String>>[
-            <String, String>{'text': task},
-          ],
-        );
-        tasks[entry]!
-            .removeWhere((Map<String, String> item) => item['text'] == task);
       }
     });
   }
 
   bool shouldShowTask(Map<String, String> task) {
     for (final String category in selectedCategories) {
-      if (tasks[category]!.contains(task)) {
+      if (tasks.isNotEmpty && tasks[category]!.contains(task)) {
         return false;
       }
     }
@@ -118,7 +132,7 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
 
   bool shouldShowSelectedTask(Map<String, String> task) {
     for (final String category in selectedCategories) {
-      if (tasks[category]!.contains(task)) {
+      if (tasks.isNotEmpty && tasks[category]!.contains(task)) {
         return true;
       }
     }
@@ -129,7 +143,7 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
     if (selectedCategories.isNotEmpty) {
       for (int i = 0; i < selectedCategories.length; i++) {
         final String selectedCategory = selectedCategories[i];
-        if (tasks[selectedCategory]!.isNotEmpty) {
+        if (tasks.isNotEmpty && tasks[selectedCategory]!.isNotEmpty) {
           return true;
         }
       }
@@ -155,6 +169,7 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
   @override
   void initState() {
     toggleCategory('done');
+    _setTodayData();
 
     super.initState();
   }
@@ -207,9 +222,9 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
                 children: <Widget>[
                   GestureDetector(
                     onTap: _selectDateToday,
-                    child: const Icon(
+                    child: Icon(
                       Icons.today_outlined,
-                      color: kDarkGrey,
+                      color: isToday ? theme.primaryColor : kDarkGrey,
                     ),
                   ),
                   AccomplishmentsDatePicker(
@@ -294,25 +309,26 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
                   ],
                 ),
               ),
-              ...tasks.entries
-                  .expand(
-                    (MapEntry<String, List<Map<String, String>>> entry) =>
-                        entry.value.map((Map<String, String> task) {
-                      if (shouldShowTask(task)) {
-                        return const SizedBox.shrink();
-                      }
-                      return GestureDetector(
-                        onTap: () {
-                          toggleTask(task['text']!, entry.key);
-                        },
-                        child: AccomplishmentsTaskChecker(
-                          title: task['text']!,
-                          type: CheckerType.unselected,
-                        ),
-                      );
-                    }),
-                  )
-                  .toList(),
+              if (tasks.isNotEmpty)
+                ...tasks.entries
+                    .expand(
+                      (MapEntry<String, List<Map<String, String>>> entry) =>
+                          entry.value.map((Map<String, String> task) {
+                        if (shouldShowTask(task)) {
+                          return const SizedBox.shrink();
+                        }
+                        return GestureDetector(
+                          onTap: () {
+                            toggleTask(task['text']!, entry.key);
+                          },
+                          child: AccomplishmentsTaskChecker(
+                            title: task['text']!,
+                            type: CheckerType.unselected,
+                          ),
+                        );
+                      }),
+                    )
+                    .toList(),
             ],
           ),
         ],
