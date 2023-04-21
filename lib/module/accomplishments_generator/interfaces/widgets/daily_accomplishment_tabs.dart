@@ -16,6 +16,7 @@ class DailyAccomplishmentTabs extends StatefulWidget {
 
 class _DailyAccomplishmentTabsState extends State<DailyAccomplishmentTabs>
     with SingleTickerProviderStateMixin {
+
   late TabController _tabController;
 
   @override
@@ -58,9 +59,7 @@ class _DailyAccomplishmentTabsState extends State<DailyAccomplishmentTabs>
               unselectedLabelColor: kBlack,
               tabs: reportTasks.keys
                   .map(
-                    (String key) => Visibility(
-                        visible: reportTasks[key]!.isNotEmpty,
-                        child: Text(key.toUpperCase())),
+                    (String key) => Visibility(visible: reportTasks[key]!.isNotEmpty, child: Text(key.toUpperCase())),
                   )
                   .toList(),
               controller: _tabController,
@@ -94,6 +93,7 @@ class _DailyAccomplishmentTabsState extends State<DailyAccomplishmentTabs>
                                 AccomplishmentsTaskChecker(
                               title: task['text']!,
                               type: CheckerType.selected,
+                              hasProfile: false,
                             ),
                           )
                           .toList(),

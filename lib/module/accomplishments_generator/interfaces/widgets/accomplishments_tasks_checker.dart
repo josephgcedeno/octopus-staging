@@ -10,10 +10,12 @@ class AccomplishmentsTaskChecker extends StatelessWidget {
   const AccomplishmentsTaskChecker({
     required this.title,
     required this.type,
+    this.hasProfile = true,
     Key? key,
   }) : super(key: key);
 
   final String title;
+  final bool hasProfile;
   final CheckerType type;
 
   @override
@@ -28,13 +30,14 @@ class AccomplishmentsTaskChecker extends StatelessWidget {
         children: <Widget>[
           Row(
             children: <Widget>[
-              CircleAvatar(
-                minRadius: width * 0.04,
-                maxRadius: width * 0.04,
-                backgroundImage: const NetworkImage(
-                  'https://cdn-icons-png.flaticon.com/512/201/201634.png',
+              if (hasProfile)
+                CircleAvatar(
+                  minRadius: width * 0.04,
+                  maxRadius: width * 0.04,
+                  backgroundImage: const NetworkImage(
+                    'https://cdn-icons-png.flaticon.com/512/201/201634.png',
+                  ),
                 ),
-              ),
               Padding(
                 padding: EdgeInsets.only(left: width * 0.03),
                 child: Text(title),
