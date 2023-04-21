@@ -14,7 +14,9 @@ class AccomplishmentsProjectSlider extends StatefulWidget {
 
 class _AccomplishmentsProjectSliderState
     extends State<AccomplishmentsProjectSlider> {
-  final PageController _pageController = PageController();
+  final PageController _pageController = PageController(
+    viewportFraction: 0.9,
+  );
   int _currentPageIndex = 0;
 
   @override
@@ -72,11 +74,10 @@ class _AccomplishmentsProjectSliderState
           width: double.infinity,
           margin: EdgeInsets.symmetric(vertical: height * 0.03),
           height: height * 0.2,
-          child: ListView(
+          child: PageView(
             controller: _pageController,
+            clipBehavior: Clip.none,
             physics: const PageScrollPhysics(),
-            scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.symmetric(horizontal: width * 0.08),
             children: projects.map((Map<String, Object> project) {
               final Color? textColor = project['textColor'] as Color?;
               final Color? backgroundColor =
