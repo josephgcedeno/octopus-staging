@@ -238,7 +238,7 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
 
     for (final MapEntry<String, List<Map<String, String>>> entry
         in tasks.entries) {
-      if (selectedCategories.contains(entry.key) &&
+      if (tasks[entry.key]!.isNotEmpty && selectedCategories.contains(entry.key) &&
           selectedCategories.length > 1) {
         taskWidgets.add(
           Text(
