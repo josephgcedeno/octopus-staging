@@ -203,7 +203,7 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
 
     for (final MapEntry<String, List<Map<String, String>>> entry
         in selectedTasks.entries) {
-      if (showSelectedTasks && selectedTasks[entry.key]!.isNotEmpty) {
+      if (showSelectedTasks && selectedTasks[entry.key]!.isNotEmpty && selectedTasks.length > 1) {
         selectedTaskWidgets.add(
           Text(
             entry.key.toUpperCase(),
