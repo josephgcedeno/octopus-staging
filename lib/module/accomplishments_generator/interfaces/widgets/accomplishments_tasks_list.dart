@@ -103,7 +103,6 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
             selectedTasks[entry]?.removeWhere(
               (Map<String, String> item) => item['text'] == task,
             );
-            selectedTasks.removeWhere((String key, List<Map<String, String>> value) => value.isEmpty);
             tasks[entry]!.add(<String, String>{'text': task});
           } else {
             selectedTasks[entry]?.add(<String, String>{'text': task});
@@ -200,10 +199,13 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
         );
 
     final List<Widget> selectedTaskWidgets = <Widget>[];
+    final List<Widget> taskWidgets = <Widget>[];
 
     for (final MapEntry<String, List<Map<String, String>>> entry
         in selectedTasks.entries) {
-      if (showSelectedTasks && selectedTasks[entry.key]!.isNotEmpty && selectedTasks.length > 1) {
+      if (showSelectedTasks &&
+          selectedTasks[entry.key]!.isNotEmpty &&
+          selectedTasks.length > 1) {
         selectedTaskWidgets.add(
           Text(
             entry.key.toUpperCase(),
@@ -225,6 +227,38 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
               child: AccomplishmentsTaskChecker(
                 title: selectedTask['text']!,
                 type: CheckerType.selected,
+              ),
+            ),
+          );
+        }
+      }
+    }
+
+    for (final MapEntry<String, List<Map<String, String>>> entry
+        in tasks.entries) {
+      if (selectedCategories.contains(entry.key) &&
+          selectedCategories.length > 1) {
+        taskWidgets.add(
+          Text(
+            entry.key.toUpperCase(),
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        );
+      }
+      for (final Map<String, String> task in entry.value) {
+        if (shouldShowTask(task)) {
+          taskWidgets.add(const SizedBox.shrink());
+        } else {
+          taskWidgets.add(
+            GestureDetector(
+              onTap: () {
+                toggleTask(task['text']!, entry.key);
+              },
+              child: AccomplishmentsTaskChecker(
+                title: task['text']!,
+                type: CheckerType.unselected,
               ),
             ),
           );
@@ -330,37 +364,22 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(bottom: height * 0.02),
-                      child: const Divider(
-                        height: 4,
-                        color: kDarkGrey,
-                      ),
+                    const Divider(
+                      height: 4,
+                      color: kDarkGrey,
                     ),
-                    const Text('Select tasks to add'),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: height * 0.014),
+                      child: const Text('Select tasks to add'),
+                    ),
                   ],
                 ),
               ),
               if (tasks.isNotEmpty)
-                ...tasks.entries
-                    .expand(
-                      (MapEntry<String, List<Map<String, String>>> entry) =>
-                          entry.value.map((Map<String, String> task) {
-                        if (shouldShowTask(task)) {
-                          return const SizedBox.shrink();
-                        }
-                        return GestureDetector(
-                          onTap: () {
-                            toggleTask(task['text']!, entry.key);
-                          },
-                          child: AccomplishmentsTaskChecker(
-                            title: task['text']!,
-                            type: CheckerType.unselected,
-                          ),
-                        );
-                      }),
-                    )
-                    .toList(),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: taskWidgets.toList(),
+                ),
               if (tasks.isEmpty)
                 Center(
                   child: Column(
