@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/screens/daily_accomplishment_pdf_screen.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/daily_accomplishment_tabs.dart';
+import 'package:octopus/module/accomplishments_generator/interfaces/widgets/daily_accomplishment_text_field.dart';
+
+String clientName = '';
 
 class DailyAccomplishmentReportScreen extends StatelessWidget {
   const DailyAccomplishmentReportScreen({required this.reportTasks, Key? key})
@@ -68,30 +71,10 @@ class DailyAccomplishmentReportScreen extends StatelessWidget {
                       ),
                       WidgetSpan(
                         alignment: PlaceholderAlignment.middle,
-                        child: Container(
-                          height: height * 0.03,
-                          width: width * 0.3,
-                          margin: EdgeInsets.only(bottom: height * 0.01),
-                          child: TextField(
-                            style: TextStyle(
-                              color: theme.primaryColor,
-                            ),
-                            decoration: InputDecoration(
-                              focusColor: theme.primaryColor,
-                              contentPadding: EdgeInsets.symmetric(
-                                vertical: height * 0.009,
-                              ),
-                              border: UnderlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: theme.primaryColor),
-                              ),
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: theme.primaryColor),
-                              ),
-                              hintText: 'Name',
-                            ),
-                          ),
+                        child: DailyAccomplishmentTextField(
+                          name: (String name) {
+                            clientName = name;
+                          },
                         ),
                       ),
                       TextSpan(
@@ -149,6 +132,7 @@ class DailyAccomplishmentReportScreen extends StatelessWidget {
                         MaterialPageRoute<dynamic>(
                           builder: (_) => DailyAccomplishmentPDFScreen(
                             reportTasks: reportTasks,
+                            clientName: clientName,
                           ),
                         ),
                       );
