@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
 
 class DailyAccomplishmentPDFScreen extends StatelessWidget {
-  const DailyAccomplishmentPDFScreen({required this.reportTasks, Key? key})
+  const DailyAccomplishmentPDFScreen(
+      {required this.reportTasks, required this.clientName, Key? key})
       : super(key: key);
 
   final Map<String, List<Map<String, String>>> reportTasks;
+  final String clientName;
 
   @override
   Widget build(BuildContext context) {
@@ -81,19 +83,11 @@ class DailyAccomplishmentPDFScreen extends StatelessWidget {
                                 style: theme.textTheme.bodySmall
                                     ?.copyWith(fontSize: height * 0.026),
                               ),
-                              WidgetSpan(
-                                alignment: PlaceholderAlignment.middle,
-                                child: Container(
-                                  height: height * 0.03,
-                                  width: width * 0.3,
-                                  margin:
-                                      EdgeInsets.only(bottom: height * 0.01),
-                                  child: TextField(
-                                    readOnly: true,
-                                    style: TextStyle(
-                                      color: theme.primaryColor,
-                                    ),
-                                  ),
+                              TextSpan(
+                                text: clientName,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  fontSize: height * 0.026,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                               TextSpan(
@@ -116,7 +110,9 @@ class DailyAccomplishmentPDFScreen extends StatelessWidget {
                               Container(
                                 width: width,
                                 padding: EdgeInsets.only(bottom: width * 0.010),
-                                margin: EdgeInsets.symmetric(vertical: width * 0.015),
+                                margin: EdgeInsets.symmetric(
+                                  vertical: width * 0.015,
+                                ),
                                 decoration: BoxDecoration(
                                   border: Border(
                                     bottom: BorderSide(
