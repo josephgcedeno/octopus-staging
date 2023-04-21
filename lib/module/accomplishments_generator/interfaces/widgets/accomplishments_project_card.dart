@@ -21,7 +21,6 @@ class AccomplishmentsProjectCard extends StatelessWidget {
     final double width = MediaQuery.of(context).size.width;
 
     return Container(
-      width: width * 0.77,
       height: height * 0.006,
       margin: EdgeInsets.symmetric(horizontal: width * 0.02),
       alignment: Alignment.center,
