@@ -4,8 +4,7 @@ import 'package:octopus/configs/themes.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/screens/daily_accomplishment_report_screen.dart';
-import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_projects_slider.dart';
-import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_tasks_list.dart';
+import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_tasks_slider_and_list.dart';
 
 Map<String, List<Map<String, String>>> reportTasks =
     <String, List<Map<String, String>>>{};
@@ -41,8 +40,10 @@ class AccomplishmentsGeneratorScreen extends StatelessWidget {
                             : theme.textTheme.titleMedium,
                       ),
                     ),
-                    const AccomplishmentsProjectSlider(),
-                    AccomplishmentsTasksList(
+                    // AccomplishmentsProjectSlider(pageIndex: (p0) {
+
+                    // },),
+                    AccomplishmentsSliderAndTasksList(
                       reportTask:
                           (Map<String, List<Map<String, String>>> tasks) {
                         reportTasks = tasks;
