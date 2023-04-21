@@ -92,7 +92,7 @@ class DailyAccomplishmentPDFScreen extends StatelessWidget {
                               ),
                               TextSpan(
                                 text:
-                                    '. For today’s update with worth 8 hours of work.',
+                                    '! For today’s update with worth 8 hours of work.',
                                 style: theme.textTheme.bodySmall
                                     ?.copyWith(fontSize: height * 0.026),
                               ),
