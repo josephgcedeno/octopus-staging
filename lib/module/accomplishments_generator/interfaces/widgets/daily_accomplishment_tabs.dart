@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
+import 'package:octopus/module/accomplishments_generator/interfaces/screens/accomplishments_generator_screen.dart';
+import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_tasks_checker.dart';
 
 class DailyAccomplishmentTabs extends StatefulWidget {
-  const DailyAccomplishmentTabs({Key? key}) : super(key: key);
+  const DailyAccomplishmentTabs({required this.reportTasks, Key? key})
+      : super(key: key);
+
+  final Map<String, List<Map<String, String>>> reportTasks;
 
   @override
   State<DailyAccomplishmentTabs> createState() =>
@@ -11,18 +16,12 @@ class DailyAccomplishmentTabs extends StatefulWidget {
 
 class _DailyAccomplishmentTabsState extends State<DailyAccomplishmentTabs>
     with SingleTickerProviderStateMixin {
-  final List<Widget> _tabs = <Widget>[
-    const Text('Done', textAlign: TextAlign.left),
-    const Text('Doing', textAlign: TextAlign.left),
-    const Text('Blockers', textAlign: TextAlign.left)
-  ];
-
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: reportTasks.length, vsync: this);
   }
 
   @override
@@ -57,6 +56,15 @@ class _DailyAccomplishmentTabsState extends State<DailyAccomplishmentTabs>
               labelStyle: theme.textTheme.bodySmall,
               labelColor: theme.primaryColor,
               unselectedLabelColor: kBlack,
+              tabs: reportTasks.keys
+                  .map(
+                    (String key) => Visibility(
+                        visible: reportTasks[key]!.isNotEmpty,
+                        child: Text(key.toUpperCase())),
+                  )
+                  .toList(),
+              controller: _tabController,
+              indicatorColor: theme.primaryColor,
               labelPadding: EdgeInsets.symmetric(horizontal: width * 0.02),
               overlayColor: MaterialStateProperty.resolveWith<Color?>(
                 (Set<MaterialState> states) {
@@ -67,24 +75,31 @@ class _DailyAccomplishmentTabsState extends State<DailyAccomplishmentTabs>
                   }
                 },
               ),
-              controller: _tabController,
-              indicatorColor: theme.primaryColor,
               indicator: UnderlineTabIndicator(
                 borderSide: BorderSide(
                   color: theme.primaryColor,
                 ),
               ),
-              tabs: _tabs,
             ),
           ),
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: const <Widget>[
-                Center(child: Text('Done')),
-                Center(child: Text('Doing')),
-                Center(child: Text('Blocked')),
-              ],
+              children: reportTasks.keys
+                  .map(
+                    (String key) => Column(
+                      children: reportTasks[key]!
+                          .map(
+                            (Map<String, String> task) =>
+                                AccomplishmentsTaskChecker(
+                              title: task['text']!,
+                              type: CheckerType.selected,
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  )
+                  .toList(),
             ),
           ),
         ],

@@ -4,7 +4,10 @@ import 'package:octopus/module/accomplishments_generator/interfaces/screens/dail
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/daily_accomplishment_tabs.dart';
 
 class DailyAccomplishmentReportScreen extends StatelessWidget {
-  const DailyAccomplishmentReportScreen({Key? key}) : super(key: key);
+  const DailyAccomplishmentReportScreen({required this.reportTasks, Key? key})
+      : super(key: key);
+
+  final Map<String, List<Map<String, String>>> reportTasks;
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +104,7 @@ class DailyAccomplishmentReportScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const DailyAccomplishmentTabs(),
+              DailyAccomplishmentTabs(reportTasks: reportTasks),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[

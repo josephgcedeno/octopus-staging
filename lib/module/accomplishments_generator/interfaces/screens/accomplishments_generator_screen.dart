@@ -6,6 +6,9 @@ import 'package:octopus/module/accomplishments_generator/interfaces/screens/dail
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_projects_slider.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_tasks_list.dart';
 
+Map<String, List<Map<String, String>>> reportTasks =
+    <String, List<Map<String, String>>>{};
+
 class AccomplishmentsGeneratorScreen extends StatelessWidget {
   const AccomplishmentsGeneratorScreen({Key? key}) : super(key: key);
 
@@ -38,16 +41,23 @@ class AccomplishmentsGeneratorScreen extends StatelessWidget {
                       ),
                     ),
                     const AccomplishmentsProjectSlider(),
-                    const AccomplishmentsTasksList(),
+                    AccomplishmentsTasksList(
+                      reportTask:
+                          (Map<String, List<Map<String, String>>> tasks) {
+                        reportTasks = tasks;
+                      },
+                    ),
                   ],
                 ),
                 GestureDetector(
                   onTap: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute<dynamic>(
-                        builder: (_) => const DailyAccomplishmentReportScreen(),
-                      ),
-                    );
+                        MaterialPageRoute<dynamic>(
+                          builder: (_) => DailyAccomplishmentReportScreen(
+                            reportTasks: reportTasks,
+                          ),
+                        ),
+                      );
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(
