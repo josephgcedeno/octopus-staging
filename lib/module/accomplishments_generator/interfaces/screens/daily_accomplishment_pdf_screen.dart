@@ -3,7 +3,7 @@ import 'package:octopus/configs/themes.dart';
 
 class DailyAccomplishmentPDFScreen extends StatelessWidget {
   const DailyAccomplishmentPDFScreen(
-      {required this.reportTasks, required this.clientName, Key? key})
+      {required this.reportTasks, required this.clientName, Key? key,})
       : super(key: key);
 
   final Map<String, List<Map<String, String>>> reportTasks;
