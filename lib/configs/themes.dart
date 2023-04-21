@@ -50,10 +50,7 @@ TextTheme _buildDefaultTextTheme(TextTheme base) {
     titleMedium: base.titleMedium?.copyWith(fontFamily: 'Gilroy'),
     bodyMedium: base.bodyMedium?.copyWith(fontFamily: 'Gilroy'),
     bodyLarge: base.bodyLarge?.copyWith(fontFamily: 'Gilroy'),
-    bodySmall: base.bodySmall?.copyWith(
-      fontFamily: 'Gilroy',
-      color: kBlack,
-    ),
+    bodySmall: base.bodySmall?.copyWith(fontFamily: 'Gilroy',),
     labelLarge: base.labelLarge?.copyWith(fontFamily: 'Gilroy'),
     labelSmall: base.labelSmall?.copyWith(fontFamily: 'Gilroy'),
   );
