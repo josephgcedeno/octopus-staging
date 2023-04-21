@@ -66,8 +66,10 @@ class DailyAccomplishmentReportScreen extends StatelessWidget {
                     children: <InlineSpan>[
                       TextSpan(
                         text: 'Hello ',
-                        style: theme.textTheme.bodySmall
-                            ?.copyWith(fontSize: height * 0.026),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontSize: height * 0.026,
+                          color: kBlack,
+                        ),
                       ),
                       WidgetSpan(
                         alignment: PlaceholderAlignment.middle,
@@ -80,8 +82,10 @@ class DailyAccomplishmentReportScreen extends StatelessWidget {
                       TextSpan(
                         text:
                             '! For today’s update with worth 8 hours of work.',
-                        style: theme.textTheme.bodySmall
-                            ?.copyWith(fontSize: height * 0.026),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontSize: height * 0.026,
+                          color: kBlack,
+                        ),
                       ),
                     ],
                   ),

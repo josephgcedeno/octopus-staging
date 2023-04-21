@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
 
 class DailyAccomplishmentPDFScreen extends StatelessWidget {
-  const DailyAccomplishmentPDFScreen(
-      {required this.reportTasks, required this.clientName, Key? key,})
-      : super(key: key);
+  const DailyAccomplishmentPDFScreen({
+    required this.reportTasks,
+    required this.clientName,
+    Key? key,
+  }) : super(key: key);
 
   final Map<String, List<Map<String, String>>> reportTasks;
   final String clientName;
@@ -80,21 +82,26 @@ class DailyAccomplishmentPDFScreen extends StatelessWidget {
                             children: <InlineSpan>[
                               TextSpan(
                                 text: 'Hello ',
-                                style: theme.textTheme.bodySmall
-                                    ?.copyWith(fontSize: height * 0.026),
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  fontSize: height * 0.026,
+                                  color: kBlack,
+                                ),
                               ),
                               TextSpan(
                                 text: clientName,
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   fontSize: height * 0.026,
+                                  color: kBlack,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                               TextSpan(
                                 text:
                                     '! For today’s update with worth 8 hours of work.',
-                                style: theme.textTheme.bodySmall
-                                    ?.copyWith(fontSize: height * 0.026),
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  fontSize: height * 0.026,
+                                  color: kBlack,
+                                ),
                               ),
                             ],
                           ),
