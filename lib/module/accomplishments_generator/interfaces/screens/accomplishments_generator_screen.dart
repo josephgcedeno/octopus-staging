@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
+import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/screens/daily_accomplishment_report_screen.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_projects_slider.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_tasks_list.dart';
@@ -51,13 +52,20 @@ class AccomplishmentsGeneratorScreen extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.of(context).push(
+                    if (reportTasks.isNotEmpty) {
+                      Navigator.of(context).push(
                         MaterialPageRoute<dynamic>(
                           builder: (_) => DailyAccomplishmentReportScreen(
                             reportTasks: reportTasks,
                           ),
                         ),
                       );
+                    } else {
+                      showSnackBar(
+                        message: 'Please select a task before proceeding.',
+                        snackBartState: SnackBartState.error,
+                      );
+                    }
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(
