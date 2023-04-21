@@ -103,6 +103,7 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
             selectedTasks[entry]?.removeWhere(
               (Map<String, String> item) => item['text'] == task,
             );
+            selectedTasks.removeWhere((String key, List<Map<String, String>> value) => value.isEmpty);
             tasks[entry]!.add(<String, String>{'text': task});
           } else {
             selectedTasks[entry]?.add(<String, String>{'text': task});
