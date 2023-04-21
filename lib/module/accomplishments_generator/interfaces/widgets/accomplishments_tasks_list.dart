@@ -322,32 +322,20 @@ class _AccomplishmentsTasksListState extends State<AccomplishmentsTasksList> {
               Wrap(
                 spacing: 10,
                 children: <Widget>[
-                  GestureDetector(
-                    onTap: () {
-                      toggleCategory('done');
-                    },
-                    child: AccomplishmentTaskButton(
-                      title: 'Done',
-                      isClicked: shouldHighlightButton('done'),
-                    ),
+                  AccomplishmentTaskButton(
+                    title: 'Done',
+                    onPressed: () => toggleCategory('done'),
+                    isClicked: shouldHighlightButton('done'),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      toggleCategory('doing');
-                    },
-                    child: AccomplishmentTaskButton(
-                      title: 'Doing',
-                      isClicked: shouldHighlightButton('doing'),
-                    ),
+                  AccomplishmentTaskButton(
+                    title: 'Doing',
+                    onPressed: () => toggleCategory('doing'),
+                    isClicked: shouldHighlightButton('doing'),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      toggleCategory('blockers');
-                    },
-                    child: AccomplishmentTaskButton(
-                      title: 'Blocked',
-                      isClicked: shouldHighlightButton('blockers'),
-                    ),
+                  AccomplishmentTaskButton(
+                    title: 'Blocked',
+                    onPressed: () => toggleCategory('blockers'),
+                    isClicked: shouldHighlightButton('blockers'),
                   ),
                 ],
               ),

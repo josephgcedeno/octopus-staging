@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
 
 class AccomplishmentTaskButton extends StatelessWidget {
-  const AccomplishmentTaskButton(
-      {required this.isClicked, required this.title, Key? key,})
-      : super(key: key);
+  const AccomplishmentTaskButton({
+    required this.isClicked,
+    required this.title,
+    required this.onPressed,
+    Key? key,
+  }) : super(key: key);
 
   final bool isClicked;
   final String title;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +21,7 @@ class AccomplishmentTaskButton extends StatelessWidget {
     return InkWell(
       splashColor: ktransparent,
       highlightColor: ktransparent,
+      onTap: onPressed,
       child: Container(
         padding: EdgeInsets.symmetric(
           vertical: width * 0.02,
