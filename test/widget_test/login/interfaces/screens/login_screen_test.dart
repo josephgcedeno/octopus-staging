@@ -1,6 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -41,11 +40,11 @@ void main() {
       );
   group('Login Screen', () {
     group('UI Components', () {
-      testWidgets('Logo should apear', (WidgetTester tester) async {
+      testWidgets('Logo should appear', (WidgetTester tester) async {
         listenStub();
-          await pumpWidget(tester);
-          await tester.pump();
-          expect(find.byType(SvgPicture), findsOneWidget);
+        await pumpWidget(tester);
+        await tester.pump();
+        expect(find.byType(SvgPicture), findsOneWidget);
       });
       const String loginMessage = "Hi there!\nLet's get you prepared.";
       testWidgets('Login message should apear', (WidgetTester tester) async {
