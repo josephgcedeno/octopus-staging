@@ -147,7 +147,9 @@ class DailyAccomplishmentReportScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute<dynamic>(
-                          builder: (_) => const DailyAccomplishmentPDFScreen(),
+                          builder: (_) => DailyAccomplishmentPDFScreen(
+                            reportTasks: reportTasks,
+                          ),
                         ),
                       );
                     },
