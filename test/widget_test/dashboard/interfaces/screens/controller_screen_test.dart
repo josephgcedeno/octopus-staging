@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,6 +12,7 @@ import 'package:octopus/module/leaves/interfaces/screens/leaves_screen.dart';
 import 'package:octopus/module/leaves/service/cubit/leaves_cubit.dart';
 import 'package:octopus/module/standup_report/interfaces/screens/standup_report_screen.dart';
 import 'package:octopus/module/standup_report/service/cubit/dsr_cubit.dart';
+import 'package:octopus/module/time_record/interfaces/screens/time_record_screen.dart';
 import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
 
 class MockTimeRecordCubit extends MockCubit<TimeRecordState>
@@ -30,6 +29,7 @@ void main() {
 
   void listenStub() {
     when(() => mockTimeRecordCubit.state).thenReturn(TimeRecordState());
+    when(() => mockTimeRecordCubit.fetchAttendance()).thenAnswer((_) async {});
     when(() => mockLeavesCubit.state).thenReturn(LeavesState());
     when(() => mockLeavesCubit.fetchAllLeaves()).thenAnswer((_) async {});
     when(() => mockDSRCubit.state).thenReturn(const DSRState());
@@ -261,9 +261,32 @@ void main() {
         expect(find.byType(ControllerScreen), findsOneWidget);
         expect(find.byType(StandupReportScreen), findsNothing);
         await tester.tap(dashboardGuestureDetector);
-        await tester.pumpAndSettle();
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pump(const Duration(seconds: 1));
         expect(find.byType(ControllerScreen), findsNothing);
         expect(find.byType(StandupReportScreen), findsOneWidget);
+      });
+      //Not yet functional
+      testWidgets(
+          'When Daily Time Record is clicked. It should navigate to Daily Time Record screen',
+          (WidgetTester tester) async {
+        await pumpWidget(tester);
+        listenStub();
+        await tester.pump();
+        final Finder dashboardButton = find.ancestor(
+          of: find.text('Daily Time Record'),
+          matching: find.byType(DashboardButton),
+        );
+        final Finder dashboardGuestureDetector = find.descendant(
+          of: dashboardButton,
+          matching: find.byType(GestureDetector),
+        );
+        expect(find.byType(ControllerScreen), findsOneWidget);
+        expect(find.byType(TimeRecordScreen), findsNothing);
+        await tester.tap(dashboardGuestureDetector);
+        await tester.pumpAndSettle();
+        expect(find.byType(ControllerScreen), findsNothing);
+        expect(find.byType(TimeRecordScreen), findsOneWidget);
       });
     });
   });
