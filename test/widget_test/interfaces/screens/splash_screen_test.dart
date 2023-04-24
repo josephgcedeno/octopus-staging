@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:octopus/interfaces/screens/splash_screen.dart';
-import 'package:octopus/internal/debug_utils.dart';
+import 'package:octopus/test/main_test.dart';
 
 void main() {
   Future<void> pumpWidget(WidgetTester tester) async => tester.pumpWidget(
-        MaterialApp(
-          scaffoldMessengerKey: snackbarKey,
-          home: const Scaffold(
-            body: SplashScreen(),
-          ),
+        universalPumper(
+          const SplashScreen(),
         ),
       );
 

@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
-import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
 import 'package:octopus/module/dashboard/interfaces/widgets/dashboard_button.dart';
 import 'package:octopus/module/hr_files/interfaces/screens/hr_files_screen.dart';
@@ -15,6 +14,7 @@ import 'package:octopus/module/standup_report/interfaces/screens/standup_report_
 import 'package:octopus/module/standup_report/service/cubit/dsr_cubit.dart';
 import 'package:octopus/module/time_record/interfaces/screens/time_record_screen.dart';
 import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
+import 'package:octopus/test/main_test.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -65,11 +65,8 @@ void main() {
               create: (BuildContext context) => mockLeavesCubit,
             ),
           ],
-          child: MaterialApp(
-            scaffoldMessengerKey: snackbarKey,
-            home: const Scaffold(
-              body: ControllerScreen(),
-            ),
+          child: universalPumper(
+            const ControllerScreen(),
           ),
         ),
       );

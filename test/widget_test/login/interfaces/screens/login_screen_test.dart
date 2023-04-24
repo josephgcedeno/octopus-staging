@@ -5,10 +5,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:octopus/interfaces/widgets/loading_indicator.dart';
-import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
 import 'package:octopus/module/login/interfaces/screens/login_screen.dart';
 import 'package:octopus/module/login/service/cubit/authentication_cubit.dart';
+import 'package:octopus/test/main_test.dart';
 
 class MockAuthenticationCubit extends MockCubit<AuthenticationState>
     implements AuthenticationCubit {}
@@ -18,7 +18,6 @@ void main() {
   void listenStub() {
     when(() => mockAuthenticationCubit.state)
         .thenReturn(const AuthenticationState());
-    // when(() => mockQuoteCubit.fetchQuote()).thenAnswer((_) async {});
   }
 
   setUp(() {
@@ -30,11 +29,11 @@ void main() {
   Future<void> pumpWidget(WidgetTester tester) async => tester.pumpWidget(
         BlocProvider<AuthenticationCubit>(
           create: (BuildContext context) => mockAuthenticationCubit,
-          child: MaterialApp(
-            scaffoldMessengerKey: snackbarKey,
-            home: const Scaffold(
+          child: universalPumper(
+            const Scaffold(
               body: LoginScreen(),
             ),
+            isUsedDefaultTheme: false,
           ),
         ),
       );
