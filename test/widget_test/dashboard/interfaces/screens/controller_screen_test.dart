@@ -284,7 +284,7 @@ void main() {
         expect(find.byType(ControllerScreen), findsOneWidget);
         expect(find.byType(TimeRecordScreen), findsNothing);
         await tester.tap(dashboardGuestureDetector);
-        await tester.pumpAndSettle();
+        await tester.pump();
         expect(find.byType(ControllerScreen), findsNothing);
         expect(find.byType(TimeRecordScreen), findsOneWidget);
       });

@@ -26,7 +26,7 @@ void main() {
         await tester.pump();
         expect(
           find.ancestor(
-              of: find.byType(SvgPicture), matching: find.byType(Center)),
+              of: find.byType(SvgPicture), matching: find.byType(Center),),
           findsOneWidget,
         );
       });

@@ -108,7 +108,7 @@ void main() {
 
         final Finder forgottenButton = find.ancestor(
             of: find.text('Forgotten?'),
-            matching: find.byType(GestureDetector));
+            matching: find.byType(GestureDetector),);
 
         expect(
           forgottenButton,
@@ -308,7 +308,7 @@ void main() {
         await tester.pump();
         expect(
           find.ancestor(
-              of: find.text(message), matching: find.byType(SnackBar)),
+              of: find.text(message), matching: find.byType(SnackBar),),
           findsOneWidget,
         );
       });
