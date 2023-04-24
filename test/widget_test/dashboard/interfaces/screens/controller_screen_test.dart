@@ -1,3 +1,4 @@
+// ignore_for_file: depend_on_referenced_packages
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,6 +15,8 @@ import 'package:octopus/module/standup_report/interfaces/screens/standup_report_
 import 'package:octopus/module/standup_report/service/cubit/dsr_cubit.dart';
 import 'package:octopus/module/time_record/interfaces/screens/time_record_screen.dart';
 import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MockTimeRecordCubit extends MockCubit<TimeRecordState>
     implements TimeRecordCubit {}
@@ -270,6 +273,20 @@ void main() {
       testWidgets(
           'When Daily Time Record is clicked. It should navigate to Daily Time Record screen',
           (WidgetTester tester) async {
+        SharedPreferences.setMockInitialValues(<String, String>{});
+        await Parse().initialize(
+          'appId',
+          'serverUrl',
+          clientKey: 'clientKey',
+          liveQueryUrl: 'liveQueryUrl',
+          appName: 'appName',
+          appPackageName: 'somePackageName',
+          appVersion: 'someAppVersion',
+          masterKey: 'masterKey',
+          sessionId: 'sessionId',
+          fileDirectory: 'someDirectory',
+          debug: true,
+        );
         await pumpWidget(tester);
         listenStub();
         await tester.pump();
@@ -283,8 +300,11 @@ void main() {
         );
         expect(find.byType(ControllerScreen), findsOneWidget);
         expect(find.byType(TimeRecordScreen), findsNothing);
+
         await tester.tap(dashboardGuestureDetector);
-        await tester.pump();
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pump(const Duration(seconds: 1));
+
         expect(find.byType(ControllerScreen), findsNothing);
         expect(find.byType(TimeRecordScreen), findsOneWidget);
       });
