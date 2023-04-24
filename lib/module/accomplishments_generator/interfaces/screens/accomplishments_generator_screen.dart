@@ -40,9 +40,6 @@ class AccomplishmentsGeneratorScreen extends StatelessWidget {
                             : theme.textTheme.titleMedium,
                       ),
                     ),
-                    // AccomplishmentsProjectSlider(pageIndex: (p0) {
-
-                    // },),
                     AccomplishmentsSliderAndTasksList(
                       reportTask:
                           (Map<String, List<Map<String, String>>> tasks) {
