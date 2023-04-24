@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
-import 'package:octopus/module/accomplishments_generator/interfaces/screens/accomplishments_generator_screen.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_tasks_checker.dart';
 
 class DailyAccomplishmentTabs extends StatefulWidget {
@@ -22,7 +21,7 @@ class _DailyAccomplishmentTabsState extends State<DailyAccomplishmentTabs>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: reportTasks.length, vsync: this);
+    _tabController = TabController(length: widget.reportTasks.length, vsync: this);
   }
 
   @override
@@ -57,9 +56,9 @@ class _DailyAccomplishmentTabsState extends State<DailyAccomplishmentTabs>
               labelStyle: theme.textTheme.bodySmall,
               labelColor: theme.primaryColor,
               unselectedLabelColor: kBlack,
-              tabs: reportTasks.keys
+              tabs: widget.reportTasks.keys
                   .map(
-                    (String key) => Visibility(visible: reportTasks[key]!.isNotEmpty, child: Text(key.toUpperCase())),
+                    (String key) => Visibility(visible: widget.reportTasks[key]!.isNotEmpty, child: Text(key.toUpperCase())),
                   )
                   .toList(),
               controller: _tabController,
@@ -84,10 +83,10 @@ class _DailyAccomplishmentTabsState extends State<DailyAccomplishmentTabs>
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: reportTasks.keys
+              children: widget.reportTasks.keys
                   .map(
                     (String key) => Column(
-                      children: reportTasks[key]!
+                      children: widget.reportTasks[key]!
                           .map(
                             (Map<String, String> task) =>
                                 AccomplishmentsTaskChecker(
