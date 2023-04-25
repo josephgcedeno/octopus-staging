@@ -8,6 +8,7 @@ import 'package:octopus/internal/database_strings.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/error_message_string.dart';
 import 'package:octopus/internal/helper_function.dart';
+import 'package:octopus/internal/string_status.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class ProjectRepository extends IProjectRepository {
@@ -33,7 +34,7 @@ class ProjectRepository extends IProjectRepository {
         final ProjectsParseObject projectTag = ProjectsParseObject()
           ..name = projectName
           ..color = projectColor
-          ..status = status ?? 'ACTIVE'
+          ..status = status ?? active
           ..date = epochFromDateTime(
             date: date ?? DateTime.now(),
           );
@@ -52,7 +53,7 @@ class ProjectRepository extends IProjectRepository {
               dateEpoch: epochFromDateTime(date: date ?? DateTime.now()),
               id: getResultId(projectTagResponse.results!),
               projectName: projectName,
-              status: status ?? 'ACTIVE',
+              status: status ?? active,
               color: projectColor,
             ),
             errorCode: null,

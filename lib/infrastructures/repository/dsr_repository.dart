@@ -10,6 +10,7 @@ import 'package:octopus/internal/database_strings.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/error_message_string.dart';
 import 'package:octopus/internal/helper_function.dart';
+import 'package:octopus/internal/string_status.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class DSRRepository extends IDSRRepository {
@@ -135,7 +136,7 @@ class DSRRepository extends IDSRRepository {
           QueryBuilder<ProjectsParseObject>(
         project,
       )
-            ..whereEqualTo(ProjectsParseObject.keyStatus, 'ACTIVE')
+            ..whereEqualTo(ProjectsParseObject.keyStatus, active)
             ..keysToReturn(<String>['objectId']);
 
       final ParseResponse queryGetActiveProjetResponse =
