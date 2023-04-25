@@ -24,6 +24,8 @@ class LeaveRequest {
     required this.status,
     required this.reason,
     required this.leaveType,
+    required this.dateFromEpoch,
+    required this.dateToEpoch,
   });
 
   final String id;
@@ -34,4 +36,18 @@ class LeaveRequest {
   final String status;
   final String reason;
   final String leaveType;
+  final int dateFromEpoch;
+  final int dateToEpoch;
+}
+
+class LeaveRemaining {
+  LeaveRemaining({
+    required this.leaveId,
+    required this.remainingLeave,
+    required this.consumedLeave,
+  });
+
+  final String leaveId;
+  final int remainingLeave;
+  final int consumedLeave;
 }

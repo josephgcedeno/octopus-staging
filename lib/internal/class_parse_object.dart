@@ -329,6 +329,8 @@ class LeavesRequestsParseObject extends ParseObject implements ParseCloneable {
   static const String keyStatus = 'status';
   static const String keyReason = 'reason';
   static const String keyLeaveType = 'leave_type';
+  static const String keyLeaveDateFrom = 'leave_date_from';
+  static const String keyLeaveDateTo = 'leave_date_to';
 
   LeavesParseObject get leave => get<LeavesParseObject>(keyLeave)!;
   set leave(LeavesParseObject leave) => set<LeavesParseObject>(keyLeave, leave);
@@ -350,6 +352,12 @@ class LeavesRequestsParseObject extends ParseObject implements ParseCloneable {
 
   String get leaveType => get<String>(keyLeaveType)!;
   set leaveType(String leaveType) => set<String>(keyLeaveType, leaveType);
+
+  int get leaveDateFrom => get<int>(keyLeaveDateFrom)!;
+  set leaveDateFrom(int from) => set<int>(keyLeaveDateFrom, from);
+
+  int get leaveDateTo => get<int>(keyLeaveDateTo)!;
+  set leaveDateTo(int to) => set<int>(keyLeaveDateTo, to);
 }
 
 class PanelRemindersParseObject extends ParseObject implements ParseCloneable {

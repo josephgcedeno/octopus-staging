@@ -23,7 +23,7 @@ class TimeRecordScreen extends StatefulWidget {
 
 class _TimeRecordScreenState extends State<TimeRecordScreen> {
   final LiveQuery liveQuery = LiveQuery();
-  late final Subscription<TimeAttendancesParseObject> subscription;
+  Subscription<TimeAttendancesParseObject>? subscription;
   Widget? notificationDialog;
 
   /// TODO: better to move up to much globally accessable listener. Like global scaffold to trigger like a notification.
@@ -32,7 +32,7 @@ class _TimeRecordScreenState extends State<TimeRecordScreen> {
         QueryBuilder<TimeAttendancesParseObject>(TimeAttendancesParseObject());
     subscription = await liveQuery.client.subscribe(query);
 
-    subscription.on(LiveQueryEvent.update, (ParseObject value) {
+    subscription?.on(LiveQueryEvent.update, (ParseObject value) {
       final String offsetStatus =
           value.get<String>(TimeAttendancesParseObject.keyOffsetStatus) ?? '';
 
@@ -78,7 +78,9 @@ class _TimeRecordScreenState extends State<TimeRecordScreen> {
   @override
   void dispose() {
     super.dispose();
-    liveQuery.client.unSubscribe(subscription);
+    if (subscription != null) {
+      liveQuery.client.unSubscribe(subscription!);
+    }
   }
 
   @override

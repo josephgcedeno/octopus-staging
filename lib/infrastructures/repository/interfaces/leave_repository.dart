@@ -63,14 +63,18 @@ abstract class ILeaveRepository {
   /// [reason] this identifies what is the reason for the leave.
   ///
   /// [leaveType] this identifies what is the type for this leave. (SICK LEAVE, VACATION LEAVE, EMERGENCY LEAVE)
+  ///
+  /// [from] this identifies start date of leave request.
+  ///
+  /// [to] this identifies end date of leave request.
   Future<APIResponse<LeaveRequest>> requestLeave({
     required DateTime dateUsed,
     required String reason,
     required String leaveType,
+    required DateTime from,
+    required DateTime to,
   });
 
-  /// FOR: ADMIN USE ONLY
-  ///
   /// This function will get the list of request leaves.
   ///
   /// [leaveRequestId] this identifies which certain record will be retrieved.
@@ -112,5 +116,15 @@ abstract class ILeaveRepository {
   /// [requestId] this identifies which request record will be canceled.
   Future<APIResponse<LeaveRequest>> cancelRequestLeave({
     required String requestId,
+  });
+
+  /// This function will get the leave number of the user base from the fiscal year leave.
+  /// 
+  /// [userId] this identifies which user we will be getting no leave.
+  /// 
+  /// [leaveId] this identifies which leave record will be referenced.
+  Future<APIResponse<LeaveRemaining>> getRemainingLeaves({
+    required String userId,
+     String? leaveId,
   });
 }
