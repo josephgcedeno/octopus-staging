@@ -28,7 +28,7 @@ abstract class IUserRepository {
     String? firstName,
     String? lastName,
     String? position,
-    String? isAdmin,
+    bool? isAdmin,
     String? address,
     String? civilStatus,
     int? age,

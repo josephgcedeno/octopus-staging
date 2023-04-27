@@ -129,15 +129,117 @@ class UserRepository extends IUserRepository {
     String? nuxifyId,
     String? firstName,
     String? lastName,
-    String? currentPosition,
-    String? isAdmin,
+    String? position,
+    bool? isAdmin,
     String? address,
     String? civilStatus,
     int? age,
     bool? isDeactive,
   }) async {
-    // TODO: implement fetchAllUser
-    throw UnimplementedError();
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final ParseUser userRecord = ParseUser.forQuery();
+
+        final QueryBuilder<ParseUser> queryUser =
+            QueryBuilder<ParseUser>(userRecord);
+
+        if (nuxifyId != null && nuxifyId != '') {
+          queryUser.whereEqualTo(usersNuxifyIdField, nuxifyId);
+        }
+
+        if (firstName != null && firstName != '') {
+          queryUser.whereContains(usersFirstNameField, firstName);
+        }
+
+        if (lastName != null && lastName != '') {
+          queryUser.whereContains(usersLastNameField, lastName);
+        }
+
+        if (position != null && position != '') {
+          queryUser.whereContains(usersPositionField, position);
+        }
+
+        if (isAdmin != null) {
+          queryUser.whereEqualTo(usersIsAdminField, isAdmin);
+        }
+        if (address != null && address != '') {
+          queryUser.whereContains(usersAddressField, address);
+        }
+        if (civilStatus != null && civilStatus != '') {
+          queryUser.whereContains(usersCivilStatusField, civilStatus);
+        }
+        if (age != null) {
+          final DateTime now = DateTime.now();
+          final int lowerLimitBirthDateEpoch = epochFromDateTime(
+            date: DateTime(now.year - age, now.month, now.day),
+          );
+
+          final int upperLimitBirthDateEpoch = epochFromDateTime(
+            date: DateTime(now.year - age - 1, now.month, now.day),
+          );
+
+          queryUser.whereGreaterThan(
+            usersBirthDateEpochField,
+            upperLimitBirthDateEpoch,
+          );
+          queryUser.whereLessThan(
+            usersBirthDateEpochField,
+            lowerLimitBirthDateEpoch,
+          );
+        }
+
+        final ParseResponse userRecordResponse = await queryUser.query();
+
+        if (userRecordResponse.error != null) {
+          formatAPIErrorResponse(error: userRecordResponse.error!);
+        }
+        final List<User> users = <User>[];
+
+        if (userRecordResponse.success && userRecordResponse.results != null) {
+          for (final ParseObject userRec
+              in userRecordResponse.results! as List<ParseObject>) {
+            users.add(
+              User(
+                id: userRec.objectId!,
+                address: userRec.get<String>(usersAddressField)!,
+                birthDateEpoch: userRec.get<int>(usersBirthDateEpochField)!,
+                dateHiredEpoch: userRec.get<int>(usersDateHiredField)!,
+                civilStatus: userRec.get<String>(usersCivilStatusField)!,
+                firstName: userRec.get<String>(usersFirstNameField)!,
+                isDeactive: userRec.get<bool>(usersIsdDeactiveField)!,
+                lastName: userRec.get<String>(usersLastNameField)!,
+                nuxifyId: userRec.get<String>(usersNuxifyIdField)!,
+                pagIbigNo: userRec.get<String>(usersPagIbigNoField)!,
+                philHealtNo: userRec.get<String>(usersPhilHealthNoField)!,
+                position: userRec.get<String>(usersPositionField)!,
+                profileImageSource:
+                    userRec.get<String>(usersProfileImageSourceField)!,
+                sssNo: userRec.get<String>(usersSSSNoField)!,
+                tinNo: userRec.get<String>(usersTinNoField)!,
+              ),
+            );
+          }
+        }
+        return APIListResponse<User>(
+          success: true,
+          message: 'Successfully created user record.',
+          data: users,
+          errorCode: null,
+        );
+      }
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
+      throw APIErrorResponse(
+        message: errorMessage,
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
+    }
   }
 
   @override
@@ -165,7 +267,7 @@ class UserRepository extends IUserRepository {
         );
       }
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
-      
+
       if (user != null && user.get<bool>(usersIsAdminField)!) {
         final ParseUser userRecord = ParseUser.forQuery();
 
