@@ -83,7 +83,10 @@ class AdminRegistrationTemplate extends StatelessWidget {
                             child: Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
-                                color: Colors.grey,
+                                color:
+                                    templateVariation == TemplateVariation.iDs
+                                        ? Colors.blue
+                                        : Colors.grey,
                               ),
                             ),
                           ),
@@ -104,6 +107,25 @@ class AdminRegistrationTemplate extends StatelessWidget {
             ),
           ),
         ),
+        if (templateVariation == TemplateVariation.iDs)
+          Align(
+            alignment: FractionalOffset.bottomCenter,
+            child: Container(
+              width: width,
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              margin: EdgeInsets.only(
+                bottom: height * 0.1,
+              ),
+              child: TextButton(
+                onPressed: buttonFunction,
+                child: Text(
+                  'Skip',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                      color: Colors.blue, fontWeight: FontWeight.w500),
+                ),
+              ),
+            ),
+          ),
         Align(
           alignment: FractionalOffset.bottomCenter,
           child: Container(
@@ -111,7 +133,6 @@ class AdminRegistrationTemplate extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 25.0),
             margin: EdgeInsets.only(
               bottom: height * 0.02,
-              top: height * 0.02,
             ),
             child: ElevatedButton(
               style: ButtonStyle(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
+import 'package:octopus/module/admin_registration/interfaces/screens/ids_form_screen.dart';
 import 'package:octopus/module/admin_registration/interfaces/widgets/admin_registration_template.dart';
 import 'package:octopus/module/admin_registration/interfaces/widgets/full_width_reg_textfield.dart';
 
@@ -23,9 +24,6 @@ class _PersonalInformationFormScreenState
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final double height = MediaQuery.of(context).size.height;
-    final double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: const GlobalAppBar(leading: LeadingButton.back),
       body: AdminRegistrationTemplate(
@@ -33,7 +31,13 @@ class _PersonalInformationFormScreenState
         buttonName: 'Next',
         subtitle: 'Personal Information',
         title: 'Registration',
-        buttonFunction: () {},
+        buttonFunction: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<dynamic>(
+              builder: (_) => const IdsFormScreen(),
+            ),
+          );
+        },
         body: Form(
           child: Column(
             children: <Widget>[
