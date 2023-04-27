@@ -47,13 +47,13 @@ abstract class IUserRepository {
   ///
   /// [nuxifyId] - The Nuxify ID of the new user.
   ///
-  /// [birthDateEpoch] - The birth date of the new user.
+  /// [birthDate] - The birth date of the new user.
   ///
   /// [address] - The address of the new user.
   ///
   /// [civilStatus] - The civil status of the new user.
   ///
-  /// [dateHiredEpoch] - The date that the new user was hired.
+  /// [dateHired] - The date that the new user was hired.
   ///
   /// [profileImageSource] - The source of the new user's profile image.
   ///
@@ -66,15 +66,15 @@ abstract class IUserRepository {
   /// [tinNo] - The TIN number of the new user.
   ///
   /// [philHealtNo] - The PhilHealth number of the new user.
-  Future<APIListResponse<User>> createUser({
+  Future<APIResponse<User>> createUser({
     required String id,
     required String firstName,
     required String lastName,
     required String nuxifyId,
-    required int birthDateEpoch,
+    required DateTime birthDate,
     required String address,
     required String civilStatus,
-    required int dateHiredEpoch,
+    required DateTime dateHired,
     required String profileImageSource,
     required String position,
     required String pagIbigNo,
@@ -114,7 +114,7 @@ abstract class IUserRepository {
   /// [philHealtNo] - (Optional) The updated PhilHealth number of the user.
   ///
   /// [position] - (Optional) The updated Position of the user.
-  Future<APIListResponse<User>> updateUser({
+  Future<APIResponse<User>> updateUser({
     required String id,
     String? firstName,
     String? lastName,
@@ -136,7 +136,7 @@ abstract class IUserRepository {
   /// Deactivates the user with the given [id] in the API.
   ///
   /// [id] - The ID of the user to deactivate.
-  Future<APIListResponse<User>> deactivateUser({
+  Future<APIResponse<User>> deactivateUser({
     required String id,
   });
 }
