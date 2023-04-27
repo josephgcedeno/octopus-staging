@@ -10,6 +10,7 @@ class User {
     required this.dateHiredEpoch,
     required this.imageSource,
     required this.isDeactive,
+    required this.position,
     required this.pagIbigNo,
     required this.sssNo,
     required this.tinNo,
@@ -26,6 +27,7 @@ class User {
   final int dateHiredEpoch;
   final String imageSource;
   final bool isDeactive;
+  final String position;
   // Government related ids
   final String pagIbigNo;
   final String sssNo;

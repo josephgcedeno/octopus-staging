@@ -55,6 +55,8 @@ abstract class IUserRepository {
   ///
   /// [imageSource] - The source of the new user's profile image.
   ///
+  /// [position] - The source of the new user's profile image.
+  ///
   /// [pagIbigNo] - The Pag-IBIG number of the new user.
   ///
   /// [sssNo] - The SSS number of the new user.
@@ -71,6 +73,7 @@ abstract class IUserRepository {
     required String civilStatus,
     required int dateHiredEpoch,
     required String imageSource,
+    required String position,
     required String pagIbigNo,
     required String sssNo,
     required String tinNo,
@@ -106,6 +109,8 @@ abstract class IUserRepository {
   /// [tinNo] - (Optional) The updated TIN number of the user.
   ///
   /// [philHealtNo] - (Optional) The updated PhilHealth number of the user.
+  ///
+  /// [position] - (Optional) The updated Position of the user.
   Future<APIListResponse<User>> updateUser({
     required String id,
     String? firstName,
@@ -120,6 +125,7 @@ abstract class IUserRepository {
     String? sssNo,
     String? tinNo,
     String? philHealtNo,
+    String? position,
   });
 
   /// FOR ADMIN USE ONLY
