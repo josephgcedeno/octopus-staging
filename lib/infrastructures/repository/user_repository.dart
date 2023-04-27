@@ -120,8 +120,84 @@ class UserRepository extends IUserRepository {
 
   @override
   Future<APIResponse<User>> deactivateUser({required String id}) async {
-    // TODO: implement deactivateUser
-    throw UnimplementedError();
+    try {
+      if (id.isEmpty) {
+        throw APIErrorResponse(
+          message: errorEmptyValue,
+          errorCode: null,
+        );
+      }
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final ParseUser userRecord = ParseUser.forQuery();
+
+        /// Set the user record with id passed
+        userRecord.objectId = id;
+
+        userRecord.set<bool>(usersIsdDeactiveField, true);
+
+        final ParseResponse userRecordResponse = await userRecord.save();
+
+        if (userRecordResponse.error != null) {
+          formatAPIErrorResponse(error: userRecordResponse.error!);
+        }
+
+        if (userRecordResponse.success && userRecordResponse.results != null) {
+          /// Fetch the time in out record if already set. Since not available keys for time in and time out when updating, fetch manually.
+          final String objectId = getResultId(userRecordResponse.results!);
+          final ParseResponse fetchUserInfo =
+              await userRecord.getObject(objectId);
+
+          if (fetchUserInfo.error != null) {
+            formatAPIErrorResponse(error: fetchUserInfo.error!);
+          }
+
+          if (fetchUserInfo.success && fetchUserInfo.results != null) {
+            final ParseObject resultParseObject =
+                getParseObject(fetchUserInfo.results!);
+
+            return APIResponse<User>(
+              success: true,
+              message: 'Successfully deactivate user.',
+              data: User(
+                id: objectId,
+                address: resultParseObject.get<String>(usersAddressField)!,
+                birthDateEpoch:
+                    resultParseObject.get<int>(usersBirthDateEpochField)!,
+                dateHiredEpoch:
+                    resultParseObject.get<int>(usersDateHiredField)!,
+                civilStatus:
+                    resultParseObject.get<String>(usersCivilStatusField)!,
+                firstName: resultParseObject.get<String>(usersFirstNameField)!,
+                isDeactive: resultParseObject.get<bool>(usersIsdDeactiveField)!,
+                lastName: resultParseObject.get<String>(usersLastNameField)!,
+                nuxifyId: resultParseObject.get<String>(usersNuxifyIdField)!,
+                pagIbigNo: resultParseObject.get<String>(usersPagIbigNoField)!,
+                philHealtNo:
+                    resultParseObject.get<String>(usersPhilHealthNoField)!,
+                position: resultParseObject.get<String>(usersPositionField)!,
+                profileImageSource: resultParseObject
+                    .get<String>(usersProfileImageSourceField)!,
+                sssNo: resultParseObject.get<String>(usersSSSNoField)!,
+                tinNo: resultParseObject.get<String>(usersTinNoField)!,
+              ),
+              errorCode: null,
+            );
+          }
+        }
+      }
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
+      throw APIErrorResponse(
+        message: errorMessage,
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
+    }
   }
 
   @override
