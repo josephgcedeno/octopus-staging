@@ -300,7 +300,8 @@ class UserRepository extends IUserRepository {
         }
         return APIListResponse<User>(
           success: true,
-          message: 'Successfully created user record.',
+          message:
+              'Successfully fetch user record. Total row is ${users.length}',
           data: users,
           errorCode: null,
         );
