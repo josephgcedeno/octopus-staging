@@ -12,7 +12,7 @@ abstract class IUserRepository {
   ///
   /// [lastName] - An optional string representing the last name of the user.
   ///
-  /// [currentPosition] - An optional string representing the current position of the user.
+  /// [position] - An optional string representing the position of the user.
   ///
   /// [isAdmin] - An optional string representing whether the user is an admin.
   ///
@@ -27,7 +27,7 @@ abstract class IUserRepository {
     String? nuxifyId,
     String? firstName,
     String? lastName,
-    String? currentPosition,
+    String? position,
     String? isAdmin,
     String? address,
     String? civilStatus,
