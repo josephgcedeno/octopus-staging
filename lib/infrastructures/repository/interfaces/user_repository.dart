@@ -39,6 +39,8 @@ abstract class IUserRepository {
   ///
   /// Creates a new user in the API with the given information.
   ///
+  /// [id] - The ID which created from register account to associate extra fields for employee record.
+  ///
   /// [firstName] - The first name of the new user.
   ///
   /// [lastName] - The last name of the new user.
@@ -65,6 +67,7 @@ abstract class IUserRepository {
   ///
   /// [philHealtNo] - The PhilHealth number of the new user.
   Future<APIListResponse<User>> createUser({
+    required String id,
     required String firstName,
     required String lastName,
     required String nuxifyId,
