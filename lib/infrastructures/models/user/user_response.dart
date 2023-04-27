@@ -8,7 +8,7 @@ class User {
     required this.address,
     required this.civilStatus,
     required this.dateHiredEpoch,
-    required this.imageSource,
+    required this.profileImageSource,
     required this.isDeactive,
     required this.position,
     required this.pagIbigNo,
@@ -25,7 +25,7 @@ class User {
   final String address;
   final String civilStatus;
   final int dateHiredEpoch;
-  final String imageSource;
+  final String profileImageSource;
   final bool isDeactive;
   final String position;
   // Government related ids

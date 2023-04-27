@@ -53,7 +53,7 @@ abstract class IUserRepository {
   ///
   /// [dateHiredEpoch] - The date that the new user was hired.
   ///
-  /// [imageSource] - The source of the new user's profile image.
+  /// [profileImageSource] - The source of the new user's profile image.
   ///
   /// [position] - The source of the new user's profile image.
   ///
@@ -72,7 +72,7 @@ abstract class IUserRepository {
     required String address,
     required String civilStatus,
     required int dateHiredEpoch,
-    required String imageSource,
+    required String profileImageSource,
     required String position,
     required String pagIbigNo,
     required String sssNo,
