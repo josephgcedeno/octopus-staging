@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
+import 'package:octopus/module/admin_registration/interfaces/screens/team_members_list_screen.dart';
 import 'package:octopus/module/admin_registration/interfaces/widgets/admin_registration_template.dart';
 import 'package:octopus/module/admin_registration/interfaces/widgets/full_width_reg_textfield.dart';
 
@@ -30,7 +28,13 @@ class _IdsFormScreenState extends State<IdsFormScreen> {
         templateVariation: TemplateVariation.iDs,
         title: 'Registration',
         subtitle: "ID's",
-        buttonFunction: () {},
+        buttonFunction: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<dynamic>(
+              builder: (_) => const TeamMembersScreen(),
+            ),
+          );
+        },
         buttonName: 'Save',
         body: Form(
           child: Column(
