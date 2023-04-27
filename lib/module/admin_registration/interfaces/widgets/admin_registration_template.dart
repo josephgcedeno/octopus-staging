@@ -1,6 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+enum TemplateVariation {
+  teamMembers,
+  personalInformaton,
+  iDs,
+}
+
 class AdminRegistrationTemplate extends StatelessWidget {
   const AdminRegistrationTemplate({
     required this.body,
@@ -8,13 +14,16 @@ class AdminRegistrationTemplate extends StatelessWidget {
     required this.subtitle,
     required this.buttonName,
     required this.buttonFunction,
+    required this.templateVariation,
     Key? key,
   }) : super(key: key);
   final Widget body;
   final String title;
   final String subtitle;
   final String buttonName;
+  final TemplateVariation templateVariation;
   final void Function() buttonFunction;
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -52,34 +61,35 @@ class AdminRegistrationTemplate extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Container(
-                    margin: EdgeInsets.only(bottom: height * 0.02),
-                    height: height * 0.003,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Flexible(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.blue,
+                  if (templateVariation != TemplateVariation.teamMembers)
+                    Container(
+                      margin: EdgeInsets.only(bottom: height * 0.02),
+                      height: height * 0.003,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Flexible(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.blue,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Flexible(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.grey,
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Flexible(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.grey,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
                   Text(
                     subtitle,
                     style: theme.textTheme.titleSmall

@@ -21,6 +21,7 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
     return Scaffold(
       appBar: const GlobalAppBar(leading: LeadingButton.back),
       body: AdminRegistrationTemplate(
+        templateVariation: TemplateVariation.teamMembers,
         buttonName: 'Add Member',
         subtitle: 'Current Members',
         title: 'Team Members',
