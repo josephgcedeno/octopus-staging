@@ -45,13 +45,13 @@ abstract class IUserRepository {
   ///
   /// [nuxifyId] - The Nuxify ID of the new user.
   ///
-  /// [birthDate] - The birth date of the new user.
+  /// [birthDateEpoch] - The birth date of the new user.
   ///
   /// [address] - The address of the new user.
   ///
   /// [civilStatus] - The civil status of the new user.
   ///
-  /// [dateHired] - The date that the new user was hired.
+  /// [dateHiredEpoch] - The date that the new user was hired.
   ///
   /// [imageSource] - The source of the new user's profile image.
   ///
@@ -66,10 +66,10 @@ abstract class IUserRepository {
     required String firstName,
     required String lastName,
     required String nuxifyId,
-    required String birthDate,
+    required int birthDateEpoch,
     required String address,
     required String civilStatus,
-    required String dateHired,
+    required int dateHiredEpoch,
     required String imageSource,
     required String pagIbigNo,
     required String sssNo,

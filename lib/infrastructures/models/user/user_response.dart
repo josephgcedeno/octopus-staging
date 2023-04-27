@@ -4,10 +4,10 @@ class User {
     required this.firstName,
     required this.lastName,
     required this.nuxifyId,
-    required this.birthDate,
+    required this.birthDateEpoch,
     required this.address,
     required this.civilStatus,
-    required this.dateHired,
+    required this.dateHiredEpoch,
     required this.imageSource,
     required this.isDeactive,
     required this.pagIbigNo,
@@ -20,10 +20,10 @@ class User {
   final String firstName;
   final String lastName;
   final String nuxifyId;
-  final String birthDate;
+  final int birthDateEpoch;
   final String address;
   final String civilStatus;
-  final String dateHired;
+  final int dateHiredEpoch;
   final String imageSource;
   final bool isDeactive;
   // Government related ids
