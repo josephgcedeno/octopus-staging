@@ -146,18 +146,160 @@ class UserRepository extends IUserRepository {
     String? firstName,
     String? lastName,
     String? nuxifyId,
-    String? birthDate,
+    DateTime? birthDate,
     String? address,
     String? civilStatus,
-    String? dateHired,
-    String? imageSource,
+    DateTime? dateHired,
+    String? profileImageSource,
     String? pagIbigNo,
     String? sssNo,
     String? tinNo,
     String? philHealtNo,
     String? position,
   }) async {
-    // TODO: implement updateUser
-    throw UnimplementedError();
+    try {
+      if (id.isEmpty) {
+        throw APIErrorResponse(
+          message: 'Id should not be empty.',
+          errorCode: null,
+        );
+      }
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+      
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final ParseUser userRecord = ParseUser.forQuery();
+
+        /// Set the user record with id passed
+        userRecord.objectId = id;
+
+        if (firstName != null && firstName != '') {
+          userRecord.set<String>(usersFirstNameField, firstName);
+        }
+        if (lastName != null && lastName != '') {
+          userRecord.set<String>(usersLastNameField, lastName);
+        }
+        if (nuxifyId != null && nuxifyId != '') {
+          userRecord.set<String>(usersNuxifyIdField, nuxifyId);
+        }
+        if (birthDate != null) {
+          final int birthDateEpoch = epochFromDateTime(date: birthDate);
+          userRecord.set<int>(usersBirthDateEpochField, birthDateEpoch);
+        }
+        if (address != null && address != '') {
+          userRecord.set<String>(usersAddressField, address);
+        }
+
+        if (civilStatus != null && civilStatus != '') {
+          userRecord.set<String>(usersCivilStatusField, civilStatus);
+        }
+
+        if (dateHired != null) {
+          final int dateHiredEpoch = epochFromDateTime(date: dateHired);
+
+          userRecord.set<int>(usersDateHiredField, dateHiredEpoch);
+        }
+
+        if (profileImageSource != null && profileImageSource != '') {
+          userRecord.set<String>(
+            usersProfileImageSourceField,
+            profileImageSource,
+          );
+        }
+
+        if (position != null && position != '') {
+          userRecord.set<String>(
+            usersPositionField,
+            position,
+          );
+        }
+
+        if (pagIbigNo != null && pagIbigNo != '') {
+          userRecord.set<String>(
+            usersPagIbigNoField,
+            pagIbigNo,
+          );
+        }
+
+        if (sssNo != null && sssNo != '') {
+          userRecord.set<String>(
+            usersSSSNoField,
+            sssNo,
+          );
+        }
+        if (tinNo != null && tinNo != '') {
+          userRecord.set<String>(
+            usersTinNoField,
+            tinNo,
+          );
+        }
+
+        if (philHealtNo != null && philHealtNo != '') {
+          userRecord.set<String>(
+            usersPhilHealthNoField,
+            philHealtNo,
+          );
+        }
+
+        final ParseResponse userRecordResponse = await userRecord.save();
+
+        if (userRecordResponse.error != null) {
+          formatAPIErrorResponse(error: userRecordResponse.error!);
+        }
+
+        if (userRecordResponse.success && userRecordResponse.results != null) {
+          /// Fetch the time in out record if already set. Since not available keys for time in and time out when updating, fetch manually.
+          final String objectId = getResultId(userRecordResponse.results!);
+          final ParseResponse fetchUserInfo =
+              await userRecord.getObject(objectId);
+
+          if (fetchUserInfo.error != null) {
+            formatAPIErrorResponse(error: fetchUserInfo.error!);
+          }
+
+          if (fetchUserInfo.success && fetchUserInfo.results != null) {
+            final ParseObject resultParseObject =
+                getParseObject(fetchUserInfo.results!);
+
+            return APIResponse<User>(
+              success: true,
+              message: 'Successfully updated user info.',
+              data: User(
+                id: objectId,
+                address: resultParseObject.get<String>(usersAddressField)!,
+                birthDateEpoch:
+                    resultParseObject.get<int>(usersBirthDateEpochField)!,
+                dateHiredEpoch:
+                    resultParseObject.get<int>(usersDateHiredField)!,
+                civilStatus:
+                    resultParseObject.get<String>(usersCivilStatusField)!,
+                firstName: resultParseObject.get<String>(usersFirstNameField)!,
+                isDeactive: resultParseObject.get<bool>(usersIsdDeactiveField)!,
+                lastName: resultParseObject.get<String>(usersLastNameField)!,
+                nuxifyId: resultParseObject.get<String>(usersNuxifyIdField)!,
+                pagIbigNo: resultParseObject.get<String>(usersPagIbigNoField)!,
+                philHealtNo:
+                    resultParseObject.get<String>(usersPhilHealthNoField)!,
+                position: resultParseObject.get<String>(usersPositionField)!,
+                profileImageSource: resultParseObject
+                    .get<String>(usersProfileImageSourceField)!,
+                sssNo: resultParseObject.get<String>(usersSSSNoField)!,
+                tinNo: resultParseObject.get<String>(usersTinNoField)!,
+              ),
+              errorCode: null,
+            );
+          }
+        }
+      }
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
+      throw APIErrorResponse(
+        message: errorMessage,
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
+    }
   }
 }
