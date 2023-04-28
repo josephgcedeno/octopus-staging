@@ -1,0 +1,109 @@
+import 'dart:developer';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/infrastructures/models/api_error_response.dart';
+import 'package:octopus/infrastructures/models/api_response.dart';
+import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
+import 'package:octopus/infrastructures/models/project/project_response.dart';
+import 'package:octopus/infrastructures/repository/dsr_repository.dart';
+import 'package:octopus/infrastructures/repository/project_repository.dart';
+import 'package:octopus/internal/string_status.dart';
+
+part 'accomplishments_state.dart';
+
+class AccomplishmentsCubit extends Cubit<AccomplishmentsState> {
+  AccomplishmentsCubit(
+      {required this.projectRepository, required this.dsrRepository,})
+      : super(AccomplishmentsState());
+  final ProjectRepository projectRepository;
+  final DSRRepository dsrRepository;
+
+  Future<void> getAllProjects() async {
+    try {
+      emit(FetchAllProjectsLoading());
+
+      final APIListResponse<Project> response =
+          await projectRepository.getAllProjects(status: active);
+
+      emit(FetchAllProjectsSuccess(projects: response.data));
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+      emit(
+        FetchAllProjectsFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
+    }
+  }
+
+  Future<void> getAccomplishments(DateTime date, String proj) async {
+    try {
+      emit(FetchAllAccomplishmentsDataLoading());
+
+      final DateTime formattedDate = DateTime(date.year, date.month, date.day);
+      final DateTime today = DateTime.now();
+      final DateTime formattedToday =
+          DateTime(today.year, today.month, today.day);
+
+      final APIResponse<SprintRecord> todaySprintResponse = await dsrRepository
+          .sprintInfoQueryToday(); // This will return a single result of Sprint object that contains object id that will be used for getting the list of DSR Record for a sprint, start date, end date.
+      String sprintId = todaySprintResponse.data.id;
+
+      final APIListResponse<Project> allProjectResponse =
+          await projectRepository.getAllProjects(status: active);
+      final List<Project> projects = allProjectResponse.data;
+      // This will return a list of Project object that contains id, color, project name, and status.
+
+      final APIListResponse<SprintRecord> allSprintResponse =
+          await dsrRepository.getAllSprints();
+      final List<SprintRecord> sprints = allSprintResponse.data;
+
+      final int epoch = date.millisecondsSinceEpoch ~/ 1000;
+
+      String projectId = allProjectResponse.data[0].id;
+
+      if (formattedDate.isAtSameMomentAs(formattedToday)) {
+        sprints.map((SprintRecord sprint) {
+          if (sprint.startDateEpoch < epoch && sprint.endDateEpoch < epoch) {
+            sprintId = sprint.id;
+          }
+        }).toList();
+
+        projects.map((Project project) {
+          if (proj == project.projectName) {
+            projectId = project.id;
+          }
+        }).toList();
+      }
+
+      final APIResponse<AllDSRItem> accomplishments =
+          await dsrRepository.getAllDSRRecordForSprint(
+        sprintId: sprintId,
+        projectId:
+            projectId // Getting all the accomplishment base from the project ids eg for frontRx.
+        ,
+        startDate: formattedDate,
+        endDate: formattedDate,
+      ); // This will return the list of DSRWorks object 'blockers': [{'text': 'No internet 1 huhu', 'color' : '0xFF017BFF', ...}, ...] <-- type aning value is naka Class/Object SprintRecord 'done': [{'text': 'No internet 2 huhu', 'color' : '0xFF017BFF', ...}, ...] <-- type aning value is naka Class/Object SprintRecord'doing': [{'text': 'No internet 3 huhu', 'color' : '0xFF017BFF', ...}, ...]  <-- type aning value is naka Class/Object SprintRecord
+
+      inspect(accomplishments);
+
+      emit(
+        FetchAllAccomplishmentsDataSuccess(
+          tasks: accomplishments.data.data,
+          projects: projects,
+        ),
+      );
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+
+      emit(
+        FetchAllAccomplishmentsDataFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
+    }
+  }
+}
