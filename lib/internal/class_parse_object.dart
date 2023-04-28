@@ -1,6 +1,6 @@
 import 'package:octopus/infrastructures/models/dsr/dsr_request.dart';
 import 'package:octopus/internal/helper_function.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class HolidayParseObject extends ParseObject implements ParseCloneable {
   HolidayParseObject() : super(_keyTableName);

@@ -5,7 +5,7 @@ import 'package:octopus/infrastructures/models/auth/auth_request.dart';
 import 'package:octopus/infrastructures/repository/interfaces/auth_repository.dart';
 import 'package:octopus/internal/database_strings.dart';
 import 'package:octopus/internal/debug_utils.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class AuthRepository extends IAuthRepository {
   @override
