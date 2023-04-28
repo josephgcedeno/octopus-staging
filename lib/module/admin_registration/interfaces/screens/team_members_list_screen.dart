@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/module/admin_registration/interfaces/screens/personal_information_form_screen.dart';
@@ -15,9 +14,6 @@ class TeamMembersScreen extends StatefulWidget {
 class _TeamMembersScreenState extends State<TeamMembersScreen> {
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final double height = MediaQuery.of(context).size.height;
-    final double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: const GlobalAppBar(leading: LeadingButton.back),
       body: AdminRegistrationTemplate(
@@ -33,14 +29,19 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
           );
         },
         body: Column(
-          children: <Widget>[
-            for (int i = 1; i < 15; i++)
-              TeamMember(
-                name: 'Employee $i',
-                imageLink:
-                    'https://cdn-icons-png.flaticon.com/512/201/201634.png',
-                position: 'Software Developer $i',
-              ),
+          children: const <Widget>[
+            TeamMember(
+              name: 'Employee 1',
+              imageLink:
+                  'https://cdn-icons-png.flaticon.com/512/201/201634.png',
+              position: 'Software Developer 1',
+            ),
+            TeamMember(
+              name: 'Employee 1',
+              imageLink:
+                  'https://cdn-icons-png.flaticon.com/512/201/201634.png',
+              position: 'Software Developer 1',
+            ),
           ],
         ),
       ),
