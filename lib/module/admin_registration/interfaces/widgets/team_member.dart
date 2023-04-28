@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:octopus/infrastructures/models/user/user_response.dart';
 import 'package:octopus/module/admin_registration/interfaces/screens/members_profile_screen.dart';
 
 class TeamMember extends StatelessWidget {
@@ -7,11 +8,15 @@ class TeamMember extends StatelessWidget {
     required this.name,
     required this.position,
     required this.imageLink,
+    required this.isDeactivated,
+    required this.user,
     Key? key,
   }) : super(key: key);
   final String name;
   final String position;
   final String imageLink;
+  final bool isDeactivated;
+  final User user;
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +34,22 @@ class TeamMember extends StatelessWidget {
             height: height * 0.09,
             child: DecoratedBox(
               decoration: BoxDecoration(
-                color: const Color(0xFFE25252).withOpacity(0.2),
+                color: isDeactivated
+                    ? const Color(0xFFE25252).withOpacity(0.2)
+                    : const Color(0xff39C0C7).withOpacity(0.2),
                 borderRadius: const BorderRadius.all(Radius.circular(4)),
               ),
-              child: const Icon(
-                Icons.close_rounded,
-                color: Color(0xFFE25252),
-                size: 20,
-              ),
+              child: isDeactivated
+                  ? const Icon(
+                      Icons.close_rounded,
+                      color: Color(0xFFE25252),
+                      size: 20,
+                    )
+                  : const Icon(
+                      Icons.check,
+                      color: Color(0xff39C0C7),
+                      size: 20,
+                    ),
             ),
           )
         ],
@@ -45,7 +58,9 @@ class TeamMember extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute<dynamic>(
-              builder: (_) => const MembersProfileScreen(),
+              builder: (_) => MembersProfileScreen(
+                user: user,
+              ),
             ),
           );
         },

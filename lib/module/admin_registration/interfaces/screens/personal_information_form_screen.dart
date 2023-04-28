@@ -21,6 +21,7 @@ class _PersonalInformationFormScreenState
   final TextEditingController addressTextController = TextEditingController();
   final TextEditingController positionTextController = TextEditingController();
   final TextEditingController dateHiredTextController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -32,13 +33,16 @@ class _PersonalInformationFormScreenState
         subtitle: 'Personal Information',
         title: 'Registration',
         buttonFunction: () {
-          Navigator.of(context).push(
-            MaterialPageRoute<dynamic>(
-              builder: (_) => const IdsFormScreen(),
-            ),
-          );
+          if (_formKey.currentState!.validate()) {
+            Navigator.of(context).push(
+              MaterialPageRoute<dynamic>(
+                builder: (_) => const IdsFormScreen(),
+              ),
+            );
+          }
         },
         body: Form(
+          key: _formKey,
           child: Column(
             children: <Widget>[
               LayoutBuilder(

@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:octopus/infrastructures/models/user/user_response.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
+import 'package:octopus/internal/helper_function.dart';
 import 'package:octopus/module/admin_registration/interfaces/widgets/member_information_component.dart';
 
 class MembersProfileScreen extends StatelessWidget {
-  const MembersProfileScreen({Key? key}) : super(key: key);
-
+  const MembersProfileScreen({
+    required this.user,
+    Key? key,
+  }) : super(key: key);
+  final User user;
   void showAlertDialogOnDeactivateAccount(BuildContext context) {
     showDialog<void>(
       context: context,
@@ -64,58 +69,81 @@ class MembersProfileScreen extends StatelessWidget {
       body: Stack(
         children: <Widget>[
           Container(
-            height: height * 0.87,
+            height: height * 0.8,
             width: width,
             padding: const EdgeInsets.symmetric(horizontal: 25.0),
-            child: Column(
-              children: <Widget>[
-                CircleAvatar(
-                  minRadius: width * 0.18,
-                  maxRadius: width * 0.18,
-                  backgroundImage: const NetworkImage(
-                    'https://cdn-icons-png.flaticon.com/512/201/201634.png',
+            child: SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  CircleAvatar(
+                    minRadius: width * 0.18,
+                    maxRadius: width * 0.18,
+                    backgroundImage: const NetworkImage(
+                      'https://cdn-icons-png.flaticon.com/512/201/201634.png',
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: height * 0.02,
-                ),
-                Text(
-                  'Employee One',
-                  style: theme.textTheme.headlineSmall
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  height: height * 0.01,
-                ),
-                const Text('Software Developer I'),
-                SizedBox(
-                  height: height * 0.01,
-                ),
-                const Icon(
-                  Icons.keyboard_arrow_down,
-                ),
-                SizedBox(
-                  height: height * 0.01,
-                ),
-                const InformationComponent(type: 'ID', value: 'NXFY-0000'),
-                const InformationComponent(type: 'Name', value: 'Employee One'),
-                const InformationComponent(
-                    type: 'Birthdate', value: '07/30/1997'),
-                const InformationComponent(
-                  type: 'Address',
-                  value: 'Lorem Ipsum St. Davao City',
-                ),
-                const InformationComponent(type: 'TIN No.', value: '00000000'),
-                const InformationComponent(type: 'SSS No.', value: '00000000'),
-                const InformationComponent(
-                    type: 'PAG-IBIG No.', value: '00000000'),
-                const InformationComponent(
-                  type: 'Philhealth No.',
-                  value: '00000000',
-                ),
-                const InformationComponent(
-                    type: 'Date Hired', value: '07/30/1921'),
-              ],
+                  SizedBox(
+                    height: height * 0.02,
+                  ),
+                  Text(
+                    '${user.firstName} ${user.lastName}',
+                    style: theme.textTheme.headlineSmall
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: height * 0.01,
+                  ),
+                  Text(user.position),
+                  SizedBox(
+                    height: height * 0.01,
+                  ),
+                  const Icon(
+                    Icons.keyboard_arrow_down,
+                  ),
+                  SizedBox(
+                    height: height * 0.01,
+                  ),
+                  SingleChildScrollView(
+                    child: SizedBox(
+                      height: height,
+                      child: Column(
+                        children: <Widget>[
+                          InformationComponent(
+                              type: 'ID', value: user.nuxifyId),
+                          InformationComponent(
+                            type: 'Name',
+                            value: '${user.firstName} ${user.lastName}',
+                          ),
+                          InformationComponent(
+                            type: 'Birthdate',
+                            value: dateTimeFromEpoch(epoch: user.birthDateEpoch)
+                                .toString(),
+                          ),
+                          InformationComponent(
+                            type: 'Address',
+                            value: user.address,
+                          ),
+                          InformationComponent(
+                              type: 'TIN No.', value: user.tinNo),
+                          InformationComponent(
+                              type: 'SSS No.', value: user.sssNo),
+                          InformationComponent(
+                              type: 'PAG-IBIG No.', value: user.pagIbigNo),
+                          InformationComponent(
+                            type: 'Philhealth No.',
+                            value: user.philHealtNo,
+                          ),
+                          InformationComponent(
+                            type: 'Date Hired',
+                            value: dateTimeFromEpoch(epoch: user.dateHiredEpoch)
+                                .toString(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           Align(
@@ -129,10 +157,14 @@ class MembersProfileScreen extends StatelessWidget {
               child: ElevatedButton(
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(
-                    const Color(0xFFE25252).withOpacity(0.2),
+                    user.isDeactive
+                        ? const Color(0xFFE25252).withOpacity(0.2)
+                        : const Color(0xff39C0C7).withOpacity(0.2),
                   ),
                   foregroundColor: MaterialStateProperty.all(
-                    const Color(0xFFE25252),
+                    user.isDeactive
+                        ? const Color(0xFFE25252)
+                        : const Color(0xff39C0C7),
                   ),
                   elevation: MaterialStateProperty.all(0),
                   shape: MaterialStateProperty.all(
@@ -144,8 +176,8 @@ class MembersProfileScreen extends StatelessWidget {
                 onPressed: () {
                   showAlertDialogOnDeactivateAccount(context);
                 },
-                child: const Text(
-                  'Deactivate Account',
+                child: Text(
+                  user.isDeactive ? 'Deactivate Account' : 'Activate Account',
                 ),
               ),
             ),
