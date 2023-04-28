@@ -1,4 +1,4 @@
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:flutter/material.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({Key? key}) : super(key: key);
@@ -91,11 +91,7 @@ class _AdminScreenState extends State<AdminScreen> {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(4),
-                      child: NeumorphicButton(
-                        style: NeumorphicStyle(
-                          color: theme.primaryColor,
-                          lightSource: LightSource.top,
-                        ),
+                      child: ElevatedButton(
                         child: Row(
                           children: <Widget>[
                             Container(
