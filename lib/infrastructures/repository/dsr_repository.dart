@@ -292,7 +292,7 @@ class DSRRepository extends IDSRRepository {
                 final DSRsParseObject row =
                     DSRsParseObject.toCustomParseObject(data: dsrDonePerUser);
 
-                final String userName = row.user.get(usersNameField)!;
+                final String userName = row.user.get(usersFirstNameField)!;
 
                 final String date = DateFormat('EEE, MMM d, yyyy').format(
                   dateTimeFromEpoch(

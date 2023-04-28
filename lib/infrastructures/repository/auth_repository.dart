@@ -103,11 +103,7 @@ class AuthRepository extends IAuthRepository {
         payload.email,
         payload.password,
         payload.email,
-      )
-        ..set<String?>(usersNameField, payload.email)
-        ..set<String?>(usersPositionField, payload.position)
-        ..set<bool?>(usersIsAdminField, payload.isAdmin ?? false)
-        ..set<String?>(usersPhotoField, payload.photo);
+      )..set<bool?>(usersIsAdminField, payload.isAdmin ?? false);
 
       final ParseResponse signUpResponse = await user.signUp();
 
