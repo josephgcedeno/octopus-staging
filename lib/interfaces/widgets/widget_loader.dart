@@ -136,3 +136,73 @@ List<Widget> itemLoader({
       )
   ];
 }
+
+Widget sliderLoader(BuildContext context) {
+  final double width = MediaQuery.of(context).size.width;
+  final double height = MediaQuery.of(context).size.height;
+
+  return Column(
+    children: <Widget>[
+      Container(
+        margin: EdgeInsets.symmetric(
+          vertical: height * 0.03,
+          horizontal: width * 0.08,
+        ),
+        alignment: Alignment.center,
+        child: lineLoader(
+          height: height * 0.2,
+          width: double.infinity,
+        ),
+      ),
+      lineLoader(
+        height: height * 0.010,
+        width: width * 0.13,
+      )
+    ],
+  );
+}
+
+Widget tasksLoader(BuildContext context) {
+  final double width = MediaQuery.of(context).size.width;
+  final double height = MediaQuery.of(context).size.height;
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: <Widget>[
+      for (int i = 0; i < 5; i++)
+        Row(
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.all(width * 0.03),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+              child: CircularPercentIndicator(
+                radius: width * 0.04,
+                lineWidth: 1.5,
+                backgroundColor: Colors.transparent,
+                progressColor: Colors.transparent,
+                reverse: true,
+                center: ClipRRect(
+                  borderRadius: BorderRadius.circular(width),
+                  child: Shimmer.fromColors(
+                    baseColor: shimmerBase,
+                    highlightColor: shimmerGlow,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: shimmerGlow,
+                      ),
+                      height: height,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            lineLoader(height: 12, width: width * 0.72),
+          ],
+        )
+    ],
+  );
+}
