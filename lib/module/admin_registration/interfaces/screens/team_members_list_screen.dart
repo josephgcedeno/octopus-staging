@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/infrastructures/models/user/user_response.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
+import 'package:octopus/interfaces/widgets/widget_loader.dart';
+import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/admin_registration/interfaces/screens/personal_information_form_screen.dart';
 import 'package:octopus/module/admin_registration/interfaces/widgets/admin_registration_template.dart';
 import 'package:octopus/module/admin_registration/interfaces/widgets/team_member.dart';
@@ -35,8 +37,9 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height;
     final ThemeData theme = Theme.of(context);
+    final double height = MediaQuery.of(context).size.height;
+    final double width = MediaQuery.of(context).size.width;
 
     return BlocListener<AdminRegistrationCubit, AdminRegistrationState>(
       listenWhen:
@@ -45,8 +48,8 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
               current is FetchAllUsersSuccess ||
               current is FetchAllUsersFailed,
       listener: (BuildContext context, AdminRegistrationState state) {
-        if (state is FetchAllUsersLoading) {}
-        if (state is FetchAllUsersSuccess) {
+        if (state is FetchAllUsersLoading) {
+        } else if (state is FetchAllUsersSuccess) {
           setState(() {
             for (final User user in state.userList) {
               if (user.isDeactive) {
@@ -62,7 +65,6 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
             snackBartState: SnackBartState.error,
           );
         }
-        if (state is FetchAllUsersFailed) {}
       },
       child: Scaffold(
         appBar: const GlobalAppBar(leading: LeadingButton.back),
@@ -78,41 +80,60 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
               ),
             );
           },
-          body: SizedBox(
-            child: Column(
-              children: <Widget>[
-                for (final User user in activated)
-                  TeamMember(
-                    user: user,
-                    isDeactivated: user.isDeactive,
-                    name: '${user.firstName} ${user.lastName}',
-                    imageLink:
-                        'https://cdn-icons-png.flaticon.com/512/201/201634.png',
-                    position: user.position,
+          body: BlocBuilder<AdminRegistrationCubit, AdminRegistrationState>(
+            builder: (BuildContext context, AdminRegistrationState state) {
+              if (state is FetchAllUsersLoading) {
+                return Container(
+                  margin: EdgeInsets.only(top: height * 0.005),
+                  child: Column(
+                    children: <Widget>[
+                      for (int i = 0; i < 7; i++)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 9),
+                          child: lineLoader(
+                            height: height * 0.057,
+                            width: width,
+                          ),
+                        )
+                    ],
                   ),
-                Row(
-                  children: <Widget>[
-                    Container(
-                      margin: const EdgeInsets.only(top: 20, bottom: 10),
-                      child: Text(
-                        'Deactivated',
-                        style: theme.textTheme.titleSmall
-                            ?.copyWith(fontWeight: FontWeight.w500),
-                      ),
-                    ),
-                  ],
-                ),
-                for (final User user in deactivated)
-                  TeamMember(
-                    user: user,
-                    isDeactivated: user.isDeactive,
-                    name: '${user.firstName} ${user.lastName}',
-                    imageLink:
-                        'https://cdn-icons-png.flaticon.com/512/201/201634.png',
-                    position: user.position,
-                  )
-              ],
-            ),
+                );
+              } else {
+                return SizedBox(
+                  child: Column(
+                    children: <Widget>[
+                      for (final User user in activated)
+                        TeamMember(
+                          callback: (User user) =>
+                              deactivateUser(targetUser: user),
+                          user: user,
+                        ),
+                      if (deactivated.isNotEmpty)
+                        Row(
+                          children: <Widget>[
+                            Container(
+                              margin:
+                                  const EdgeInsets.only(top: 20, bottom: 10),
+                              child: Text(
+                                'Deactivated',
+                                style: theme.textTheme.titleSmall
+                                    ?.copyWith(fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                          ],
+                        ),
+                      for (final User user in deactivated)
+                        TeamMember(
+                          callback: (User user) {
+                            
+                          },
+                          user: user,
+                        )
+                    ],
+                  ),
+                );
+              }
+            },
           ),
         ),
       ),

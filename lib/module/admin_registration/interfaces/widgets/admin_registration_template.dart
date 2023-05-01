@@ -121,7 +121,7 @@ class AdminRegistrationTemplate extends StatelessWidget {
                 child: Text(
                   'Skip',
                   style: theme.textTheme.bodyLarge?.copyWith(
-                      color: Colors.blue, fontWeight: FontWeight.w500),
+                      color: Colors.blue, fontWeight: FontWeight.w500,),
                 ),
               ),
             ),

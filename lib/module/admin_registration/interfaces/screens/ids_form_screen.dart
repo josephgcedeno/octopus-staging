@@ -40,20 +40,28 @@ class _IdsFormScreenState extends State<IdsFormScreen> {
           child: Column(
             children: <FullWidthTextField>[
               FullWidthTextField(
+                tapFunction: () {},
                 textEditingController: tinIDTextController,
                 hint: 'TIN',
+                type: Type.normal,
               ),
               FullWidthTextField(
+                tapFunction: () {},
                 textEditingController: sssIDTextController,
                 hint: 'SSS No.',
+                type: Type.normal,
               ),
               FullWidthTextField(
+                tapFunction: () {},
                 textEditingController: pagibigIDTextController,
                 hint: 'Pag-Ibig No.',
+                type: Type.normal,
               ),
               FullWidthTextField(
+                tapFunction: () {},
                 textEditingController: philhealthIDTextController,
                 hint: 'PhilHealth No.',
+                type: Type.normal,
               ),
             ],
           ),

@@ -1,4 +1,4 @@
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/user/user_response.dart';
@@ -29,6 +29,40 @@ class AdminRegistrationCubit extends Cubit<AdminRegistrationState> {
       );
     }
   }
+
+  Future<void> createUser({
+    required String firstName,
+    required String lastName,
+    required DateTime birthDate,
+    required String address,
+    required String civilStatus,
+    required DateTime dateHired,
+    required String profileImageSource,
+    required String position,
+    required String pagIbigNo,
+    required String sssNo,
+    required String tinNo,
+    required String philHealtNo,
+  }) async {
+    try {
+      emit(CreateUserLoading());
+      final APIResponse<User> response = await iUserRepository.createUser(
+        id: '1',
+        firstName: firstName,
+        lastName: lastName,
+        nuxifyId: 'nuxifyId',
+        birthDate: birthDate,
+        address: address,
+        civilStatus: civilStatus,
+        dateHired: dateHired,
+        profileImageSource: profileImageSource,
+        position: position,
+        pagIbigNo: pagIbigNo,
+        sssNo: sssNo,
+        tinNo: tinNo,
+        philHealtNo: philHealtNo,
+      );
+      emit(CreateUserSuccess(response));
     } catch (e) {
       final APIErrorResponse error = e as APIErrorResponse;
       emit(

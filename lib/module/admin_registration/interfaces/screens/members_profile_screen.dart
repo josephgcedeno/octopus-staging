@@ -109,7 +109,7 @@ class MembersProfileScreen extends StatelessWidget {
                       child: Column(
                         children: <Widget>[
                           InformationComponent(
-                              type: 'ID', value: user.nuxifyId),
+                              type: 'ID', value: user.nuxifyId,),
                           InformationComponent(
                             type: 'Name',
                             value: '${user.firstName} ${user.lastName}',
@@ -124,11 +124,11 @@ class MembersProfileScreen extends StatelessWidget {
                             value: user.address,
                           ),
                           InformationComponent(
-                              type: 'TIN No.', value: user.tinNo),
+                              type: 'TIN No.', value: user.tinNo,),
                           InformationComponent(
-                              type: 'SSS No.', value: user.sssNo),
+                              type: 'SSS No.', value: user.sssNo,),
                           InformationComponent(
-                              type: 'PAG-IBIG No.', value: user.pagIbigNo),
+                              type: 'PAG-IBIG No.', value: user.pagIbigNo,),
                           InformationComponent(
                             type: 'Philhealth No.',
                             value: user.philHealtNo,
@@ -157,12 +157,12 @@ class MembersProfileScreen extends StatelessWidget {
               child: ElevatedButton(
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(
-                    user.isDeactive
+                    !user.isDeactive
                         ? const Color(0xFFE25252).withOpacity(0.2)
                         : const Color(0xff39C0C7).withOpacity(0.2),
                   ),
                   foregroundColor: MaterialStateProperty.all(
-                    user.isDeactive
+                    !user.isDeactive
                         ? const Color(0xFFE25252)
                         : const Color(0xff39C0C7),
                   ),
@@ -177,7 +177,7 @@ class MembersProfileScreen extends StatelessWidget {
                   showAlertDialogOnDeactivateAccount(context);
                 },
                 child: Text(
-                  user.isDeactive ? 'Deactivate Account' : 'Activate Account',
+                  !user.isDeactive ? 'Deactivate Account' : 'Activate Account',
                 ),
               ),
             ),
