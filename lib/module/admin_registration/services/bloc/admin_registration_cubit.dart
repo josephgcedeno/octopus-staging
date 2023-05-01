@@ -40,6 +40,13 @@ class AdminRegistrationCubit extends Cubit<AdminRegistrationState> {
     }
   }
 
+  Future<void> deactivateUser({required String id}) async {
+    try {
+      emit(DeactivateUserLoading());
+      final APIResponse<User> response =
+          await iUserRepository.deactivateUser(id: id);
+
+      emit(DeactivateUserSuccess(response));
     } catch (e) {
       final APIErrorResponse error = e as APIErrorResponse;
       emit(

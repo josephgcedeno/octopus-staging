@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:octopus/infrastructures/models/user/user_response.dart';
+import 'package:octopus/interfaces/widgets/loading_indicator.dart';
 import 'package:octopus/module/admin_registration/interfaces/screens/members_profile_screen.dart';
+import 'package:octopus/module/admin_registration/services/bloc/admin_registration_cubit.dart';
 
-class TeamMember extends StatelessWidget {
+class TeamMember extends StatefulWidget {
   const TeamMember({
-    required this.name,
-    required this.position,
-    required this.imageLink,
-    required this.isDeactivated,
     required this.user,
+    required this.callback,
     Key? key,
   }) : super(key: key);
-  final String name;
-  final String position;
-  final String imageLink;
-  final bool isDeactivated;
-  final User user;
 
+  final User user;
+  final void Function(User user) callback;
+  @override
+  State<TeamMember> createState() => _TeamMemberState();
+}
+
+class _TeamMemberState extends State<TeamMember> {
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -28,29 +30,57 @@ class TeamMember extends StatelessWidget {
         extentRatio: width * 0.00043,
         motion: const ScrollMotion(),
         children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(2),
-            width: width * 0.1,
-            height: height * 0.09,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: isDeactivated
-                    ? const Color(0xFFE25252).withOpacity(0.2)
-                    : const Color(0xff39C0C7).withOpacity(0.2),
-                borderRadius: const BorderRadius.all(Radius.circular(4)),
-              ),
-              child: isDeactivated
-                  ? const Icon(
-                      Icons.close_rounded,
-                      color: Color(0xFFE25252),
-                      size: 20,
-                    )
-                  : const Icon(
-                      Icons.check,
-                      color: Color(0xff39C0C7),
-                      size: 20,
+          BlocBuilder<AdminRegistrationCubit, AdminRegistrationState>(
+            builder: (BuildContext context, AdminRegistrationState state) {
+              if (state is DeactivateUserLoading) {
+                return Container(
+                  padding: const EdgeInsets.all(2),
+                  width: width * 0.1,
+                  height: height * 0.09,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 93, 92, 92)
+                          .withOpacity(0.2),
+                      borderRadius: const BorderRadius.all(Radius.circular(4)),
                     ),
-            ),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 5,
+                      ),
+                      child: LoadingIndicator(),
+                    ),
+                  ),
+                );
+              }
+              return GestureDetector(
+                onTap: () => widget.callback.call(widget.user),
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  width: width * 0.1,
+                  height: height * 0.09,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: !widget.user.isDeactive
+                          ? const Color(0xFFE25252).withOpacity(0.2)
+                          : const Color(0xff39C0C7).withOpacity(0.2),
+                      borderRadius: const BorderRadius.all(Radius.circular(4)),
+                    ),
+                    child: !widget.user.isDeactive
+                        ? const Icon(
+                            Icons.close_rounded,
+                            color: Color(0xFFE25252),
+                            size: 20,
+                          )
+                        : const Icon(
+                            Icons.check,
+                            color: Color(0xff39C0C7),
+                            size: 20,
+                          ),
+                  ),
+                ),
+              );
+            },
           )
         ],
       ),
@@ -59,7 +89,7 @@ class TeamMember extends StatelessWidget {
           Navigator.of(context).push(
             MaterialPageRoute<dynamic>(
               builder: (_) => MembersProfileScreen(
-                user: user,
+                user: widget.user,
               ),
             ),
           );
@@ -75,13 +105,13 @@ class TeamMember extends StatelessWidget {
                     minRadius: width * 0.04,
                     maxRadius: width * 0.04,
                     backgroundImage: NetworkImage(
-                      imageLink,
+                      widget.user.profileImageSource,
                     ),
                   ),
                   Padding(
                     padding: EdgeInsets.only(left: width * 0.03),
                     child: Text(
-                      name,
+                      '${widget.user.firstName} ${widget.user.lastName}',
                       style: theme.textTheme.bodyMedium
                           ?.copyWith(fontWeight: FontWeight.w500),
                     ),
@@ -91,7 +121,7 @@ class TeamMember extends StatelessWidget {
               Container(
                 padding: EdgeInsets.all(width * 0.01),
                 child: Text(
-                  position,
+                  widget.user.position,
                   style: theme.textTheme.bodySmall,
                 ),
               ),
@@ -100,6 +130,5 @@ class TeamMember extends StatelessWidget {
         ),
       ),
     );
-    ;
   }
 }

@@ -18,6 +18,15 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
   List<User> activated = <User>[];
   List<User> deactivated = <User>[];
 
+  void deactivateUser({required User targetUser}) {
+    context.read<AdminRegistrationCubit>().deactivateUser(id: targetUser.id);
+    setState(() {
+      for (final User user in activated) {
+        activated.removeWhere((User element) => element == user);
+        deactivated.add(user);
+      }
+    });
+  }
   @override
   void initState() {
     super.initState();

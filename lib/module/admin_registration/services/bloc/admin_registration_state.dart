@@ -18,6 +18,16 @@ class FetchAllUsersFailed extends AdminRegistrationState {
   final String errorCode;
   final String message;
 }
+
+class DeactivateUserLoading extends AdminRegistrationState {
+  DeactivateUserLoading();
+}
+
+class DeactivateUserSuccess extends AdminRegistrationState {
+  DeactivateUserSuccess(this.response);
+  final APIResponse<User> response;
+}
+
 class DeactivateUserFailed extends AdminRegistrationState {
   DeactivateUserFailed({required this.errorCode, required this.message});
   final String errorCode;
