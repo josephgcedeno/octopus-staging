@@ -14,7 +14,12 @@ class FetchAllUsersSuccess extends AdminRegistrationState {
 }
 
 class FetchAllUsersFailed extends AdminRegistrationState {
-  FetchAllUsersFailed(this.errorCode, this.message);
+  FetchAllUsersFailed({required this.errorCode, required this.message});
+  final String errorCode;
+  final String message;
+}
+class DeactivateUserFailed extends AdminRegistrationState {
+  DeactivateUserFailed({required this.errorCode, required this.message});
   final String errorCode;
   final String message;
 }

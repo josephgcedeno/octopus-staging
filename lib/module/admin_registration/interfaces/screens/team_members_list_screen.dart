@@ -47,6 +47,11 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
               }
             }
           });
+        } else if (state is FetchAllUsersFailed) {
+          showSnackBar(
+            message: state.message,
+            snackBartState: SnackBartState.error,
+          );
         }
         if (state is FetchAllUsersFailed) {}
       },

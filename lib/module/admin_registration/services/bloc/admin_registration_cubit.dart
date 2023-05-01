@@ -21,6 +21,33 @@ class AdminRegistrationCubit extends Cubit<AdminRegistrationState> {
       emit(FetchAllUsersSuccess(response.data));
     } catch (e) {
       final APIErrorResponse error = e as APIErrorResponse;
+      emit(
+        DeactivateUserFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
+    }
+  }
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+      emit(
+        CreateUserFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
+    }
+  }
+
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+      emit(
+        DeactivateUserFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
     }
   }
 }
