@@ -541,6 +541,9 @@ class UserRepository extends IUserRepository {
           final String resultParseObject =
               getResultId(userAccountResponse.results!);
 
+          /// Persist old session when saving new account.
+          await ParseUser.getCurrentUserFromServer(user.sessionToken!);
+
           return APIResponse<String>(
             success: true,
             message: 'Successfully updated user info.',
