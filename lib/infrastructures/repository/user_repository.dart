@@ -3,11 +3,12 @@ import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/user/user_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/user_repository.dart';
+import 'package:octopus/internal/class_parse_object.dart';
 import 'package:octopus/internal/database_strings.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/error_message_string.dart';
 import 'package:octopus/internal/helper_function.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class UserRepository extends IUserRepository {
   @override
@@ -48,39 +49,59 @@ class UserRepository extends IUserRepository {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseUser userRecord = ParseUser.forQuery();
+        final EmployeeInfoParseObject employeeInfoParseObject =
+            EmployeeInfoParseObject();
+        final ParseUser userRecord = (ParseUser.forQuery()..objectId = id);
 
-        /// Set the user record with id passed
-        userRecord.objectId = id;
+        final QueryBuilder<EmployeeInfoParseObject> isRecordAlreadyExist =
+            QueryBuilder<EmployeeInfoParseObject>(employeeInfoParseObject)
+              ..whereEqualTo(EmployeeInfoParseObject.keyUser, userRecord);
 
+        final ParseResponse checkRecordResponse =
+            await isRecordAlreadyExist.query();
+
+        if (checkRecordResponse.error != null) {
+          formatAPIErrorResponse(error: checkRecordResponse.error!);
+        }
+
+        if (checkRecordResponse.success && checkRecordResponse.count > 0) {
+          throw APIErrorResponse(
+            message: 'Cannot create new record. already existing!',
+            errorCode: '409',
+          );
+        }
+        
         final int birthDateEpoch = epochFromDateTime(date: birthDate);
         final int dateHiredEpoch = epochFromDateTime(date: dateHired);
 
         /// Add required fields
-        userRecord
-          ..set<String>(usersFirstNameField, firstName)
-          ..set<String>(usersLastNameField, lastName)
-          ..set<String>(usersNuxifyIdField, nuxifyId)
-          ..set<int>(usersBirthDateEpochField, birthDateEpoch)
-          ..set<String>(usersAddressField, address)
-          ..set<String>(usersCivilStatusField, civilStatus)
-          ..set<int>(usersDateHiredField, dateHiredEpoch)
-          ..set<String>(usersProfileImageSourceField, profileImageSource)
-          ..set<bool>(usersIsdDeactiveField, false)
-          ..set<String>(usersPositionField, position)
-          ..set<String>(usersPagIbigNoField, pagIbigNo)
-          ..set<String>(usersSSSNoField, sssNo)
-          ..set<String>(usersTinNoField, tinNo)
-          ..set<String>(usersPhilHealthNoField, philHealtNo);
+        employeeInfoParseObject
+          ..user = userRecord
+          ..firstName = firstName
+          ..lastName = lastName
+          ..nuxifyId = nuxifyId
+          ..birthDateEpoch = birthDateEpoch
+          ..address = address
+          ..civilStatus = civilStatus
+          ..dateHiredEpoch = dateHiredEpoch
+          ..profileImageSource = profileImageSource
+          ..isDeactive = false
+          ..position = position
+          ..pagIbigNo = pagIbigNo
+          ..sssNo = sssNo
+          ..tinNo = tinNo
+          ..philHealthNo = philHealtNo;
 
-        final ParseResponse userRecordResponse = await userRecord.save();
+        final ParseResponse employeeRecordResponse =
+            await employeeInfoParseObject.save();
 
-        if (userRecordResponse.error != null) {
-          formatAPIErrorResponse(error: userRecordResponse.error!);
+        if (employeeRecordResponse.error != null) {
+          formatAPIErrorResponse(error: employeeRecordResponse.error!);
         }
 
-        if (userRecordResponse.success && userRecordResponse.results != null) {
-          final String id = getResultId(userRecordResponse.results!);
+        if (employeeRecordResponse.success &&
+            employeeRecordResponse.results != null) {
+          final String id = getResultId(employeeRecordResponse.results!);
           return APIResponse<User>(
             success: true,
             message: 'Successfully created user record.',
@@ -119,7 +140,10 @@ class UserRepository extends IUserRepository {
   }
 
   @override
-  Future<APIResponse<User>> deactivateUser({required String id}) async {
+  Future<APIResponse<User>> updateUserStatus({
+    required String id,
+    required UserStatus userStatus,
+  }) async {
     try {
       if (id.isEmpty) {
         throw APIErrorResponse(
@@ -130,14 +154,17 @@ class UserRepository extends IUserRepository {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseUser userRecord = ParseUser.forQuery();
+        final EmployeeInfoParseObject employeeInfoParseObject =
+            EmployeeInfoParseObject();
 
         /// Set the user record with id passed
-        userRecord.objectId = id;
+        employeeInfoParseObject.objectId = id;
 
-        userRecord.set<bool>(usersIsdDeactiveField, true);
+        employeeInfoParseObject.isDeactive =
+            userStatus == UserStatus.deactivate;
 
-        final ParseResponse userRecordResponse = await userRecord.save();
+        final ParseResponse userRecordResponse =
+            await employeeInfoParseObject.save();
 
         if (userRecordResponse.error != null) {
           formatAPIErrorResponse(error: userRecordResponse.error!);
@@ -145,42 +172,38 @@ class UserRepository extends IUserRepository {
 
         if (userRecordResponse.success && userRecordResponse.results != null) {
           /// Fetch the time in out record if already set. Since not available keys for time in and time out when updating, fetch manually.
-          final String objectId = getResultId(userRecordResponse.results!);
           final ParseResponse fetchUserInfo =
-              await userRecord.getObject(objectId);
+              await employeeInfoParseObject.getObject(id);
 
           if (fetchUserInfo.error != null) {
             formatAPIErrorResponse(error: fetchUserInfo.error!);
           }
 
           if (fetchUserInfo.success && fetchUserInfo.results != null) {
-            final ParseObject resultParseObject =
-                getParseObject(fetchUserInfo.results!);
+            final EmployeeInfoParseObject resultParseObject =
+                EmployeeInfoParseObject.toCustomParseObject(
+              data: fetchUserInfo.results!.first,
+            );
 
             return APIResponse<User>(
               success: true,
-              message: 'Successfully deactivate user.',
+              message: 'Successfully ${userStatus.name} user.',
               data: User(
-                id: objectId,
-                address: resultParseObject.get<String>(usersAddressField)!,
-                birthDateEpoch:
-                    resultParseObject.get<int>(usersBirthDateEpochField)!,
-                dateHiredEpoch:
-                    resultParseObject.get<int>(usersDateHiredField)!,
-                civilStatus:
-                    resultParseObject.get<String>(usersCivilStatusField)!,
-                firstName: resultParseObject.get<String>(usersFirstNameField)!,
-                isDeactive: resultParseObject.get<bool>(usersIsdDeactiveField)!,
-                lastName: resultParseObject.get<String>(usersLastNameField)!,
-                nuxifyId: resultParseObject.get<String>(usersNuxifyIdField)!,
-                pagIbigNo: resultParseObject.get<String>(usersPagIbigNoField)!,
-                philHealtNo:
-                    resultParseObject.get<String>(usersPhilHealthNoField)!,
-                position: resultParseObject.get<String>(usersPositionField)!,
-                profileImageSource: resultParseObject
-                    .get<String>(usersProfileImageSourceField)!,
-                sssNo: resultParseObject.get<String>(usersSSSNoField)!,
-                tinNo: resultParseObject.get<String>(usersTinNoField)!,
+                id: id,
+                address: resultParseObject.address,
+                birthDateEpoch: resultParseObject.birthDateEpoch,
+                dateHiredEpoch: resultParseObject.dateHiredEpoch,
+                civilStatus: resultParseObject.civilStatus,
+                firstName: resultParseObject.firstName,
+                isDeactive: resultParseObject.isDeactive,
+                lastName: resultParseObject.lastName,
+                nuxifyId: resultParseObject.nuxifyId,
+                pagIbigNo: resultParseObject.pagIbigNo,
+                philHealtNo: resultParseObject.philHealthNo,
+                position: resultParseObject.position,
+                profileImageSource: resultParseObject.profileImageSource,
+                sssNo: resultParseObject.sssNo,
+                tinNo: resultParseObject.tinNo,
               ),
               errorCode: null,
             );
@@ -216,10 +239,11 @@ class UserRepository extends IUserRepository {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final ParseUser userRecord = ParseUser.forQuery();
+        final EmployeeInfoParseObject employeeRecord =
+            EmployeeInfoParseObject();
 
-        final QueryBuilder<ParseUser> queryUser =
-            QueryBuilder<ParseUser>(userRecord);
+        final QueryBuilder<EmployeeInfoParseObject> queryUser =
+            QueryBuilder<EmployeeInfoParseObject>(employeeRecord);
 
         if (nuxifyId != null && nuxifyId != '') {
           queryUser.whereEqualTo(usersNuxifyIdField, nuxifyId);
@@ -276,24 +300,26 @@ class UserRepository extends IUserRepository {
         if (userRecordResponse.success && userRecordResponse.results != null) {
           for (final ParseObject userRec
               in userRecordResponse.results! as List<ParseObject>) {
+            final EmployeeInfoParseObject resultParseObject =
+                EmployeeInfoParseObject.toCustomParseObject(data: userRec);
+
             users.add(
               User(
-                id: userRec.objectId!,
-                address: userRec.get<String>(usersAddressField)!,
-                birthDateEpoch: userRec.get<int>(usersBirthDateEpochField)!,
-                dateHiredEpoch: userRec.get<int>(usersDateHiredField)!,
-                civilStatus: userRec.get<String>(usersCivilStatusField)!,
-                firstName: userRec.get<String>(usersFirstNameField)!,
-                isDeactive: userRec.get<bool>(usersIsdDeactiveField)!,
-                lastName: userRec.get<String>(usersLastNameField)!,
-                nuxifyId: userRec.get<String>(usersNuxifyIdField)!,
-                pagIbigNo: userRec.get<String>(usersPagIbigNoField)!,
-                philHealtNo: userRec.get<String>(usersPhilHealthNoField)!,
-                position: userRec.get<String>(usersPositionField)!,
-                profileImageSource:
-                    userRec.get<String>(usersProfileImageSourceField)!,
-                sssNo: userRec.get<String>(usersSSSNoField)!,
-                tinNo: userRec.get<String>(usersTinNoField)!,
+                id: resultParseObject.objectId!,
+                address: resultParseObject.address,
+                birthDateEpoch: resultParseObject.birthDateEpoch,
+                dateHiredEpoch: resultParseObject.dateHiredEpoch,
+                civilStatus: resultParseObject.civilStatus,
+                firstName: resultParseObject.firstName,
+                isDeactive: resultParseObject.isDeactive,
+                lastName: resultParseObject.lastName,
+                nuxifyId: resultParseObject.nuxifyId,
+                pagIbigNo: resultParseObject.pagIbigNo,
+                philHealtNo: resultParseObject.philHealthNo,
+                position: resultParseObject.position,
+                profileImageSource: resultParseObject.profileImageSource,
+                sssNo: resultParseObject.sssNo,
+                tinNo: resultParseObject.tinNo,
               ),
             );
           }

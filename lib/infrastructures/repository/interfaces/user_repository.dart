@@ -1,6 +1,8 @@
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/user/user_response.dart';
 
+enum UserStatus { deactivate, activate }
+
 abstract class IUserRepository {
   /// FOR ADMIN USE ONLY
   ///
@@ -133,10 +135,13 @@ abstract class IUserRepository {
 
   /// FOR ADMIN USE ONLY
   ///
-  /// Deactivates the user with the given [id] in the API.
+  /// Deactivates or Activates the user with the given [id] in the API.
   ///
   /// [id] - The ID of the user to deactivate.
-  Future<APIResponse<User>> deactivateUser({
+  ///
+  /// [userStatus] - Determine if the account is to be deactivated or activated.
+  Future<APIResponse<User>> updateUserStatus({
     required String id,
+    required UserStatus userStatus,
   });
 }
