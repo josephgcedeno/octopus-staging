@@ -394,3 +394,80 @@ class PanelRemindersParseObject extends ParseObject implements ParseCloneable {
   set announcement(String announcement) =>
       set<String>(keyAnnouncement, announcement);
 }
+
+class EmployeeInfoParseObject extends ParseObject implements ParseCloneable {
+  EmployeeInfoParseObject() : super(_keyTableName);
+  EmployeeInfoParseObject.clone() : this();
+
+  /// Convert the ParseObject to a custom parse object.
+  static EmployeeInfoParseObject toCustomParseObject({
+    required dynamic data,
+  }) =>
+      data as EmployeeInfoParseObject;
+
+  /// Serialized response
+  @override
+  EmployeeInfoParseObject clone(Map<String, dynamic> map) =>
+      EmployeeInfoParseObject.clone()..fromJson(map);
+
+  static const String _keyTableName = 'EmployeeInfo';
+
+  // Field names with snake case
+  static const String keyUser = 'user';
+  static const String keyFirstName = 'first_name';
+  static const String keyLastName = 'last_name';
+  static const String keyNuxifyId = 'nuxify_id';
+  static const String keyBirthDate = 'birth_date';
+  static const String keyAddress = 'address';
+  static const String keyCivilStatus = 'civil_status';
+  static const String keyDateHired = 'date_hired';
+  static const String keyProfileImageSource = 'profile_image_source';
+  static const String keyPosition = 'position';
+  static const String keyPagIbigNo = 'pag_ibig_no';
+  static const String keySssNo = 'sss_no';
+  static const String keyTinNo = 'tin_no';
+  static const String keyPhilHealthNo = 'phil_health_no';
+
+  ParseUser get user => get<ParseUser>(keyUser)!;
+  set user(ParseUser user) => set<ParseUser>(keyUser, user);
+
+  String get firstName => get<String>(keyFirstName)!;
+  set firstName(String value) => set<String>(keyFirstName, value);
+
+  String get lastName => get<String>(keyLastName)!;
+  set lastName(String value) => set<String>(keyLastName, value);
+
+  String get nuxifyId => get<String>(keyNuxifyId)!;
+  set nuxifyId(String value) => set<String>(keyNuxifyId, value);
+
+  DateTime get birthDate => get<DateTime>(keyBirthDate)!;
+  set birthDate(DateTime value) => set<DateTime>(keyBirthDate, value);
+
+  String get address => get<String>(keyAddress)!;
+  set address(String value) => set<String>(keyAddress, value);
+
+  String get civilStatus => get<String>(keyCivilStatus)!;
+  set civilStatus(String value) => set<String>(keyCivilStatus, value);
+
+  DateTime get dateHired => get<DateTime>(keyDateHired)!;
+  set dateHired(DateTime value) => set<DateTime>(keyDateHired, value);
+
+  String get profileImageSource => get<String>(keyProfileImageSource)!;
+  set profileImageSource(String value) =>
+      set<String>(keyProfileImageSource, value);
+
+  String get position => get<String>(keyPosition)!;
+  set position(String value) => set<String>(keyPosition, value);
+
+  String get pagIbigNo => get<String>(keyPagIbigNo)!;
+  set pagIbigNo(String value) => set<String>(keyPagIbigNo, value);
+
+  String get sssNo => get<String>(keySssNo)!;
+  set sssNo(String value) => set<String>(keySssNo, value);
+
+  String get tinNo => get<String>(keyTinNo)!;
+  set tinNo(String value) => set<String>(keyTinNo, value);
+
+  String get philHealthNo => get<String>(keyPhilHealthNo)!;
+  set philHealthNo(String value) => set<String>(keyPhilHealthNo, value);
+}
