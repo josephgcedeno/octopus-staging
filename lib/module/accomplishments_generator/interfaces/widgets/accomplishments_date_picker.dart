@@ -4,10 +4,12 @@ import 'package:octopus/configs/themes.dart';
 class AccomplishmentsDatePicker extends StatefulWidget {
   const AccomplishmentsDatePicker({
     required this.onDateSelected,
+    this.isClicked = false,
     Key? key,
   }) : super(key: key);
 
   final void Function(DateTime) onDateSelected;
+  final bool isClicked;
 
   @override
   State<AccomplishmentsDatePicker> createState() =>
@@ -15,14 +17,15 @@ class AccomplishmentsDatePicker extends StatefulWidget {
 }
 
 class _AccomplishmentsDatePickerState extends State<AccomplishmentsDatePicker> {
-  late DateTime _selectedDate;
+  late DateTime _selectedDate = DateTime.now();
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(2015, 8),
-        lastDate: DateTime(2101),);
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2015, 8),
+      lastDate: DateTime(2101),
+    );
     if (picked != null && picked != _selectedDate) {
       setState(() {
         _selectedDate = picked;
@@ -32,18 +35,14 @@ class _AccomplishmentsDatePickerState extends State<AccomplishmentsDatePicker> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _selectedDate = DateTime.now();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
     return GestureDetector(
       onTap: () => _selectDate(context),
-      child: const Icon(
+      child: Icon(
         Icons.event_note_outlined,
-        color: kDarkGrey,
+        color: widget.isClicked ? theme.primaryColor : kDarkGrey,
       ),
     );
   }
