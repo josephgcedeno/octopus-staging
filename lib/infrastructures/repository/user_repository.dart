@@ -507,4 +507,60 @@ class UserRepository extends IUserRepository {
       throw APIErrorResponse.socketErrorResponse();
     }
   }
+
+  @override
+  Future<APIResponse<String>> createUserAccount({
+    required String email,
+    required String password,
+    required bool isAdmin,
+  }) async {
+    try {
+      if (email.isEmpty || password.isEmpty) {
+        throw APIErrorResponse(
+          message: errorEmptyValue,
+          errorCode: null,
+        );
+      }
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        // Create a new ParseUser object
+        final ParseUser createAccount =
+            ParseUser.createUser(email, password, email)
+              ..set<bool?>(usersIsAdminField, isAdmin);
+
+        // Save the user to the Parse Server
+        final ParseResponse userAccountResponse = await createAccount.save();
+
+        if (userAccountResponse.error != null) {
+          formatAPIErrorResponse(error: userAccountResponse.error!);
+        }
+
+        if (userAccountResponse.success &&
+            userAccountResponse.results != null) {
+          final String resultParseObject =
+              getResultId(userAccountResponse.results!);
+
+          return APIResponse<String>(
+            success: true,
+            message: 'Successfully updated user info.',
+            data: resultParseObject,
+            errorCode: null,
+          );
+        }
+      }
+
+      if (user != null && user.get<bool>(usersIsAdminField)!) {}
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
+      throw APIErrorResponse(
+        message: errorMessage,
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
+    }
+  }
 }
