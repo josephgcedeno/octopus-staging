@@ -427,6 +427,7 @@ class EmployeeInfoParseObject extends ParseObject implements ParseCloneable {
   static const String keySssNo = 'sss_no';
   static const String keyTinNo = 'tin_no';
   static const String keyPhilHealthNo = 'phil_health_no';
+  static const String keyIsDeactive = 'is_deactive';
 
   ParseUser get user => get<ParseUser>(keyUser)!;
   set user(ParseUser user) => set<ParseUser>(keyUser, user);
@@ -470,4 +471,7 @@ class EmployeeInfoParseObject extends ParseObject implements ParseCloneable {
 
   String get philHealthNo => get<String>(keyPhilHealthNo)!;
   set philHealthNo(String value) => set<String>(keyPhilHealthNo, value);
+
+  bool get isDeactive => get<bool>(keyIsDeactive)!;
+  set isDeactive(bool value) => set<bool>(keyIsDeactive, value);
 }
