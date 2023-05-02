@@ -34,7 +34,7 @@ TextTheme _buildDefaultTextTheme(TextTheme base) {
     displayMedium: base.displayMedium?.copyWith(
       fontFamily: 'Gilroy',
       fontSize: 17,
-      color: kDarkGrey,
+      color: kBlack,
     ),
     displayLarge: base.displayLarge?.copyWith(
       fontFamily: 'Gilroy',
