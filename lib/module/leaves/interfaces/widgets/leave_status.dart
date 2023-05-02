@@ -73,7 +73,7 @@ class _LeaveStatusIndicatorState extends State<LeaveStatusIndicator> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Text(
-            'Your leave request has been',
+            'Your leave request is',
             style: theme.textTheme.bodyMedium?.copyWith(
               fontSize: kIsWeb ? 15 : width * 0.04,
             ),
