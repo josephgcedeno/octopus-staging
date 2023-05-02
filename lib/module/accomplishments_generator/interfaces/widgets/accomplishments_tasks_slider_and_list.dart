@@ -81,58 +81,127 @@ class _AccomplishmentsSliderAndTasksListState
   //   },
   // ];
 
-  void _setData() {
-    if (_currentPageIndex == 0) {
-      _setTodayData();
-      return;
+  bool shouldShowTask(DSRWorks task) {
+    for (String category in selectedCategories) {
+      category = convertCategory(category);
+      if (tasks.isNotEmpty && tasks.containsKey(category)) {
+        if (tasks[category]!.contains(task)) {
+          return false;
+        }
+      }
     }
-    _setOtherDayData();
+    return true;
   }
 
-  void _setTodayData() {
-    // setState(() {
-    //   tasks = <String, List<Map<String, String>>>{
-    //     'done': <Map<String, String>>[
-    //       <String, String>{'text': 'Deploy eleven minions'},
-    //       <String, String>{'text': 'Deploy nine minions'},
-    //       <String, String>{'text': 'Deploy two minions'},
-    //       <String, String>{'text': 'Deploy eight minions'},
-    //       <String, String>{'text': 'Deploy eleven minions'},
-    //       <String, String>{'text': 'Deploy ten minions'}
-    //     ],
-    //     'doing': <Map<String, String>>[
-    //       <String, String>{'text': 'Deploy eight minions'},
-    //       <String, String>{'text': 'Deploy seven minions'},
-    //       <String, String>{'text': 'Deploy two minions'},
-    //     ],
-    //     'blockers': <Map<String, String>>[
-    //       <String, String>{'text': 'Deploy four minions'},
-    //       <String, String>{'text': 'Deploy six minions'}
-    //     ],
-    //   };
-    // });
+  bool shouldShowSelectedTask(DSRWorks task) {
+    for (String category in selectedCategories) {
+      category = convertCategory(category);
+      if (selectedTasks.isNotEmpty && selectedTasks.containsKey(category)) {
+        if (selectedTasks[category]!.contains(task)) {
+          return false;
+        }
+        return false;
+      }
+    }
+    return true;
   }
 
-  void _setOtherDayData() {
-    // setState(() {
-    //   tasks = <String, List<Map<String, String>>>{};
-    // });
+  bool shouldShowTaskstoAdd() {
+    if (selectedCategories.isNotEmpty) {
+      for (int i = 0; i < selectedCategories.length; i++) {
+        String selectedCategory = selectedCategories[i];
+        selectedCategory = convertCategory(selectedCategory);
+        if (tasks.isNotEmpty && tasks.containsKey(selectedCategory)) {
+          if (tasks[selectedCategory]!.isNotEmpty) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
+
+  bool shouldHighlightButton(String category) {
+    if (selectedCategories.isNotEmpty) {
+      if (selectedCategories.contains(category)) {
+        if (selectedCategories.length == 1) {
+          return true;
+        }
+        return true;
+      } else if (selectedCategories.contains(category)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  String convertCategory(String category) {
+    if (category == 'doing') {
+      return 'work_in_progress';
+    }
+
+    return category;
+  }
+
+  // void _setData() {
+  //   if (_currentPageIndex == 0) {
+  //     _setTodayData();
+  //     return;
+  //   }
+  //   // _setOtherDayData();
+  // }
+
+  // void _setTodayData() {
+  //   // setState(() {
+  //   //   tasks = <String, List<Map<String, String>>>{
+  //   //     'done': <Map<String, String>>[
+  //   //       <String, String>{'text': 'Deploy eleven minions'},
+  //   //       <String, String>{'text': 'Deploy nine minions'},
+  //   //       <String, String>{'text': 'Deploy two minions'},
+  //   //       <String, String>{'text': 'Deploy eight minions'},
+  //   //       <String, String>{'text': 'Deploy eleven minions'},
+  //   //       <String, String>{'text': 'Deploy ten minions'}
+  //   //     ],
+  //   //     'doing': <Map<String, String>>[
+  //   //       <String, String>{'text': 'Deploy eight minions'},
+  //   //       <String, String>{'text': 'Deploy seven minions'},
+  //   //       <String, String>{'text': 'Deploy two minions'},
+  //   //     ],
+  //   //     'blockers': <Map<String, String>>[
+  //   //       <String, String>{'text': 'Deploy four minions'},
+  //   //       <String, String>{'text': 'Deploy six minions'}
+  //   //     ],
+  //   //   };
+  //   // });
+  // }
+
+  // void _setOtherDayData() {
+  //   // setState(() {
+  //   //   tasks = <String, List<Map<String, String>>>{};
+  //   // });
+  // }
 
   void _selectDateToday() {
     setState(() {
       _selectedDate = DateTime.now();
       isToday = true;
-      _setData();
+      // _setData();
     });
+    context
+        .read<AccomplishmentsCubit>()
+        .getAccomplishments(_selectedDate, _currentPageIndex);
   }
 
   void _handleDateSelection(DateTime date) {
     setState(() {
       isToday = false;
       _selectedDate = date;
-      _setOtherDayData();
+      // _setOtherDayData();
     });
+    context
+        .read<AccomplishmentsCubit>()
+        .getAccomplishments(_selectedDate, _currentPageIndex);
   }
 
   void toggleCategory(String category) {
@@ -180,68 +249,14 @@ class _AccomplishmentsSliderAndTasksListState
     });
   }
 
-  bool shouldShowTask(DSRWorks task) {
-    for (String category in selectedCategories) {
-      category = convertCategory(category);
-      if (tasks.isNotEmpty && tasks.containsKey(category)) {
-        if (tasks[category]!.contains(task)) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  bool shouldShowSelectedTask(DSRWorks task) {
-    for (String category in selectedCategories) {
-      category = convertCategory(category);
-      if (selectedTasks.isNotEmpty && selectedTasks.containsKey(category)) {
-        if (selectedTasks[category]!.contains(task)) {
-          return false;
-        }
-        return false;
-      }
-    }
-    return true;
-  }
-
-  String convertCategory(String category) {
-    if (category == 'doing') {
-      return 'work_in_progress';
-    }
-
-    return category;
-  }
-
-  bool shouldShowTaskstoAdd() {
-    if (selectedCategories.isNotEmpty) {
-      for (int i = 0; i < selectedCategories.length; i++) {
-        String selectedCategory = selectedCategories[i];
-        selectedCategory = convertCategory(selectedCategory);
-        if (tasks.isNotEmpty &&
-            tasks.containsKey(selectedCategory)) {
-          if (tasks[selectedCategory]!.isNotEmpty) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
-
-  bool shouldHighlightButton(String category) {
-    if (selectedCategories.isNotEmpty) {
-      if (selectedCategories.contains(category)) {
-        if (selectedCategories.length == 1) {
-          return true;
-        }
-        return true;
-      } else if (selectedCategories.contains(category)) {
-        return true;
-      }
-    }
-
-    return false;
+  void _updateProjects(int newIndex) {
+    setState(() {
+      _currentPageIndex = newIndex;
+      selectedTasks.clear();
+    });
+    context
+        .read<AccomplishmentsCubit>()
+        .getAccomplishments(_selectedDate, _currentPageIndex);
   }
 
   @override
@@ -249,7 +264,7 @@ class _AccomplishmentsSliderAndTasksListState
     // context.read<AccomplishmentsCubit>().getAllProjects();
     context
         .read<AccomplishmentsCubit>()
-        .getAccomplishments(_selectedDate, 'CoinMode');
+        .getAccomplishments(_selectedDate, _currentPageIndex);
 
     toggleCategory('done');
     // _setData();
@@ -268,15 +283,6 @@ class _AccomplishmentsSliderAndTasksListState
     _pageController.dispose();
 
     super.dispose();
-  }
-
-  @override
-  void didChangeDependencies() {
-    // setState(() {
-    //   widget.reportTask(selectedTasks);
-    // });
-
-    super.didChangeDependencies();
   }
 
   @override
@@ -374,8 +380,6 @@ class _AccomplishmentsSliderAndTasksListState
       }
     }
 
-    // print(tasks);
-
     return BlocListener<AccomplishmentsCubit, AccomplishmentsState>(
       listenWhen:
           (AccomplishmentsState previous, AccomplishmentsState current) =>
@@ -383,8 +387,10 @@ class _AccomplishmentsSliderAndTasksListState
               current is FetchAllAccomplishmentsDataSuccess ||
               current is FetchAllAccomplishmentsDataFailed,
       listener: (BuildContext context, AccomplishmentsState state) {
+        if (state is FetchAllAccomplishmentsDataLoading) {}
         if (state is FetchAllAccomplishmentsDataSuccess) {
           setState(() {
+            isLoading = false;
             projects = state.projects;
             tasks = state.tasks;
           });
@@ -393,64 +399,39 @@ class _AccomplishmentsSliderAndTasksListState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          BlocBuilder<AccomplishmentsCubit, AccomplishmentsState>(
-            builder: (BuildContext context, AccomplishmentsState state) {
-              if (state is FetchAllAccomplishmentsDataLoading) {
-                return sliderLoader(context);
-              } else if (state is FetchAllAccomplishmentsDataSuccess) {
-                return Column(
-                  children: <Widget>[
-                    Container(
-                      width: double.infinity,
-                      margin: EdgeInsets.symmetric(vertical: height * 0.03),
-                      height: height * 0.2,
-                      child: PageView(
-                        controller: _pageController,
-                        clipBehavior: Clip.none,
-                        physics: const PageScrollPhysics(),
-                        children: projects.map((Project project) {
-                          projectID = project.id;
-                          return AccomplishmentsProjectCard(
-                            title: project.projectName,
-                            image: SvgPicture.asset(
-                              whiteLogoSvg,
-                            ), // change to project.logo (depending on the name) if available
-                            textColor:
-                                kWhite, // change to project.textColor (depending on the name) if available
-                            backgroundColor: Color(int.parse(project.color)),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    DotsIndicator(
-                      currentIndex: _currentPageIndex,
-                      pageCount: projects.length,
-                    ),
-                  ],
-                );
-              } else {
-                return Center(
-                  child: Container(
-                    width: double.infinity,
-                    margin: EdgeInsets.symmetric(vertical: height * 0.03),
-                    height: height * 0.2,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.all(height * 0.015),
-                          child: const Icon(
-                            Icons.error_outline_outlined,
-                          ),
-                        ),
-                        const Text('No data available'),
-                      ],
-                    ),
+          if (isLoading) sliderLoader(context),
+          if (!isLoading)
+            Column(
+              children: <Widget>[
+                Container(
+                  width: double.infinity,
+                  margin: EdgeInsets.symmetric(vertical: height * 0.03),
+                  height: height * 0.2,
+                  child: PageView(
+                    controller: _pageController,
+                    clipBehavior: Clip.none,
+                    onPageChanged: _updateProjects,
+                    physics: const PageScrollPhysics(),
+                    children: projects.map((Project project) {
+                      projectID = project.id;
+                      return AccomplishmentsProjectCard(
+                        title: project.projectName,
+                        image: SvgPicture.asset(
+                          whiteLogoSvg,
+                        ), // change to project.logo (depending on the name) if available
+                        textColor:
+                            kWhite, // change to project.textColor (depending on the name) if available
+                        backgroundColor: Color(int.parse(project.color)),
+                      );
+                    }).toList(),
                   ),
-                );
-              }
-            },
-          ),
+                ),
+                DotsIndicator(
+                  currentIndex: _currentPageIndex,
+                  pageCount: projects.length,
+                ),
+              ],
+            ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: width * 0.05),
             child: Column(
@@ -494,6 +475,7 @@ class _AccomplishmentsSliderAndTasksListState
                         ),
                         AccomplishmentsDatePicker(
                           onDateSelected: _handleDateSelection,
+                          isClicked: !isToday,
                         ),
                       ],
                     ),
@@ -549,76 +531,6 @@ class _AccomplishmentsSliderAndTasksListState
                         ],
                       ),
                     ),
-
-                    // BlocBuilder<AccomplishmentsCubit, AccomplishmentsState>(
-                    //   builder:
-                    //       (BuildContext context, AccomplishmentsState state) {
-                    //     if (state is FetchAllAccomplishmentsDataLoading) {
-                    //       return tasksLoader(context);
-                    //     } else if (state
-                    //         is FetchAllAccomplishmentsDataSuccess) {
-                    //       final Iterable<MapEntry<String, List<DSRWorks>>>
-                    //           iterableTasks = tasks.entries;
-                    //         print(iterableTasks);
-                    //       for (final MapEntry<String, List<DSRWorks>> entry
-                    //           in iterableTasks) {
-                    //         String category = entry.key;
-                    //         if (category == 'work_in_progress') {
-                    //           category = 'doing';
-                    //         }
-                    //         if (category.isNotEmpty &&
-                    //             selectedCategories.contains(category) &&
-                    //             selectedCategories.length > 1) {
-                    //           taskWidgets.add(
-                    //             Text(
-                    //               category.toUpperCase(),
-                    //               style: theme.textTheme.bodySmall?.copyWith(
-                    //                 fontWeight: FontWeight.w600,
-                    //               ),
-                    //             ),
-                    //           );
-                    //         }
-                    //         for (final DSRWorks task in entry.value) {
-                    //           // print(task.text);
-                    //           if (shouldShowTask(task)) {
-                    //             return const SizedBox.shrink();
-                    //           } else {
-                    //             return GestureDetector(
-                    //               onTap: () {
-                    //                 toggleTask(
-                    //                   task.text,
-                    //                   category,
-                    //                 );
-                    //               },
-                    //               child: AccomplishmentsTaskChecker(
-                    //                 title: task.text,
-                    //                 type: CheckerType.unselected,
-                    //               ),
-                    //               // ),
-                    //             );
-                    //           }
-                    //         }
-                    //       }
-                    //     }
-                    //     return Center(
-                    //       child: Column(
-                    //         mainAxisAlignment: MainAxisAlignment.center,
-                    //         children: <Widget>[
-                    //           Padding(
-                    //             padding: EdgeInsets.all(height * 0.015),
-                    //             child: const Icon(
-                    //               Icons.error_outline_outlined,
-                    //             ),
-                    //           ),
-                    //           const Text('No data available'),
-                    //         ],
-                    //       ),
-                    //     );
-                    //   },
-                    // ),
-
-                    // if (tasks.isNotEmpty)
-
                     BlocBuilder<AccomplishmentsCubit, AccomplishmentsState>(
                       builder:
                           (BuildContext context, AccomplishmentsState state) {
@@ -647,26 +559,6 @@ class _AccomplishmentsSliderAndTasksListState
                         );
                       },
                     ),
-                    // if (tasks.isNotEmpty)
-                    //   Column(
-                    //     crossAxisAlignment: CrossAxisAlignment.start,
-                    //     children: taskWidgets.toList(),
-                    //   ),
-                    // if (tasks.isEmpty)
-                    //   Center(
-                    //     child: Column(
-                    //       mainAxisAlignment: MainAxisAlignment.center,
-                    //       children: <Widget>[
-                    //         Padding(
-                    //           padding: EdgeInsets.all(height * 0.015),
-                    //           child: const Icon(
-                    //             Icons.error_outline_outlined,
-                    //           ),
-                    //         ),
-                    //         const Text('No data available'),
-                    //       ],
-                    //     ),
-                    //   ),
                   ],
                 ),
               ],
