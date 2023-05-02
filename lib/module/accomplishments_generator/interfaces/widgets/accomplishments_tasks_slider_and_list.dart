@@ -540,23 +540,27 @@ class _AccomplishmentsSliderAndTasksListState
                             is FetchAllAccomplishmentsDataSuccess) {
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: taskWidgets.toList(),
+                            children: <Widget>[
+                              if (tasks.isEmpty && selectedTasks.isEmpty)
+                                Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: EdgeInsets.all(height * 0.02),
+                                        child: const Icon(
+                                          Icons.error_outline_outlined,
+                                        ),
+                                      ),
+                                      const Text('No data available'),
+                                    ],
+                                  ),
+                                ),
+                              ...taskWidgets.toList(),
+                            ],
                           );
                         }
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.all(height * 0.015),
-                                child: const Icon(
-                                  Icons.error_outline_outlined,
-                                ),
-                              ),
-                              const Text('No data available'),
-                            ],
-                          ),
-                        );
+                        return const Placeholder();
                       },
                     ),
                   ],
