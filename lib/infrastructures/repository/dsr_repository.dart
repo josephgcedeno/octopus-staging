@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:octopus/infrastructures/models/api_error_response.dart';
@@ -285,6 +286,16 @@ class DSRRepository extends IDSRRepository {
           }
 
           final Map<String, List<DSRWorks>> datas = <String, List<DSRWorks>>{};
+
+          /// Get all user info list parse object.
+          final ParseResponse allUsersInfo =
+              await EmployeeInfoParseObject().getAll();
+
+          final List<EmployeeInfoParseObject> allUserInfoCasted =
+              List<EmployeeInfoParseObject>.from(
+            allUsersInfo.results ?? <dynamic>[],
+          );
+
           if (dsrResponse.success) {
             if (dsrResponse.results != null) {
               for (final ParseObject dsrDonePerUser
@@ -292,7 +303,13 @@ class DSRRepository extends IDSRRepository {
                 final DSRsParseObject row =
                     DSRsParseObject.toCustomParseObject(data: dsrDonePerUser);
 
-                final String userName = row.user.get(usersFirstNameField)!;
+                final EmployeeInfoParseObject singleEmployeeInfo =
+                    allUserInfoCasted.firstWhere(
+                  (EmployeeInfoParseObject obj) =>
+                      obj.user.objectId == row.user.objectId,
+                );
+
+                final String userName = singleEmployeeInfo.firstName;
 
                 final String date = DateFormat('EEE, MMM d, yyyy').format(
                   dateTimeFromEpoch(
