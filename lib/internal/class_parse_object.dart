@@ -440,8 +440,8 @@ class EmployeeInfoParseObject extends ParseObject implements ParseCloneable {
   String get nuxifyId => get<String>(keyNuxifyId)!;
   set nuxifyId(String value) => set<String>(keyNuxifyId, value);
 
-  DateTime get birthDate => get<DateTime>(keyBirthDate)!;
-  set birthDate(DateTime value) => set<DateTime>(keyBirthDate, value);
+  int get birthDateEpoch => get<int>(keyBirthDate)!;
+  set birthDateEpoch(int value) => set<int>(keyBirthDate, value);
 
   String get address => get<String>(keyAddress)!;
   set address(String value) => set<String>(keyAddress, value);
@@ -449,8 +449,8 @@ class EmployeeInfoParseObject extends ParseObject implements ParseCloneable {
   String get civilStatus => get<String>(keyCivilStatus)!;
   set civilStatus(String value) => set<String>(keyCivilStatus, value);
 
-  DateTime get dateHired => get<DateTime>(keyDateHired)!;
-  set dateHired(DateTime value) => set<DateTime>(keyDateHired, value);
+  int get dateHiredEpoch => get<int>(keyDateHired)!;
+  set dateHiredEpoch(int value) => set<int>(keyDateHired, value);
 
   String get profileImageSource => get<String>(keyProfileImageSource)!;
   set profileImageSource(String value) =>
