@@ -12,32 +12,14 @@ import 'package:octopus/internal/string_status.dart';
 part 'accomplishments_state.dart';
 
 class AccomplishmentsCubit extends Cubit<AccomplishmentsState> {
-  AccomplishmentsCubit(
-      {required this.projectRepository, required this.dsrRepository,})
-      : super(AccomplishmentsState());
+  AccomplishmentsCubit({
+    required this.projectRepository,
+    required this.dsrRepository,
+  }) : super(AccomplishmentsState());
   final ProjectRepository projectRepository;
   final DSRRepository dsrRepository;
 
-  Future<void> getAllProjects() async {
-    try {
-      emit(FetchAllProjectsLoading());
-
-      final APIListResponse<Project> response =
-          await projectRepository.getAllProjects(status: active);
-
-      emit(FetchAllProjectsSuccess(projects: response.data));
-    } catch (e) {
-      final APIErrorResponse error = e as APIErrorResponse;
-      emit(
-        FetchAllProjectsFailed(
-          errorCode: error.errorCode ?? '',
-          message: error.message,
-        ),
-      );
-    }
-  }
-
-  Future<void> getAccomplishments(DateTime date, String proj) async {
+  Future<void> getAccomplishments(DateTime date, int projectIndex) async {
     try {
       emit(FetchAllAccomplishmentsDataLoading());
 
@@ -60,19 +42,12 @@ class AccomplishmentsCubit extends Cubit<AccomplishmentsState> {
       final List<SprintRecord> sprints = allSprintResponse.data;
 
       final int epoch = date.millisecondsSinceEpoch ~/ 1000;
-
-      String projectId = allProjectResponse.data[0].id;
+      final String projectId = allProjectResponse.data[projectIndex].id;
 
       if (formattedDate.isAtSameMomentAs(formattedToday)) {
         sprints.map((SprintRecord sprint) {
           if (sprint.startDateEpoch < epoch && sprint.endDateEpoch < epoch) {
             sprintId = sprint.id;
-          }
-        }).toList();
-
-        projects.map((Project project) {
-          if (proj == project.projectName) {
-            projectId = project.id;
           }
         }).toList();
       }
