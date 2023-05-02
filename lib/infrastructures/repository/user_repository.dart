@@ -140,7 +140,10 @@ class UserRepository extends IUserRepository {
   }
 
   @override
-  Future<APIResponse<User>> deactivateUser({required String id}) async {
+  Future<APIResponse<User>> updateUserStatus({
+    required String id,
+    required UserStatus userStatus,
+  }) async {
     try {
       if (id.isEmpty) {
         throw APIErrorResponse(
@@ -157,7 +160,8 @@ class UserRepository extends IUserRepository {
         /// Set the user record with id passed
         employeeInfoParseObject.objectId = id;
 
-        employeeInfoParseObject.isDeactive = true;
+        employeeInfoParseObject.isDeactive =
+            userStatus == UserStatus.deactivate;
 
         final ParseResponse userRecordResponse =
             await employeeInfoParseObject.save();
@@ -183,7 +187,7 @@ class UserRepository extends IUserRepository {
 
             return APIResponse<User>(
               success: true,
-              message: 'Successfully deactivate user.',
+              message: 'Successfully ${userStatus.name} user.',
               data: User(
                 id: id,
                 address: resultParseObject.address,
