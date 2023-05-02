@@ -9,9 +9,11 @@ import 'package:octopus/infrastructures/repository/project_repository.dart';
 import 'package:octopus/infrastructures/repository/time_in_out_repository.dart';
 import 'package:octopus/interfaces/screens/splash_screen.dart';
 import 'package:octopus/internal/debug_utils.dart';
+import 'package:octopus/module/accomplishments_generator/service/cubit/accomplishments_cubit.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
 import 'package:octopus/module/leaves/service/cubit/leaves_cubit.dart';
 import 'package:octopus/module/login/interfaces/screens/login_screen.dart';
+import './module/admin/interfaces/screens/admin_screen.dart';
 import 'package:octopus/module/login/service/cubit/authentication_cubit.dart';
 import 'package:octopus/module/standup_report/service/cubit/dsr_cubit.dart';
 import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
@@ -69,6 +71,12 @@ class _AppState extends State<App> {
         BlocProvider<TimeRecordCubit>(
           create: (BuildContext context) => TimeRecordCubit(
             timeInOutRepository: timeInOutRepository,
+          ),
+        ),
+        BlocProvider<AccomplishmentsCubit>(
+          create: (BuildContext context) => AccomplishmentsCubit(
+            dsrRepository: dsrRepository,
+            projectRepository: projectRepository,
           ),
         ),
         BlocProvider<LeavesCubit>(
