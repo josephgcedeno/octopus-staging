@@ -169,7 +169,7 @@ Widget tasksLoader(BuildContext context) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: <Widget>[
-      for (int i = 0; i < 5; i++)
+      for (int i = 0; i < 4; i++)
         Row(
           children: <Widget>[
             Container(
