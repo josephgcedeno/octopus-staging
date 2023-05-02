@@ -23,6 +23,7 @@ environment:
 dependencies:
   camera: ^0.10.0+4
   cupertino_icons: ^1.0.5
+  dio: ^4.0.6
   equatable: ^2.0.5
   flutter:
     sdk: flutter
@@ -33,6 +34,7 @@ dependencies:
   flutter_secure_storage: ^6.0.0
   flutter_svg: ^1.1.6
   http: ^0.13.5
+  internet_file: ^1.2.0
   intl: ^0.18.0
   json_annotation: ^4.7.0
   parse_server_sdk_flutter: ^3.1.3
