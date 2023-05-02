@@ -1,10 +1,14 @@
+import 'dart:io';
 import 'dart:math';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
+import 'package:octopus/internal/debug_utils.dart';
+import 'package:path/path.dart' as p;
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
@@ -22,6 +26,59 @@ class PDFViewerScreen extends StatefulWidget {
 class _PDFViewerScreenState extends State<PDFViewerScreen> {
   bool isLoading = true;
   bool isNotLoading = false;
+
+  Future<void> downloadPDF(String url) async {
+    try {
+      final Directory? directory = await _getAppDirectory();
+      final String? appDirectory = directory?.path;
+
+      final Dio dio = Dio();
+      final String fileName = (widget.title.replaceAll(' ', '-')).toLowerCase();
+
+      await dio.download(
+        url,
+        '$appDirectory/$fileName.pdf',
+        onReceiveProgress: (int receivedBytes, int totalBytes) {},
+      );
+
+      showSnackBar(message: 'File downloaded successfully');
+    } catch (error) {
+      showSnackBar(
+        message: error.toString(),
+        snackBartState: SnackBartState.error,
+      );
+    }
+  }
+
+  Future<Directory?> _getAppDirectory() async {
+    Directory? appDirectory;
+    if (kIsWeb) {
+      appDirectory = Directory('/Downloads');
+    } else {
+      if (Platform.isIOS) {
+        appDirectory = Directory(
+          '${Directory.current.path}/Documents',
+        );
+      } else if (Platform.isAndroid) {
+        if (await _isExternalStorageWritable()) {
+          appDirectory = Directory('/storage/emulated/0/Download');
+        }
+      }
+    }
+    return appDirectory;
+  }
+
+  Future<bool> _isExternalStorageWritable() async {
+    final Directory directory = Directory('/storage/emulated/0/Download');
+    try {
+      final File file = File('${directory.path}/test.temp');
+      await file.create();
+      await file.delete();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,14 +119,18 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                       ),
                     ],
                   ),
-                  Container(
-                    padding: EdgeInsets.all(width * 0.015),
-                    decoration: BoxDecoration(
-                      color: kLightGrey,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: GestureDetector(
-                      onTap: () {},
+                  GestureDetector(
+                    onTap: () {
+                      downloadPDF(
+                        'https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf',
+                      ); // pdf file URL
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(width * 0.015),
+                      decoration: BoxDecoration(
+                        color: kLightGrey,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       child: const Icon(Icons.file_download_outlined),
                     ),
                   ),
@@ -84,7 +145,7 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                       progressBarColor: ktransparent,
                     ),
                     child: SfPdfViewer.network(
-                      'https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf',
+                      'https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf', // pdf file URL
                       onDocumentLoaded: (_) {
                         setState(() {
                           isLoading = false;
