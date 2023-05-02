@@ -71,7 +71,7 @@ class _LeavesScreenState extends State<LeavesScreen> {
             ),
           );
 
-          showSnackBar(message: 'Request Sent');
+          showSnackBar(message: 'Leave request successfully sent');
         } else if (state is SubmitLeavesRequestFailed) {
           showSnackBar(
             message: state.message,
