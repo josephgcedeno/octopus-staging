@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:octopus/internal/debug_utils.dart';
 
 enum PickerType {
   date,
@@ -60,6 +61,16 @@ class _DateTimePickerState<T> extends State<DateTimePicker<T>> {
     } else {
       toTextController.text = dateFormat;
       to = res as T;
+    }
+
+    // Prevent users from setting past dates
+    if (res.isBefore(DateTime.now().subtract(const Duration(days: 1)))) {
+      showSnackBar(
+        message:
+            'Please enter a valid date range starting from today or a future date.',
+      );
+      fromTextController.clear();
+      toTextController.clear();
     }
 
     /// Trigger callback if both fields are filled.
