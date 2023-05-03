@@ -319,7 +319,8 @@ class DSRRepository extends IDSRRepository {
                       obj.user.objectId == row.user.objectId,
                 );
 
-                final String userName = singleEmployeeInfo.firstName;
+                final String userName =
+                    '${singleEmployeeInfo.firstName} ${singleEmployeeInfo.lastName}';
 
                 final String date = DateFormat('EEE, MMM d, yyyy').format(
                   dateTimeFromEpoch(
