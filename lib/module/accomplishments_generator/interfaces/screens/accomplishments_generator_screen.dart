@@ -1,16 +1,25 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/configs/themes.dart';
+import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/screens/daily_accomplishment_report_screen.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_tasks_slider_and_list.dart';
+import 'package:octopus/module/accomplishments_generator/service/cubit/accomplishments_cubit.dart';
 
-Map<String, List<Map<String, String>>> reportTasks =
-    <String, List<Map<String, String>>>{};
-
-class AccomplishmentsGeneratorScreen extends StatelessWidget {
+class AccomplishmentsGeneratorScreen extends StatefulWidget {
   const AccomplishmentsGeneratorScreen({Key? key}) : super(key: key);
+
+  @override
+  State<AccomplishmentsGeneratorScreen> createState() =>
+      _AccomplishmentsGeneratorScreenState();
+}
+
+class _AccomplishmentsGeneratorScreenState
+    extends State<AccomplishmentsGeneratorScreen> {
+  late Map<String, List<DSRWorks>>? selectedTasks;
 
   @override
   Widget build(BuildContext context) {
@@ -40,22 +49,20 @@ class AccomplishmentsGeneratorScreen extends StatelessWidget {
                             : theme.textTheme.titleMedium,
                       ),
                     ),
-                    AccomplishmentsSliderAndTasksList(
-                      reportTask:
-                          (Map<String, List<Map<String, String>>> tasks) {
-                        reportTasks = tasks;
-                      },
-                    ),
+                    const AccomplishmentsSliderAndTasksList(),
                   ],
                 ),
                 GestureDetector(
                   onTap: () {
-                    if (reportTasks.isNotEmpty) {
+                    selectedTasks = context
+                        .read<AccomplishmentsCubit>()
+                        .state
+                        .selectedTasks;
+                    if (selectedTasks != null) {
                       Navigator.of(context).push(
                         MaterialPageRoute<dynamic>(
-                          builder: (_) => DailyAccomplishmentReportScreen(
-                            reportTasks: reportTasks,
-                          ),
+                          builder: (_) =>
+                              const DailyAccomplishmentReportScreen(),
                         ),
                       );
                     } else {

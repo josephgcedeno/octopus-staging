@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
-import 'package:octopus/module/accomplishments_generator/interfaces/screens/daily_accomplishment_pdf_screen.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/daily_accomplishment_tabs.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/daily_accomplishment_text_field.dart';
 
 String clientName = '';
 
 class DailyAccomplishmentReportScreen extends StatelessWidget {
-  const DailyAccomplishmentReportScreen({required this.reportTasks, Key? key})
-      : super(key: key);
-
-  final Map<String, List<Map<String, String>>> reportTasks;
+  const DailyAccomplishmentReportScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +25,7 @@ class DailyAccomplishmentReportScreen extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        child: Container(
+        child: Padding(
           padding: EdgeInsets.only(
             left: width * 0.04,
             right: width * 0.04,
@@ -91,7 +87,7 @@ class DailyAccomplishmentReportScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              DailyAccomplishmentTabs(reportTasks: reportTasks),
+              const DailyAccomplishmentTabs(),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -132,14 +128,14 @@ class DailyAccomplishmentReportScreen extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute<dynamic>(
-                          builder: (_) => DailyAccomplishmentPDFScreen(
-                            reportTasks: reportTasks,
-                            clientName: clientName,
-                          ),
-                        ),
-                      );
+                      // Navigator.of(context).push(
+                      //   MaterialPageRoute<dynamic>(
+                      //     builder: (_) => DailyAccomplishmentPDFScreen(
+                      //       reportTasks: reportTasks,
+                      //       clientName: clientName,
+                      //     ),
+                      //   ),
+                      // );
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(

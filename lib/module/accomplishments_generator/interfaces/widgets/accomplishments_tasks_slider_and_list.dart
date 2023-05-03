@@ -15,11 +15,8 @@ import 'package:octopus/module/accomplishments_generator/service/cubit/accomplis
 
 class AccomplishmentsSliderAndTasksList extends StatefulWidget {
   const AccomplishmentsSliderAndTasksList({
-    required this.reportTask,
     Key? key,
   }) : super(key: key);
-
-  final void Function(Map<String, List<Map<String, String>>>) reportTask;
 
   @override
   State<AccomplishmentsSliderAndTasksList> createState() =>
@@ -136,6 +133,19 @@ class _AccomplishmentsSliderAndTasksListState
     return false;
   }
 
+  bool shouldProjectDateChange() {
+    if (projects.isNotEmpty) {
+      if (selectedTasks.isNotEmpty &&
+          selectedTasks.values.any(
+            (List<DSRWorks> category) => category.isNotEmpty,
+          )) {
+        return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
   String convertCategory(String category) {
     if (category == 'doing') {
       return 'work_in_progress';
@@ -183,14 +193,15 @@ class _AccomplishmentsSliderAndTasksListState
   // }
 
   void _selectDateToday() {
-    setState(() {
-      _selectedDate = DateTime.now();
-      isToday = true;
-      // _setData();
-    });
-    context
-        .read<AccomplishmentsCubit>()
-        .getAccomplishments(_selectedDate, _currentPageIndex);
+    if (shouldProjectDateChange()) {
+      setState(() {
+        _selectedDate = DateTime.now();
+        isToday = true;
+      });
+      context
+          .read<AccomplishmentsCubit>()
+          .getAccomplishments(_selectedDate, _currentPageIndex);
+    }
   }
 
   void _handleDateSelection(DateTime date) {
@@ -243,9 +254,8 @@ class _AccomplishmentsSliderAndTasksListState
           selectedTasks[category]!.add(task);
           tasks[category]!.remove(task);
         }
-
-        // print(selectedTasks);
       }
+      context.read<AccomplishmentsCubit>().getSelectedTasks(selectedTasks);
     });
   }
 
@@ -261,16 +271,12 @@ class _AccomplishmentsSliderAndTasksListState
 
   @override
   void initState() {
-    // context.read<AccomplishmentsCubit>().getAllProjects();
     context
         .read<AccomplishmentsCubit>()
         .getAccomplishments(_selectedDate, _currentPageIndex);
 
-    toggleCategory('done');
-    // _setData();
     _pageController.addListener(() {
       setState(() {
-        // _setData();
         _currentPageIndex = _pageController.page!.round();
       });
     });
@@ -330,7 +336,6 @@ class _AccomplishmentsSliderAndTasksListState
           taskWidgets.add(
             GestureDetector(
               onTap: () {
-                // toggleTask(task.text, entry.key);
                 toggleTask(task, entry.key);
               },
               child: AccomplishmentsTaskChecker(
@@ -411,7 +416,9 @@ class _AccomplishmentsSliderAndTasksListState
                     controller: _pageController,
                     clipBehavior: Clip.none,
                     onPageChanged: _updateProjects,
-                    physics: const PageScrollPhysics(),
+                    physics: shouldProjectDateChange() && projects.length > 1
+                        ? const ClampingScrollPhysics()
+                        : const NeverScrollableScrollPhysics(),
                     children: projects.map((Project project) {
                       projectID = project.id;
                       return AccomplishmentsProjectCard(
@@ -475,6 +482,7 @@ class _AccomplishmentsSliderAndTasksListState
                         ),
                         AccomplishmentsDatePicker(
                           onDateSelected: _handleDateSelection,
+                          shouldProjectDateChange: shouldProjectDateChange(),
                           isClicked: !isToday,
                         ),
                       ],
@@ -532,6 +540,12 @@ class _AccomplishmentsSliderAndTasksListState
                       ),
                     ),
                     BlocBuilder<AccomplishmentsCubit, AccomplishmentsState>(
+                      buildWhen: (
+                        AccomplishmentsState previous,
+                        AccomplishmentsState current,
+                      ) =>
+                          current is FetchAllAccomplishmentsDataLoading ||
+                          current is FetchAllAccomplishmentsDataSuccess,
                       builder:
                           (BuildContext context, AccomplishmentsState state) {
                         if (state is FetchAllAccomplishmentsDataLoading) {
