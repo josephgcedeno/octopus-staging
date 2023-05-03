@@ -10,9 +10,10 @@ class TeamMember extends StatefulWidget {
   const TeamMember({
     required this.user,
     required this.callback,
+    required this.updateButtonStatus,
     Key? key,
   }) : super(key: key);
-
+  final bool updateButtonStatus;
   final User user;
   final void Function(User user) callback;
   @override
@@ -32,7 +33,8 @@ class _TeamMemberState extends State<TeamMember> {
         children: <Widget>[
           BlocBuilder<AdminRegistrationCubit, AdminRegistrationState>(
             builder: (BuildContext context, AdminRegistrationState state) {
-              if (state is DeactivateUserLoading) {
+              if (state is UpdateUserStatusLoading &&
+                  state.id == widget.user.id) {
                 return Container(
                   padding: const EdgeInsets.all(2),
                   width: width * 0.1,
@@ -61,12 +63,12 @@ class _TeamMemberState extends State<TeamMember> {
                   height: height * 0.09,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: !widget.user.isDeactive
+                      color: widget.updateButtonStatus
                           ? const Color(0xFFE25252).withOpacity(0.2)
                           : const Color(0xff39C0C7).withOpacity(0.2),
                       borderRadius: const BorderRadius.all(Radius.circular(4)),
                     ),
-                    child: !widget.user.isDeactive
+                    child: widget.updateButtonStatus
                         ? const Icon(
                             Icons.close_rounded,
                             color: Color(0xFFE25252),

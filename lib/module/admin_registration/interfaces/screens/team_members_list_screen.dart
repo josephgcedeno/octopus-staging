@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/infrastructures/models/user/user_response.dart';
+import 'package:octopus/infrastructures/repository/interfaces/user_repository.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/internal/debug_utils.dart';
@@ -20,15 +21,18 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
   List<User> activated = <User>[];
   List<User> deactivated = <User>[];
 
-  void deactivateUser({required User targetUser}) {
-    context.read<AdminRegistrationCubit>().deactivateUser(id: targetUser.id);
-    setState(() {
-      for (final User user in activated) {
-        activated.removeWhere((User element) => element == user);
-        deactivated.add(user);
-      }
-    });
+  void deactivateUser({required User targetUser, required int position}) {
+    context
+        .read<AdminRegistrationCubit>()
+        .deactivateUser(id: targetUser.id, position: position);
   }
+
+  void activateUser({required User targetUser, required int position}) {
+    context
+        .read<AdminRegistrationCubit>()
+        .activateUser(id: targetUser.id, position: position);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -46,7 +50,10 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
           (AdminRegistrationState previous, AdminRegistrationState current) =>
               current is FetchAllUsersLoading ||
               current is FetchAllUsersSuccess ||
-              current is FetchAllUsersFailed,
+              current is FetchAllUsersFailed ||
+              current is UpdateUserStatusLoading ||
+              current is UpdateUserStatusSuccess ||
+              current is UpdateUserStatusFailed,
       listener: (BuildContext context, AdminRegistrationState state) {
         if (state is FetchAllUsersLoading) {
         } else if (state is FetchAllUsersSuccess) {
@@ -60,6 +67,30 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
             }
           });
         } else if (state is FetchAllUsersFailed) {
+          showSnackBar(
+            message: state.message,
+            snackBartState: SnackBartState.error,
+          );
+        }
+        if (state is UpdateUserStatusSuccess) {
+          String status = 'activated.';
+
+          if (state.userStatus == UserStatus.deactivate) {
+            status = 'deactivated.';
+            setState(() {
+              activated.removeAt(state.position!);
+              deactivated.add(state.response.data);
+            });
+          } else {
+            setState(() {
+              deactivated.removeAt(state.position!);
+              activated.add(state.response.data);
+            });
+          }
+          showSnackBar(
+            message: 'User is $status',
+          );
+        } else if (state is UpdateUserStatusFailed) {
           showSnackBar(
             message: state.message,
             snackBartState: SnackBartState.error,
@@ -102,12 +133,20 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
                 return SizedBox(
                   child: Column(
                     children: <Widget>[
-                      for (final User user in activated)
-                        TeamMember(
-                          callback: (User user) =>
-                              deactivateUser(targetUser: user),
-                          user: user,
+                      if (activated.isEmpty)
+                        const Center(
+                          child: Text('There is no Activated Members'),
                         ),
+                      if (activated.isNotEmpty)
+                        for (final User user in activated)
+                          TeamMember(
+                            updateButtonStatus: true,
+                            callback: (User user) => deactivateUser(
+                              targetUser: user,
+                              position: activated.indexOf(user),
+                            ),
+                            user: user,
+                          ),
                       if (deactivated.isNotEmpty)
                         Row(
                           children: <Widget>[
@@ -124,9 +163,11 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
                         ),
                       for (final User user in deactivated)
                         TeamMember(
-                          callback: (User user) {
-                            
-                          },
+                          updateButtonStatus: false,
+                          callback: (User user) => activateUser(
+                            targetUser: user,
+                            position: deactivated.indexOf(user),
+                          ),
                           user: user,
                         )
                     ],

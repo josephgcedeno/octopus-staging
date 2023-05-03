@@ -34,17 +34,20 @@ class CreateUserFailed extends AdminRegistrationState {
   final String message;
 }
 
-class DeactivateUserLoading extends AdminRegistrationState {
-  DeactivateUserLoading();
+class UpdateUserStatusLoading extends AdminRegistrationState {
+  UpdateUserStatusLoading({required this.id});
+  final String id;
 }
 
-class DeactivateUserSuccess extends AdminRegistrationState {
-  DeactivateUserSuccess(this.response);
+class UpdateUserStatusSuccess extends AdminRegistrationState {
+  UpdateUserStatusSuccess(this.response, this.userStatus, this.position);
   final APIResponse<User> response;
+  final UserStatus userStatus;
+  int? position;
 }
 
-class DeactivateUserFailed extends AdminRegistrationState {
-  DeactivateUserFailed({required this.errorCode, required this.message});
+class UpdateUserStatusFailed extends AdminRegistrationState {
+  UpdateUserStatusFailed({required this.errorCode, required this.message});
   final String errorCode;
   final String message;
 }

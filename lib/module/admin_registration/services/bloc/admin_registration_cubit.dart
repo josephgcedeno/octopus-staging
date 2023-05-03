@@ -17,12 +17,11 @@ class AdminRegistrationCubit extends Cubit<AdminRegistrationState> {
       emit(FetchAllUsersLoading());
       final APIListResponse<User> response =
           await iUserRepository.fetchAllUser();
-
       emit(FetchAllUsersSuccess(response.data));
     } catch (e) {
       final APIErrorResponse error = e as APIErrorResponse;
       emit(
-        DeactivateUserFailed(
+        UpdateUserStatusFailed(
           errorCode: error.errorCode ?? '',
           message: error.message,
         ),
@@ -74,17 +73,45 @@ class AdminRegistrationCubit extends Cubit<AdminRegistrationState> {
     }
   }
 
-  Future<void> deactivateUser({required String id}) async {
+  Future<void> deactivateUser({
+    required String id,
+    int? position,
+  }) async {
     try {
-      emit(DeactivateUserLoading());
-      final APIResponse<User> response =
-          await iUserRepository.deactivateUser(id: id);
+      emit(UpdateUserStatusLoading(id: id));
 
-      emit(DeactivateUserSuccess(response));
+      final APIResponse<User> response = await iUserRepository.updateUserStatus(
+        id: id,
+        userStatus: UserStatus.deactivate,
+      );
+      emit(UpdateUserStatusSuccess(response, UserStatus.deactivate, position));
     } catch (e) {
       final APIErrorResponse error = e as APIErrorResponse;
       emit(
-        DeactivateUserFailed(
+        UpdateUserStatusFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
+    }
+  }
+
+  Future<void> activateUser({
+    required String id,
+    int? position,
+  }) async {
+    try {
+      emit(UpdateUserStatusLoading(id: id));
+
+      final APIResponse<User> response = await iUserRepository.updateUserStatus(
+        id: id,
+        userStatus: UserStatus.activate,
+      );
+      emit(UpdateUserStatusSuccess(response, UserStatus.activate, position));
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+      emit(
+        UpdateUserStatusFailed(
           errorCode: error.errorCode ?? '',
           message: error.message,
         ),
