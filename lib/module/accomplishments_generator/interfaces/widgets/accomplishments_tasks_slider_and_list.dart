@@ -241,7 +241,7 @@ class _AccomplishmentsSliderAndTasksListState
               (DSRWorks item) => item == task,
             );
             selectedTasks
-                .removeWhere((String key, List<DSRWorks> item) => key.isEmpty);
+                .removeWhere((String key, List<DSRWorks> item) => item.isEmpty);
             tasks[category]!.add(task);
           } else {
             tasks[category]!.removeWhere(
