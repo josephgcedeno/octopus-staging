@@ -4,11 +4,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/repository/auth_repository.dart';
 import 'package:octopus/infrastructures/repository/dsr_repository.dart';
+import 'package:octopus/infrastructures/repository/leave_repository.dart';
 import 'package:octopus/infrastructures/repository/project_repository.dart';
 import 'package:octopus/infrastructures/repository/time_in_out_repository.dart';
 import 'package:octopus/interfaces/screens/splash_screen.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
+import 'package:octopus/module/leaves/service/cubit/leaves_cubit.dart';
 import 'package:octopus/module/login/interfaces/screens/login_screen.dart';
 import 'package:octopus/module/login/service/cubit/authentication_cubit.dart';
 import 'package:octopus/module/standup_report/service/cubit/dsr_cubit.dart';
@@ -49,6 +51,7 @@ class _AppState extends State<App> {
   final TimeInOutRepository timeInOutRepository = TimeInOutRepository();
   final DSRRepository dsrRepository = DSRRepository();
   final ProjectRepository projectRepository = ProjectRepository();
+  final LeaveRepository leaveRepository = LeaveRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +69,11 @@ class _AppState extends State<App> {
         BlocProvider<TimeRecordCubit>(
           create: (BuildContext context) => TimeRecordCubit(
             timeInOutRepository: timeInOutRepository,
+          ),
+        ),
+        BlocProvider<LeavesCubit>(
+          create: (BuildContext context) => LeavesCubit(
+            leaveRepository: leaveRepository,
           ),
         ),
       ],
