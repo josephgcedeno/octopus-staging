@@ -15,7 +15,7 @@ import 'package:octopus/module/standup_report/service/cubit/dsr_cubit.dart';
 import 'package:octopus/module/time_record/interfaces/screens/time_record_screen.dart';
 import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
 import 'package:octopus/test/main_test.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MockTimeRecordCubit extends MockCubit<TimeRecordState>
