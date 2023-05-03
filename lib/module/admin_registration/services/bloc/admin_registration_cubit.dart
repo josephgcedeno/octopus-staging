@@ -29,9 +29,10 @@ class AdminRegistrationCubit extends Cubit<AdminRegistrationState> {
     }
   }
 
-  Future<void> createUser({
+  Future<void> registerUser({
     required String firstName,
     required String lastName,
+    required String email,
     required DateTime birthDate,
     required String address,
     required String civilStatus,
@@ -45,8 +46,11 @@ class AdminRegistrationCubit extends Cubit<AdminRegistrationState> {
   }) async {
     try {
       emit(CreateUserLoading());
+      final APIResponse<String> userID = await iUserRepository
+          .createUserAccount(email: email, password: '0000', isAdmin: false);
+
       final APIResponse<User> response = await iUserRepository.createUser(
-        id: '1',
+        id: userID.data,
         firstName: firstName,
         lastName: lastName,
         nuxifyId: 'nuxifyId',

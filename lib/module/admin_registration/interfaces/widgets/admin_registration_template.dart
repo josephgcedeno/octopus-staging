@@ -1,5 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/interfaces/widgets/loading_indicator.dart';
+import 'package:octopus/module/admin_registration/services/bloc/admin_registration_cubit.dart';
 
 enum TemplateVariation {
   teamMembers,
@@ -15,6 +18,7 @@ class AdminRegistrationTemplate extends StatelessWidget {
     required this.buttonName,
     required this.buttonFunction,
     required this.templateVariation,
+    this.skipFunction,
     Key? key,
   }) : super(key: key);
   final Widget body;
@@ -23,6 +27,7 @@ class AdminRegistrationTemplate extends StatelessWidget {
   final String buttonName;
   final TemplateVariation templateVariation;
   final void Function() buttonFunction;
+  final void Function()? skipFunction;
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +126,9 @@ class AdminRegistrationTemplate extends StatelessWidget {
                 child: Text(
                   'Skip',
                   style: theme.textTheme.bodyLarge?.copyWith(
-                      color: Colors.blue, fontWeight: FontWeight.w500,),
+                    color: Colors.blue,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
@@ -134,17 +141,39 @@ class AdminRegistrationTemplate extends StatelessWidget {
             margin: EdgeInsets.only(
               bottom: height * 0.02,
             ),
-            child: ElevatedButton(
-              style: ButtonStyle(
-                elevation: MaterialStateProperty.all(0),
-                shape: MaterialStateProperty.all(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                ),
-              ),
-              onPressed: buttonFunction,
-              child: Text(buttonName),
+            child: BlocBuilder<AdminRegistrationCubit, AdminRegistrationState>(
+              builder: (BuildContext context, AdminRegistrationState state) {
+                if (state is CreateUserLoading) {
+                  return ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(
+                        Colors.grey,
+                      ),
+                      elevation: MaterialStateProperty.all(0),
+                      shape: MaterialStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                      ),
+                    ),
+                    onPressed: null,
+                    child: const LoadingIndicator(),
+                  );
+                } else {
+                  return ElevatedButton(
+                    style: ButtonStyle(
+                      elevation: MaterialStateProperty.all(0),
+                      shape: MaterialStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                      ),
+                    ),
+                    onPressed: buttonFunction,
+                    child: Text(buttonName),
+                  );
+                }
+              },
             ),
           ),
         )

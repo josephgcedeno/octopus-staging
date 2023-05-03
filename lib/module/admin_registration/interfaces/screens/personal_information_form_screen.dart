@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
+import 'package:octopus/module/admin_registration/interfaces/screens/ids_form_screen.dart';
 import 'package:octopus/module/admin_registration/interfaces/widgets/admin_registration_template.dart';
 import 'package:octopus/module/admin_registration/interfaces/widgets/full_width_reg_textfield.dart';
-import 'package:octopus/module/admin_registration/services/bloc/admin_registration_cubit.dart';
 
 class PersonalInformationFormScreen extends StatefulWidget {
   const PersonalInformationFormScreen({Key? key}) : super(key: key);
@@ -49,23 +49,6 @@ class _PersonalInformationFormScreenState
     }
   }
 
-  void saveForm() {
-    context.read<AdminRegistrationCubit>().createUser(
-          firstName: firstNameTextController.text,
-          lastName: lastNameTextController.text,
-          birthDate: birthDate,
-          address: addressTextController.text,
-          civilStatus: 'Single',
-          dateHired: hireDate,
-          profileImageSource: 'None',
-          position: positionTextController.text,
-          pagIbigNo: 'No Data',
-          sssNo: 'No Data',
-          tinNo: 'No Data',
-          philHealtNo: 'No Data',
-        );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,7 +59,23 @@ class _PersonalInformationFormScreenState
         subtitle: 'Personal Information',
         title: 'Registration',
         buttonFunction: () {
-          saveForm();
+          if (_formKey.currentState!.validate()) {
+            Navigator.of(context).push(
+              MaterialPageRoute<dynamic>(
+                builder: (_) => IdsFormScreen(
+                  addressTextController: addressTextController,
+                  birthdateTextController: birthdateTextController,
+                  dateHiredTextController: dateHiredTextController,
+                  emailTextController: emailTextController,
+                  firstNameTextController: firstNameTextController,
+                  lastNameTextController: lastNameTextController,
+                  positionTextController: positionTextController,
+                  birthDate: birthDate,
+                  hireDate: hireDate,
+                ),
+              ),
+            );
+          }
         },
         body: Form(
           key: _formKey,
