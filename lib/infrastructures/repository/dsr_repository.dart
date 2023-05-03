@@ -29,6 +29,7 @@ class DSRRepository extends IDSRRepository {
     required List<dynamic> tasks,
     required String userName,
     required String date,
+    required List<ProjectsParseObject> projects,
     String? filterByProjectId,
   }) async {
     final List<DSRWorks> data = <DSRWorks>[];
@@ -43,9 +44,9 @@ class DSRRepository extends IDSRRepository {
       }
       final String text = parseTask['text']!.toString();
 
-      final ProjectsParseObject project =
-          (await ProjectsParseObject().getObject(projectTagId)).result
-              as ProjectsParseObject;
+      final ProjectsParseObject project = projects.firstWhere(
+        (ProjectsParseObject obj) => obj.objectId == projectTagId,
+      );
 
       final String projectName = project.name;
       final String projectColor = project.color;
@@ -291,9 +292,18 @@ class DSRRepository extends IDSRRepository {
           final ParseResponse allUsersInfo =
               await EmployeeInfoParseObject().getAll();
 
+          /// Get all project info list of parse object.
+          final ParseResponse allProjects =
+              await ProjectsParseObject().getAll();
+
           final List<EmployeeInfoParseObject> allUserInfoCasted =
               List<EmployeeInfoParseObject>.from(
             allUsersInfo.results ?? <dynamic>[],
+          );
+
+          final List<ProjectsParseObject> allProjectInfoCasted =
+              List<ProjectsParseObject>.from(
+            allProjects.results ?? <dynamic>[],
           );
 
           if (dsrResponse.success) {
@@ -327,6 +337,7 @@ class DSRRepository extends IDSRRepository {
                         userName: userName,
                         filterByProjectId: projectId,
                         date: date,
+                        projects: allProjectInfoCasted,
                       ),
                     );
                     continue;
@@ -337,6 +348,7 @@ class DSRRepository extends IDSRRepository {
                     userName: userName,
                     filterByProjectId: projectId,
                     date: date,
+                    projects: allProjectInfoCasted,
                   );
                 }
               }
