@@ -19,6 +19,9 @@ class AccomplishmentsCubit extends Cubit<AccomplishmentsState> {
   final ProjectRepository projectRepository;
   final DSRRepository dsrRepository;
 
+  void getSelectedTasks(Map<String, List<DSRWorks>> selectedTasks) =>
+      emit(AccomplishmentsState(selectedTasks: selectedTasks));
+
   Future<void> getAccomplishments(DateTime date, int projectIndex) async {
     try {
       emit(FetchAllAccomplishmentsDataLoading());

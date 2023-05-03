@@ -1,7 +1,11 @@
 part of 'accomplishments_cubit.dart';
 
 class AccomplishmentsState {
-  AccomplishmentsState();
+  AccomplishmentsState({
+    this.selectedTasks,
+  });
+
+  Map<String, List<DSRWorks>>? selectedTasks;
 }
 
 class FetchAllAccomplishmentsDataLoading extends AccomplishmentsState {
