@@ -88,10 +88,11 @@ class MembersProfileScreen extends StatelessWidget {
               current is UpdateUserStatusSuccess,
       listener: (BuildContext context, AdminRegistrationState state) {
         if (state is UpdateUserStatusSuccess) {
-          Navigator.of(context).pushReplacement(
+          Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute<dynamic>(
               builder: (_) => const TeamMembersScreen(),
             ),
+            (Route<dynamic> route) => false,
           );
         } else if (state is UpdateUserStatusFailed) {
           showSnackBar(
