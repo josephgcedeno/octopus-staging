@@ -504,5 +504,34 @@ class AccountCredentialsParseObject extends ParseObject
   set password(String password) => set<String>(keyPassword, password);
 
   String get accountType => get<String>(keyAccountType)!;
-  set accountType(String accountType) => set<String>(keyAccountType, accountType);
+  set accountType(String accountType) =>
+      set<String>(keyAccountType, accountType);
+}
+
+class CompanyFilePDFParseObject extends ParseObject implements ParseCloneable {
+  CompanyFilePDFParseObject() : super(_keyTableName);
+  CompanyFilePDFParseObject.clone() : this();
+
+  /// Convert the ParseObject to a custom parse object.
+  static CompanyFilePDFParseObject toCustomParseObject({
+    required dynamic data,
+  }) =>
+      data as CompanyFilePDFParseObject;
+
+  /// Serialized response
+  @override
+  CompanyFilePDFParseObject clone(Map<String, dynamic> map) =>
+      CompanyFilePDFParseObject.clone()..fromJson(map);
+
+  static const String _keyTableName = 'CompanyFilePDF';
+  static const String keyFileSource = 'file_source';
+  static const String keyCompanyFileType = 'company_file_type';
+  static const String keyAccountType = 'account_type';
+
+  String get fileSource => get<String>(keyFileSource)!;
+  set fileSource(String fileSource) => set<String>(keyFileSource, fileSource);
+
+  String get companyFileType => get<String>(keyCompanyFileType)!;
+  set companyFileType(String companyFileType) =>
+      set<String>(keyCompanyFileType, companyFileType);
 }

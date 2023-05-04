@@ -16,6 +16,20 @@ const String encrpyPassowrd = 'hdqvb3BVzVc2KH-u2WA9cSkgCSxPj9AJ';
 
 class HRRepository extends IHRRepository {
   final EncryptionService encryptionService = EncryptionService(encrpyPassowrd);
+
+  String _getCompanyFileType(CompanyFileType companyFileType) {
+    switch (companyFileType) {
+      case CompanyFileType.policies:
+        return 'POLICIES';
+      case CompanyFileType.guidelines:
+        return 'GUIDELINES';
+      case CompanyFileType.background:
+        return 'BACKGROUND';
+      case CompanyFileType.organizationChart:
+        return 'ORGANIZATIOCHART';
+    }
+  }
+
   @override
   Future<APIResponse<Credential>> addCredential({
     required String username,
@@ -260,10 +274,62 @@ class HRRepository extends IHRRepository {
   }
 
   @override
-  Future<APIResponse<CompanyFilePdf>> createCompanyFile(
-      {required CompanyFileType fileType, required String fileSource}) {
-    // TODO: implement createCompanyFile
-    throw UnimplementedError();
+  Future<APIResponse<CompanyFilePdf>> createCompanyFile({
+    required CompanyFileType fileType,
+    required String fileSource,
+  }) async {
+    try {
+      if (fileSource.isEmpty) {
+        throw APIErrorResponse(
+          message: errorEmptyValue,
+          errorCode: null,
+        );
+      }
+
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final CompanyFilePDFParseObject companyFilePDFParseObject =
+            CompanyFilePDFParseObject();
+        // Encrypt password for extra security.
+
+        /// Add required fields
+        companyFilePDFParseObject
+          ..fileSource = fileSource
+          ..companyFileType = _getCompanyFileType(fileType);
+
+        final ParseResponse accountResponse =
+            await companyFilePDFParseObject.save();
+
+        if (accountResponse.error != null) {
+          formatAPIErrorResponse(error: accountResponse.error!);
+        }
+
+        if (accountResponse.success && accountResponse.results != null) {
+          final String id = getResultId(accountResponse.results!);
+          return APIResponse<CompanyFilePdf>(
+            success: true,
+            message: 'Successfully created new file PDF.',
+            data: CompanyFilePdf(
+              companyFileType: fileType,
+              fileSource: fileSource,
+              id: id,
+            ),
+            errorCode: null,
+          );
+        }
+      }
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
+      throw APIErrorResponse(
+        message: errorMessage,
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
+    }
   }
 
   @override
