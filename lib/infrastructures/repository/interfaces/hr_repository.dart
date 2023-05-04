@@ -98,7 +98,7 @@ abstract class IHRRepository {
   ///
   /// [id] - (optional) The ID of the company file to retrieve.
   /// [fileType] - (optional) The type of company file to retrieve.
-  Future<APIListResponse<Credential>> getAllCompanyFilePdf({
+  Future<APIListResponse<CompanyFilePdf>> getAllCompanyFilePdf({
     String? id,
     CompanyFileType? fileType,
   });

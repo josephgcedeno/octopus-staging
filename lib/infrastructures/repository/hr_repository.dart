@@ -373,7 +373,7 @@ class HRRepository extends IHRRepository {
   }
 
   @override
-  Future<APIListResponse<Credential>> getAllCompanyFilePdf(
+  Future<APIListResponse<CompanyFilePdf>> getAllCompanyFilePdf(
       {String? id, CompanyFileType? fileType}) {
     // TODO: implement getAllCompanyFilePdf
     throw UnimplementedError();
