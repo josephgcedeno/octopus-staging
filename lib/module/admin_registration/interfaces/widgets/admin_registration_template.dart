@@ -122,7 +122,7 @@ class AdminRegistrationTemplate extends StatelessWidget {
                 bottom: height * 0.1,
               ),
               child: TextButton(
-                onPressed: buttonFunction,
+                onPressed: skipFunction,
                 child: Text(
                   'Skip',
                   style: theme.textTheme.bodyLarge?.copyWith(

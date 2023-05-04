@@ -60,6 +60,25 @@ class _IdsFormScreenState extends State<IdsFormScreen> {
         );
   }
 
+  void skipForm() {
+    context.read<AdminRegistrationCubit>().registerUser(
+          firstName: widget.firstNameTextController.text,
+          lastName: widget.lastNameTextController.text,
+          email: widget.emailTextController.text,
+          birthDate: widget.birthDate,
+          address: widget.addressTextController.text,
+          civilStatus: 'Single',
+          dateHired: widget.hireDate,
+          profileImageSource:
+              'https://cdn-icons-png.flaticon.com/512/201/201634.png',
+          position: widget.positionTextController.text,
+          tinNo: 'No Data',
+          sssNo: 'No Data',
+          pagIbigNo: 'No Data',
+          philHealtNo: 'No Data',
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<AdminRegistrationCubit, AdminRegistrationState>(
@@ -93,7 +112,7 @@ class _IdsFormScreenState extends State<IdsFormScreen> {
           title: 'Registration',
           subtitle: "ID's",
           skipFunction: () {
-            saveForm();
+            skipForm();
           },
           buttonFunction: () {
             if (_formKey.currentState!.validate()) {
