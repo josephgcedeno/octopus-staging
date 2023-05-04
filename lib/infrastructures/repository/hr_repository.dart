@@ -298,15 +298,15 @@ class HRRepository extends IHRRepository {
           ..fileSource = fileSource
           ..companyFileType = _getCompanyFileType(fileType);
 
-        final ParseResponse accountResponse =
+        final ParseResponse companyFileCreate =
             await companyFilePDFParseObject.save();
 
-        if (accountResponse.error != null) {
-          formatAPIErrorResponse(error: accountResponse.error!);
+        if (companyFileCreate.error != null) {
+          formatAPIErrorResponse(error: companyFileCreate.error!);
         }
 
-        if (accountResponse.success && accountResponse.results != null) {
-          final String id = getResultId(accountResponse.results!);
+        if (companyFileCreate.success && companyFileCreate.results != null) {
+          final String id = getResultId(companyFileCreate.results!);
           return APIResponse<CompanyFilePdf>(
             success: true,
             message: 'Successfully created new file PDF.',
