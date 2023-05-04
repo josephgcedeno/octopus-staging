@@ -460,9 +460,75 @@ class HRRepository extends IHRRepository {
   }
 
   @override
-  Future<APIResponse<CompanyFilePdf>> updateCompanyFile(
-      {required String id, CompanyFileType? fileType, String? fileSource}) {
-    // TODO: implement updateCompanyFile
-    throw UnimplementedError();
+  Future<APIResponse<CompanyFilePdf>> updateCompanyFile({
+    required String id,
+    CompanyFileType? fileType,
+    String? fileSource,
+  }) async {
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final CompanyFilePDFParseObject companyFilePDFParseObject =
+            CompanyFilePDFParseObject();
+        companyFilePDFParseObject.objectId = id;
+
+        if (fileType != null) {
+          companyFilePDFParseObject.companyFileType =
+              _getCompanyFileType(fileType);
+        }
+        if (fileSource != null) {
+          companyFilePDFParseObject.fileSource = fileSource;
+        }
+
+        final ParseResponse companyFileUpdateResponse =
+            await companyFilePDFParseObject.save();
+
+        if (companyFileUpdateResponse.error != null) {
+          formatAPIErrorResponse(error: companyFileUpdateResponse.error!);
+        }
+
+        if (companyFileUpdateResponse.success &&
+            companyFileUpdateResponse.results != null) {
+          final String objectId =
+              getResultId(companyFileUpdateResponse.results!);
+          final ParseResponse fetchUserInfo =
+              await companyFilePDFParseObject.getObject(objectId);
+
+          if (fetchUserInfo.error != null) {
+            formatAPIErrorResponse(error: fetchUserInfo.error!);
+          }
+
+          if (fetchUserInfo.success && fetchUserInfo.results != null) {
+            final CompanyFilePDFParseObject resultParseObject =
+                getParseObject(fetchUserInfo.results!)
+                    as CompanyFilePDFParseObject;
+
+            return APIResponse<CompanyFilePdf>(
+              success: true,
+              message: 'Successfully update company file.',
+              data: CompanyFilePdf(
+                companyFileType: _getCompanyFileTypeFromString(
+                  resultParseObject.companyFileType,
+                ),
+                fileSource: resultParseObject.fileSource,
+                id: resultParseObject.objectId!,
+              ),
+              errorCode: null,
+            );
+          }
+        }
+      }
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
+      throw APIErrorResponse(
+        message: errorMessage,
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
+    }
   }
 }
