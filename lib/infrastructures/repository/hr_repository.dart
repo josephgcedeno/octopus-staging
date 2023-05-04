@@ -80,6 +80,75 @@ class HRRepository extends IHRRepository {
   }
 
   @override
+  Future<APIListResponse<Credential>> getAllCredentials({
+    String? id,
+    String? accountType,
+  }) async {
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final AccountCredentialsParseObject accountCredentialsParseObject =
+            AccountCredentialsParseObject();
+
+        final QueryBuilder<AccountCredentialsParseObject>
+            queryAccountCredentials =
+            QueryBuilder<AccountCredentialsParseObject>(
+          accountCredentialsParseObject,
+        );
+
+        if (id != null) {
+          queryAccountCredentials.whereEqualTo('objectId', id);
+        }
+
+        if (accountType != null) {
+          queryAccountCredentials.whereEqualTo(
+            AccountCredentialsParseObject.keyAccountType,
+            accountType,
+          );
+        }
+
+        final ParseResponse accountResponse =
+            await queryAccountCredentials.query();
+
+        if (accountResponse.error != null) {
+          formatAPIErrorResponse(error: accountResponse.error!);
+        }
+
+        final List<Credential> credentials = <Credential>[];
+        if (accountResponse.success && accountResponse.results != null) {
+          final List<AccountCredentialsParseObject> allAccountsCasted =
+              List<AccountCredentialsParseObject>.from(
+            accountResponse.results ?? <dynamic>[],
+          );
+
+          for (final AccountCredentialsParseObject account
+              in allAccountsCasted) {
+            credentials.add(encryptionService.decryptCredential(account));
+          }
+        }
+
+        return APIListResponse<Credential>(
+          success: true,
+          message: 'Successfully fetch all account.',
+          data: credentials,
+          errorCode: null,
+        );
+      }
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
+      throw APIErrorResponse(
+        message: errorMessage,
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
+    }
+  }
+
+  @override
   Future<APIResponse<CompanyFilePdf>> createCompanyFile(
       {required CompanyFileType fileType, required String fileSource}) {
     // TODO: implement createCompanyFile
@@ -102,13 +171,6 @@ class HRRepository extends IHRRepository {
   Future<APIListResponse<Credential>> getAllCompanyFilePdf(
       {String? id, CompanyFileType? fileType}) {
     // TODO: implement getAllCompanyFilePdf
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<APIListResponse<Credential>> getAllCredentials(
-      {String? id, String? accountType}) {
-    // TODO: implement getAllCredentials
     throw UnimplementedError();
   }
 

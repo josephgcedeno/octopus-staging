@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:encrypt/encrypt.dart';
+import 'package:octopus/infrastructures/models/hr/hr_response.dart';
+import 'package:octopus/internal/class_parse_object.dart';
 
 class EncryptionService {
   EncryptionService(String key) {
@@ -22,4 +24,14 @@ class EncryptionService {
     final String decrypted = _encrypter.decrypt64(data, iv: _iv);
     return decrypted;
   }
+
+  Credential decryptCredential(
+    AccountCredentialsParseObject encrptedCredentials,
+  ) =>
+      Credential(
+        accountType: encrptedCredentials.accountType,
+        id: encrptedCredentials.objectId!,
+        password: decrypt(encrptedCredentials.password),
+        username: encrptedCredentials.username,
+      );
 }
