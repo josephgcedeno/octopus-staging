@@ -31,7 +31,16 @@ class _DailyAccomplishmentTabsState extends State<DailyAccomplishmentTabs>
     super.dispose();
   }
 
-  String changeTabLabel(String tabName) {
+  void _updateTabTasks(String key, DSRWorks task) {
+    setState(() {
+      selectedTasks![key]!.removeWhere(
+        (DSRWorks item) => item == task,
+      );
+      context.read<AccomplishmentsCubit>().getSelectedTasks(selectedTasks!);
+    });
+  }
+
+  String _changeTabLabel(String tabName) {
     if (tabName == 'work_in_progress') {
       return 'DOING';
     } else if (tabName == 'blockers') {
@@ -69,17 +78,15 @@ class _DailyAccomplishmentTabsState extends State<DailyAccomplishmentTabs>
                 unselectedLabelColor: kBlack,
                 tabs: selectedTasks!.keys
                     .map(
-                      (String key) => Visibility(
-                        visible: selectedTasks![key]!.isNotEmpty,
-                        child: Text(
-                          changeTabLabel(key),
-                        ),
+                      (String key) => Text(
+                        _changeTabLabel(key),
                       ),
                     )
                     .toList(),
                 controller: _tabController,
                 indicatorColor: theme.primaryColor,
-                labelPadding: EdgeInsets.symmetric(horizontal: width * 0.02, vertical: height * 0.008),
+                labelPadding: EdgeInsets.symmetric(
+                    horizontal: width * 0.02, vertical: height * 0.008),
                 overlayColor: MaterialStateProperty.resolveWith<Color?>(
                   (Set<MaterialState> states) {
                     if (states.contains(MaterialState.pressed)) {
@@ -105,6 +112,7 @@ class _DailyAccomplishmentTabsState extends State<DailyAccomplishmentTabs>
                       children: <Widget>[
                         for (DSRWorks task in selectedTasks![key]!)
                           AccomplishmentsTaskChecker(
+                            onTap: () => _updateTabTasks(key, task),
                             title: task.text,
                             type: CheckerType.selected,
                             hasProfile: false,
