@@ -55,7 +55,7 @@ class HRRepository extends IHRRepository {
           final String id = getResultId(accountResponse.results!);
           return APIResponse<Credential>(
             success: true,
-            message: 'Successfully created user record.',
+            message: 'Successfully created new account.',
             data: Credential(
               accountType: accountType,
               id: id,
