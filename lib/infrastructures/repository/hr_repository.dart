@@ -220,6 +220,46 @@ class HRRepository extends IHRRepository {
   }
 
   @override
+  Future<APIResponse<void>> deleteCredential({required String id}) async {
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final AccountCredentialsParseObject accountCredentialsParseObject =
+            AccountCredentialsParseObject();
+        accountCredentialsParseObject.objectId = id;
+
+        final ParseResponse accountResponse =
+            await accountCredentialsParseObject.delete();
+
+        if (accountResponse.error != null) {
+          formatAPIErrorResponse(error: accountResponse.error!);
+        }
+
+        if (accountResponse.success && accountResponse.results != null) {
+          return APIResponse<void>(
+            success: true,
+            message: 'Successfully delete account.',
+            data: null,
+            errorCode: null,
+          );
+        }
+      }
+
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
+      throw APIErrorResponse(
+        message: errorMessage,
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
+    }
+  }
+
+  @override
   Future<APIResponse<CompanyFilePdf>> createCompanyFile(
       {required CompanyFileType fileType, required String fileSource}) {
     // TODO: implement createCompanyFile
@@ -229,12 +269,6 @@ class HRRepository extends IHRRepository {
   @override
   Future<APIResponse<void>> deleteCompanyFile({required String id}) {
     // TODO: implement deleteCompanyFile
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<APIResponse<void>> deleteCredential({required String id}) {
-    // TODO: implement deleteCredential
     throw UnimplementedError();
   }
 
