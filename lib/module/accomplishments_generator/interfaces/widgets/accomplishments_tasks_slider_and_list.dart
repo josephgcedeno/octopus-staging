@@ -334,14 +334,12 @@ class _AccomplishmentsSliderAndTasksListState
           taskWidgets.add(const SizedBox.shrink());
         } else {
           taskWidgets.add(
-            GestureDetector(
+            AccomplishmentsTaskChecker(
+              title: task.text,
+              type: CheckerType.unselected,
               onTap: () {
                 toggleTask(task, entry.key);
               },
-              child: AccomplishmentsTaskChecker(
-                title: task.text,
-                type: CheckerType.unselected,
-              ),
             ),
           );
         }
@@ -371,14 +369,12 @@ class _AccomplishmentsSliderAndTasksListState
           selectedTaskWidgets.add(const SizedBox.shrink());
         } else {
           selectedTaskWidgets.add(
-            GestureDetector(
+            AccomplishmentsTaskChecker(
+              title: selectedTask.text,
+              type: CheckerType.selected,
               onTap: () {
                 toggleTask(selectedTask, entry.key);
               },
-              child: AccomplishmentsTaskChecker(
-                title: selectedTask.text,
-                type: CheckerType.selected,
-              ),
             ),
           );
         }

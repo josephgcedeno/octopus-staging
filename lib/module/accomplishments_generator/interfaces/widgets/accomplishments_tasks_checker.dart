@@ -10,6 +10,7 @@ class AccomplishmentsTaskChecker extends StatelessWidget {
   const AccomplishmentsTaskChecker({
     required this.title,
     required this.type,
+    required this.onTap,
     this.hasProfile = true,
     Key? key,
   }) : super(key: key);
@@ -17,6 +18,7 @@ class AccomplishmentsTaskChecker extends StatelessWidget {
   final String title;
   final bool hasProfile;
   final CheckerType type;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -44,17 +46,20 @@ class AccomplishmentsTaskChecker extends StatelessWidget {
               ),
             ],
           ),
-          Container(
-            padding: EdgeInsets.all(width * 0.01),
-            decoration: BoxDecoration(
-              color: type == CheckerType.selected
-                  ? kLightRed.withOpacity(0.08)
-                  : kAqua.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              type == CheckerType.selected ? Icons.close : Icons.check,
-              color: type == CheckerType.selected ? kLightRed : kAqua,
+          GestureDetector(
+            onTap: onTap,
+            child: Container(
+              padding: EdgeInsets.all(width * 0.01),
+              decoration: BoxDecoration(
+                color: type == CheckerType.selected
+                    ? kLightRed.withOpacity(0.08)
+                    : kAqua.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                type == CheckerType.selected ? Icons.close : Icons.check,
+                color: type == CheckerType.selected ? kLightRed : kAqua,
+              ),
             ),
           ),
         ],
