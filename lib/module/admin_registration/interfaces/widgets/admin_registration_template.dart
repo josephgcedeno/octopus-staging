@@ -115,22 +115,46 @@ class AdminRegistrationTemplate extends StatelessWidget {
         if (templateVariation == TemplateVariation.iDs)
           Align(
             alignment: FractionalOffset.bottomCenter,
-            child: Container(
-              width: width,
-              padding: const EdgeInsets.symmetric(horizontal: 25.0),
-              margin: EdgeInsets.only(
-                bottom: height * 0.1,
-              ),
-              child: TextButton(
-                onPressed: skipFunction,
-                child: Text(
-                  'Skip',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: Colors.blue,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
+            child: BlocBuilder<AdminRegistrationCubit, AdminRegistrationState>(
+              builder: (BuildContext context, AdminRegistrationState state) {
+                if (state is CreateUserLoading) {
+                  return Container(
+                    width: width,
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    margin: EdgeInsets.only(
+                      bottom: height * 0.1,
+                    ),
+                    child: TextButton(
+                      onPressed: null,
+                      child: Text(
+                        'Skip',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  );
+                } else {
+                  return Container(
+                    width: width,
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    margin: EdgeInsets.only(
+                      bottom: height * 0.1,
+                    ),
+                    child: TextButton(
+                      onPressed: skipFunction,
+                      child: Text(
+                        'Skip',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  );
+                }
+              },
             ),
           ),
         Align(
