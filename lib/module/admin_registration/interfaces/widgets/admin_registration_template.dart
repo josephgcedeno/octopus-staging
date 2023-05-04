@@ -43,71 +43,74 @@ class AdminRegistrationTemplate extends StatelessWidget {
             width: width,
             padding: const EdgeInsets.symmetric(horizontal: 25.0),
             child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding:
-                            EdgeInsets.only(bottom: height * 0.03, top: 20),
-                        child: Center(
-                          child: Text(
-                            title,
-                            style: kIsWeb
-                                ? theme.textTheme.titleLarge
-                                : theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+              child: Container(
+                margin: EdgeInsets.only(bottom: height * 0.07),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Padding(
+                          padding:
+                              EdgeInsets.only(bottom: height * 0.03, top: 20),
+                          child: Center(
+                            child: Text(
+                              title,
+                              style: kIsWeb
+                                  ? theme.textTheme.titleLarge
+                                  : theme.textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  if (templateVariation != TemplateVariation.teamMembers)
-                    Container(
-                      margin: EdgeInsets.only(bottom: height * 0.02),
-                      height: height * 0.003,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Flexible(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: Colors.blue,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          Flexible(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color:
-                                    templateVariation == TemplateVariation.iDs
-                                        ? Colors.blue
-                                        : Colors.grey,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      ],
                     ),
-                  Text(
-                    subtitle,
-                    style: theme.textTheme.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w500),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: body,
-                  )
-                ],
+                    if (templateVariation != TemplateVariation.teamMembers)
+                      Container(
+                        margin: EdgeInsets.only(bottom: height * 0.02),
+                        height: height * 0.003,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Flexible(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            Flexible(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color:
+                                      templateVariation == TemplateVariation.iDs
+                                          ? Colors.blue
+                                          : Colors.grey,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    Text(
+                      subtitle,
+                      style: theme.textTheme.titleSmall
+                          ?.copyWith(fontWeight: FontWeight.w500),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 10),
+                      child: body,
+                    )
+                  ],
+                ),
               ),
             ),
           ),
