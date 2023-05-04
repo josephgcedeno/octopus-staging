@@ -31,14 +31,13 @@ class AccomplishmentsCubit extends Cubit<AccomplishmentsState> {
       final DateTime formattedToday =
           DateTime(today.year, today.month, today.day);
 
-      final APIResponse<SprintRecord> todaySprintResponse = await dsrRepository
-          .sprintInfoQueryToday(); // This will return a single result of Sprint object that contains object id that will be used for getting the list of DSR Record for a sprint, start date, end date.
+      final APIResponse<SprintRecord> todaySprintResponse =
+          await dsrRepository.sprintInfoQueryToday();
       String sprintId = todaySprintResponse.data.id;
 
       final APIListResponse<Project> allProjectResponse =
           await projectRepository.getAllProjects(status: active);
       final List<Project> projects = allProjectResponse.data;
-      // This will return a list of Project object that contains id, color, project name, and status.
 
       final APIListResponse<SprintRecord> allSprintResponse =
           await dsrRepository.getAllSprints();
@@ -59,12 +58,12 @@ class AccomplishmentsCubit extends Cubit<AccomplishmentsState> {
           await dsrRepository.getAllDSRRecordForSprint(
         sprintId: sprintId,
         projectId:
-            projectId // Getting all the accomplishment base from the project ids eg for frontRx.
+            projectId 
         ,
         startDate: formattedDate,
         endDate: formattedDate,
-      ); // This will return the list of DSRWorks object 'blockers': [{'text': 'No internet 1 huhu', 'color' : '0xFF017BFF', ...}, ...] <-- type aning value is naka Class/Object SprintRecord 'done': [{'text': 'No internet 2 huhu', 'color' : '0xFF017BFF', ...}, ...] <-- type aning value is naka Class/Object SprintRecord'doing': [{'text': 'No internet 3 huhu', 'color' : '0xFF017BFF', ...}, ...]  <-- type aning value is naka Class/Object SprintRecord
-
+      ); 
+      
       inspect(accomplishments);
 
       emit(

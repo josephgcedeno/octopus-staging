@@ -44,9 +44,6 @@ class _AccomplishmentsSliderAndTasksListState
     'done',
   ];
 
-  // Map<String, List<Map<String, String>>> selectedTasks =
-  //     <String, List<Map<String, String>>>{};
-
   Map<String, List<DSRWorks>> tasks = <String, List<DSRWorks>>{};
 
   Map<String, List<DSRWorks>> selectedTasks = <String, List<DSRWorks>>{};
@@ -132,44 +129,6 @@ class _AccomplishmentsSliderAndTasksListState
     return category;
   }
 
-  // void _setData() {
-  //   if (_currentPageIndex == 0) {
-  //     _setTodayData();
-  //     return;
-  //   }
-  //   // _setOtherDayData();
-  // }
-
-  // void _setTodayData() {
-  //   // setState(() {
-  //   //   tasks = <String, List<Map<String, String>>>{
-  //   //     'done': <Map<String, String>>[
-  //   //       <String, String>{'text': 'Deploy eleven minions'},
-  //   //       <String, String>{'text': 'Deploy nine minions'},
-  //   //       <String, String>{'text': 'Deploy two minions'},
-  //   //       <String, String>{'text': 'Deploy eight minions'},
-  //   //       <String, String>{'text': 'Deploy eleven minions'},
-  //   //       <String, String>{'text': 'Deploy ten minions'}
-  //   //     ],
-  //   //     'doing': <Map<String, String>>[
-  //   //       <String, String>{'text': 'Deploy eight minions'},
-  //   //       <String, String>{'text': 'Deploy seven minions'},
-  //   //       <String, String>{'text': 'Deploy two minions'},
-  //   //     ],
-  //   //     'blockers': <Map<String, String>>[
-  //   //       <String, String>{'text': 'Deploy four minions'},
-  //   //       <String, String>{'text': 'Deploy six minions'}
-  //   //     ],
-  //   //   };
-  //   // });
-  // }
-
-  // void _setOtherDayData() {
-  //   // setState(() {
-  //   //   tasks = <String, List<Map<String, String>>>{};
-  //   // });
-  // }
-
   void _selectDateToday() {
     if (shouldProjectDateChange()) {
       setState(() {
@@ -186,7 +145,6 @@ class _AccomplishmentsSliderAndTasksListState
     setState(() {
       isToday = false;
       _selectedDate = date;
-      // _setOtherDayData();
     });
     context
         .read<AccomplishmentsCubit>()
@@ -211,7 +169,7 @@ class _AccomplishmentsSliderAndTasksListState
         if (selectedTasks.isNotEmpty && selectedTasks.containsKey(category)) {
           final bool containsText = selectedTasks[category]!.any(
             (DSRWorks item) => item == task,
-          ); // checks whether selectedTasks already has the task
+          ); 
 
           if (containsText) {
             selectedTasks.remove(task);
@@ -396,9 +354,9 @@ class _AccomplishmentsSliderAndTasksListState
                         title: project.projectName,
                         image: SvgPicture.asset(
                           whiteLogoSvg,
-                        ), // change to project.logo (depending on the name) if available
+                        ),
                         textColor:
-                            kWhite, // change to project.textColor (depending on the name) if available
+                            kWhite,
                         backgroundColor: Color(int.parse(project.color)),
                       );
                     }).toList(),
