@@ -30,6 +30,21 @@ class HRRepository extends IHRRepository {
     }
   }
 
+  CompanyFileType _getCompanyFileTypeFromString(String companyFileType) {
+    switch (companyFileType) {
+      case 'POLICIES':
+        return CompanyFileType.policies;
+      case 'GUIDELINES':
+        return CompanyFileType.guidelines;
+      case 'BACKGROUND':
+        return CompanyFileType.background;
+      case 'ORGANIZATIOCHART':
+        return CompanyFileType.organizationChart;
+      default:
+        return CompanyFileType.background;
+    }
+  }
+
   @override
   Future<APIResponse<Credential>> addCredential({
     required String username,
@@ -373,10 +388,75 @@ class HRRepository extends IHRRepository {
   }
 
   @override
-  Future<APIListResponse<CompanyFilePdf>> getAllCompanyFilePdf(
-      {String? id, CompanyFileType? fileType}) {
-    // TODO: implement getAllCompanyFilePdf
-    throw UnimplementedError();
+  Future<APIListResponse<CompanyFilePdf>> getAllCompanyFilePdf({
+    String? id,
+    CompanyFileType? fileType,
+  }) async {
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final CompanyFilePDFParseObject companyFilePDFParseObject =
+            CompanyFilePDFParseObject();
+
+        final QueryBuilder<CompanyFilePDFParseObject> queryGetAllFile =
+            QueryBuilder<CompanyFilePDFParseObject>(companyFilePDFParseObject);
+
+        if (id != null) {
+          queryGetAllFile.whereEqualTo('objectId', id);
+        }
+        if (fileType != null) {
+          queryGetAllFile.whereEqualTo(
+            CompanyFilePDFParseObject.keyCompanyFileType,
+            _getCompanyFileType(fileType),
+          );
+        }
+
+        final ParseResponse getAllCompanyFile = await queryGetAllFile.query();
+
+        if (getAllCompanyFile.error != null) {
+          formatAPIErrorResponse(error: getAllCompanyFile.error!);
+        }
+
+        final List<CompanyFilePdf> companyFilesPdf = <CompanyFilePdf>[];
+
+        if (getAllCompanyFile.success && getAllCompanyFile.results != null) {
+          final List<CompanyFilePDFParseObject> allFileCasted =
+              List<CompanyFilePDFParseObject>.from(
+            getAllCompanyFile.results ?? <dynamic>[],
+          );
+
+          for (final CompanyFilePDFParseObject companyFile in allFileCasted) {
+            companyFilesPdf.add(
+              CompanyFilePdf(
+                companyFileType:
+                    _getCompanyFileTypeFromString(companyFile.companyFileType),
+                fileSource: companyFile.fileSource,
+                id: companyFile.objectId!,
+              ),
+            );
+          }
+        }
+
+        return APIListResponse<CompanyFilePdf>(
+          success: true,
+          message: 'Successfully fetch all file PDF.',
+          data: companyFilesPdf,
+          errorCode: null,
+        );
+      }
+
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
+      throw APIErrorResponse(
+        message: errorMessage,
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
+    }
   }
 
   @override
