@@ -53,30 +53,8 @@ class _AccomplishmentsSliderAndTasksListState
 
   List<Project> projects = <Project>[];
 
-  // final List<Map<String, Object>> projects = <Map<String, Object>>[
-  //   <String, Object>{
-  //     'name': 'Project Octopus',
-  //     'backgroundColor': kBlue,
-  //     'textColor': kWhite,
-  //     'image': SvgPicture.asset(whiteLogoSvg),
-  //   },
-  //   <String, Object>{
-  //     'name': 'Coin Mode',
-  //     'backgroundColor': Colors.orange,
-  //     'textColor': kWhite,
-  //     'image': Image.network(
-  //       'https://cdn-icons-png.flaticon.com/512/7880/7880066.png',
-  //     ),
-  //   },
-  //   <String, Object>{
-  //     'name': 'NFT Deals',
-  //     'backgroundColor': kLightGrey,
-  //     'textColor': kBlack,
-  //     'image': Image.network(
-  //       'https://cdn-icons-png.flaticon.com/512/6699/6699362.png',
-  //     ),
-  //   },
-  // ];
+  final List<Widget> selectedTaskWidgets = <Widget>[];
+  final List<Widget> taskWidgets = <Widget>[];
 
   bool shouldShowTask(DSRWorks task) {
     for (String category in selectedCategories) {
@@ -302,9 +280,6 @@ class _AccomplishmentsSliderAndTasksListState
         selectedTasks.values.any(
           (List<DSRWorks> category) => category.isNotEmpty,
         );
-
-    final List<Widget> selectedTaskWidgets = <Widget>[];
-    final List<Widget> taskWidgets = <Widget>[];
 
     final Iterable<MapEntry<String, List<DSRWorks>>> iterableTasks =
         tasks.entries;
