@@ -15,8 +15,8 @@ class InformationComponent extends StatelessWidget {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
     return Container(
-      margin: EdgeInsets.symmetric(vertical: height * 0.01),
-      width: width * 0.6,
+      margin: EdgeInsets.symmetric(vertical: height * 0.015),
+      width: width * 0.8,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
@@ -31,7 +31,7 @@ class InformationComponent extends StatelessWidget {
             ),
           ),
           SizedBox(
-            width: width * 0.3,
+            width: width * 0.45,
             child: Text(
               value,
               textAlign: TextAlign.left,

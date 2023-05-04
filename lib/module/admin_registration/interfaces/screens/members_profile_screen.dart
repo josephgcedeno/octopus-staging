@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:octopus/infrastructures/models/user/user_response.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/interfaces/widgets/loading_indicator.dart';
@@ -155,9 +156,11 @@ class MembersProfileScreen extends StatelessWidget {
                             ),
                             InformationComponent(
                               type: 'Birthdate',
-                              value:
-                                  dateTimeFromEpoch(epoch: user.birthDateEpoch)
-                                      .toString(),
+                              value: DateFormat('MM/dd/yyyy').format(
+                                dateTimeFromEpoch(
+                                  epoch: user.birthDateEpoch,
+                                ),
+                              ),
                             ),
                             InformationComponent(
                               type: 'Address',
@@ -181,9 +184,11 @@ class MembersProfileScreen extends StatelessWidget {
                             ),
                             InformationComponent(
                               type: 'Date Hired',
-                              value:
-                                  dateTimeFromEpoch(epoch: user.dateHiredEpoch)
-                                      .toString(),
+                              value: DateFormat('MM/dd/yyyy').format(
+                                dateTimeFromEpoch(
+                                  epoch: user.dateHiredEpoch,
+                                ),
+                              ),
                             ),
                           ],
                         ),
