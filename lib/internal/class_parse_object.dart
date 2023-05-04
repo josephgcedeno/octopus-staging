@@ -475,3 +475,34 @@ class EmployeeInfoParseObject extends ParseObject implements ParseCloneable {
   bool get isDeactive => get<bool>(keyIsDeactive)!;
   set isDeactive(bool value) => set<bool>(keyIsDeactive, value);
 }
+
+class AccountCredentialsParseObject extends ParseObject
+    implements ParseCloneable {
+  AccountCredentialsParseObject() : super(_keyTableName);
+  AccountCredentialsParseObject.clone() : this();
+
+  /// Convert the ParseObject to a custom parse object.
+  static AccountCredentialsParseObject toCustomParseObject({
+    required dynamic data,
+  }) =>
+      data as AccountCredentialsParseObject;
+
+  /// Serialized response
+  @override
+  AccountCredentialsParseObject clone(Map<String, dynamic> map) =>
+      AccountCredentialsParseObject.clone()..fromJson(map);
+
+  static const String _keyTableName = 'AccountCredentials';
+  static const String keyUsername = 'username';
+  static const String keyPassword = 'password';
+  static const String keyAccountType = 'account_type';
+
+  String get username => get<String>(keyUsername)!;
+  set username(String username) => set<String>(keyUsername, username);
+
+  String get password => get<String>(keyPassword)!;
+  set password(String password) => set<String>(keyPassword, password);
+
+  String get accountType => get<String>(keyAccountType)!;
+  set accountType(String accountType) => set<String>(keyAccountType, accountType);
+}
