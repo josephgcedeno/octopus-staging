@@ -32,7 +32,7 @@ class _PersonalInformationFormScreenState
     final DateTime? res = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
+      firstDate: DateTime(1900),
       lastDate: DateTime(2100),
     );
 
