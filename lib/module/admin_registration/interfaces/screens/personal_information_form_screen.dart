@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/module/admin_registration/interfaces/screens/ids_form_screen.dart';
@@ -50,6 +51,8 @@ class _PersonalInformationFormScreenState
 
   @override
   Widget build(BuildContext context) {
+    final double height = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: const GlobalAppBar(leading: LeadingButton.back),
       body: AdminRegistrationTemplate(
@@ -76,90 +79,100 @@ class _PersonalInformationFormScreenState
             );
           }
         },
-        body: Form(
-          key: _formKey,
-          child: Column(
-            children: <Widget>[
-              LayoutBuilder(
-                builder: (
-                  BuildContext context,
-                  BoxConstraints constraints,
-                ) {
-                  return Row(
-                    children: <Widget>[
-                      for (int i = 0; i < 2; i++)
-                        Container(
-                          margin: EdgeInsets.only(
-                            right: constraints.maxWidth * 0.05,
-                          ),
-                          child: SizedBox(
-                            width: constraints.maxWidth * 0.45,
-                            child: TextFormField(
-                              controller: i == 0
-                                  ? firstNameTextController
-                                  : lastNameTextController,
-                              validator: (String? value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Fields cannot be empty.';
-                                }
-                                return null;
-                              },
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide.none,
+        body: SingleChildScrollView(
+          child: SizedBox(
+            height: height,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  LayoutBuilder(
+                    builder: (
+                      BuildContext context,
+                      BoxConstraints constraints,
+                    ) {
+                      return Row(
+                        children: <Widget>[
+                          for (int i = 0; i < 2; i++)
+                            Container(
+                              margin: EdgeInsets.only(
+                                right: constraints.maxWidth * 0.05,
+                              ),
+                              child: SizedBox(
+                                width: constraints.maxWidth * 0.45,
+                                child: TextFormField(
+                                  controller: i == 0
+                                      ? firstNameTextController
+                                      : lastNameTextController,
+                                  validator: (String? value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Fields cannot be empty.';
+                                    }
+                                    return null;
+                                  },
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    hintText: () {
+                                      return i == 0
+                                          ? 'First Name'
+                                          : 'Last Name';
+                                    }(),
+                                    filled: true,
+                                  ),
                                 ),
-                                hintText: () {
-                                  return i == 0 ? 'First Name' : 'Last Name';
-                                }(),
-                                filled: true,
                               ),
                             ),
-                          ),
-                        ),
-                    ],
-                  );
-                },
+                        ],
+                      );
+                    },
+                  ),
+                  FullWidthTextField(
+                    tapFunction: () {},
+                    textEditingController: emailTextController,
+                    hint: 'Email',
+                    type: Type.normal,
+                  ),
+                  FullWidthTextField(
+                    tapFunction: () {
+                      openDatePicker(
+                        context: context,
+                        type: 0,
+                      );
+                    },
+                    textEditingController: birthdateTextController,
+                    hint: 'Birthdate',
+                    type: Type.date,
+                  ),
+                  FullWidthTextField(
+                    tapFunction: () {},
+                    textEditingController: addressTextController,
+                    hint: 'Address',
+                    type: Type.normal,
+                  ),
+                  SizedBox(
+                    height: height * 0.01,
+                  ),
+                  const Divider(),
+                  FullWidthTextField(
+                    tapFunction: () {},
+                    textEditingController: positionTextController,
+                    hint: 'Position',
+                    type: Type.normal,
+                  ),
+                  FullWidthTextField(
+                    tapFunction: () {
+                      openDatePicker(context: context, type: 1);
+                    },
+                    textEditingController: dateHiredTextController,
+                    hint: 'Date Hired',
+                    type: Type.date,
+                  ),
+                ],
               ),
-              FullWidthTextField(
-                tapFunction: () {},
-                textEditingController: emailTextController,
-                hint: 'Email',
-                type: Type.normal,
-              ),
-              FullWidthTextField(
-                tapFunction: () {
-                  openDatePicker(
-                    context: context,
-                    type: 0,
-                  );
-                },
-                textEditingController: birthdateTextController,
-                hint: 'Birthdate',
-                type: Type.date,
-              ),
-              FullWidthTextField(
-                tapFunction: () {},
-                textEditingController: addressTextController,
-                hint: 'Address',
-                type: Type.normal,
-              ),
-              const Divider(),
-              FullWidthTextField(
-                tapFunction: () {},
-                textEditingController: positionTextController,
-                hint: 'Position',
-                type: Type.normal,
-              ),
-              FullWidthTextField(
-                tapFunction: () {
-                  openDatePicker(context: context, type: 1);
-                },
-                textEditingController: dateHiredTextController,
-                hint: 'Date Hired',
-                type: Type.date,
-              ),
-            ],
+            ),
           ),
         ),
       ),

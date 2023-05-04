@@ -142,56 +142,53 @@ class MembersProfileScreen extends StatelessWidget {
                       height: height * 0.01,
                     ),
                     SingleChildScrollView(
-                      child: SizedBox(
-                        height: height,
-                        child: Column(
-                          children: <Widget>[
-                            InformationComponent(
-                              type: 'ID',
-                              value: user.nuxifyId,
-                            ),
-                            InformationComponent(
-                              type: 'Name',
-                              value: '${user.firstName} ${user.lastName}',
-                            ),
-                            InformationComponent(
-                              type: 'Birthdate',
-                              value: DateFormat('MM/dd/yyyy').format(
-                                dateTimeFromEpoch(
-                                  epoch: user.birthDateEpoch,
-                                ),
+                      child: Column(
+                        children: <Widget>[
+                          InformationComponent(
+                            type: 'ID',
+                            value: user.nuxifyId,
+                          ),
+                          InformationComponent(
+                            type: 'Name',
+                            value: '${user.firstName} ${user.lastName}',
+                          ),
+                          InformationComponent(
+                            type: 'Birthdate',
+                            value: DateFormat('MM/dd/yyyy').format(
+                              dateTimeFromEpoch(
+                                epoch: user.birthDateEpoch,
                               ),
                             ),
-                            InformationComponent(
-                              type: 'Address',
-                              value: user.address,
-                            ),
-                            InformationComponent(
-                              type: 'TIN No.',
-                              value: user.tinNo,
-                            ),
-                            InformationComponent(
-                              type: 'SSS No.',
-                              value: user.sssNo,
-                            ),
-                            InformationComponent(
-                              type: 'PAG-IBIG No.',
-                              value: user.pagIbigNo,
-                            ),
-                            InformationComponent(
-                              type: 'Philhealth No.',
-                              value: user.philHealtNo,
-                            ),
-                            InformationComponent(
-                              type: 'Date Hired',
-                              value: DateFormat('MM/dd/yyyy').format(
-                                dateTimeFromEpoch(
-                                  epoch: user.dateHiredEpoch,
-                                ),
+                          ),
+                          InformationComponent(
+                            type: 'Address',
+                            value: user.address,
+                          ),
+                          InformationComponent(
+                            type: 'TIN No.',
+                            value: user.tinNo,
+                          ),
+                          InformationComponent(
+                            type: 'SSS No.',
+                            value: user.sssNo,
+                          ),
+                          InformationComponent(
+                            type: 'PAG-IBIG No.',
+                            value: user.pagIbigNo,
+                          ),
+                          InformationComponent(
+                            type: 'Philhealth No.',
+                            value: user.philHealtNo,
+                          ),
+                          InformationComponent(
+                            type: 'Date Hired',
+                            value: DateFormat('MMdd/yyyy').format(
+                              dateTimeFromEpoch(
+                                epoch: user.dateHiredEpoch,
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
