@@ -52,7 +52,6 @@ class _AccomplishmentsSliderAndTasksListState
 
   final List<Widget> selectedTaskWidgets = <Widget>[];
   final List<Widget> taskWidgets = <Widget>[];
-
   bool shouldShowTask(DSRWorks task) {
     for (String category in selectedCategories) {
       category = convertCategory(category);
@@ -68,9 +67,11 @@ class _AccomplishmentsSliderAndTasksListState
   bool shouldShowSelectedTask(DSRWorks task) {
     for (String category in selectedCategories) {
       category = convertCategory(category);
-      if (selectedTasks.isNotEmpty && selectedTasks.containsKey(category)) {
-        if (selectedTasks[category]!.contains(task)) {
-          return false;
+      if (selectedTasks.isNotEmpty) {
+        if (selectedTasks.containsKey(category)) {
+          if (selectedTasks[category]!.contains(task)) {
+            return false;
+          }
         }
         return false;
       }
@@ -169,7 +170,7 @@ class _AccomplishmentsSliderAndTasksListState
         if (selectedTasks.isNotEmpty && selectedTasks.containsKey(category)) {
           final bool containsText = selectedTasks[category]!.any(
             (DSRWorks item) => item == task,
-          ); 
+          );
 
           if (containsText) {
             selectedTasks.remove(task);
@@ -244,6 +245,9 @@ class _AccomplishmentsSliderAndTasksListState
 
     final Iterable<MapEntry<String, List<DSRWorks>>> iterableSelectedTasks =
         selectedTasks.entries;
+
+    taskWidgets.clear();
+    selectedTaskWidgets.clear();
 
     for (final MapEntry<String, List<DSRWorks>> entry in iterableTasks) {
       String category = entry.key;
@@ -355,8 +359,7 @@ class _AccomplishmentsSliderAndTasksListState
                         image: SvgPicture.asset(
                           whiteLogoSvg,
                         ),
-                        textColor:
-                            kWhite,
+                        textColor: kWhite,
                         backgroundColor: Color(int.parse(project.color)),
                       );
                     }).toList(),
