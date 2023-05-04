@@ -1,15 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/configs/themes.dart';
+import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
+import 'package:octopus/module/accomplishments_generator/service/cubit/accomplishments_cubit.dart';
 
-class DailyAccomplishmentPDFScreen extends StatelessWidget {
+class DailyAccomplishmentPDFScreen extends StatefulWidget {
   const DailyAccomplishmentPDFScreen({
-    required this.reportTasks,
     required this.clientName,
     Key? key,
   }) : super(key: key);
 
-  final Map<String, List<Map<String, String>>> reportTasks;
   final String clientName;
+
+  @override
+  State<DailyAccomplishmentPDFScreen> createState() =>
+      _DailyAccomplishmentPDFScreenState();
+}
+
+class _DailyAccomplishmentPDFScreenState
+    extends State<DailyAccomplishmentPDFScreen> {
+  late Map<String, List<DSRWorks>>? selectedTasks =
+      context.read<AccomplishmentsCubit>().state.selectedTasks;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  String _changeTabLabel(String tabName) {
+    if (tabName == 'work_in_progress') {
+      return 'DOING';
+    } else if (tabName == 'blockers') {
+      return 'BLOCKED';
+    }
+    return tabName.toUpperCase();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +113,7 @@ class DailyAccomplishmentPDFScreen extends StatelessWidget {
                                 ),
                               ),
                               TextSpan(
-                                text: clientName,
+                                text: widget.clientName,
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   fontSize: height * 0.026,
                                   color: kBlack,
@@ -108,37 +133,38 @@ class DailyAccomplishmentPDFScreen extends StatelessWidget {
                         ),
                       ),
                       Column(
-                        children: reportTasks.entries.map((
-                          MapEntry<String, List<Map<String, String>>> entry,
+                        children: selectedTasks!.entries.map((
+                          MapEntry<String, List<DSRWorks>> entry,
                         ) {
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Container(
-                                width: width,
-                                padding: EdgeInsets.only(bottom: width * 0.010),
-                                margin: EdgeInsets.symmetric(
-                                  vertical: width * 0.015,
-                                ),
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: kDarkGrey.withOpacity(0.4),
+                              if (selectedTasks![entry.key]!.isNotEmpty)
+                                Container(
+                                  width: width,
+                                  padding:
+                                      EdgeInsets.only(bottom: width * 0.010),
+                                  margin: EdgeInsets.symmetric(
+                                    vertical: width * 0.015,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: kDarkGrey.withOpacity(0.4),
+                                      ),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    _changeTabLabel(entry.key),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.none,
                                     ),
                                   ),
                                 ),
-                                child: Text(
-                                  entry.key.toUpperCase(),
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    decoration: TextDecoration.none,
-                                  ),
-                                ),
-                              ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: entry.value
-                                    .map((Map<String, String> value) {
+                                children: entry.value.map((DSRWorks value) {
                                   return Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
@@ -150,7 +176,7 @@ class DailyAccomplishmentPDFScreen extends StatelessWidget {
                                           size: 15,
                                         ),
                                       ),
-                                      Text(value['text']!),
+                                      Text(value.text),
                                     ],
                                   );
                                 }).toList(),

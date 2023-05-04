@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
+import 'package:octopus/module/accomplishments_generator/interfaces/screens/daily_accomplishment_pdf_screen.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/daily_accomplishment_tabs.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/daily_accomplishment_text_field.dart';
 
@@ -128,14 +129,13 @@ class DailyAccomplishmentReportScreen extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // Navigator.of(context).push(
-                      //   MaterialPageRoute<dynamic>(
-                      //     builder: (_) => DailyAccomplishmentPDFScreen(
-                      //       reportTasks: reportTasks,
-                      //       clientName: clientName,
-                      //     ),
-                      //   ),
-                      // );
+                      Navigator.of(context).push(
+                        MaterialPageRoute<dynamic>(
+                          builder: (_) => DailyAccomplishmentPDFScreen(
+                            clientName: clientName,
+                          ),
+                        ),
+                      );
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(
