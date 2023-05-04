@@ -333,9 +333,43 @@ class HRRepository extends IHRRepository {
   }
 
   @override
-  Future<APIResponse<void>> deleteCompanyFile({required String id}) {
-    // TODO: implement deleteCompanyFile
-    throw UnimplementedError();
+  Future<APIResponse<void>> deleteCompanyFile({required String id}) async {
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final CompanyFilePDFParseObject companyFilePDFParseObject =
+            CompanyFilePDFParseObject();
+        companyFilePDFParseObject.objectId = id;
+
+        final ParseResponse deleteResponse =
+            await companyFilePDFParseObject.delete();
+
+        if (deleteResponse.error != null) {
+          formatAPIErrorResponse(error: deleteResponse.error!);
+        }
+
+        if (deleteResponse.success && deleteResponse.results != null) {
+          return APIResponse<void>(
+            success: true,
+            message: 'Successfully delete file PDF.',
+            data: null,
+            errorCode: null,
+          );
+        }
+      }
+
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
+      throw APIErrorResponse(
+        message: errorMessage,
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
+    }
   }
 
   @override
