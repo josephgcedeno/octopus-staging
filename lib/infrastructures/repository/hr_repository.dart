@@ -149,6 +149,77 @@ class HRRepository extends IHRRepository {
   }
 
   @override
+  Future<APIResponse<Credential>> updateCredential({
+    required String id,
+    String? username,
+    String? password,
+    String? accountType,
+  }) async {
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final AccountCredentialsParseObject accountCredentialsParseObject =
+            AccountCredentialsParseObject();
+        accountCredentialsParseObject.objectId = id;
+
+        if (username != null) {
+          accountCredentialsParseObject.username = username;
+        }
+        if (password != null) {
+          // Encrypt password for extra security.
+          final String cipherText = encryptionService.encrypt(password);
+          accountCredentialsParseObject.password = cipherText;
+        }
+        if (accountType != null) {
+          accountCredentialsParseObject.accountType = accountType;
+        }
+
+        final ParseResponse accountResponse =
+            await accountCredentialsParseObject.save();
+
+        if (accountResponse.error != null) {
+          formatAPIErrorResponse(error: accountResponse.error!);
+        }
+
+        if (accountResponse.success && accountResponse.results != null) {
+          final String objectId = getResultId(accountResponse.results!);
+          final ParseResponse fetchUserInfo =
+              await accountCredentialsParseObject.getObject(objectId);
+
+          if (fetchUserInfo.error != null) {
+            formatAPIErrorResponse(error: fetchUserInfo.error!);
+          }
+
+          if (fetchUserInfo.success && fetchUserInfo.results != null) {
+            final ParseObject resultParseObject =
+                getParseObject(fetchUserInfo.results!);
+
+            return APIResponse<Credential>(
+              success: true,
+              message: 'Successfully update account.',
+              data: encryptionService.decryptCredential(
+                resultParseObject as AccountCredentialsParseObject,
+              ),
+              errorCode: null,
+            );
+          }
+        }
+      }
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
+      throw APIErrorResponse(
+        message: errorMessage,
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
+    }
+  }
+
+  @override
   Future<APIResponse<CompanyFilePdf>> createCompanyFile(
       {required CompanyFileType fileType, required String fileSource}) {
     // TODO: implement createCompanyFile
@@ -178,16 +249,6 @@ class HRRepository extends IHRRepository {
   Future<APIResponse<CompanyFilePdf>> updateCompanyFile(
       {required String id, CompanyFileType? fileType, String? fileSource}) {
     // TODO: implement updateCompanyFile
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<APIResponse<Credential>> updateCredential(
-      {required String id,
-      String? username,
-      String? password,
-      String? accountType}) {
-    // TODO: implement updateCredential
     throw UnimplementedError();
   }
 }
