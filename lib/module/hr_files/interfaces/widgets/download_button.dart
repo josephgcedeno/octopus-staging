@@ -1,8 +1,9 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
+import 'package:download/download.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/internal/debug_utils.dart';
 
@@ -28,23 +29,16 @@ class _DownloadButtonState extends State<DownloadButton> {
       setState(() {
         isDownloading = true;
       });
+      final http.Response response = await http.get(Uri.parse(url));
+      final Stream<int> stream = Stream<int>.fromIterable(response.bodyBytes);
+      final String fileName = (title.replaceAll(' ', '-')).toLowerCase();
       final Directory? directory = await _getAppDirectory();
       final String? appDirectory = directory?.path;
-
-      final Dio dio = Dio();
-      final String fileName = (title.replaceAll(' ', '-')).toLowerCase();
-
-      await dio.download(
-        url,
-        '$appDirectory/$fileName.pdf',
-        onReceiveProgress: (int receivedBytes, int totalBytes) {},
-      );
-
+      await download(stream, '$appDirectory$fileName.pdf');
+      showSnackBar(message: 'File downloaded successfully');
       setState(() {
         isDownloading = false;
       });
-
-      showSnackBar(message: 'File downloaded successfully');
     } catch (error) {
       showSnackBar(
         message: error.toString(),
@@ -56,15 +50,15 @@ class _DownloadButtonState extends State<DownloadButton> {
   Future<Directory?> _getAppDirectory() async {
     Directory? appDirectory;
     if (kIsWeb) {
-      appDirectory = Directory('/Downloads');
+      appDirectory = Directory('');
     } else {
       if (Platform.isIOS) {
         appDirectory = Directory(
-          '${Directory.current.path}/Documents',
+          '${Directory.current.path}/Documents/',
         );
       } else if (Platform.isAndroid) {
         if (await _isExternalStorageWritable()) {
-          appDirectory = Directory('/storage/emulated/0/Download');
+          appDirectory = Directory('/storage/emulated/0/Download/');
         }
       }
     }
