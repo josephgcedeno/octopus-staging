@@ -1,7 +1,7 @@
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/hr/hr_response.dart';
 
-abstract class HRRepository {
+abstract class IHRRepository {
   /// FOR ADMIN USE ONLY
   ///
   /// Adds a new credential with the given [username], [password], and [accountType].
