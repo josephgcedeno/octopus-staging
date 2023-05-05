@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:download/download.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -7,8 +8,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
+import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/accomplishments_generator/service/cubit/accomplishments_cubit.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class DailyAccomplishmentPDFScreen extends StatefulWidget {
@@ -32,6 +35,8 @@ class _DailyAccomplishmentPDFScreenState
       context.read<AccomplishmentsCubit>().state.selectedTasks;
 
   bool isDownloading = false;
+  bool isLoading = true;
+  bool isLoadingFailed = false;
 
   @override
   void initState() {
@@ -91,6 +96,8 @@ class _DailyAccomplishmentPDFScreenState
     }
   }
 
+  final int loaderItems = 13;
+
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -139,14 +146,107 @@ class _DailyAccomplishmentPDFScreenState
       body: CustomScrollView(
         slivers: <Widget>[
           SliverFillRemaining(
-            child: FutureBuilder<File>(
-              future: widget.document,
-              builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
-                if (snapshot.data != null) {
-                  return SfPdfViewer.file(snapshot.data!);
-                }
-                return const CircularProgressIndicator();
-              },
+            child: SizedBox(
+              width: width,
+              height: height,
+              child: Stack(
+                children: <Widget>[
+                  FutureBuilder<File>(
+                    future: widget.document,
+                    builder:
+                        (BuildContext context, AsyncSnapshot<File> snapshot) {
+                      if (snapshot.data != null) {
+                        return SfPdfViewerTheme(
+                          data: SfPdfViewerThemeData(
+                            progressBarColor: ktransparent,
+                          ),
+                          child: SfPdfViewer.file(
+                            snapshot.data!,
+                            onDocumentLoaded: (_) {
+                              setState(() {
+                                isLoading = false;
+                              });
+                            },
+                            onDocumentLoadFailed: (_) {
+                              setState(() {
+                                isLoadingFailed = true;
+                              });
+                            },
+                          ),
+                        );
+                      } else {
+                        return Container(
+                          width: double.infinity,
+                          color: kLightGrey,
+                          padding: EdgeInsets.all(width * 0.035),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              for (int i = 0; i < loaderItems; i++)
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: height * 0.008,
+                                    horizontal: width * 0.025,
+                                  ),
+                                  child: lineLoader(
+                                    height: Random().nextInt(15) + 10,
+                                    width: double.infinity,
+                                  ),
+                                )
+                            ],
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                  Visibility(
+                    visible: isLoading,
+                    child: Container(
+                      width: double.infinity,
+                      color: kLightGrey,
+                      padding: EdgeInsets.all(width * 0.035),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          for (int i = 0; i < loaderItems; i++)
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                vertical: height * 0.008,
+                                horizontal: width * 0.025,
+                              ),
+                              child: lineLoader(
+                                height: Random().nextInt(15) + 10,
+                                width: double.infinity,
+                              ),
+                            )
+                        ],
+                      ),
+                    ),
+                  ),
+                  Visibility(
+                    visible: isLoadingFailed,
+                    child: Container(
+                      width: double.infinity,
+                      color: kLightGrey,
+                      padding: EdgeInsets.all(width * 0.035),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.all(height * 0.015),
+                            child: const Icon(
+                              Icons.error_outline_outlined,
+                            ),
+                          ),
+                          const Text('Document failed to load'),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
