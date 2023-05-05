@@ -164,6 +164,7 @@ class ProjectsParseObject extends ParseObject implements ParseCloneable {
   static const String keyName = 'name';
   static const String keyStatus = 'status';
   static const String keyColor = 'color';
+  static const String keyLogoImage = 'logo_image';
 
   int get date => get<int>(keyDate)!;
   set date(int name) => set<int>(keyDate, name);
@@ -176,6 +177,9 @@ class ProjectsParseObject extends ParseObject implements ParseCloneable {
 
   String get color => get<String>(keyColor)!;
   set color(String color) => set<String>(keyColor, color);
+
+  String get logoImage => get<String>(keyLogoImage)!;
+  set logoImage(String logoImage) => set<String>(keyLogoImage, logoImage);
 }
 
 class SprintsParseObject extends ParseObject implements ParseCloneable {
