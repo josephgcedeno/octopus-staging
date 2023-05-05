@@ -69,6 +69,7 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                   DownloadButton(
                     title: widget.title,
                     url: urlPDF,
+                    documentLoading: isLoading,
                   ),
                 ],
               ),

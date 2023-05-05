@@ -12,12 +12,13 @@ class DownloadButton extends StatefulWidget {
   const DownloadButton({
     required this.title,
     required this.url,
+    required this.documentLoading,
     Key? key,
   }) : super(key: key);
 
   final String title;
   final String url;
-
+  final bool documentLoading;
   @override
   State<DownloadButton> createState() => _DownloadButtonState();
 }
@@ -41,6 +42,9 @@ class _DownloadButtonState extends State<DownloadButton> {
         isDownloading = false;
       });
     } catch (error) {
+      setState(() {
+        isDownloading = false;
+      });
       showSnackBar(
         message: error.toString(),
         snackBartState: SnackBartState.error,
@@ -85,10 +89,14 @@ class _DownloadButtonState extends State<DownloadButton> {
     final double height = MediaQuery.of(context).size.height;
 
     return GestureDetector(
-      onTap: () => downloadPDF(
-        widget.title,
-        widget.url,
-      ),
+      onTap: () {
+        if (!widget.documentLoading) {
+          downloadPDF(
+            widget.title,
+            widget.url,
+          );
+        }
+      },
       child: Container(
         padding: EdgeInsets.all(width * 0.015),
         decoration: BoxDecoration(
@@ -104,7 +112,10 @@ class _DownloadButtonState extends State<DownloadButton> {
                   color: kDarkGrey,
                 ),
               )
-            : const Icon(Icons.file_download_outlined),
+            : Icon(
+                Icons.file_download_outlined,
+                color: widget.documentLoading ? Colors.grey : null,
+              ),
       ),
     );
   }
