@@ -22,7 +22,7 @@ class PDFViewerScreen extends StatefulWidget {
 
 class _PDFViewerScreenState extends State<PDFViewerScreen> {
   bool isLoading = true;
-  bool isNotLoading = false;
+  bool isFailed = false;
 
   final String urlPDF =
       'https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf';
@@ -89,7 +89,7 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                       },
                       onDocumentLoadFailed: (_) {
                         setState(() {
-                          isNotLoading = true;
+                          isFailed = true;
                         });
                       },
                     ),
@@ -120,7 +120,7 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                     ),
                   ),
                   Visibility(
-                    visible: isNotLoading,
+                    visible: isFailed,
                     child: Container(
                       width: double.infinity,
                       color: kLightGrey,
