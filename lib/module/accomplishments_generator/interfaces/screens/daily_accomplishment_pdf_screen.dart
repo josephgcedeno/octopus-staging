@@ -5,7 +5,6 @@ import 'package:download/download.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart' as http;
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
@@ -37,6 +36,8 @@ class _DailyAccomplishmentPDFScreenState
   bool isDownloading = false;
   bool isLoading = true;
   bool isLoadingFailed = false;
+
+  File reportDocument = File('');
 
   @override
   void initState() {
@@ -73,13 +74,16 @@ class _DailyAccomplishmentPDFScreenState
     }
   }
 
-  Future<void> downloadPDF(String title, String url) async {
+  Stream<int> fileToStream(File file) {
+    return file.openRead().expand((List<int> bytes) => bytes);
+  }
+
+  Future<void> downloadPDF(String title, File file) async {
     try {
       setState(() {
         isDownloading = true;
       });
-      final http.Response response = await http.get(Uri.parse(url));
-      final Stream<int> stream = Stream<int>.fromIterable(response.bodyBytes);
+      final Stream<int> stream = fileToStream(file);
       final String fileName = (title.replaceAll(' ', '-')).toLowerCase();
       final Directory? directory = await _getAppDirectory();
       final String? appDirectory = directory?.path;
@@ -122,22 +126,22 @@ class _DailyAccomplishmentPDFScreenState
             ),
           ),
           GestureDetector(
-            onTap: () => downloadPDF('report', ''),
-            child: Padding(
-              padding: EdgeInsets.only(right: width * 0.03),
+            onTap: () => downloadPDF('report', reportDocument),
+            child: Container(
+              height: height * 0.0003,
+              padding: EdgeInsets.symmetric(
+                horizontal: width * 0.040,
+                vertical: width * 0.03,
+              ),
               child: isDownloading
-                  ? SizedBox(
-                      height: height * 0.03,
-                      width: height * 0.03,
-                      child: const CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: kDarkGrey,
-                      ),
+                  ? const CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: kDarkGrey,
                     )
                   : const Icon(
                       Icons.file_download_outlined,
                       color: kLightBlack,
-                      size: 20,
+                      size: 25,
                     ),
             ),
           ),
@@ -156,6 +160,7 @@ class _DailyAccomplishmentPDFScreenState
                     builder:
                         (BuildContext context, AsyncSnapshot<File> snapshot) {
                       if (snapshot.data != null) {
+                        reportDocument = snapshot.data!;
                         return SfPdfViewerTheme(
                           data: SfPdfViewerThemeData(
                             progressBarColor: ktransparent,
