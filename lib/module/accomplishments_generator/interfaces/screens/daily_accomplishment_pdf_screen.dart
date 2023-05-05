@@ -1,16 +1,25 @@
+import 'dart:io';
+
+import 'package:download/download.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
+import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/accomplishments_generator/service/cubit/accomplishments_cubit.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class DailyAccomplishmentPDFScreen extends StatefulWidget {
   const DailyAccomplishmentPDFScreen({
     required this.clientName,
+    required this.document,
     Key? key,
   }) : super(key: key);
 
   final String clientName;
+  final Future<File> document;
 
   @override
   State<DailyAccomplishmentPDFScreen> createState() =>
@@ -22,23 +31,68 @@ class _DailyAccomplishmentPDFScreenState
   late Map<String, List<DSRWorks>>? selectedTasks =
       context.read<AccomplishmentsCubit>().state.selectedTasks;
 
+  bool isDownloading = false;
+
   @override
   void initState() {
     super.initState();
   }
 
-  String _changeTabLabel(String tabName) {
-    if (tabName == 'work_in_progress') {
-      return 'DOING';
-    } else if (tabName == 'blockers') {
-      return 'BLOCKED';
+  Future<Directory?> _getAppDirectory() async {
+    Directory? appDirectory;
+    if (kIsWeb) {
+      appDirectory = Directory('');
+    } else {
+      if (Platform.isIOS) {
+        appDirectory = Directory(
+          '${Directory.current.path}/Documents/',
+        );
+      } else if (Platform.isAndroid) {
+        if (await _isExternalStorageWritable()) {
+          appDirectory = Directory('/storage/emulated/0/Download/');
+        }
+      }
     }
-    return tabName.toUpperCase();
+    return appDirectory;
+  }
+
+  Future<bool> _isExternalStorageWritable() async {
+    final Directory directory = Directory('/storage/emulated/0/Download');
+    try {
+      final File file = File('${directory.path}/test.temp');
+      await file.create();
+      await file.delete();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> downloadPDF(String title, String url) async {
+    try {
+      setState(() {
+        isDownloading = true;
+      });
+      final http.Response response = await http.get(Uri.parse(url));
+      final Stream<int> stream = Stream<int>.fromIterable(response.bodyBytes);
+      final String fileName = (title.replaceAll(' ', '-')).toLowerCase();
+      final Directory? directory = await _getAppDirectory();
+      final String? appDirectory = directory?.path;
+      await download(stream, '$appDirectory$fileName.pdf');
+      showSnackBar(message: 'File downloaded successfully');
+      setState(() {
+        isDownloading = false;
+      });
+    } catch (error) {
+      showSnackBar(
+        message: error.toString(),
+        snackBartState: SnackBartState.error,
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
 
@@ -60,12 +114,24 @@ class _DailyAccomplishmentPDFScreenState
               size: 20,
             ),
           ),
-          Padding(
-            padding: EdgeInsets.only(right: width * 0.03),
-            child: const Icon(
-              Icons.file_download_outlined,
-              color: kLightBlack,
-              size: 20,
+          GestureDetector(
+            onTap: () => downloadPDF('report', ''),
+            child: Padding(
+              padding: EdgeInsets.only(right: width * 0.03),
+              child: isDownloading
+                  ? SizedBox(
+                      height: height * 0.03,
+                      width: height * 0.03,
+                      child: const CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: kDarkGrey,
+                      ),
+                    )
+                  : const Icon(
+                      Icons.file_download_outlined,
+                      color: kLightBlack,
+                      size: 20,
+                    ),
             ),
           ),
         ],
@@ -73,163 +139,14 @@ class _DailyAccomplishmentPDFScreenState
       body: CustomScrollView(
         slivers: <Widget>[
           SliverFillRemaining(
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: width * 0.04,
-                vertical: height * 0.02,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          SizedBox(
-                            width: width * 0.30,
-                            height: height * 0.055,
-                            child: Image.asset(nuxifyLogoPng),
-                          ),
-                          const Text(
-                            'DAILY ACCOMPLISHMENT REPORT',
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: width * 0.06,
-                        ),
-                        child: RichText(
-                          text: TextSpan(
-                            children: <InlineSpan>[
-                              TextSpan(
-                                text: 'Hello ',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  fontSize: height * 0.026,
-                                  color: kBlack,
-                                ),
-                              ),
-                              TextSpan(
-                                text: widget.clientName,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  fontSize: height * 0.026,
-                                  color: kBlack,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              TextSpan(
-                                text:
-                                    '! For today’s update with worth 8 hours of work.',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  fontSize: height * 0.026,
-                                  color: kBlack,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Column(
-                        children: selectedTasks!.entries.map((
-                          MapEntry<String, List<DSRWorks>> entry,
-                        ) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              if (selectedTasks![entry.key]!.isNotEmpty)
-                                Container(
-                                  width: width,
-                                  padding:
-                                      EdgeInsets.only(bottom: width * 0.010),
-                                  margin: EdgeInsets.symmetric(
-                                    vertical: width * 0.015,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                      bottom: BorderSide(
-                                        color: kDarkGrey.withOpacity(0.4),
-                                      ),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    _changeTabLabel(entry.key),
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      decoration: TextDecoration.none,
-                                    ),
-                                  ),
-                                ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: entry.value.map((DSRWorks value) {
-                                  return Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: EdgeInsets.all(width * 0.02),
-                                        child: const Icon(
-                                          Icons.check,
-                                          color: kLightBlack,
-                                          size: 15,
-                                        ),
-                                      ),
-                                      Text(value.text),
-                                    ],
-                                  );
-                                }).toList(),
-                              ),
-                            ],
-                          );
-                        }).toList(),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(bottom: width * 0.06),
-                        child: RichText(
-                          textAlign: TextAlign.left,
-                          text: TextSpan(
-                            children: <InlineSpan>[
-                              TextSpan(
-                                text:
-                                    'You can see detailed cards update in our',
-                                style: theme.textTheme.bodySmall
-                                    ?.copyWith(fontSize: height * 0.017),
-                              ),
-                              TextSpan(
-                                text: ' Asana ',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: kLightRed,
-                                  fontSize: height * 0.017,
-                                ),
-                              ),
-                              TextSpan(
-                                text: 'board.',
-                                style: theme.textTheme.bodySmall
-                                    ?.copyWith(fontSize: height * 0.017),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const Text('Regards,'),
-                      Text(
-                        'Karl from Nuxify',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontSize: height * 0.018,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+            child: FutureBuilder<File>(
+              future: widget.document,
+              builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
+                if (snapshot.data != null) {
+                  return SfPdfViewer.file(snapshot.data!);
+                }
+                return const CircularProgressIndicator();
+              },
             ),
           ),
         ],
