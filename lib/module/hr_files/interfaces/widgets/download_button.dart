@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/internal/debug_utils.dart';
+import 'package:path_provider/path_provider.dart';
 
 class DownloadButton extends StatefulWidget {
   const DownloadButton({
@@ -53,8 +54,9 @@ class _DownloadButtonState extends State<DownloadButton> {
       appDirectory = Directory('');
     } else {
       if (Platform.isIOS) {
+        final Directory documents = await getApplicationDocumentsDirectory();
         appDirectory = Directory(
-          '${Directory.current.path}/Documents/',
+          '${documents.path}/Documents',
         );
       } else if (Platform.isAndroid) {
         if (await _isExternalStorageWritable()) {
