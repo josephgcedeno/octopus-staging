@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:download/download.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
@@ -11,6 +12,7 @@ import 'package:octopus/interfaces/widgets/loading_indicator.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/accomplishments_generator/service/cubit/accomplishments_cubit.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
@@ -38,9 +40,25 @@ class _DailyAccomplishmentPDFScreenState
   bool isLoading = true;
   bool isLoadingFailed = false;
 
-  @override
-  void initState() {
-    super.initState();
+  final int loaderItems = 13;
+
+  Future<void> sharePDF() async {
+    try {
+      if (kIsWeb) {
+        await Share.shareXFiles(
+          <XFile>[XFile(widget.document.path)],
+          subject: 'Nuxify Report',
+        );
+      } else {
+        await Share.shareFiles(
+          <String>[widget.document.path],
+          subject: 'Nuxify Report',
+        );
+      }
+    } on PlatformException catch (e) {
+      showSnackBar(
+          message: 'Error detected: $e', snackBartState: SnackBartState.error);
+    }
   }
 
   Future<Directory?> _getAppDirectory() async {
@@ -99,11 +117,8 @@ class _DailyAccomplishmentPDFScreenState
     }
   }
 
-  final int loaderItems = 13;
-
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
     final bool isPortrait =
@@ -119,12 +134,15 @@ class _DailyAccomplishmentPDFScreenState
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(right: width * 0.03),
-            child: const Icon(
-              Icons.share_outlined,
-              color: kLightBlack,
-              size: 20,
+          GestureDetector(
+            onTap: sharePDF,
+            child: Padding(
+              padding: EdgeInsets.only(right: width * 0.03),
+              child: const Icon(
+                Icons.share_outlined,
+                color: kLightBlack,
+                size: 20,
+              ),
             ),
           ),
           GestureDetector(
