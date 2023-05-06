@@ -487,7 +487,16 @@ class _AccomplishmentsSliderAndTasksListState
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              if (tasks.isEmpty && selectedTasks.isEmpty)
+                              if ((tasks.isEmpty ||
+                                      tasks.values.any(
+                                        (List<DSRWorks> category) =>
+                                            category.isEmpty,
+                                      )) &&
+                                  (selectedTasks.isEmpty ||
+                                      selectedTasks.values.any(
+                                        (List<DSRWorks> category) =>
+                                            category.isEmpty,
+                                      )))
                                 Center(
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
