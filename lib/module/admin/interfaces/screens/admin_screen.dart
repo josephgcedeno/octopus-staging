@@ -1,5 +1,4 @@
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:octopus/module/accomplishments_generator/interfaces/screens/accomplishments_generator_screen.dart
+import 'package:octopus/module/accomplishments_generator/interfaces/screens/accomplishments_generator_screen.dart';
 import 'package:flutter/material.dart';
 
 class AdminScreen extends StatefulWidget {
@@ -119,10 +118,11 @@ class _AdminScreenState extends State<AdminScreen> {
                             Navigator.of(context).popUntil(
                               (Route<dynamic> route) => route.isFirst,
                             );
-                          } else if(i == 0){
+                          } else if (i == 0) {
                             Navigator.of(context).push(
                               MaterialPageRoute<dynamic>(
-                                builder: (_) => const AccomplishmentsGeneratorScreen(),
+                                builder: (_) =>
+                                    const AccomplishmentsGeneratorScreen(),
                               ),
                             );
                           }
