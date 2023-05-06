@@ -86,7 +86,9 @@ class _DailyAccomplishmentTabsState extends State<DailyAccomplishmentTabs>
                 controller: _tabController,
                 indicatorColor: theme.primaryColor,
                 labelPadding: EdgeInsets.symmetric(
-                    horizontal: width * 0.02, vertical: height * 0.008),
+                  horizontal: width * 0.02,
+                  vertical: height * 0.008,
+                ),
                 overlayColor: MaterialStateProperty.resolveWith<Color?>(
                   (Set<MaterialState> states) {
                     if (states.contains(MaterialState.pressed)) {

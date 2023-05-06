@@ -400,8 +400,10 @@ class _DailyAccomplishmentReportScreenState
                           (BuildContext context, AccomplishmentsState state) {
                         return FutureBuilder<File>(
                           future: generateDocument(),
-                          builder: (BuildContext context,
-                              AsyncSnapshot<File> snapshot) {
+                          builder: (
+                            BuildContext context,
+                            AsyncSnapshot<File> snapshot,
+                          ) {
                             if (snapshot.data == null) {
                               return Center(
                                 child: LoadingIndicator(

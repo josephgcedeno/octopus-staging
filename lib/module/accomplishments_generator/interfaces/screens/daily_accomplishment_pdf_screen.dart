@@ -57,7 +57,7 @@ class _DailyAccomplishmentPDFScreenState
       }
     } on PlatformException catch (e) {
       showSnackBar(
-          message: 'Error detected: $e', snackBartState: SnackBartState.error);
+          message: 'Error detected: $e', snackBartState: SnackBartState.error,);
     }
   }
 
