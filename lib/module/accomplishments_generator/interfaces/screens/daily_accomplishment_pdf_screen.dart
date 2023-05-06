@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
+import 'package:octopus/interfaces/widgets/loading_indicator.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/accomplishments_generator/service/cubit/accomplishments_cubit.dart';
@@ -102,8 +103,11 @@ class _DailyAccomplishmentPDFScreenState
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
+    final bool isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -126,15 +130,19 @@ class _DailyAccomplishmentPDFScreenState
           GestureDetector(
             onTap: () => downloadPDF('report', widget.document),
             child: Container(
+              margin: EdgeInsets.only(
+                right: width * 0.03,
+              ),
               height: height * 0.0003,
               padding: EdgeInsets.symmetric(
-                horizontal: width * 0.040,
-                vertical: width * 0.03,
+                horizontal: isPortrait ? 0 : width * 0.040,
+                vertical: isPortrait ? 0 : width * 0.03,
               ),
               child: isDownloading
-                  ? const CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: kDarkGrey,
+                  ? const Center(
+                      child: LoadingIndicator(
+                        color: kLightBlack,
+                      ),
                     )
                   : const Icon(
                       Icons.file_download_outlined,
