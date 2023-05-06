@@ -21,7 +21,7 @@ class DailyAccomplishmentPDFScreen extends StatefulWidget {
   }) : super(key: key);
 
   final String clientName;
-  final Future<File> document;
+  final File document;
 
   @override
   State<DailyAccomplishmentPDFScreen> createState() =>
@@ -36,8 +36,6 @@ class _DailyAccomplishmentPDFScreenState
   bool isDownloading = false;
   bool isLoading = true;
   bool isLoadingFailed = false;
-
-  File reportDocument = File('');
 
   @override
   void initState() {
@@ -126,7 +124,7 @@ class _DailyAccomplishmentPDFScreenState
             ),
           ),
           GestureDetector(
-            onTap: () => downloadPDF('report', reportDocument),
+            onTap: () => downloadPDF('report', widget.document),
             child: Container(
               height: height * 0.0003,
               padding: EdgeInsets.symmetric(
@@ -155,55 +153,23 @@ class _DailyAccomplishmentPDFScreenState
               height: height,
               child: Stack(
                 children: <Widget>[
-                  FutureBuilder<File>(
-                    future: widget.document,
-                    builder:
-                        (BuildContext context, AsyncSnapshot<File> snapshot) {
-                      if (snapshot.data != null) {
-                        reportDocument = snapshot.data!;
-                        return SfPdfViewerTheme(
-                          data: SfPdfViewerThemeData(
-                            progressBarColor: ktransparent,
-                          ),
-                          child: SfPdfViewer.file(
-                            snapshot.data!,
-                            onDocumentLoaded: (_) {
-                              setState(() {
-                                isLoading = false;
-                              });
-                            },
-                            onDocumentLoadFailed: (_) {
-                              setState(() {
-                                isLoadingFailed = true;
-                              });
-                            },
-                          ),
-                        );
-                      } else {
-                        return Container(
-                          width: double.infinity,
-                          color: kLightGrey,
-                          padding: EdgeInsets.all(width * 0.035),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                              for (int i = 0; i < loaderItems; i++)
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: height * 0.008,
-                                    horizontal: width * 0.025,
-                                  ),
-                                  child: lineLoader(
-                                    height: Random().nextInt(15) + 10,
-                                    width: double.infinity,
-                                  ),
-                                )
-                            ],
-                          ),
-                        );
-                      }
-                    },
+                  SfPdfViewerTheme(
+                    data: SfPdfViewerThemeData(
+                      progressBarColor: ktransparent,
+                    ),
+                    child: SfPdfViewer.file(
+                      widget.document,
+                      onDocumentLoaded: (_) {
+                        setState(() {
+                          isLoading = false;
+                        });
+                      },
+                      onDocumentLoadFailed: (_) {
+                        setState(() {
+                          isLoadingFailed = true;
+                        });
+                      },
+                    ),
                   ),
                   Visibility(
                     visible: isLoading,

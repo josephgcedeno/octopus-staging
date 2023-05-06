@@ -7,6 +7,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
+import 'package:octopus/interfaces/widgets/loading_indicator.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/screens/daily_accomplishment_pdf_screen.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/daily_accomplishment_tabs.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/daily_accomplishment_text_field.dart';
@@ -380,44 +381,58 @@ class _DailyAccomplishmentReportScreenState
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute<dynamic>(
-                          builder: (_) => DailyAccomplishmentPDFScreen(
-                            clientName: clientName,
-                            document: generateDocument(),
-                          ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: width * 0.06,
-                        vertical: height * 0.02,
-                      ),
-                      margin: EdgeInsets.only(top: width * 0.06),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: theme.primaryColor.withOpacity(0.10),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(
-                            'Generate Accomplishment',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: width * 0.06,
+                      vertical: height * 0.02,
+                    ),
+                    margin: EdgeInsets.only(top: width * 0.06),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: theme.primaryColor.withOpacity(0.10),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: FutureBuilder<File>(
+                      future: generateDocument(),
+                      builder:
+                          (BuildContext context, AsyncSnapshot<File> snapshot) {
+                        if (snapshot.data == null) {
+                          return Center(
+                            child: LoadingIndicator(
                               color: theme.primaryColor,
                             ),
-                          ),
-                          Icon(
-                            Icons.chevron_right,
-                            color: theme.primaryColor,
-                          ),
-                        ],
-                      ),
+                          );
+                        } else {
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute<dynamic>(
+                                  builder: (_) => DailyAccomplishmentPDFScreen(
+                                    clientName: clientName,
+                                    document: snapshot.data!,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text(
+                                  'Generate Accomplishment',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: theme.primaryColor,
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.chevron_right,
+                                  color: theme.primaryColor,
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      },
                     ),
                   ),
                 ],
