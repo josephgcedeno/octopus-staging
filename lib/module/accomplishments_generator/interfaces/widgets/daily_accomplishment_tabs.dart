@@ -36,8 +36,8 @@ class _DailyAccomplishmentTabsState extends State<DailyAccomplishmentTabs>
       selectedTasks![key]!.removeWhere(
         (DSRWorks item) => item == task,
       );
-      context.read<AccomplishmentsCubit>().getSelectedTasks(selectedTasks!);
     });
+    context.read<AccomplishmentsCubit>().getSelectedTasks(selectedTasks!);
   }
 
   String _changeTabLabel(String tabName) {
@@ -104,23 +104,28 @@ class _DailyAccomplishmentTabsState extends State<DailyAccomplishmentTabs>
               ),
             ),
           Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: selectedTasks!.keys
-                  .map(
-                    (String key) => Column(
-                      children: <Widget>[
-                        for (DSRWorks task in selectedTasks![key]!)
-                          AccomplishmentsTaskChecker(
-                            onTap: () => _updateTabTasks(key, task),
-                            title: task.text,
-                            type: CheckerType.selected,
-                            hasProfile: false,
-                          )
-                      ],
-                    ),
-                  )
-                  .toList(),
+            child: Padding(
+              padding: EdgeInsets.only(bottom: height * 0.02),
+              child: TabBarView(
+                controller: _tabController,
+                children: selectedTasks!.keys
+                    .map(
+                      (String key) => SingleChildScrollView(
+                        child: Column(
+                          children: <Widget>[
+                            for (DSRWorks task in selectedTasks![key]!)
+                              AccomplishmentsTaskChecker(
+                                onTap: () => _updateTabTasks(key, task),
+                                title: task.text,
+                                type: CheckerType.selected,
+                                hasProfile: false,
+                              )
+                          ],
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
             ),
           ),
         ],
