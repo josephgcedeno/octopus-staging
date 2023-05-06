@@ -1,5 +1,5 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/interfaces/widgets/loading_indicator.dart';
