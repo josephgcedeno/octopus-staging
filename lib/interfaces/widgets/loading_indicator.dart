@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 class LoadingIndicator extends StatelessWidget {
-  const LoadingIndicator({Key? key}) : super(key: key);
+  const LoadingIndicator({this.color = Colors.white, Key? key})
+      : super(key: key);
+
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -10,9 +13,9 @@ class LoadingIndicator extends StatelessWidget {
     return SizedBox(
       height: height * 0.03,
       width: height * 0.03,
-      child: const CircularProgressIndicator(
+      child: CircularProgressIndicator(
         strokeWidth: 2,
-        color: Colors.white,
+        color: color,
       ),
     );
   }
