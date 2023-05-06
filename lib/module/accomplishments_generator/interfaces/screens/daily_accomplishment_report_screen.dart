@@ -43,6 +43,8 @@ class _DailyAccomplishmentReportScreenState
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
 
+    selectedTasks = context.read<AccomplishmentsCubit>().state.selectedTasks;
+
     final pw.Document pdf = pw.Document();
 
     final ByteData imageData = await rootBundle.load(nuxifyLogoPng);
@@ -392,46 +394,54 @@ class _DailyAccomplishmentReportScreenState
                       color: theme.primaryColor.withOpacity(0.10),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: FutureBuilder<File>(
-                      future: generateDocument(),
+                    child:
+                        BlocBuilder<AccomplishmentsCubit, AccomplishmentsState>(
                       builder:
-                          (BuildContext context, AsyncSnapshot<File> snapshot) {
-                        if (snapshot.data == null) {
-                          return Center(
-                            child: LoadingIndicator(
-                              color: theme.primaryColor,
-                            ),
-                          );
-                        } else {
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute<dynamic>(
-                                  builder: (_) => DailyAccomplishmentPDFScreen(
-                                    clientName: clientName,
-                                    document: snapshot.data!,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                  'Generate Accomplishment',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: theme.primaryColor,
-                                  ),
-                                ),
-                                Icon(
-                                  Icons.chevron_right,
+                          (BuildContext context, AccomplishmentsState state) {
+                        return FutureBuilder<File>(
+                          future: generateDocument(),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<File> snapshot) {
+                            if (snapshot.data == null) {
+                              return Center(
+                                child: LoadingIndicator(
                                   color: theme.primaryColor,
                                 ),
-                              ],
-                            ),
-                          );
-                        }
+                              );
+                            } else {
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute<dynamic>(
+                                      builder: (_) =>
+                                          DailyAccomplishmentPDFScreen(
+                                        clientName: clientName,
+                                        document: snapshot.data!,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Text(
+                                      'Generate Accomplishment',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: theme.primaryColor,
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.chevron_right,
+                                      color: theme.primaryColor,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          },
+                        );
                       },
                     ),
                   ),
