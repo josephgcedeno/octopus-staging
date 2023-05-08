@@ -6,6 +6,7 @@ class Project {
     required this.dateEpoch,
     required this.status,
     required this.color,
+    required this.logoImage,
   });
 
   final String id;
@@ -13,4 +14,5 @@ class Project {
   final int dateEpoch;
   final String status;
   final String color;
+  final String logoImage;
 }

@@ -3,7 +3,7 @@ import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/leaves/leaves_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/leave_repository.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 part 'leaves_state.dart';
 

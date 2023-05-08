@@ -33,6 +33,7 @@ class _StatusColumnState extends State<StatusColumn> {
     dateEpoch: 0,
     status: 'DONE',
     color: '0x000000',
+    logoImage: '',
   );
 
   Project? getTaskProject(String id) {

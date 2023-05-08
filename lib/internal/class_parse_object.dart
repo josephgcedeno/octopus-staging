@@ -1,6 +1,6 @@
 import 'package:octopus/infrastructures/models/dsr/dsr_request.dart';
 import 'package:octopus/internal/helper_function.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class HolidayParseObject extends ParseObject implements ParseCloneable {
   HolidayParseObject() : super(_keyTableName);
@@ -164,6 +164,7 @@ class ProjectsParseObject extends ParseObject implements ParseCloneable {
   static const String keyName = 'name';
   static const String keyStatus = 'status';
   static const String keyColor = 'color';
+  static const String keyLogoImage = 'logo_image';
 
   int get date => get<int>(keyDate)!;
   set date(int name) => set<int>(keyDate, name);
@@ -176,6 +177,9 @@ class ProjectsParseObject extends ParseObject implements ParseCloneable {
 
   String get color => get<String>(keyColor)!;
   set color(String color) => set<String>(keyColor, color);
+
+  String get logoImage => get<String>(keyLogoImage)!;
+  set logoImage(String logoImage) => set<String>(keyLogoImage, logoImage);
 }
 
 class SprintsParseObject extends ParseObject implements ParseCloneable {
@@ -393,4 +397,145 @@ class PanelRemindersParseObject extends ParseObject implements ParseCloneable {
   String get announcement => get<String>(keyAnnouncement)!;
   set announcement(String announcement) =>
       set<String>(keyAnnouncement, announcement);
+}
+
+class EmployeeInfoParseObject extends ParseObject implements ParseCloneable {
+  EmployeeInfoParseObject() : super(_keyTableName);
+  EmployeeInfoParseObject.clone() : this();
+
+  /// Convert the ParseObject to a custom parse object.
+  static EmployeeInfoParseObject toCustomParseObject({
+    required dynamic data,
+  }) =>
+      data as EmployeeInfoParseObject;
+
+  /// Serialized response
+  @override
+  EmployeeInfoParseObject clone(Map<String, dynamic> map) =>
+      EmployeeInfoParseObject.clone()..fromJson(map);
+
+  static const String _keyTableName = 'EmployeeInfo';
+
+  // Field names with snake case
+  static const String keyUser = 'user';
+  static const String keyFirstName = 'first_name';
+  static const String keyLastName = 'last_name';
+  static const String keyNuxifyId = 'nuxify_id';
+  static const String keyBirthDate = 'birth_date';
+  static const String keyAddress = 'address';
+  static const String keyCivilStatus = 'civil_status';
+  static const String keyDateHired = 'date_hired';
+  static const String keyProfileImageSource = 'profile_image_source';
+  static const String keyPosition = 'position';
+  static const String keyPagIbigNo = 'pag_ibig_no';
+  static const String keySssNo = 'sss_no';
+  static const String keyTinNo = 'tin_no';
+  static const String keyPhilHealthNo = 'phil_health_no';
+  static const String keyIsDeactive = 'is_deactive';
+
+  ParseUser get user => get<ParseUser>(keyUser)!;
+  set user(ParseUser user) => set<ParseUser>(keyUser, user);
+
+  String get firstName => get<String>(keyFirstName)!;
+  set firstName(String value) => set<String>(keyFirstName, value);
+
+  String get lastName => get<String>(keyLastName)!;
+  set lastName(String value) => set<String>(keyLastName, value);
+
+  String get nuxifyId => get<String>(keyNuxifyId)!;
+  set nuxifyId(String value) => set<String>(keyNuxifyId, value);
+
+  int get birthDateEpoch => get<int>(keyBirthDate)!;
+  set birthDateEpoch(int value) => set<int>(keyBirthDate, value);
+
+  String get address => get<String>(keyAddress)!;
+  set address(String value) => set<String>(keyAddress, value);
+
+  String get civilStatus => get<String>(keyCivilStatus)!;
+  set civilStatus(String value) => set<String>(keyCivilStatus, value);
+
+  int get dateHiredEpoch => get<int>(keyDateHired)!;
+  set dateHiredEpoch(int value) => set<int>(keyDateHired, value);
+
+  String get profileImageSource => get<String>(keyProfileImageSource)!;
+  set profileImageSource(String value) =>
+      set<String>(keyProfileImageSource, value);
+
+  String get position => get<String>(keyPosition)!;
+  set position(String value) => set<String>(keyPosition, value);
+
+  String get pagIbigNo => get<String>(keyPagIbigNo)!;
+  set pagIbigNo(String value) => set<String>(keyPagIbigNo, value);
+
+  String get sssNo => get<String>(keySssNo)!;
+  set sssNo(String value) => set<String>(keySssNo, value);
+
+  String get tinNo => get<String>(keyTinNo)!;
+  set tinNo(String value) => set<String>(keyTinNo, value);
+
+  String get philHealthNo => get<String>(keyPhilHealthNo)!;
+  set philHealthNo(String value) => set<String>(keyPhilHealthNo, value);
+
+  bool get isDeactive => get<bool>(keyIsDeactive)!;
+  set isDeactive(bool value) => set<bool>(keyIsDeactive, value);
+}
+
+class AccountCredentialsParseObject extends ParseObject
+    implements ParseCloneable {
+  AccountCredentialsParseObject() : super(_keyTableName);
+  AccountCredentialsParseObject.clone() : this();
+
+  /// Convert the ParseObject to a custom parse object.
+  static AccountCredentialsParseObject toCustomParseObject({
+    required dynamic data,
+  }) =>
+      data as AccountCredentialsParseObject;
+
+  /// Serialized response
+  @override
+  AccountCredentialsParseObject clone(Map<String, dynamic> map) =>
+      AccountCredentialsParseObject.clone()..fromJson(map);
+
+  static const String _keyTableName = 'AccountCredentials';
+  static const String keyUsername = 'username';
+  static const String keyPassword = 'password';
+  static const String keyAccountType = 'account_type';
+
+  String get username => get<String>(keyUsername)!;
+  set username(String username) => set<String>(keyUsername, username);
+
+  String get password => get<String>(keyPassword)!;
+  set password(String password) => set<String>(keyPassword, password);
+
+  String get accountType => get<String>(keyAccountType)!;
+  set accountType(String accountType) =>
+      set<String>(keyAccountType, accountType);
+}
+
+class CompanyFilePDFParseObject extends ParseObject implements ParseCloneable {
+  CompanyFilePDFParseObject() : super(_keyTableName);
+  CompanyFilePDFParseObject.clone() : this();
+
+  /// Convert the ParseObject to a custom parse object.
+  static CompanyFilePDFParseObject toCustomParseObject({
+    required dynamic data,
+  }) =>
+      data as CompanyFilePDFParseObject;
+
+  /// Serialized response
+  @override
+  CompanyFilePDFParseObject clone(Map<String, dynamic> map) =>
+      CompanyFilePDFParseObject.clone()..fromJson(map);
+
+  static const String _keyTableName = 'CompanyFilePDF';
+  static const String keyFileSource = 'file_source';
+  static const String keyCompanyFileType = 'company_file_type';
+  static const String keyAccountType = 'account_type';
+
+  String get fileSource => get<String>(keyFileSource)!;
+  set fileSource(String fileSource) => set<String>(keyFileSource, fileSource);
+
+  String get companyFileType => get<String>(keyCompanyFileType)!;
+  set companyFileType(String companyFileType) =>
+      set<String>(keyCompanyFileType, companyFileType);
 }

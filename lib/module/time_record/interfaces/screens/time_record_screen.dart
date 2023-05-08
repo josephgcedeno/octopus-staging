@@ -10,7 +10,7 @@ import 'package:octopus/module/time_record/interfaces/widgets/dtr_clock.dart';
 import 'package:octopus/module/time_record/interfaces/widgets/offset_button.dart';
 import 'package:octopus/module/time_record/interfaces/widgets/time_record_slider.dart';
 import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class TimeRecordScreen extends StatefulWidget {
   const TimeRecordScreen({Key? key}) : super(key: key);

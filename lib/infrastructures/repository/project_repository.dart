@@ -8,18 +8,20 @@ import 'package:octopus/internal/database_strings.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/error_message_string.dart';
 import 'package:octopus/internal/helper_function.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class ProjectRepository extends IProjectRepository {
   @override
   Future<APIResponse<Project>> addProject({
     required String projectName,
     required String projectColor,
+    required String logoImage,
     String? status,
     DateTime? date,
   }) async {
     if (projectName.isEmpty ||
         projectColor.isEmpty ||
+        logoImage.isEmpty ||
         (status != null && status.isEmpty)) {
       throw APIErrorResponse(
         message: 'This fields cannot be empty.',
@@ -36,7 +38,8 @@ class ProjectRepository extends IProjectRepository {
           ..status = status ?? 'ACTIVE'
           ..date = epochFromDateTime(
             date: date ?? DateTime.now(),
-          );
+          )
+          ..logoImage = logoImage;
 
         final ParseResponse projectTagResponse = await projectTag.save();
 
@@ -54,6 +57,7 @@ class ProjectRepository extends IProjectRepository {
               projectName: projectName,
               status: status ?? 'ACTIVE',
               color: projectColor,
+              logoImage: logoImage,
             ),
             errorCode: null,
           );
@@ -172,6 +176,7 @@ class ProjectRepository extends IProjectRepository {
               dateEpoch: record.date,
               status: record.status,
               color: record.color,
+              logoImage: record.logoImage,
             ),
           );
         }
@@ -194,6 +199,7 @@ class ProjectRepository extends IProjectRepository {
     String? projectName,
     String? projectColor,
     String? status,
+    String? logoImage,
     DateTime? date,
   }) async {
     if (id.isEmpty ||
@@ -225,6 +231,9 @@ class ProjectRepository extends IProjectRepository {
         if (projectColor != null) {
           updateProject.color = projectColor;
         }
+        if (logoImage != null) {
+          updateProject.logoImage = logoImage;
+        }
 
         final ParseResponse updateProjectResponse = await updateProject.save();
 
@@ -254,6 +263,7 @@ class ProjectRepository extends IProjectRepository {
                 projectName: resultParseObject.name,
                 status: resultParseObject.status,
                 color: resultParseObject.color,
+                logoImage: resultParseObject.logoImage,
               ),
               errorCode: null,
             );
