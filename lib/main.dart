@@ -13,7 +13,6 @@ import 'package:octopus/module/accomplishments_generator/service/cubit/accomplis
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
 import 'package:octopus/module/leaves/service/cubit/leaves_cubit.dart';
 import 'package:octopus/module/login/interfaces/screens/login_screen.dart';
-import './module/admin/interfaces/screens/admin_screen.dart';
 import 'package:octopus/module/login/service/cubit/authentication_cubit.dart';
 import 'package:octopus/module/standup_report/service/cubit/dsr_cubit.dart';
 import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
