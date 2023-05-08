@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 final ThemeData defaultTheme = _buildDefaultTheme();
 const Color kBlue = Color(0xFF017BFF);
 const Color kRed = Color(0xFFE63462);
+const Color kLightRed = Color(0xFFE25252);
 const Color kBlack = Color(0xFF000000);
+const Color kLightBlack = Color(0xFF1B252F);
 const Color kDarkGrey = Color(0xFF8d9297);
 const Color kLightGrey = Color(0xFFF5F7F9);
 const Color kWhite = Color(0xFFFFFFFF);
 const Color ktransparent = Colors.transparent;
+const Color kAqua = Color(0xFF39C0C7);
 
 ThemeData _buildDefaultTheme() {
   final ThemeData base = ThemeData.light();
@@ -47,7 +50,7 @@ TextTheme _buildDefaultTextTheme(TextTheme base) {
     titleMedium: base.titleMedium?.copyWith(fontFamily: 'Gilroy'),
     bodyMedium: base.bodyMedium?.copyWith(fontFamily: 'Gilroy'),
     bodyLarge: base.bodyLarge?.copyWith(fontFamily: 'Gilroy'),
-    bodySmall: base.bodySmall?.copyWith(fontFamily: 'Gilroy'),
+    bodySmall: base.bodySmall?.copyWith(fontFamily: 'Gilroy',),
     labelLarge: base.labelLarge?.copyWith(fontFamily: 'Gilroy'),
     labelSmall: base.labelSmall?.copyWith(fontFamily: 'Gilroy'),
   );
@@ -61,3 +64,5 @@ const Color gradient2 = Color(0xFF017BFF);
 const String logoSvg = 'assets/images/app_logo.svg';
 const String whiteLogoSvg = 'assets/images/app_logo_white.svg';
 const String logoPng = 'assets/images/app_logo.png';
+const String nuxifyLogoSvg = 'assets/images/nuxify_logo_text.svg';
+const String nuxifyLogoPng = 'assets/images/nuxify_logo_text.png';

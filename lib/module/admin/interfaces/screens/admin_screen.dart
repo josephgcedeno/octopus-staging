@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:octopus/module/accomplishments_generator/interfaces/screens/accomplishments_generator_screen.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({Key? key}) : super(key: key);
@@ -116,6 +117,13 @@ class _AdminScreenState extends State<AdminScreen> {
                           if (i == 4) {
                             Navigator.of(context).popUntil(
                               (Route<dynamic> route) => route.isFirst,
+                            );
+                          } else if (i == 0) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute<dynamic>(
+                                builder: (_) =>
+                                    const AccomplishmentsGeneratorScreen(),
+                              ),
                             );
                           }
                         },

@@ -42,12 +42,17 @@ dependencies:
   parse_server_sdk_flutter: ^4.0.0
   path: ^1.8.2
   path_provider: ^2.0.14
+  pdf: ^3.10.1
   percent_indicator: ^4.2.2
+  share_plus: ^6.3.4
   shimmer: ^2.0.0
   syncfusion_flutter_core: ^21.1.39
   syncfusion_flutter_pdfviewer: ^21.1.39
   url_launcher: ^6.1.6
 
+dependency_overrides:
+  win32: ^3.0.0
+  
 dev_dependencies:
   bloc_test: ^9.0.3
   build_runner: ^2.0.1
@@ -72,6 +77,8 @@ flutter:
     - assets/images/tasks.svg
     - assets/images/app_logo.svg
     - assets/images/app_logo_white.svg
+    - assets/images/nuxify_logo_text.svg
+    - assets/images/nuxify_logo_text.png
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

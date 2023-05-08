@@ -7,6 +7,7 @@ import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
 import 'package:octopus/infrastructures/models/project/project_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/dsr_repository.dart';
 import 'package:octopus/infrastructures/repository/interfaces/project_repository.dart';
+import 'package:octopus/internal/string_status.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/status_column.dart';
 import 'package:octopus/module/standup_report/service/cubit/task_card_dto.dart';
 
@@ -261,7 +262,7 @@ class DSRCubit extends Cubit<DSRState> {
   Future<void> getAllProjects() async {
     try {
       final APIListResponse<Project> response =
-          await projectRepository.getAllProjects(status: 'ACTIVE');
+          await projectRepository.getAllProjects(status: active);
 
       emit(FetchProjectsSuccess(projects: response.data));
     } catch (e) {
