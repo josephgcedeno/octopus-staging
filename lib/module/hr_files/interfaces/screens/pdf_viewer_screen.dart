@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
+import 'package:octopus/module/hr_files/interfaces/widgets/download_button.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
@@ -21,7 +22,10 @@ class PDFViewerScreen extends StatefulWidget {
 
 class _PDFViewerScreenState extends State<PDFViewerScreen> {
   bool isLoading = true;
-  bool isNotLoading = false;
+  bool isFailed = false;
+
+  final String urlPDF =
+      'https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf';
 
   @override
   Widget build(BuildContext context) {
@@ -37,127 +41,106 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
       body: SizedBox(
         height: height,
         width: width,
-        child: Stack(
+        child: Column(
           children: <Widget>[
-            Positioned(
-              top: 0,
-              child: Container(
-                color: kWhite,
-                width: width,
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: width * 0.055,
-                        vertical: height * 0.02,
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: width * 0.055,
+                vertical: height * 0.02,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Icon(widget.icon),
+                      Padding(
+                        padding: EdgeInsets.only(left: width * 0.03),
+                        child: Text(
+                          widget.title,
+                          style: kIsWeb
+                              ? theme.textTheme.titleLarge
+                              : theme.textTheme.titleMedium,
+                        ),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    ],
+                  ),
+                  DownloadButton(
+                    title: widget.title,
+                    url: urlPDF,
+                    documentLoading: isLoading,
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Stack(
+                children: <Widget>[
+                  SfPdfViewerTheme(
+                    data: SfPdfViewerThemeData(
+                      progressBarColor: ktransparent,
+                    ),
+                    child: SfPdfViewer.network(
+                      urlPDF, // pdf file URL
+                      onDocumentLoaded: (_) {
+                        setState(() {
+                          isLoading = false;
+                        });
+                      },
+                      onDocumentLoadFailed: (_) {
+                        setState(() {
+                          isFailed = true;
+                        });
+                      },
+                    ),
+                  ),
+                  Visibility(
+                    visible: isLoading,
+                    child: Container(
+                      width: double.infinity,
+                      color: kLightGrey,
+                      padding: EdgeInsets.all(width * 0.035),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Icon(widget.icon),
-                              Padding(
-                                padding: EdgeInsets.only(left: width * 0.03),
-                                child: Text(
-                                  widget.title,
-                                  style: kIsWeb
-                                      ? theme.textTheme.titleLarge
-                                      : theme.textTheme.titleMedium,
-                                ),
+                          for (int i = 0; i < loaderItems; i++)
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                vertical: height * 0.008,
+                                horizontal: width * 0.025,
                               ),
-                            ],
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(width * 0.015),
-                            decoration: BoxDecoration(
-                              color: kLightGrey,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: GestureDetector(
-                              onTap: () {},
-                              child: const Icon(Icons.file_download_outlined),
-                            ),
-                          ),
+                              child: lineLoader(
+                                height: Random().nextInt(15) + 10,
+                                width: double.infinity,
+                              ),
+                            )
                         ],
                       ),
                     ),
-                    SizedBox(
-                      width: width,
-                      height: height * 0.765,
-                      child: Stack(
+                  ),
+                  Visibility(
+                    visible: isFailed,
+                    child: Container(
+                      width: double.infinity,
+                      color: kLightGrey,
+                      padding: EdgeInsets.all(width * 0.035),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          SfPdfViewerTheme(
-                            data: SfPdfViewerThemeData(
-                              progressBarColor: ktransparent,
-                            ),
-                            child: SfPdfViewer.network(
-                              'https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf',
-                              onDocumentLoaded:
-                                  (_) {
-                                setState(() {
-                                  isLoading = false;
-                                });
-                              },
-                              onDocumentLoadFailed: (_) {
-                                setState(() {
-                                  isNotLoading = true;
-                                });
-                              },
+                          Padding(
+                            padding: EdgeInsets.all(height * 0.015),
+                            child: const Icon(
+                              Icons.error_outline_outlined,
                             ),
                           ),
-                          Visibility(
-                            visible: isLoading,
-                            child: Container(
-                              width: double.infinity,
-                              color: kLightGrey,
-                              padding: EdgeInsets.all(width * 0.035),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: <Widget>[
-                                  for (int i = 0; i < loaderItems; i++)
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: height * 0.008,
-                                        horizontal: width * 0.025,
-                                      ),
-                                      child: lineLoader(
-                                        height: Random().nextInt(15) + 10,
-                                        width: double.infinity,
-                                      ),
-                                    )
-                                ],
-                              ),
-                            ),
-                          ),
-                          Visibility(
-                            visible: isNotLoading,
-                            child: Container(
-                              width: double.infinity,
-                              color: kLightGrey,
-                              padding: EdgeInsets.all(width * 0.035),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Padding(
-                                    padding: EdgeInsets.all(height * 0.015),
-                                    child: const Icon(
-                                      Icons.error_outline_outlined,
-                                    ),
-                                  ),
-                                  const Text('Document failed to load'),
-                                ],
-                              ),
-                            ),
-                          ),
+                          const Text('Document failed to load'),
                         ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],
