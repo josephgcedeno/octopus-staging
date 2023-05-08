@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/hr/hr_response.dart';
@@ -12,10 +13,10 @@ import 'package:octopus/internal/error_message_string.dart';
 import 'package:octopus/internal/helper_function.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
-const String encrpyPassowrd = 'hdqvb3BVzVc2KH-u2WA9cSkgCSxPj9AJ';
-
 class HRRepository extends IHRRepository {
-  final EncryptionService encryptionService = EncryptionService(encrpyPassowrd);
+  final String encryptionKey = dotenv.get('ENCRYPTION_KEY');
+  late final EncryptionService encryptionService =
+      EncryptionService(encryptionKey);
 
   String _getCompanyFileType(CompanyFileType companyFileType) {
     switch (companyFileType) {
