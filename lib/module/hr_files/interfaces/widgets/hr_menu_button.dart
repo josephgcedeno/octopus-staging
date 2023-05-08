@@ -131,7 +131,7 @@ class _HrMenuButtonState extends State<HrMenuButton> {
                   Expanded(
                     child: Icon(
                       widget.icon,
-                      color: isClicked ? theme.primaryColor : kDarkGrey,
+                      color: isClicked ? theme.primaryColor : kBlack,
                     ),
                   ),
                   Expanded(

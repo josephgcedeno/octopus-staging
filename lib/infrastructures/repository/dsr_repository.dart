@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:octopus/infrastructures/models/api_error_response.dart';
@@ -11,7 +12,7 @@ import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/error_message_string.dart';
 import 'package:octopus/internal/helper_function.dart';
 import 'package:octopus/internal/string_status.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class DSRRepository extends IDSRRepository {
   final DateTime today = DateTime.now();
@@ -29,6 +30,7 @@ class DSRRepository extends IDSRRepository {
     required List<dynamic> tasks,
     required String userName,
     required String date,
+    required List<ProjectsParseObject> projects,
     String? filterByProjectId,
   }) async {
     final List<DSRWorks> data = <DSRWorks>[];
@@ -43,9 +45,9 @@ class DSRRepository extends IDSRRepository {
       }
       final String text = parseTask['text']!.toString();
 
-      final ProjectsParseObject project =
-          (await ProjectsParseObject().getObject(projectTagId)).result
-              as ProjectsParseObject;
+      final ProjectsParseObject project = projects.firstWhere(
+        (ProjectsParseObject obj) => obj.objectId == projectTagId,
+      );
 
       final String projectName = project.name;
       final String projectColor = project.color;
@@ -286,6 +288,25 @@ class DSRRepository extends IDSRRepository {
           }
 
           final Map<String, List<DSRWorks>> datas = <String, List<DSRWorks>>{};
+
+          /// Get all user info list parse object.
+          final ParseResponse allUsersInfo =
+              await EmployeeInfoParseObject().getAll();
+
+          /// Get all project info list of parse object.
+          final ParseResponse allProjects =
+              await ProjectsParseObject().getAll();
+
+          final List<EmployeeInfoParseObject> allUserInfoCasted =
+              List<EmployeeInfoParseObject>.from(
+            allUsersInfo.results ?? <dynamic>[],
+          );
+
+          final List<ProjectsParseObject> allProjectInfoCasted =
+              List<ProjectsParseObject>.from(
+            allProjects.results ?? <dynamic>[],
+          );
+
           if (dsrResponse.success) {
             if (dsrResponse.results != null) {
               for (final ParseObject dsrDonePerUser
@@ -293,7 +314,14 @@ class DSRRepository extends IDSRRepository {
                 final DSRsParseObject row =
                     DSRsParseObject.toCustomParseObject(data: dsrDonePerUser);
 
-                final String userName = row.user.get(usersNameField)!;
+                final EmployeeInfoParseObject singleEmployeeInfo =
+                    allUserInfoCasted.firstWhere(
+                  (EmployeeInfoParseObject obj) =>
+                      obj.user.objectId == row.user.objectId,
+                );
+
+                final String userName =
+                    '${singleEmployeeInfo.firstName} ${singleEmployeeInfo.lastName}';
 
                 final String date = DateFormat('EEE, MMM d, yyyy').format(
                   dateTimeFromEpoch(
@@ -311,6 +339,7 @@ class DSRRepository extends IDSRRepository {
                         userName: userName,
                         filterByProjectId: projectId,
                         date: date,
+                        projects: allProjectInfoCasted,
                       ),
                     );
                     continue;
@@ -321,6 +350,7 @@ class DSRRepository extends IDSRRepository {
                     userName: userName,
                     filterByProjectId: projectId,
                     date: date,
+                    projects: allProjectInfoCasted,
                   );
                 }
               }
@@ -637,7 +667,7 @@ class DSRRepository extends IDSRRepository {
           );
         }
       }
-      
+
       String errorMessage = errorSomethingWentWrong;
       if (user != null && !user.get<bool>(usersIsAdminField)!) {
         errorMessage = errorInvalidPermission;

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -7,16 +8,18 @@ import 'package:octopus/infrastructures/repository/dsr_repository.dart';
 import 'package:octopus/infrastructures/repository/leave_repository.dart';
 import 'package:octopus/infrastructures/repository/project_repository.dart';
 import 'package:octopus/infrastructures/repository/time_in_out_repository.dart';
+import 'package:octopus/infrastructures/repository/user_repository.dart';
 import 'package:octopus/interfaces/screens/splash_screen.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/accomplishments_generator/service/cubit/accomplishments_cubit.dart';
+import 'package:octopus/module/admin_registration/services/bloc/admin_registration_cubit.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
 import 'package:octopus/module/leaves/service/cubit/leaves_cubit.dart';
 import 'package:octopus/module/login/interfaces/screens/login_screen.dart';
 import 'package:octopus/module/login/service/cubit/authentication_cubit.dart';
 import 'package:octopus/module/standup_report/service/cubit/dsr_cubit.dart';
 import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +38,8 @@ void main() async {
     serverUrl,
     masterKey: masterKey,
     liveQueryUrl: liveQueryUrl,
+    clientCreator: ({bool? sendSessionId, SecurityContext? securityContext}) =>
+        ParseDioClient(securityContext: securityContext),
   );
 
   runApp(const App());
@@ -53,6 +58,7 @@ class _AppState extends State<App> {
   final DSRRepository dsrRepository = DSRRepository();
   final ProjectRepository projectRepository = ProjectRepository();
   final LeaveRepository leaveRepository = LeaveRepository();
+  final UserRepository userRepository = UserRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +87,11 @@ class _AppState extends State<App> {
         BlocProvider<LeavesCubit>(
           create: (BuildContext context) => LeavesCubit(
             leaveRepository: leaveRepository,
+          ),
+        ),
+        BlocProvider<AdminRegistrationCubit>(
+          create: (BuildContext context) => AdminRegistrationCubit(
+            iUserRepository: userRepository,
           ),
         ),
       ],

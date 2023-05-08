@@ -25,12 +25,15 @@ abstract class IProjectRepository {
   ///
   /// [date] this updates the date of the project.
   /// This object will contain the necessary field for Leave record.
+  /// 
+  /// [logoImage] this will be the logo source image for a certain project.
   Future<APIResponse<Project>> updateProject({
     required String id,
     String? projectName,
     String? projectColor,
     String? status,
     DateTime? date,
+    String? logoImage,
   });
 
   /// FOR: ADMIN USE ONLY
@@ -55,9 +58,12 @@ abstract class IProjectRepository {
   ///
   /// [date] this defines the date created of the project.
   /// This object will contain the necessary field for Leave record.
+  /// 
+  /// [logoImage] this will be the logo source image for a certain project.
   Future<APIResponse<Project>> addProject({
     required String projectName,
     required String projectColor,
+    required String logoImage,
     String? status,
     DateTime? date,
   });

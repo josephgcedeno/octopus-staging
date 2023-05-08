@@ -5,7 +5,7 @@ import 'package:octopus/infrastructures/models/auth/auth_request.dart';
 import 'package:octopus/infrastructures/repository/interfaces/auth_repository.dart';
 import 'package:octopus/internal/database_strings.dart';
 import 'package:octopus/internal/debug_utils.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class AuthRepository extends IAuthRepository {
   @override
@@ -103,11 +103,7 @@ class AuthRepository extends IAuthRepository {
         payload.email,
         payload.password,
         payload.email,
-      )
-        ..set<String?>(usersNameField, payload.email)
-        ..set<String?>(usersPositionField, payload.position)
-        ..set<bool?>(usersIsAdminField, payload.isAdmin ?? false)
-        ..set<String?>(usersPhotoField, payload.photo);
+      )..set<bool?>(usersIsAdminField, payload.isAdmin ?? false);
 
       final ParseResponse signUpResponse = await user.signUp();
 

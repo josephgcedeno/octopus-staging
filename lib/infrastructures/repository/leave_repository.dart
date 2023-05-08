@@ -9,7 +9,7 @@ import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/error_message_string.dart';
 import 'package:octopus/internal/helper_function.dart';
 import 'package:octopus/internal/string_status.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class LeaveRepository extends ILeaveRepository {
   void checkFieldIsEmpty(List<String> fields) {
