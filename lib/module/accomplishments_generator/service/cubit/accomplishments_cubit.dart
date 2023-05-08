@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
@@ -57,14 +55,10 @@ class AccomplishmentsCubit extends Cubit<AccomplishmentsState> {
       final APIResponse<AllDSRItem> accomplishments =
           await dsrRepository.getAllDSRRecordForSprint(
         sprintId: sprintId,
-        projectId:
-            projectId 
-        ,
+        projectId: projectId,
         startDate: formattedDate,
         endDate: formattedDate,
-      ); 
-      
-      inspect(accomplishments);
+      );
 
       emit(
         FetchAllAccomplishmentsDataSuccess(
