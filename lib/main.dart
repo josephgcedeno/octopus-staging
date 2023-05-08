@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -34,6 +35,8 @@ void main() async {
     serverUrl,
     masterKey: masterKey,
     liveQueryUrl: liveQueryUrl,
+    clientCreator: ({bool? sendSessionId, SecurityContext? securityContext}) =>
+        ParseDioClient(securityContext: securityContext),
   );
 
   runApp(const App());
