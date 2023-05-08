@@ -1,3 +1,4 @@
+// ignore_for_file: depend_on_referenced_packages
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -7,11 +8,11 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
-import 'package:octopus/interfaces/widgets/loading_indicator.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/screens/daily_accomplishment_pdf_screen.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/daily_accomplishment_tabs.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/daily_accomplishment_text_field.dart';
 import 'package:octopus/module/accomplishments_generator/service/cubit/accomplishments_cubit.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
@@ -223,25 +224,20 @@ class _DailyAccomplishmentReportScreenState
         ),
       ),
     );
-    final Directory? directory = await _getAppDirectory();
-    final String? appDirectory = directory?.path;
-    final File file = File('${appDirectory}report.pdf');
-    if (await file.exists()) {
-      await file.create(recursive: true);
-    }
+
+    final Directory output = await _getAppDirectory();
+    final File file = File('${output.path}/report.pdf');
     await file.writeAsBytes(await pdf.save());
     return file;
   }
 
-  Future<Directory?> _getAppDirectory() async {
-    Directory? appDirectory;
+  Future<Directory> _getAppDirectory() async {
+    late Directory appDirectory;
     if (kIsWeb) {
       appDirectory = Directory('');
     } else {
       if (Platform.isIOS) {
-        appDirectory = Directory(
-          '${Directory.current.path}/Documents/',
-        );
+        appDirectory = await getTemporaryDirectory();
       } else if (Platform.isAndroid) {
         if (await _isExternalStorageWritable()) {
           appDirectory = Directory('/storage/emulated/0/Download/');
@@ -323,7 +319,7 @@ class _DailyAccomplishmentReportScreenState
                         ),
                       ),
                       WidgetSpan(
-                        alignment: PlaceholderAlignment.middle,
+                        alignment: PlaceholderAlignment.top,
                         child: DailyAccomplishmentTextField(
                           name: (String name) {
                             setState(() {
@@ -394,57 +390,36 @@ class _DailyAccomplishmentReportScreenState
                       color: theme.primaryColor.withOpacity(0.10),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child:
-                        BlocBuilder<AccomplishmentsCubit, AccomplishmentsState>(
-                      builder:
-                          (BuildContext context, AccomplishmentsState state) {
-                        return FutureBuilder<File>(
-                          future: generateDocument(),
-                          builder: (
-                            BuildContext context,
-                            AsyncSnapshot<File> snapshot,
-                          ) {
-                            if (snapshot.data == null) {
-                              return Center(
-                                child: LoadingIndicator(
-                                  color: theme.primaryColor,
-                                ),
-                              );
-                            } else {
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute<dynamic>(
-                                      builder: (_) =>
-                                          DailyAccomplishmentPDFScreen(
-                                        clientName: clientName,
-                                        document: snapshot.data!,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Text(
-                                      'Generate Accomplishment',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: theme.primaryColor,
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.chevron_right,
-                                      color: theme.primaryColor,
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
-                          },
+                    child: GestureDetector(
+                      onTap: () async {
+                        final File document = await generateDocument();
+                        if (!mounted) return;
+
+                        Navigator.of(context).push(
+                          MaterialPageRoute<dynamic>(
+                            builder: (_) => DailyAccomplishmentPDFScreen(
+                              clientName: clientName,
+                              document: document,
+                            ),
+                          ),
                         );
                       },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text(
+                            'Generate Accomplishment',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: theme.primaryColor,
+                            ),
+                          ),
+                          Icon(
+                            Icons.chevron_right,
+                            color: theme.primaryColor,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
