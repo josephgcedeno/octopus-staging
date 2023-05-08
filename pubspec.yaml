@@ -32,6 +32,7 @@ dependencies:
   flutter_dotenv: ^5.0.2
   flutter_fadein: ^2.0.0
   flutter_secure_storage: ^6.0.0
+  flutter_slidable: ^3.0.0
   flutter_svg: ^1.1.6
   http: ^0.13.5
   intl: ^0.18.0

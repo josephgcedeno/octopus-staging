@@ -8,8 +8,10 @@ import 'package:octopus/infrastructures/repository/dsr_repository.dart';
 import 'package:octopus/infrastructures/repository/leave_repository.dart';
 import 'package:octopus/infrastructures/repository/project_repository.dart';
 import 'package:octopus/infrastructures/repository/time_in_out_repository.dart';
+import 'package:octopus/infrastructures/repository/user_repository.dart';
 import 'package:octopus/interfaces/screens/splash_screen.dart';
 import 'package:octopus/internal/debug_utils.dart';
+import 'package:octopus/module/admin_registration/services/bloc/admin_registration_cubit.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
 import 'package:octopus/module/leaves/service/cubit/leaves_cubit.dart';
 import 'package:octopus/module/login/interfaces/screens/login_screen.dart';
@@ -55,6 +57,7 @@ class _AppState extends State<App> {
   final DSRRepository dsrRepository = DSRRepository();
   final ProjectRepository projectRepository = ProjectRepository();
   final LeaveRepository leaveRepository = LeaveRepository();
+  final UserRepository userRepository = UserRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +80,11 @@ class _AppState extends State<App> {
         BlocProvider<LeavesCubit>(
           create: (BuildContext context) => LeavesCubit(
             leaveRepository: leaveRepository,
+          ),
+        ),
+        BlocProvider<AdminRegistrationCubit>(
+          create: (BuildContext context) => AdminRegistrationCubit(
+            iUserRepository: userRepository,
           ),
         ),
       ],
