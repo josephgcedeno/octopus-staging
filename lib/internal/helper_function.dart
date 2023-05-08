@@ -1,5 +1,5 @@
 import 'package:octopus/infrastructures/models/dsr/dsr_request.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 /// Get the id of the ParseObject in a list of dynamic
 String getResultId(List<dynamic> data) =>
