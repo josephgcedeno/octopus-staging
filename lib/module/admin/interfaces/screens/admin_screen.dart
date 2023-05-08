@@ -1,5 +1,5 @@
-import 'package:octopus/module/accomplishments_generator/interfaces/screens/accomplishments_generator_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:octopus/module/accomplishments_generator/interfaces/screens/accomplishments_generator_screen.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({Key? key}) : super(key: key);

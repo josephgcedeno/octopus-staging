@@ -44,20 +44,15 @@ class _DailyAccomplishmentPDFScreenState
 
   Future<void> sharePDF() async {
     try {
-      if (kIsWeb) {
-        await Share.shareXFiles(
-          <XFile>[XFile(widget.document.path)],
-          subject: 'Nuxify Report',
-        );
-      } else {
-        await Share.shareFiles(
-          <String>[widget.document.path],
-          subject: 'Nuxify Report',
-        );
-      }
+      await Share.shareXFiles(
+        <XFile>[XFile(widget.document.path)],
+        subject: 'Nuxify Report',
+      );
     } on PlatformException catch (e) {
       showSnackBar(
-          message: 'Error detected: $e', snackBartState: SnackBartState.error,);
+        message: 'Error detected: $e',
+        snackBartState: SnackBartState.error,
+      );
     }
   }
 
