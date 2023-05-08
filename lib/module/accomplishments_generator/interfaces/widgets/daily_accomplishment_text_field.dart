@@ -18,27 +18,12 @@ class _DailyAccomplishmentTextFieldState
     extends State<DailyAccomplishmentTextField> {
   final TextEditingController textController = TextEditingController();
 
-  // For delay on change
-  Timer? _debounce;
-
   // On change top text field (source wallet) will be handled by this function.
-  void _onChangeTopTextField(String input) {
-    if (_debounce?.isActive ?? false) {
-      _debounce!.cancel();
-    } // New changes will cancel the previous request
-
-    if (input.isNotEmpty) {
-      _debounce = Timer(const Duration(milliseconds: 1500), () {
-        print('puasok');
-        widget.name(input);
-      });
-    }
-  }
+  void _onChangeTopTextField(String input) => widget.name(input);
 
   @override
   void dispose() {
     textController.dispose();
-    _debounce?.cancel();
     super.dispose();
   }
 
