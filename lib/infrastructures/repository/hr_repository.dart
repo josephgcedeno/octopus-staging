@@ -118,23 +118,43 @@ class HRRepository extends IHRRepository {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        final AccountCredentialsParseObject accountCredentialsParseObject =
-            AccountCredentialsParseObject();
+        final AccountCredentialsAccessParseObject
+            accountCredentialsParseObject =
+            AccountCredentialsAccessParseObject();
 
-        final QueryBuilder<AccountCredentialsParseObject>
+        final QueryBuilder<AccountCredentialsAccessParseObject>
             queryAccountCredentials =
-            QueryBuilder<AccountCredentialsParseObject>(
+            QueryBuilder<AccountCredentialsAccessParseObject>(
           accountCredentialsParseObject,
-        );
+        )
+              ..whereEqualTo(
+                AccountCredentialsAccessParseObject.keyUser,
+                ParseUser.forQuery()..objectId = user.objectId,
+              )
+              ..includeObject(
+                <String>[
+                  AccountCredentialsAccessParseObject.keyAccountCredential,
+                ],
+              );
 
         if (id != null) {
           queryAccountCredentials.whereEqualTo('objectId', id);
         }
 
         if (accountType != null) {
-          queryAccountCredentials.whereEqualTo(
-            AccountCredentialsParseObject.keyAccountType,
-            accountType,
+          /// Complex query by querying inner class object and then uses whereMatchesQuery in the main query.
+          final QueryBuilder<AccountCredentialsParseObject>
+              accountCredentialInnerQuery =
+              QueryBuilder<AccountCredentialsParseObject>(
+            AccountCredentialsParseObject(),
+          )..whereEqualTo(
+                  AccountCredentialsParseObject.keyAccountType,
+                  accountType,
+                );
+
+          queryAccountCredentials.whereMatchesQuery(
+            AccountCredentialsAccessParseObject.keyAccountCredential,
+            accountCredentialInnerQuery,
           );
         }
 
@@ -147,14 +167,18 @@ class HRRepository extends IHRRepository {
 
         final List<Credential> credentials = <Credential>[];
         if (accountResponse.success && accountResponse.results != null) {
-          final List<AccountCredentialsParseObject> allAccountsCasted =
-              List<AccountCredentialsParseObject>.from(
+          final List<AccountCredentialsAccessParseObject> allAccountsCasted =
+              List<AccountCredentialsAccessParseObject>.from(
             accountResponse.results ?? <dynamic>[],
           );
 
-          for (final AccountCredentialsParseObject account
+          for (final AccountCredentialsAccessParseObject account
               in allAccountsCasted) {
-            credentials.add(encryptionService.decryptCredential(account));
+            credentials.add(
+              encryptionService.decryptCredential(
+                account.accountCredential,
+              ),
+            );
           }
         }
 
