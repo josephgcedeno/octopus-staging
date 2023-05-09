@@ -120,7 +120,7 @@ abstract class IHRRepository {
   ///
   /// [userId] - The ID of the user to revoke access.
   /// [accountId] - The ID of the account to revoke access from.
-  Future<APIResponse<AccountUserAccess>> removeAccessToAccount({
+  Future<APIResponse<void>> removeAccessToAccount({
     required String userId,
     required String accountId,
   });

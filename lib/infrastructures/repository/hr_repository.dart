@@ -622,11 +622,70 @@ class HRRepository extends IHRRepository {
   }
 
   @override
-  Future<APIResponse<AccountUserAccess>> removeAccessToAccount({
+  Future<APIResponse<void>> removeAccessToAccount({
     required String userId,
     required String accountId,
-  }) {
-    // TODO: implement removeAccessToAccount
-    throw UnimplementedError();
+  }) async {
+    if (userId.isEmpty || accountId.isEmpty) {
+      throw APIErrorResponse(
+        message: errorEmptyValue,
+        errorCode: null,
+      );
+    }
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final AccountCredentialsAccessParseObject accountCredentialsAccess =
+            AccountCredentialsAccessParseObject();
+
+        final ParseUser user = ParseUser.forQuery()..objectId = userId;
+        final AccountCredentialsParseObject accountCredential =
+            AccountCredentialsParseObject()..objectId = accountId;
+
+        /// Check if the account is already linked to the user.
+        final QueryBuilder<AccountCredentialsAccessParseObject>
+            queryIsAlreadyExist = QueryBuilder<
+                AccountCredentialsAccessParseObject>(accountCredentialsAccess)
+              ..whereEqualTo(AccountCredentialsAccessParseObject.keyUser, user)
+              ..whereEqualTo(
+                AccountCredentialsAccessParseObject.keyAccountCredential,
+                accountCredential,
+              );
+
+        /// to return just a number of count without returning the data.
+        final List<AccountCredentialsAccessParseObject>
+            queryIsAlreadyExistResponse = await queryIsAlreadyExist.find();
+
+        if (queryIsAlreadyExistResponse.isEmpty) {
+          throw APIErrorResponse(
+            message: 'No record found.',
+            errorCode: '204',
+          );
+        }
+
+        /// Delete each record
+        for (final AccountCredentialsAccessParseObject record
+            in queryIsAlreadyExistResponse) {
+          await record.delete();
+        }
+        return APIResponse<void>(
+          success: true,
+          message: 'Successfully remove access to account.',
+          data: null,
+          errorCode: null,
+        );
+      }
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
+      throw APIErrorResponse(
+        message: errorMessage,
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
+    }
   }
 }
