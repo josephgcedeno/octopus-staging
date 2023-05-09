@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
+import 'package:octopus/infrastructures/models/hr/hr_response.dart';
 import 'package:octopus/module/hr_files/interfaces/screens/pdf_viewer_screen.dart';
 
 class HrMenuButton extends StatefulWidget {
   const HrMenuButton({
     required this.title,
     required this.icon,
+    this.companyFileType,
     this.isDropdown = true,
     Key? key,
     this.functionCall,
@@ -15,6 +17,7 @@ class HrMenuButton extends StatefulWidget {
   final bool isDropdown;
   final IconData icon;
   final VoidCallback? functionCall;
+  final CompanyFileType? companyFileType;
 
   @override
   State<HrMenuButton> createState() => _HrMenuButtonState();
@@ -43,19 +46,22 @@ class _HrMenuButtonState extends State<HrMenuButton> {
                 opacity: isClicked ? 1 : 0,
                 duration: const Duration(milliseconds: 250),
                 child: GestureDetector(
-                  onTap: () async {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<dynamic>(
-                        builder: (_) => PDFViewerScreen(
-                          title: widget.title,
-                          icon: widget.icon,
-                        ),
-                      ),
-                    );
-                    setState(() {
-                      isClicked = false;
-                    });
-                  },
+                  onTap: widget.companyFileType != null
+                      ? () async {
+                          Navigator.of(context).push(
+                            MaterialPageRoute<dynamic>(
+                              builder: (_) => PDFViewerScreen(
+                                title: widget.title,
+                                icon: widget.icon,
+                                companyFileType: widget.companyFileType!,
+                              ),
+                            ),
+                          );
+                          setState(() {
+                            isClicked = false;
+                          });
+                        }
+                      : null,
                   child: Container(
                     width: isPortrait ? width * 0.887 : width * 0.880,
                     margin: isPortrait
@@ -94,7 +100,7 @@ class _HrMenuButtonState extends State<HrMenuButton> {
                 if (!widget.isDropdown) {
                   Future<void>.delayed(const Duration(milliseconds: 500), () {
                     setState(() {
-                    isClicked = false;
+                      isClicked = false;
                     });
                     widget.functionCall?.call();
                   });
