@@ -34,4 +34,34 @@ class HrCubit extends Cubit<HrState> {
       );
     }
   }
+
+  Future<void> fetchPDFFile({
+    required CompanyFileType fileType,
+    String? id,
+  }) async {
+    try {
+      emit(FetchPDFFileLoading());
+
+      final APIListResponse<CompanyFilePdf> response =
+          await hrRepository.getAllCompanyFilePdf(
+        id: id,
+        fileType: fileType,
+      );
+
+      emit(
+        FetchPDFFileSuccess(
+          companyFiles: response.data,
+          fileType: fileType,
+        ),
+      );
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+      emit(
+        FetchPDFFileFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
+    }
+  }
 }

@@ -25,3 +25,25 @@ class FetchAllCredentialsFailed extends HrState {
   final String errorCode;
   final String message;
 }
+
+class FetchPDFFileLoading extends HrState {}
+
+class FetchPDFFileSuccess extends HrState {
+  FetchPDFFileSuccess({
+    required this.fileType,
+    required this.companyFiles,
+  });
+
+  final CompanyFileType fileType;
+  final List<CompanyFilePdf> companyFiles;
+}
+
+class FetchPDFFileFailed extends HrState {
+  FetchPDFFileFailed({
+    required this.errorCode,
+    required this.message,
+  });
+
+  final String errorCode;
+  final String message;
+}
