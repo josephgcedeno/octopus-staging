@@ -532,4 +532,101 @@ class HRRepository extends IHRRepository {
       throw APIErrorResponse.socketErrorResponse();
     }
   }
+
+  @override
+  Future<APIResponse<AccountUserAccess>> addAccessToAccount({
+    required String userId,
+    required String accountId,
+  }) async {
+    if (userId.isEmpty || accountId.isEmpty) {
+      throw APIErrorResponse(
+        message: errorEmptyValue,
+        errorCode: null,
+      );
+    }
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final AccountCredentialsAccessParseObject accountCredentialsAccess =
+            AccountCredentialsAccessParseObject();
+
+        final ParseUser user = ParseUser.forQuery()..objectId = userId;
+        final AccountCredentialsParseObject accountCredential =
+            AccountCredentialsParseObject()..objectId = accountId;
+
+        /// Check if the account is already linked to the user.
+        final QueryBuilder<AccountCredentialsAccessParseObject>
+            queryIsAlreadyExist = QueryBuilder<
+                AccountCredentialsAccessParseObject>(accountCredentialsAccess)
+              ..whereEqualTo(AccountCredentialsAccessParseObject.keyUser, user)
+              ..whereEqualTo(
+                AccountCredentialsAccessParseObject.keyAccountCredential,
+                accountCredential,
+              );
+
+        /// to return just a number of count without returning the data.
+        final ParseResponse queryIsAlreadyExistResponse =
+            await queryIsAlreadyExist.count();
+
+        if (queryIsAlreadyExistResponse.error != null) {
+          formatAPIErrorResponse(error: queryIsAlreadyExistResponse.error!);
+        }
+
+        if (queryIsAlreadyExistResponse.count > 0) {
+          throw APIErrorResponse(
+            message: 'Already have access to this account.',
+            errorCode: '400',
+          );
+        }
+
+        /// If not yet exist.
+        accountCredentialsAccess
+          ..user = user
+          ..accountCredential = accountCredential;
+
+        final ParseResponse addAccessUserResponse =
+            await accountCredentialsAccess.save();
+
+        if (addAccessUserResponse.error != null) {
+          formatAPIErrorResponse(error: addAccessUserResponse.error!);
+        }
+
+        if (addAccessUserResponse.success &&
+            addAccessUserResponse.results != null) {
+          final String objectId = getResultId(addAccessUserResponse.results!);
+
+          return APIResponse<AccountUserAccess>(
+            success: true,
+            message: 'Successfully add access to account.',
+            data: AccountUserAccess(
+              accountId: accountId,
+              id: objectId,
+              userId: userId,
+            ),
+            errorCode: null,
+          );
+        }
+      }
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
+      throw APIErrorResponse(
+        message: errorMessage,
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
+    }
+  }
+
+  @override
+  Future<APIResponse<AccountUserAccess>> removeAccessToAccount({
+    required String userId,
+    required String accountId,
+  }) {
+    // TODO: implement removeAccessToAccount
+    throw UnimplementedError();
+  }
 }
