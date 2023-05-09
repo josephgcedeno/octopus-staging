@@ -539,3 +539,36 @@ class CompanyFilePDFParseObject extends ParseObject implements ParseCloneable {
   set companyFileType(String companyFileType) =>
       set<String>(keyCompanyFileType, companyFileType);
 }
+
+class AccountCredentialsAccessParseObject extends ParseObject
+    implements ParseCloneable {
+  AccountCredentialsAccessParseObject() : super(_keyTableName);
+  AccountCredentialsAccessParseObject.clone() : this();
+
+  /// Convert the ParseObject to a custom parse object.
+  static AccountCredentialsAccessParseObject toCustomParseObject({
+    required dynamic data,
+  }) =>
+      data as AccountCredentialsAccessParseObject;
+
+  /// Serialized response
+  @override
+  AccountCredentialsAccessParseObject clone(Map<String, dynamic> map) =>
+      AccountCredentialsAccessParseObject.clone()..fromJson(map);
+
+  static const String _keyTableName = 'AccountCredentialsAccess';
+  static const String keyUser = 'user';
+  static const String keyAccountCredential = 'account_credential';
+
+  ParseUser get user => get<ParseUser>(keyUser)!;
+  set user(ParseUser user) => set<ParseUser>(keyUser, user);
+
+  AccountCredentialsParseObject get accountCredential =>
+      get<AccountCredentialsParseObject>(keyAccountCredential)!;
+  set accountCredential(
+          AccountCredentialsParseObject accountCredentialsParseObject) =>
+      set<AccountCredentialsParseObject>(
+        keyAccountCredential,
+        accountCredentialsParseObject,
+      );
+}
