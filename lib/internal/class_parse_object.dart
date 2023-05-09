@@ -551,6 +551,19 @@ class AccountCredentialsAccessParseObject extends ParseObject
   }) =>
       data as AccountCredentialsAccessParseObject;
 
+  /// This function will be used to manually override the default conversion of ParseObject to custom parse object.
+  @override
+  AccountCredentialsAccessParseObject fromJson(
+    Map<String, dynamic> objectData,
+  ) {
+    super.fromJson(objectData);
+    if (objectData.containsKey(keyAccountCredential)) {
+      accountCredential = AccountCredentialsParseObject.clone()
+        ..fromJson(objectData[keyAccountCredential] as Map<String, dynamic>);
+    }
+    return this;
+  }
+
   /// Serialized response
   @override
   AccountCredentialsAccessParseObject clone(Map<String, dynamic> map) =>
