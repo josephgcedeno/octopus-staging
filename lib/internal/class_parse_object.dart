@@ -566,7 +566,8 @@ class AccountCredentialsAccessParseObject extends ParseObject
   AccountCredentialsParseObject get accountCredential =>
       get<AccountCredentialsParseObject>(keyAccountCredential)!;
   set accountCredential(
-          AccountCredentialsParseObject accountCredentialsParseObject) =>
+    AccountCredentialsParseObject accountCredentialsParseObject,
+  ) =>
       set<AccountCredentialsParseObject>(
         keyAccountCredential,
         accountCredentialsParseObject,
