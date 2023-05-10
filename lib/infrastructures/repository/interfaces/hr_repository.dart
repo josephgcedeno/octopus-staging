@@ -102,4 +102,26 @@ abstract class IHRRepository {
     String? id,
     CompanyFileType? fileType,
   });
+
+  /// FOR ADMIN USE ONLY
+  ///
+  /// Adds access to an account for a user.
+  ///
+  /// [userId] - The ID of the user to grant access.
+  /// [accountId] - The ID of the account to grant access to.
+  Future<APIResponse<AccountUserAccess>> addAccessToAccount({
+    required String userId,
+    required String accountId,
+  });
+
+  /// FOR ADMIN USE ONLY
+  ///
+  /// Removes access to an account for a user.
+  ///
+  /// [userId] - The ID of the user to revoke access.
+  /// [accountId] - The ID of the account to revoke access from.
+  Future<APIResponse<void>> removeAccessToAccount({
+    required String userId,
+    required String accountId,
+  });
 }

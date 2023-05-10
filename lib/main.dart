@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/repository/auth_repository.dart';
 import 'package:octopus/infrastructures/repository/dsr_repository.dart';
+import 'package:octopus/infrastructures/repository/hr_repository.dart';
 import 'package:octopus/infrastructures/repository/leave_repository.dart';
 import 'package:octopus/infrastructures/repository/project_repository.dart';
 import 'package:octopus/infrastructures/repository/time_in_out_repository.dart';
@@ -14,6 +15,7 @@ import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/accomplishments_generator/service/cubit/accomplishments_cubit.dart';
 import 'package:octopus/module/admin_registration/services/bloc/admin_registration_cubit.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
+import 'package:octopus/module/hr_files/services/cubit/hr_cubit.dart';
 import 'package:octopus/module/leaves/service/cubit/leaves_cubit.dart';
 import 'package:octopus/module/login/interfaces/screens/login_screen.dart';
 import 'package:octopus/module/login/service/cubit/authentication_cubit.dart';
@@ -59,6 +61,7 @@ class _AppState extends State<App> {
   final ProjectRepository projectRepository = ProjectRepository();
   final LeaveRepository leaveRepository = LeaveRepository();
   final UserRepository userRepository = UserRepository();
+  final HRRepository hrRepository = HRRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -92,6 +95,11 @@ class _AppState extends State<App> {
         BlocProvider<AdminRegistrationCubit>(
           create: (BuildContext context) => AdminRegistrationCubit(
             iUserRepository: userRepository,
+          ),
+        ),
+        BlocProvider<HrCubit>(
+          create: (BuildContext context) => HrCubit(
+            hrRepository: hrRepository,
           ),
         ),
       ],
