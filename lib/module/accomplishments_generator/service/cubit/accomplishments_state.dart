@@ -29,3 +29,20 @@ class FetchAllAccomplishmentsDataFailed extends AccomplishmentsState {
   final String errorCode;
   final String message;
 }
+
+class GeneratePDFLoading extends AccomplishmentsState {}
+
+class GeneratePDFSuccess extends AccomplishmentsState {
+  GeneratePDFSuccess(this.document);
+
+  final Uint8List document;
+}
+
+class GeneratePDFFailed extends AccomplishmentsState {
+  GeneratePDFFailed({
+    required this.errorCode,
+    required this.message,
+  });
+  final String errorCode;
+  final String message;
+}
