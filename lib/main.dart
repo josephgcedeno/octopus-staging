@@ -6,6 +6,7 @@ import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/repository/auth_repository.dart';
 import 'package:octopus/infrastructures/repository/dsr_repository.dart';
 import 'package:octopus/infrastructures/repository/leave_repository.dart';
+import 'package:octopus/infrastructures/repository/pdf_repository.dart';
 import 'package:octopus/infrastructures/repository/project_repository.dart';
 import 'package:octopus/infrastructures/repository/time_in_out_repository.dart';
 import 'package:octopus/infrastructures/repository/user_repository.dart';
@@ -59,6 +60,7 @@ class _AppState extends State<App> {
   final ProjectRepository projectRepository = ProjectRepository();
   final LeaveRepository leaveRepository = LeaveRepository();
   final UserRepository userRepository = UserRepository();
+  final PDFRepository pdfRepository = PDFRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +84,7 @@ class _AppState extends State<App> {
           create: (BuildContext context) => AccomplishmentsCubit(
             dsrRepository: dsrRepository,
             projectRepository: projectRepository,
+            pdfRepository: pdfRepository,
           ),
         ),
         BlocProvider<LeavesCubit>(
