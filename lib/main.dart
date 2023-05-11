@@ -9,8 +9,10 @@ import 'package:octopus/infrastructures/repository/hr_repository.dart';
 import 'package:octopus/infrastructures/repository/leave_repository.dart';
 import 'package:octopus/infrastructures/repository/pdf_repository.dart';
 import 'package:octopus/infrastructures/repository/project_repository.dart';
+import 'package:octopus/infrastructures/repository/secure_storage_repository.dart';
 import 'package:octopus/infrastructures/repository/time_in_out_repository.dart';
 import 'package:octopus/infrastructures/repository/user_repository.dart';
+import 'package:octopus/infrastructures/service/cubit/secure_storage_cubit_cubit.dart';
 import 'package:octopus/interfaces/screens/splash_screen.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/accomplishments_generator/service/cubit/accomplishments_cubit.dart';
@@ -64,13 +66,18 @@ class _AppState extends State<App> {
   final UserRepository userRepository = UserRepository();
   final PDFRepository pdfRepository = PDFRepository();
   final HRRepository hrRepository = HRRepository();
+  final SecureStorageRepository secureStorageRepository =
+      SecureStorageRepository();
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: <BlocProvider<dynamic>>[
         BlocProvider<AuthenticationCubit>(
-          create: (_) => AuthenticationCubit(authRepository: authRepository),
+          create: (_) => AuthenticationCubit(
+            authRepository: authRepository,
+            storageRepository: secureStorageRepository,
+          ),
         ),
         BlocProvider<DSRCubit>(
           create: (_) => DSRCubit(
@@ -103,6 +110,11 @@ class _AppState extends State<App> {
         BlocProvider<HrCubit>(
           create: (BuildContext context) => HrCubit(
             hrRepository: hrRepository,
+          ),
+        ),
+        BlocProvider<SecureStorageCubit>(
+          create: (BuildContext context) => SecureStorageCubit(
+            storage: secureStorageRepository,
           ),
         ),
       ],
