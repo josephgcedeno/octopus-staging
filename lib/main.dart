@@ -9,6 +9,7 @@ import 'package:octopus/infrastructures/repository/hr_repository.dart';
 import 'package:octopus/infrastructures/repository/leave_repository.dart';
 import 'package:octopus/infrastructures/repository/pdf_repository.dart';
 import 'package:octopus/infrastructures/repository/project_repository.dart';
+import 'package:octopus/infrastructures/repository/reminder_repository.dart';
 import 'package:octopus/infrastructures/repository/time_in_out_repository.dart';
 import 'package:octopus/infrastructures/repository/user_repository.dart';
 import 'package:octopus/interfaces/screens/splash_screen.dart';
@@ -16,6 +17,7 @@ import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/accomplishments_generator/service/cubit/accomplishments_cubit.dart';
 import 'package:octopus/module/admin_registration/services/bloc/admin_registration_cubit.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
+import 'package:octopus/module/dashboard/service/cubit/reminder_cubit.dart';
 import 'package:octopus/module/hr_files/services/cubit/hr_cubit.dart';
 import 'package:octopus/module/leaves/service/cubit/leaves_cubit.dart';
 import 'package:octopus/module/login/interfaces/screens/login_screen.dart';
@@ -62,6 +64,7 @@ class _AppState extends State<App> {
   final ProjectRepository projectRepository = ProjectRepository();
   final LeaveRepository leaveRepository = LeaveRepository();
   final UserRepository userRepository = UserRepository();
+  final ReminderRepository reminderRepository = ReminderRepository();
   final PDFRepository pdfRepository = PDFRepository();
   final HRRepository hrRepository = HRRepository();
 
@@ -99,6 +102,10 @@ class _AppState extends State<App> {
           create: (BuildContext context) => AdminRegistrationCubit(
             iUserRepository: userRepository,
           ),
+        ),
+        BlocProvider<ReminderCubit>(
+          create: (BuildContext context) =>
+              ReminderCubit(reminderRepository: reminderRepository),
         ),
         BlocProvider<HrCubit>(
           create: (BuildContext context) => HrCubit(

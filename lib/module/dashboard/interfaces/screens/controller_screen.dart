@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/module/dashboard/interfaces/widgets/dashboard_button.dart';
+import 'package:octopus/module/dashboard/interfaces/widgets/panel_reminder.dart';
 import 'package:octopus/module/hr_files/interfaces/screens/hr_files_screen.dart';
 import 'package:octopus/module/leaves/interfaces/screens/leaves_screen.dart';
 import 'package:octopus/module/standup_report/interfaces/screens/standup_report_screen.dart';
@@ -30,28 +31,7 @@ class _ControllerScreenState extends State<ControllerScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              for (int i = 0; i < 2; i++)
-                Container(
-                  width: width,
-                  padding: EdgeInsets.symmetric(vertical: height * 0.015),
-                  margin: const EdgeInsets.only(bottom: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    gradient: const LinearGradient(
-                      colors: <Color>[
-                        Color(0xFF4BA1FF),
-                        Color(0xFF017BFF),
-                      ],
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Today is a special holiday.',
-                      style: theme.textTheme.titleMedium
-                          ?.copyWith(color: Colors.white),
-                    ),
-                  ),
-                ),
+              const PanelReminder(),
               Container(
                 margin: EdgeInsets.symmetric(vertical: height * 0.02),
                 child: Text(
