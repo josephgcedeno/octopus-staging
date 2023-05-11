@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/infrastructures/models/user/user_response.dart';
 import 'package:octopus/infrastructures/service/cubit/user_cubit.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
+import 'package:octopus/module/accomplishments_generator/interfaces/screens/accomplishments_generator_screen.dart';
+import 'package:octopus/module/admin_registration/interfaces/screens/team_members_list_screen.dart';
 import 'package:octopus/module/dashboard/interfaces/widgets/dashboard_button.dart';
 import 'package:octopus/module/hr_files/interfaces/screens/hr_files_screen.dart';
 import 'package:octopus/module/leaves/interfaces/screens/leaves_screen.dart';
@@ -113,7 +115,8 @@ class _ToolsAvailableState extends State<ToolsAvailable> {
                             onTap: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute<dynamic>(
-                                  builder: (_) => const LeavesScreen(),
+                                  builder: (_) =>
+                                      const AccomplishmentsGeneratorScreen(),
                                 ),
                               );
                             },
@@ -122,13 +125,7 @@ class _ToolsAvailableState extends State<ToolsAvailable> {
                           DashboardButton(
                             icon: Icons.folder_open_outlined,
                             label: 'Request Leaves',
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute<dynamic>(
-                                  builder: (_) => const HRFilesScreen(),
-                                ),
-                              );
-                            },
+                            onTap: () {},
                           ),
                         ],
                       ),
@@ -142,7 +139,7 @@ class _ToolsAvailableState extends State<ToolsAvailable> {
                           onTap: () {
                             Navigator.of(context).push(
                               MaterialPageRoute<dynamic>(
-                                builder: (_) => const LeavesScreen(),
+                                builder: (_) => const TeamMembersScreen(),
                               ),
                             );
                           },
@@ -151,13 +148,7 @@ class _ToolsAvailableState extends State<ToolsAvailable> {
                         DashboardButton(
                           icon: Icons.collections_bookmark_outlined,
                           label: 'Historical Data',
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute<dynamic>(
-                                builder: (_) => const HRFilesScreen(),
-                              ),
-                            );
-                          },
+                          onTap: () {},
                         ),
                       ],
                     ),
