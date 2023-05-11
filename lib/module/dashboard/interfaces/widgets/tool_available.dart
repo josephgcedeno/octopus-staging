@@ -28,8 +28,8 @@ class _ToolsAvailableState extends State<ToolsAvailable> {
 
   @override
   Widget build(BuildContext context) {
-    final double width = kIsWeb ? 600 : MediaQuery.of(context).size.width;
-    final double height = kIsWeb ? 600 : MediaQuery.of(context).size.height;
+    final double width = kIsWeb ? 560 : MediaQuery.of(context).size.width;
+    final double height = kIsWeb ? 560 : MediaQuery.of(context).size.height;
 
     return BlocBuilder<UserCubit, UserState>(
       buildWhen: (UserState previous, UserState current) =>
