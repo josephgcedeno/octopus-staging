@@ -1,9 +1,11 @@
+import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
 import 'package:octopus/infrastructures/models/project/project_response.dart';
 import 'package:octopus/infrastructures/repository/dsr_repository.dart';
+import 'package:octopus/infrastructures/repository/interfaces/pdf_repository.dart';
 import 'package:octopus/infrastructures/repository/project_repository.dart';
 import 'package:octopus/internal/string_status.dart';
 
@@ -13,9 +15,11 @@ class AccomplishmentsCubit extends Cubit<AccomplishmentsState> {
   AccomplishmentsCubit({
     required this.projectRepository,
     required this.dsrRepository,
+    required this.pdfRepository,
   }) : super(AccomplishmentsState());
   final ProjectRepository projectRepository;
   final DSRRepository dsrRepository;
+  final IPDFRepository pdfRepository;
 
   void getSelectedTasks(Map<String, List<DSRWorks>> selectedTasks) =>
       emit(AccomplishmentsState(selectedTasks: selectedTasks));
@@ -71,6 +75,30 @@ class AccomplishmentsCubit extends Cubit<AccomplishmentsState> {
 
       emit(
         FetchAllAccomplishmentsDataFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
+    }
+  }
+
+  Future<void> generatePDFFile({
+    required String name,
+    required Map<String, List<String>> selectedTasks,
+  }) async {
+    try {
+      emit(GeneratePDFLoading());
+      final APIResponse<Uint8List> response = await pdfRepository.generatePDF(
+        name: name,
+        selectedTasks: selectedTasks,
+      );
+
+      emit(GeneratePDFSuccess(response.data));
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+
+      emit(
+        GeneratePDFFailed(
           errorCode: error.errorCode ?? '',
           message: error.message,
         ),

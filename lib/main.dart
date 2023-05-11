@@ -7,6 +7,7 @@ import 'package:octopus/infrastructures/repository/auth_repository.dart';
 import 'package:octopus/infrastructures/repository/dsr_repository.dart';
 import 'package:octopus/infrastructures/repository/hr_repository.dart';
 import 'package:octopus/infrastructures/repository/leave_repository.dart';
+import 'package:octopus/infrastructures/repository/pdf_repository.dart';
 import 'package:octopus/infrastructures/repository/project_repository.dart';
 import 'package:octopus/infrastructures/repository/reminder_repository.dart';
 import 'package:octopus/infrastructures/repository/time_in_out_repository.dart';
@@ -63,7 +64,8 @@ class _AppState extends State<App> {
   final ProjectRepository projectRepository = ProjectRepository();
   final LeaveRepository leaveRepository = LeaveRepository();
   final UserRepository userRepository = UserRepository();
-  final ReminderRepository repository = ReminderRepository();
+  final ReminderRepository reminderRepository = ReminderRepository();
+  final PDFRepository pdfRepository = PDFRepository();
   final HRRepository hrRepository = HRRepository();
 
   @override
@@ -88,6 +90,7 @@ class _AppState extends State<App> {
           create: (BuildContext context) => AccomplishmentsCubit(
             dsrRepository: dsrRepository,
             projectRepository: projectRepository,
+            pdfRepository: pdfRepository,
           ),
         ),
         BlocProvider<LeavesCubit>(
@@ -102,7 +105,7 @@ class _AppState extends State<App> {
         ),
         BlocProvider<ReminderCubit>(
           create: (BuildContext context) =>
-              ReminderCubit(reminderRepository: repository),
+              ReminderCubit(reminderRepository: reminderRepository),
         ),
         BlocProvider<HrCubit>(
           create: (BuildContext context) => HrCubit(
