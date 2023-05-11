@@ -572,12 +572,15 @@ class UserRepository extends IUserRepository {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null) {
-        // Save the user to the Parse Server
-        final EmployeeInfoParseObject employeeInfoParseObject =
-            EmployeeInfoParseObject();
-
+        final QueryBuilder<EmployeeInfoParseObject> employeeInfoQuery =
+            QueryBuilder<EmployeeInfoParseObject>(EmployeeInfoParseObject())
+              ..whereEqualTo(
+                EmployeeInfoParseObject.keyUser,
+                ParseUser.forQuery()..objectId = user.objectId,
+              )
+              ..setLimit(1);
         final ParseResponse userAccountResponse =
-            await employeeInfoParseObject.getObject(user.objectId!);
+            await employeeInfoQuery.query();
 
         if (userAccountResponse.error != null) {
           formatAPIErrorResponse(error: userAccountResponse.error!);
