@@ -12,6 +12,7 @@ import 'package:octopus/infrastructures/repository/project_repository.dart';
 import 'package:octopus/infrastructures/repository/reminder_repository.dart';
 import 'package:octopus/infrastructures/repository/time_in_out_repository.dart';
 import 'package:octopus/infrastructures/repository/user_repository.dart';
+import 'package:octopus/infrastructures/service/cubit/user_cubit.dart';
 import 'package:octopus/interfaces/screens/splash_screen.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/accomplishments_generator/service/cubit/accomplishments_cubit.dart';
@@ -110,6 +111,11 @@ class _AppState extends State<App> {
         BlocProvider<HrCubit>(
           create: (BuildContext context) => HrCubit(
             hrRepository: hrRepository,
+          ),
+        ),
+        BlocProvider<UserCubit>(
+          create: (BuildContext context) => UserCubit(
+            userRepository: userRepository,
           ),
         ),
       ],
