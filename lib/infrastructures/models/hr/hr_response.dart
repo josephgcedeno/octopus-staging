@@ -25,3 +25,15 @@ class CompanyFilePdf {
   final String fileSource;
   final CompanyFileType companyFileType;
 }
+
+class AccountUserAccess {
+  AccountUserAccess({
+    required this.id,
+    required this.userId,
+    required this.accountId,
+  });
+
+  final String id;
+  final String userId;
+  final String accountId;
+}
