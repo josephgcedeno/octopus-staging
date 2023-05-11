@@ -14,6 +14,27 @@ typedef UploadStringFunction = Future<String> Function({
   String? fileName,
 });
 
+class PdfGenerationDialog extends StatelessWidget {
+  const PdfGenerationDialog({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: AlertDialog(
+        title: const Text('Generating PDF'),
+        content: Row(
+          children: const <Widget>[
+            CircularProgressIndicator(),
+            SizedBox(width: 16.0),
+            Text('Please wait...'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 UploadStringFunction uploadFile = ({
   required BuildContext context,
   required File file,

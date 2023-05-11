@@ -12,6 +12,7 @@ import 'package:octopus/interfaces/widgets/loading_indicator.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/accomplishments_generator/service/cubit/accomplishments_cubit.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
@@ -19,12 +20,12 @@ import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 class DailyAccomplishmentPDFScreen extends StatefulWidget {
   const DailyAccomplishmentPDFScreen({
     required this.clientName,
-    required this.document,
+    required this.pdf,
     Key? key,
   }) : super(key: key);
 
   final String clientName;
-  final File document;
+  final Uint8List pdf;
 
   @override
   State<DailyAccomplishmentPDFScreen> createState() =>
@@ -44,10 +45,26 @@ class _DailyAccomplishmentPDFScreenState
 
   Future<void> sharePDF() async {
     try {
-      await Share.shareXFiles(
-        <XFile>[XFile(widget.document.path)],
+      Share.shareXFiles(
+        <XFile>[
+          XFile.fromData(
+            widget.pdf,
+            mimeType: 'application/pdf',
+            name: 'Daily Report',
+          )
+        ],
         subject: 'Nuxify Report',
-      );
+      ).catchError((Object e) async {
+        showSnackBar(
+          message: 'Error when sharing file.',
+          snackBartState: SnackBartState.error,
+          data: e.toString(),
+        );
+        return const ShareResult(
+          'Error when sharing file.',
+          ShareResultStatus.unavailable,
+        );
+      });
     } on PlatformException catch (e) {
       showSnackBar(
         message: 'Error detected: $e',
@@ -62,9 +79,7 @@ class _DailyAccomplishmentPDFScreenState
       appDirectory = Directory('');
     } else {
       if (Platform.isIOS) {
-        appDirectory = Directory(
-          '${Directory.current.path}/Documents/',
-        );
+        appDirectory = await getApplicationDocumentsDirectory();
       } else if (Platform.isAndroid) {
         if (await _isExternalStorageWritable()) {
           appDirectory = Directory('/storage/emulated/0/Download/');
@@ -90,20 +105,21 @@ class _DailyAccomplishmentPDFScreenState
     return file.openRead().expand((List<int> bytes) => bytes);
   }
 
-  Future<void> downloadPDF(String title, File file) async {
+  Future<void> downloadPDF(String title, Uint8List file) async {
     try {
       setState(() {
         isDownloading = true;
       });
-      final Stream<int> stream = fileToStream(file);
+
+      final Stream<int> stream = Stream<int>.fromIterable(file);
       final String fileName = (title.replaceAll(' ', '-')).toLowerCase();
       final Directory? directory = await _getAppDirectory();
       final String? appDirectory = directory?.path;
+
       await download(stream, '$appDirectory$fileName.pdf');
-      showSnackBar(message: 'File downloaded successfully');
-      setState(() {
-        isDownloading = false;
-      });
+      showSnackBar(message: 'File downloaded successfully $appDirectory');
+
+      setState(() => isDownloading = false);
     } catch (error) {
       showSnackBar(
         message: error.toString(),
@@ -116,8 +132,6 @@ class _DailyAccomplishmentPDFScreenState
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
-    final bool isPortrait =
-        MediaQuery.of(context).orientation == Orientation.portrait;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -141,16 +155,12 @@ class _DailyAccomplishmentPDFScreenState
             ),
           ),
           GestureDetector(
-            onTap: () => downloadPDF('report', widget.document),
+            onTap: () => downloadPDF('report', widget.pdf),
             child: Container(
               margin: EdgeInsets.only(
-                right: width * 0.03,
+                right: width * 0.04,
               ),
               height: height * 0.0003,
-              padding: EdgeInsets.symmetric(
-                horizontal: isPortrait ? 0 : width * 0.040,
-                vertical: isPortrait ? 0 : width * 0.03,
-              ),
               child: isDownloading
                   ? const Center(
                       child: LoadingIndicator(
@@ -178,8 +188,8 @@ class _DailyAccomplishmentPDFScreenState
                     data: SfPdfViewerThemeData(
                       progressBarColor: ktransparent,
                     ),
-                    child: SfPdfViewer.file(
-                      widget.document,
+                    child: SfPdfViewer.memory(
+                      widget.pdf,
                       onDocumentLoaded: (_) {
                         setState(() {
                           isLoading = false;
