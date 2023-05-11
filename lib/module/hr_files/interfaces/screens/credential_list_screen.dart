@@ -1,10 +1,26 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/infrastructures/models/hr/hr_response.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
+import 'package:octopus/interfaces/widgets/widget_loader.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/hr_files/interfaces/widgets/credentials_card.dart';
+import 'package:octopus/module/hr_files/services/cubit/hr_cubit.dart';
 
-class CredentialListScreen extends StatelessWidget {
+class CredentialListScreen extends StatefulWidget {
   const CredentialListScreen({Key? key}) : super(key: key);
+
+  @override
+  State<CredentialListScreen> createState() => _CredentialListScreenState();
+}
+
+class _CredentialListScreenState extends State<CredentialListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<HrCubit>().fetchAllCredentials();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,15 +58,49 @@ class CredentialListScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                const CredentialsCard(
-                  appTitle: 'Udemy',
-                  email: 'emailaddress@tech',
-                  password: 'password123',
-                ),
-                const CredentialsCard(
-                  appTitle: 'Figma',
-                  email: 'emailaddress@tech',
-                  password: 'password123',
+                BlocBuilder<HrCubit, HrState>(
+                  buildWhen: (HrState previous, HrState current) =>
+                      current is FetchAllCredentialsLoading ||
+                      current is FetchAllCredentialsSuccess,
+                  builder: (BuildContext context, HrState state) {
+                    if (state is FetchAllCredentialsSuccess) {
+                      return Column(
+                        children: <Widget>[
+                          for (final Credential credential in state.credential)
+                            CredentialsCard(
+                              appTitle: credential.accountType,
+                              email: credential.username,
+                              password: credential.password,
+                            ),
+                        ],
+                      );
+                    }
+                    return Column(
+                      children: <Widget>[
+                        for (int i = 0; i < 5; i++)
+                          Center(
+                            child: Container(
+                              padding: EdgeInsets.all(width * 0.04),
+                              margin: EdgeInsets.only(
+                                left: width * 0.03,
+                                right: width * 0.03,
+                                bottom: height * 0.02,
+                                top: height * 0.035,
+                              ),
+                              child: lineLoader(
+                                // height: kIsWeb ? 300 : height * 0.30,
+                                height: height >= smMinHeight &&
+                                        height <= smMaxHeight
+                                    ? height * 0.28
+                                    : 200.01,
+                                // width: kIsWeb ? 370 : width * 0.8,
+                                width: width,
+                              ),
+                            ),
+                          )
+                      ],
+                    );
+                  },
                 ),
               ],
             ),

@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/repository/auth_repository.dart';
 import 'package:octopus/infrastructures/repository/dsr_repository.dart';
+import 'package:octopus/infrastructures/repository/hr_repository.dart';
 import 'package:octopus/infrastructures/repository/leave_repository.dart';
 import 'package:octopus/infrastructures/repository/project_repository.dart';
 import 'package:octopus/infrastructures/repository/reminder_repository.dart';
@@ -16,6 +17,7 @@ import 'package:octopus/module/accomplishments_generator/service/cubit/accomplis
 import 'package:octopus/module/admin_registration/services/bloc/admin_registration_cubit.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
 import 'package:octopus/module/dashboard/service/cubit/reminder_cubit.dart';
+import 'package:octopus/module/hr_files/services/cubit/hr_cubit.dart';
 import 'package:octopus/module/leaves/service/cubit/leaves_cubit.dart';
 import 'package:octopus/module/login/interfaces/screens/login_screen.dart';
 import 'package:octopus/module/login/service/cubit/authentication_cubit.dart';
@@ -62,6 +64,7 @@ class _AppState extends State<App> {
   final LeaveRepository leaveRepository = LeaveRepository();
   final UserRepository userRepository = UserRepository();
   final ReminderRepository repository = ReminderRepository();
+  final HRRepository hrRepository = HRRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +103,11 @@ class _AppState extends State<App> {
         BlocProvider<ReminderCubit>(
           create: (BuildContext context) =>
               ReminderCubit(reminderRepository: repository),
+        ),
+        BlocProvider<HrCubit>(
+          create: (BuildContext context) => HrCubit(
+            hrRepository: hrRepository,
+          ),
         ),
       ],
       child: MaterialApp(

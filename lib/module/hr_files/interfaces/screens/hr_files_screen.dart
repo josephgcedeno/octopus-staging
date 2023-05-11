@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:octopus/infrastructures/models/hr/hr_response.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/module/hr_files/interfaces/screens/credential_list_screen.dart';
 import 'package:octopus/module/hr_files/interfaces/widgets/hr_menu_button.dart';
@@ -44,18 +45,22 @@ class HRFilesScreen extends StatelessWidget {
                   const HrMenuButton(
                     icon: Icons.policy_outlined,
                     title: 'Company Policies',
+                    companyFileType: CompanyFileType.policies,
                   ),
                   const HrMenuButton(
                     icon: Icons.task_outlined,
                     title: 'Company Guidelines',
+                    companyFileType: CompanyFileType.guidelines,
                   ),
                   const HrMenuButton(
                     icon: Icons.corporate_fare_outlined,
                     title: 'Company Background',
+                    companyFileType: CompanyFileType.background,
                   ),
                   const HrMenuButton(
                     icon: Icons.legend_toggle_outlined,
                     title: 'Organization Chart',
+                    companyFileType: CompanyFileType.organizationChart,
                   ),
                   HrMenuButton(
                     icon: Icons.note_alt_outlined,
