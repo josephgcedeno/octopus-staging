@@ -72,12 +72,13 @@ class ReminderRepository extends IReminderRepository {
     }
   }
 
+  /// Only admin can access all reminders.
   @override
   Future<APIListResponse<Reminder>> getAllReminder() async {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
-      if (user != null) {
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
         final ParseResponse remindersResponse =
             await PanelRemindersParseObject().getAll();
 
@@ -115,8 +116,12 @@ class ReminderRepository extends IReminderRepository {
         }
       }
 
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
       throw APIErrorResponse(
-        message: errorSomethingWentWrong,
+        message: errorMessage,
         errorCode: null,
       );
     } on SocketException {
