@@ -1,5 +1,8 @@
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/models/reminders/reminders_response.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/internal/debug_utils.dart';
@@ -40,6 +43,18 @@ class _PanelReminderState extends State<PanelReminder> {
           current is FetchReminderTodaySuccess,
       builder: (BuildContext context, ReminderState state) {
         if (state is FetchReminderTodaySuccess) {
+          if (state.reminders.isEmpty) {
+            return DottedBorder(
+              borderType: BorderType.RRect,
+              radius: const Radius.circular(20),
+              color: const Color(0x421B252F),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                width: width,
+                child: SvgPicture.asset(nuxifyTakingNotesSvg),
+              ),
+            );
+          }
           return Column(
             children: <Widget>[
               for (final Reminder reminder in state.reminders)
