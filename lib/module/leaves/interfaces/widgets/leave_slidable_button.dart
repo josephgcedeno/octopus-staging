@@ -3,16 +3,59 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:intl/intl.dart';
+import 'package:octopus/infrastructures/models/leaves/leaves_response.dart';
+import 'package:octopus/internal/helper_function.dart';
+import 'package:octopus/internal/string_helper.dart';
+import 'package:octopus/internal/string_status.dart';
 
 class LeaveSlideableButton extends StatefulWidget {
-  const LeaveSlideableButton({Key? key}) : super(key: key);
+  const LeaveSlideableButton({required this.leaveRequest, Key? key})
+      : super(key: key);
+  final LeaveRequest leaveRequest;
 
   @override
   State<LeaveSlideableButton> createState() => _LeaveSlideableButtonState();
 }
 
 class _LeaveSlideableButtonState extends State<LeaveSlideableButton> {
+  late final String startAndEndDate;
   bool isExpanded = false;
+
+  IconData getIconForLeaveType(String leaveType) {
+    late final IconData icon;
+
+    switch (leaveType) {
+      case leaveTypeSickLeave:
+        icon = Icons.sick_outlined;
+        break;
+      case leaveTypeVacationLeave:
+        icon = Icons.card_travel_outlined;
+        break;
+      case leaveTypeEmergencyLeave:
+        icon = Icons.my_location_outlined;
+        break;
+    }
+    return icon;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    final DateTime dateTimeFrom =
+        dateTimeFromEpoch(epoch: widget.leaveRequest.dateFromEpoch);
+
+    final DateTime dateTimeTo =
+        dateTimeFromEpoch(epoch: widget.leaveRequest.dateToEpoch);
+
+    startAndEndDate = '${DateFormat(
+      'MMM dd',
+    ).format(dateTimeFrom)} - ${DateFormat(
+      'MMM dd',
+    ).format(dateTimeTo)}';
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -93,7 +136,7 @@ class _LeaveSlideableButtonState extends State<LeaveSlideableButton> {
                           ),
                         ),
                         Text(
-                          'Juana Dela Cruz',
+                          widget.leaveRequest.userName ?? '',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -104,15 +147,17 @@ class _LeaveSlideableButtonState extends State<LeaveSlideableButton> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      const Padding(
-                        padding: EdgeInsets.only(right: 3.0),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 3.0),
                         child: Icon(
-                          Icons.sick_outlined,
+                          getIconForLeaveType(widget.leaveRequest.leaveType),
                           size: 15,
                         ),
                       ),
                       Text(
-                        'Sick',
+                        widget.leaveRequest.leaveType
+                            .split(' ')[0]
+                            .toCapitalized(),
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -132,7 +177,7 @@ class _LeaveSlideableButtonState extends State<LeaveSlideableButton> {
                   ),
                 ),
                 Text(
-                  'Jan 18 -Jan 18',
+                  startAndEndDate,
                   style: theme.textTheme.bodySmall,
                 )
               ],
@@ -148,7 +193,7 @@ class _LeaveSlideableButtonState extends State<LeaveSlideableButton> {
                       style: theme.textTheme.bodySmall,
                     ),
                     Text(
-                      "I need a vacation from January 18 to January 20. My parents live in my village and they are very sick and I haven't spent time with them for a long time.",
+                      widget.leaveRequest.reason,
                       style: theme.textTheme.bodyMedium,
                     )
                   ],
