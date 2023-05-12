@@ -364,9 +364,9 @@ class LeavesRequestsParseObject extends ParseObject implements ParseCloneable {
   int get leaveDateTo => get<int>(keyLeaveDateTo)!;
   set leaveDateTo(int to) => set<int>(keyLeaveDateTo, to);
 
-  String get declineReason => get<String>(keyDeclineReason)!;
-  set declineReason(String declineReason) =>
-      set<String>(keyDeclineReason, declineReason);
+  String? get declineReason => get<String>(keyDeclineReason);
+  set declineReason(String? declineReason) =>
+      set<String?>(keyDeclineReason, declineReason);
 }
 
 class PanelRemindersParseObject extends ParseObject implements ParseCloneable {
