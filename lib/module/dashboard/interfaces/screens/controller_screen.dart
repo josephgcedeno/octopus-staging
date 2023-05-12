@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
+import 'package:octopus/module/dashboard/interfaces/widgets/leave_status.dart';
 import 'package:octopus/module/dashboard/interfaces/widgets/panel_reminder.dart';
 import 'package:octopus/module/dashboard/interfaces/widgets/tool_available.dart';
 
@@ -25,18 +26,30 @@ class _ControllerScreenState extends State<ControllerScreen> {
         child: SizedBox(
           width: kIsWeb ? 500 : width * 0.9,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              const PanelReminder(),
-              Container(
-                margin: EdgeInsets.symmetric(vertical: height * 0.02),
-                child: Text(
-                  'Tools',
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                ),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: PanelReminder(),
               ),
-              const ToolsAvailable()
+              Expanded(
+                child: ListView(
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.symmetric(vertical: height * 0.02),
+                      child: Text(
+                        'Tools',
+                        style: theme.textTheme.bodyMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    const ToolsAvailable(),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 8.0),
+                      child: PanelLeavesStatus(),
+                    ),
+                  ],
+                ),
+              )
             ],
           ),
         ),
