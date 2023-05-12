@@ -39,7 +39,7 @@ class LeaveRequest {
   final String leaveType;
   final int dateFromEpoch;
   final int dateToEpoch;
-  final String? userName;
+  String? userName;
 }
 
 class LeaveRemaining {
