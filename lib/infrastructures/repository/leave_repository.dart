@@ -394,8 +394,9 @@ class LeaveRepository extends ILeaveRepository {
   @override
   Future<APIResponse<LeaveRequest>> declineRequestLeave({
     required String requestId,
+    required String declineReason,
   }) async {
-    checkFieldIsEmpty(<String>[requestId]);
+    checkFieldIsEmpty(<String>[requestId, declineReason]);
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
@@ -404,7 +405,8 @@ class LeaveRepository extends ILeaveRepository {
 
         leaveRequests
           ..objectId = requestId
-          ..status = 'DECLINED';
+          ..status = 'DECLINED'
+          ..declineReason = declineReason;
 
         final ParseResponse updateReqRecordResponse =
             await leaveRequests.save();
@@ -437,6 +439,7 @@ class LeaveRepository extends ILeaveRepository {
                 status: leaveReq.status,
                 dateFromEpoch: leaveReq.leaveDateFrom,
                 dateToEpoch: leaveReq.leaveDateTo,
+                declineReason: leaveReq.declineReason,
               ),
               errorCode: null,
             );

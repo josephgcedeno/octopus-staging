@@ -27,6 +27,7 @@ class LeaveRequest {
     required this.dateFromEpoch,
     required this.dateToEpoch,
     this.userName,
+    this.declineReason,
   });
 
   final String id;
@@ -39,6 +40,7 @@ class LeaveRequest {
   final String leaveType;
   final int dateFromEpoch;
   final int dateToEpoch;
+  final String? declineReason;
   String? userName;
 }
 
