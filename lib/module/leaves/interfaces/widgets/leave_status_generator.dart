@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/infrastructures/models/leaves/leaves_response.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/leaves/interfaces/widgets/leave_slidable_button.dart';
@@ -13,6 +14,8 @@ class LeaveStatusGenerator extends StatefulWidget {
 }
 
 class _LeaveStatusGeneratorState extends State<LeaveStatusGenerator> {
+  final List<LeaveRequest> leaves = <LeaveRequest>[];
+  bool isLoading = true;
   @override
   void initState() {
     super.initState();
@@ -24,45 +27,61 @@ class _LeaveStatusGeneratorState extends State<LeaveStatusGenerator> {
     final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
 
-    return BlocConsumer<LeavesCubit, LeavesState>(
+    return BlocListener<LeavesCubit, LeavesState>(
       listenWhen: (LeavesState previous, LeavesState current) =>
+          current is FetchAllLeaveRequestLoading ||
+          current is FetchAllLeaveRequestSuccess ||
+          current is FetchAllLeaveRequestFailed ||
+          current is ApprovedLeaveRequestLoading ||
           current is ApprovedLeaveRequestSuccess ||
           current is ApprovedLeaveRequestFailed,
       listener: (BuildContext context, LeavesState state) {
+        if (state is FetchAllLeaveRequestLoading) {
+          setState(() {
+            isLoading = true;
+          });
+        }
         if (state is ApprovedLeaveRequestSuccess) {
+          // Remove the item from the list
+          setState(() {
+            leaves.removeWhere(
+              (LeaveRequest item) => item.id == state.leaveRequest.id,
+            );
+          });
+
           showSnackBar(
             message:
                 '${state.leaveRequest.userName ?? ''} leave request has been approved. User will be notified by it.',
           );
         }
-      },
-      buildWhen: (LeavesState previous, LeavesState current) =>
-          current is FetchAllLeaveRequestLoading ||
-          current is FetchAllLeaveRequestSuccess,
-      builder: (BuildContext context, LeavesState state) {
         if (state is FetchAllLeaveRequestSuccess) {
-          return ListView.builder(
-            shrinkWrap: true,
-            itemCount: state.leaves.length,
-            itemBuilder: (BuildContext context, int index) {
-              return LeaveSlideableButton(
-                leaveRequest: state.leaves[index],
-              );
-            },
-          );
+          setState(() {
+            isLoading = false;
+            leaves.addAll(state.leaves);
+          });
         }
-        return Column(
-          children: <Widget>[
-            for (int i = 0; i < 5; i++)
-              Center(
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  child: lineLoader(height: height * 0.065, width: width),
-                ),
-              )
-          ],
-        );
       },
+      child: isLoading
+          ? Column(
+              children: <Widget>[
+                for (int i = 0; i < 5; i++)
+                  Center(
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      child: lineLoader(height: height * 0.065, width: width),
+                    ),
+                  )
+              ],
+            )
+          : ListView.builder(
+              shrinkWrap: true,
+              itemCount: leaves.length,
+              itemBuilder: (BuildContext context, int index) {
+                return LeaveSlideableButton(
+                  leaveRequest: leaves[index],
+                );
+              },
+            ),
     );
   }
 }
