@@ -480,6 +480,19 @@ class LeaveRepository extends ILeaveRepository {
     try {
       final LeavesRequestsParseObject leaveRequests =
           LeavesRequestsParseObject();
+      final EmployeeInfoParseObject employeeInfoParseObject =
+          EmployeeInfoParseObject();
+      final ParseResponse employeeResponse =
+          await employeeInfoParseObject.getAll();
+
+      if (employeeResponse.error != null) {
+        formatAPIErrorResponse(error: employeeResponse.error!);
+      }
+
+      final List<EmployeeInfoParseObject> allEmployeeCasted =
+          List<EmployeeInfoParseObject>.from(
+        employeeResponse.results ?? <dynamic>[],
+      );
 
       final QueryBuilder<LeavesRequestsParseObject> leaveReqQuery =
           QueryBuilder<LeavesRequestsParseObject>(leaveRequests)
@@ -523,6 +536,15 @@ class LeaveRepository extends ILeaveRepository {
               data: leaveRequest,
             );
 
+            final EmployeeInfoParseObject singleEmployeeInfo =
+                allEmployeeCasted.firstWhere(
+              (EmployeeInfoParseObject obj) =>
+                  obj.user.objectId == record.user.objectId,
+            );
+
+            final String userName =
+                '${singleEmployeeInfo.firstName} ${singleEmployeeInfo.lastName}';
+
             leaveRequests.add(
               LeaveRequest(
                 id: record.objectId!,
@@ -535,6 +557,7 @@ class LeaveRepository extends ILeaveRepository {
                 reason: record.reason,
                 dateFromEpoch: record.leaveDateFrom,
                 dateToEpoch: record.leaveDateTo,
+                userName: userName,
               ),
             );
           }

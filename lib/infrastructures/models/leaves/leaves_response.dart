@@ -26,6 +26,7 @@ class LeaveRequest {
     required this.leaveType,
     required this.dateFromEpoch,
     required this.dateToEpoch,
+    this.userName,
   });
 
   final String id;
@@ -38,6 +39,7 @@ class LeaveRequest {
   final String leaveType;
   final int dateFromEpoch;
   final int dateToEpoch;
+  final String? userName;
 }
 
 class LeaveRemaining {
