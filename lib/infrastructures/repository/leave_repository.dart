@@ -496,7 +496,8 @@ class LeaveRepository extends ILeaveRepository {
 
       final QueryBuilder<LeavesRequestsParseObject> leaveReqQuery =
           QueryBuilder<LeavesRequestsParseObject>(leaveRequests)
-            ..whereEqualTo(LeavesRequestsParseObject.keyStatus, status);
+            ..whereEqualTo(LeavesRequestsParseObject.keyStatus, status)
+            ..orderByDescending('createdAt');
 
       if (leaveRequestId != null) checkFieldIsEmpty(<String>[leaveRequestId]);
 
