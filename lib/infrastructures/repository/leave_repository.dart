@@ -309,6 +309,7 @@ class LeaveRepository extends ILeaveRepository {
                 status: leaveReq.status,
                 dateFromEpoch: leaveReq.leaveDateFrom,
                 dateToEpoch: leaveReq.leaveDateTo,
+                declineReason: leaveReq.declineReason,
               ),
               errorCode: null,
             );
@@ -375,6 +376,7 @@ class LeaveRepository extends ILeaveRepository {
                 status: leaveReq.status,
                 dateFromEpoch: leaveReq.leaveDateFrom,
                 dateToEpoch: leaveReq.leaveDateTo,
+                declineReason: leaveReq.declineReason,
               ),
               errorCode: null,
             );
@@ -562,6 +564,7 @@ class LeaveRepository extends ILeaveRepository {
                 dateFromEpoch: record.leaveDateFrom,
                 dateToEpoch: record.leaveDateTo,
                 userName: userName,
+                declineReason: record.declineReason,
               ),
             );
           }
