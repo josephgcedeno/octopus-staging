@@ -66,4 +66,34 @@ class LeavesCubit extends Cubit<LeavesState> {
       );
     }
   }
+
+  Future<void> fetchAllLeaveRequest({
+    String? leaveRequestId,
+    String? leaveId,
+    String? userId,
+    String status = 'PENDING',
+  }) async {
+    try {
+      emit(FetchAllLeaveRequestLoading());
+
+      final APIListResponse<LeaveRequest> response =
+          await leaveRepository.getRequestLeaves(
+        leaveId: leaveId,
+        leaveRequestId: leaveRequestId,
+        userId: userId,
+        status: status,
+      );
+
+      emit(FetchAllLeaveRequestSuccess(leaves: response.data));
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+
+      emit(
+        FetchAllLeaveRequestFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
+    }
+  }
 }

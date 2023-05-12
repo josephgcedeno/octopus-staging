@@ -34,3 +34,19 @@ class SubmitLeavesRequestFailed extends LeavesState {
   final String errorCode;
   final String message;
 }
+
+class FetchAllLeaveRequestLoading extends LeavesState {}
+
+class FetchAllLeaveRequestSuccess extends LeavesState {
+  FetchAllLeaveRequestSuccess({
+    required this.leaves,
+  });
+
+  final List<LeaveRequest> leaves;
+}
+
+class FetchAllLeaveRequestFailed extends LeavesState {
+  FetchAllLeaveRequestFailed({required this.errorCode, required this.message});
+  final String errorCode;
+  final String message;
+}
