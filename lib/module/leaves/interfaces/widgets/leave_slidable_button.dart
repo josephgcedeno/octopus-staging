@@ -2,12 +2,14 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import 'package:octopus/infrastructures/models/leaves/leaves_response.dart';
 import 'package:octopus/internal/helper_function.dart';
 import 'package:octopus/internal/string_helper.dart';
 import 'package:octopus/internal/string_status.dart';
+import 'package:octopus/module/leaves/service/cubit/leaves_cubit.dart';
 
 class LeaveSlideableButton extends StatefulWidget {
   const LeaveSlideableButton({required this.leaveRequest, Key? key})
@@ -21,6 +23,7 @@ class LeaveSlideableButton extends StatefulWidget {
 class _LeaveSlideableButtonState extends State<LeaveSlideableButton> {
   late final String startAndEndDate;
   bool isExpanded = false;
+  bool isApprovedBtnDisabled = false;
 
   IconData getIconForLeaveType(String leaveType) {
     late final IconData icon;
@@ -81,13 +84,23 @@ class _LeaveSlideableButtonState extends State<LeaveSlideableButton> {
             height: 50,
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(
-              color: const Color(0x4739C0C7),
+              color: isApprovedBtnDisabled
+                  ? const Color(0x1639C0C7)
+                  : const Color(0x4739C0C7),
               borderRadius: BorderRadius.circular(5),
             ),
             child: FittedBox(
               child: IconButton(
                 color: const Color(0xff39C0C7),
-                onPressed: () {},
+                onPressed: isApprovedBtnDisabled
+                    ? null
+                    : () {
+                        setState(() => isApprovedBtnDisabled = true);
+                        context.read<LeavesCubit>().approvedLeaveRequest(
+                              requestId: widget.leaveRequest.id,
+                              username: widget.leaveRequest.userName ?? '',
+                            );
+                      },
                 icon: const Icon(Icons.check),
               ),
             ),

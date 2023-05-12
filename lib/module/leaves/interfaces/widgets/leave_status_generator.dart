@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
+import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/leaves/interfaces/widgets/leave_slidable_button.dart';
 import 'package:octopus/module/leaves/service/cubit/leaves_cubit.dart';
 
@@ -24,7 +25,17 @@ class _LeaveStatusGeneratorState extends State<LeaveStatusGenerator> {
     final double height = MediaQuery.of(context).size.height;
 
     return BlocConsumer<LeavesCubit, LeavesState>(
-      listener: (BuildContext context, LeavesState state) {},
+      listenWhen: (LeavesState previous, LeavesState current) =>
+          current is ApprovedLeaveRequestSuccess ||
+          current is ApprovedLeaveRequestFailed,
+      listener: (BuildContext context, LeavesState state) {
+        if (state is ApprovedLeaveRequestSuccess) {
+          showSnackBar(
+            message:
+                '${state.leaveRequest.userName ?? ''} leave request has been approved. User will be notified by it.',
+          );
+        }
+      },
       buildWhen: (LeavesState previous, LeavesState current) =>
           current is FetchAllLeaveRequestLoading ||
           current is FetchAllLeaveRequestSuccess,
