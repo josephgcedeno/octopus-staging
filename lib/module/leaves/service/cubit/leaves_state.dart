@@ -50,3 +50,19 @@ class FetchAllLeaveRequestFailed extends LeavesState {
   final String errorCode;
   final String message;
 }
+
+class ApprovedLeaveRequestLoading extends LeavesState {}
+
+class ApprovedLeaveRequestSuccess extends LeavesState {
+  ApprovedLeaveRequestSuccess({
+    required this.leaveRequest,
+  });
+
+  final LeaveRequest leaveRequest;
+}
+
+class ApprovedLeaveRequestFailed extends LeavesState {
+  ApprovedLeaveRequestFailed({required this.errorCode, required this.message});
+  final String errorCode;
+  final String message;
+}
