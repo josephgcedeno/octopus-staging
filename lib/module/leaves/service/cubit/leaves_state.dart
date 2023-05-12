@@ -66,3 +66,19 @@ class ApprovedLeaveRequestFailed extends LeavesState {
   final String errorCode;
   final String message;
 }
+
+class DeclineLeaveRequestLoading extends LeavesState {}
+
+class DeclineLeaveRequestSuccess extends LeavesState {
+  DeclineLeaveRequestSuccess({
+    required this.leaveRequest,
+  });
+
+  final LeaveRequest leaveRequest;
+}
+
+class DeclineLeaveRequestFailed extends LeavesState {
+  DeclineLeaveRequestFailed({required this.errorCode, required this.message});
+  final String errorCode;
+  final String message;
+}
