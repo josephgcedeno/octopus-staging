@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:octopus/infrastructures/models/leaves/leaves_response.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/internal/debug_utils.dart';
+import 'package:octopus/internal/error_message_string.dart';
 import 'package:octopus/internal/helper_function.dart';
 import 'package:octopus/internal/string_helper.dart';
 import 'package:octopus/module/leaves/service/cubit/leaves_cubit.dart';
@@ -102,11 +103,13 @@ class _PanelLeavesStatusState extends State<PanelLeavesStatus> {
 
     return BlocConsumer<LeavesCubit, LeavesState>(
       buildWhen: (LeavesState previous, LeavesState current) =>
+          current is FetchAllLeaveTodayFailed ||
           current is FetchAllLeaveTodaySuccess,
       listenWhen: (LeavesState previous, LeavesState current) =>
           current is FetchAllLeaveTodayFailed,
       listener: (BuildContext context, LeavesState state) {
-        if (state is FetchAllLeaveTodayFailed) {
+        if (state is FetchAllLeaveTodayFailed &&
+            state.message != errorInvalidPermission) {
           showSnackBar(
             message: state.message,
             snackBartState: SnackBartState.error,
@@ -114,7 +117,10 @@ class _PanelLeavesStatusState extends State<PanelLeavesStatus> {
         }
       },
       builder: (BuildContext context, LeavesState state) {
-        if (state is FetchAllLeaveTodaySuccess) {
+        if (state is FetchAllLeaveTodayFailed &&
+            state.message == errorInvalidPermission) {
+          return const SizedBox.shrink();
+        } else if (state is FetchAllLeaveTodaySuccess) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
