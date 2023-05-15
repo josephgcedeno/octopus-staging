@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
+import 'package:octopus/module/historical_data/interfaces/screens/daily_time_record_screen.dart';
 import 'package:octopus/module/historical_data/interfaces/widgets/historical_menu_button.dart';
 
 class HistoricalDataScreen extends StatelessWidget {
@@ -35,16 +36,23 @@ class HistoricalDataScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const <Widget>[
+                  children: <Widget>[
                     HistoricalMenuButton(
                       icon: Icons.punch_clock_outlined,
                       title: 'Daily Time Record',
+                      functionCall: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<dynamic>(
+                            builder: (_) => const DailyTimeRecordScreen(),
+                          ),
+                        );
+                      },
                     ),
-                    HistoricalMenuButton(
+                    const HistoricalMenuButton(
                       icon: Icons.folder_outlined,
                       title: 'Daily Standup Report',
                     ),
-                    HistoricalMenuButton(
+                    const HistoricalMenuButton(
                       icon: Icons.calendar_today_outlined,
                       title: 'Leave Requests',
                     ),
