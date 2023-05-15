@@ -2,9 +2,13 @@ import 'dart:io';
 import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/auth/auth_request.dart';
+import 'package:octopus/infrastructures/models/user/user_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/auth_repository.dart';
+import 'package:octopus/internal/class_parse_object.dart';
 import 'package:octopus/internal/database_strings.dart';
 import 'package:octopus/internal/debug_utils.dart';
+import 'package:octopus/internal/error_message_string.dart';
+import 'package:octopus/internal/helper_function.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class AuthRepository extends IAuthRepository {
@@ -46,7 +50,7 @@ class AuthRepository extends IAuthRepository {
   }
 
   @override
-  Future<APIResponse<void>> loginUser(AuthLoginRequest payload) async {
+  Future<APIResponse<User>> loginUser(AuthLoginRequest payload) async {
     try {
       final ParseUser user = ParseUser(
         payload.username,
@@ -60,12 +64,60 @@ class AuthRepository extends IAuthRepository {
       if (loginAccountResponse.error != null) {
         formatAPIErrorResponse(error: loginAccountResponse.error!);
       }
+      if (loginAccountResponse.success) {
+        final String id = getResultId(loginAccountResponse.results!);
 
-      return APIResponse<void>(
-        success: true,
-        message: 'Login successfully.',
+        final QueryBuilder<EmployeeInfoParseObject> employeeInfoQuery =
+            QueryBuilder<EmployeeInfoParseObject>(EmployeeInfoParseObject())
+              ..whereEqualTo(
+                EmployeeInfoParseObject.keyUser,
+                ParseUser.forQuery()..objectId = id,
+              )
+              ..setLimit(1);
+
+        final ParseResponse employeeInfoResponse =
+            await employeeInfoQuery.query();
+
+        /// Check if ParseResponse is error is not null.
+        if (employeeInfoResponse.error != null) {
+          formatAPIErrorResponse(error: employeeInfoResponse.error!);
+        }
+
+        if (employeeInfoResponse.success &&
+            employeeInfoResponse.result != null) {
+          final EmployeeInfoParseObject result =
+              EmployeeInfoParseObject.toCustomParseObject(
+            data: employeeInfoResponse.results!.first,
+          );
+
+          return APIResponse<User>(
+            success: true,
+            message: 'Login successfully.',
+            errorCode: null,
+            data: User(
+              address: result.address,
+              birthDateEpoch: result.birthDateEpoch,
+              civilStatus: result.civilStatus,
+              dateHiredEpoch: result.dateHiredEpoch,
+              firstName: result.firstName,
+              id: id,
+              isDeactive: result.isDeactive,
+              lastName: result.lastName,
+              nuxifyId: result.nuxifyId,
+              pagIbigNo: result.pagIbigNo,
+              philHealtNo: result.philHealthNo,
+              position: result.position,
+              profileImageSource: result.profileImageSource,
+              sssNo: result.sssNo,
+              tinNo: result.tinNo,
+            ),
+          );
+        }
+      }
+
+      throw APIErrorResponse(
+        message: errorSomethingWentWrong,
         errorCode: null,
-        data: null,
       );
     } on SocketException {
       throw APIErrorResponse.socketErrorResponse();

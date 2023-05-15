@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -10,8 +11,10 @@ import 'package:octopus/infrastructures/repository/leave_repository.dart';
 import 'package:octopus/infrastructures/repository/pdf_repository.dart';
 import 'package:octopus/infrastructures/repository/project_repository.dart';
 import 'package:octopus/infrastructures/repository/reminder_repository.dart';
+import 'package:octopus/infrastructures/repository/secure_storage_repository.dart';
 import 'package:octopus/infrastructures/repository/time_in_out_repository.dart';
 import 'package:octopus/infrastructures/repository/user_repository.dart';
+import 'package:octopus/infrastructures/service/cubit/secure_storage_cubit_cubit.dart';
 import 'package:octopus/infrastructures/service/cubit/user_cubit.dart';
 import 'package:octopus/interfaces/screens/splash_screen.dart';
 import 'package:octopus/internal/debug_utils.dart';
@@ -68,13 +71,18 @@ class _AppState extends State<App> {
   final ReminderRepository reminderRepository = ReminderRepository();
   final PDFRepository pdfRepository = PDFRepository();
   final HRRepository hrRepository = HRRepository();
+  final SecureStorageRepository secureStorageRepository =
+      SecureStorageRepository();
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: <BlocProvider<dynamic>>[
         BlocProvider<AuthenticationCubit>(
-          create: (_) => AuthenticationCubit(authRepository: authRepository),
+          create: (_) => AuthenticationCubit(
+            authRepository: authRepository,
+            storageRepository: secureStorageRepository,
+          ),
         ),
         BlocProvider<DSRCubit>(
           create: (_) => DSRCubit(
@@ -116,6 +124,11 @@ class _AppState extends State<App> {
         BlocProvider<UserCubit>(
           create: (BuildContext context) => UserCubit(
             userRepository: userRepository,
+          ),
+        ),
+        BlocProvider<SecureStorageCubit>(
+          create: (BuildContext context) => SecureStorageCubit(
+            storage: secureStorageRepository,
           ),
         ),
       ],
