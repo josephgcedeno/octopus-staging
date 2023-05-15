@@ -12,10 +12,12 @@ class DateTimePicker<T> extends StatefulWidget {
   const DateTimePicker({
     required this.type,
     required this.callBack,
+    this.showLabel = true,
     Key? key,
   }) : super(key: key);
   final PickerType type;
   final void Function(T from, T to) callBack;
+  final bool showLabel;
 
   @override
   State<DateTimePicker<T>> createState() => _DateTimePickerState<T>();
@@ -127,21 +129,22 @@ class _DateTimePickerState<T> extends State<DateTimePicker<T>> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        bottom: 5.0,
-                        left: 3.0,
+                    if (widget.showLabel)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          bottom: 5.0,
+                          left: 3.0,
+                        ),
+                        child: Text(
+                          i == 0 ? 'From' : 'To',
+                          style: kIsWeb
+                              ? theme.textTheme.titleLarge
+                              : theme.textTheme.titleMedium?.copyWith(
+                                  color: blackColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                        ),
                       ),
-                      child: Text(
-                        i == 0 ? 'From' : 'To',
-                        style: kIsWeb
-                            ? theme.textTheme.titleLarge
-                            : theme.textTheme.titleMedium?.copyWith(
-                                color: blackColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                      ),
-                    ),
                     SizedBox(
                       width: constraints.maxWidth * 0.45,
                       child: TextFormField(
@@ -161,9 +164,10 @@ class _DateTimePickerState<T> extends State<DateTimePicker<T>> {
                         },
                         readOnly: true,
                         decoration: InputDecoration(
-                          suffixIcon: widget.type == PickerType.date
-                              ? const Icon(Icons.calendar_month_outlined)
-                              : null,
+                          suffixIcon:
+                              widget.type == PickerType.date && widget.showLabel
+                                  ? const Icon(Icons.calendar_month_outlined)
+                                  : null,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: BorderSide.none,
