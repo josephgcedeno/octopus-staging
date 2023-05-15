@@ -21,6 +21,7 @@ import 'package:octopus/module/accomplishments_generator/service/cubit/accomplis
 import 'package:octopus/module/admin_registration/services/bloc/admin_registration_cubit.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
 import 'package:octopus/module/dashboard/service/cubit/reminder_cubit.dart';
+import 'package:octopus/module/historical_data/services/cubit/historical_cubit.dart';
 import 'package:octopus/module/hr_files/services/cubit/hr_cubit.dart';
 import 'package:octopus/module/leaves/service/cubit/leaves_cubit.dart';
 import 'package:octopus/module/login/interfaces/screens/login_screen.dart';
@@ -124,6 +125,10 @@ class _AppState extends State<App> {
           create: (BuildContext context) => SecureStorageCubit(
             storage: secureStorageRepository,
           ),
+        ),
+        BlocProvider<HistoricalCubit>(
+          create: (BuildContext context) =>
+              HistoricalCubit(userRepository: userRepository),
         ),
       ],
       child: MaterialApp(
