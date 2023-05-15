@@ -22,6 +22,21 @@ class _LeaveStatusGeneratorState extends State<LeaveStatusGenerator> {
     context.read<LeavesCubit>().fetchAllLeaveRequest();
   }
 
+  void removeLeaves(
+    String requestId,
+    String message,
+  ) {
+    setState(() {
+      leaves.removeWhere(
+        (LeaveRequest item) => item.id == requestId,
+      );
+    });
+
+    showSnackBar(
+      message: message,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
@@ -29,6 +44,9 @@ class _LeaveStatusGeneratorState extends State<LeaveStatusGenerator> {
 
     return BlocListener<LeavesCubit, LeavesState>(
       listenWhen: (LeavesState previous, LeavesState current) =>
+          current is DeclineLeaveRequestLoading ||
+          current is DeclineLeaveRequestSuccess ||
+          current is DeclineLeaveRequestFailed ||
           current is FetchAllLeaveRequestLoading ||
           current is FetchAllLeaveRequestSuccess ||
           current is FetchAllLeaveRequestFailed ||
@@ -43,15 +61,9 @@ class _LeaveStatusGeneratorState extends State<LeaveStatusGenerator> {
         }
         if (state is ApprovedLeaveRequestSuccess) {
           // Remove the item from the list
-          setState(() {
-            leaves.removeWhere(
-              (LeaveRequest item) => item.id == state.leaveRequest.id,
-            );
-          });
-
-          showSnackBar(
-            message:
-                '${state.leaveRequest.userName ?? ''} leave request has been approved. User will be notified by it.',
+          removeLeaves(
+            state.leaveRequest.id,
+            '${state.leaveRequest.userName ?? ''} leave request has been approved. User will be notified by it.',
           );
         }
         if (state is FetchAllLeaveRequestSuccess) {
@@ -59,6 +71,16 @@ class _LeaveStatusGeneratorState extends State<LeaveStatusGenerator> {
             isLoading = false;
             leaves.addAll(state.leaves);
           });
+        }
+
+        if (state is DeclineLeaveRequestSuccess) {
+          // Pop alert dialog once success.
+          Navigator.of(context).pop();
+          // Remove the item from the list
+          removeLeaves(
+            state.leaveRequest.id,
+            '${state.leaveRequest.userName ?? ''} leave request has been declined. User will be notified by it.',
+          );
         }
       },
       child: isLoading

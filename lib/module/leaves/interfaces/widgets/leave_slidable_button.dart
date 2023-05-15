@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import 'package:octopus/infrastructures/models/leaves/leaves_response.dart';
+import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/helper_function.dart';
 import 'package:octopus/internal/string_helper.dart';
 import 'package:octopus/internal/string_status.dart';
@@ -24,6 +25,8 @@ class _LeaveSlideableButtonState extends State<LeaveSlideableButton> {
   late final String startAndEndDate;
   bool isExpanded = false;
   bool isApprovedBtnDisabled = false;
+  String deniedReason = '';
+  bool isBarrierDismissible = true;
 
   IconData getIconForLeaveType(String leaveType) {
     late final IconData icon;
@@ -41,6 +44,100 @@ class _LeaveSlideableButtonState extends State<LeaveSlideableButton> {
     }
     return icon;
   }
+
+  void showDeclineAlertDialog(ThemeData theme) => showDialog<void>(
+        barrierDismissible: isBarrierDismissible,
+        context: context,
+        builder: (BuildContext context) {
+          bool isSubmitted = false;
+          return StatefulBuilder(
+            builder: (
+              BuildContext context,
+              void Function(void Function()) setState,
+            ) {
+              return AlertDialog(
+                title: Text(
+                  'Leave Request Denial',
+                  style: theme.textTheme.titleMedium
+                      ?.copyWith(color: Colors.black),
+                ),
+                content: TextField(
+                  maxLines: 5,
+                  minLines: 5,
+                  keyboardType: TextInputType.multiline,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide.none,
+                    ),
+                    hintText: 'Write reason for the denial..',
+                    hintStyle: theme.textTheme.bodySmall,
+                    filled: true,
+                  ),
+                  onChanged: (String value) {
+                    deniedReason = value;
+                  },
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: isSubmitted
+                        ? null
+                        : () {
+                            isBarrierDismissible = true;
+                            Navigator.of(context).pop();
+                          },
+                    child: Text(
+                      'Cancel',
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0.0,
+                      backgroundColor: const Color(0xff017BFF),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    onPressed: () {
+                      if (deniedReason.isEmpty) {
+                        showSnackBar(
+                          message: 'Deny reason should not be empty!',
+                          snackBartState: SnackBartState.error,
+                        );
+                        return;
+                      }
+
+                      setState(() {
+                        isSubmitted = true;
+                      });
+                      context.read<LeavesCubit>().declineLeaveRequest(
+                            requestId: widget.leaveRequest.id,
+                            username: widget.leaveRequest.userName ?? '',
+                            declineReason: deniedReason,
+                          );
+                    },
+                    child: isSubmitted
+                        ? const SizedBox(
+                            width: 25,
+                            height: 25,
+                            child: Padding(
+                              padding: EdgeInsets.all(5.0),
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
+                        : Text(
+                            'Confirm',
+                            style: theme.textTheme.bodySmall
+                                ?.copyWith(color: Colors.white),
+                          ),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      );
 
   @override
   void initState() {
@@ -115,7 +212,13 @@ class _LeaveSlideableButtonState extends State<LeaveSlideableButton> {
             child: FittedBox(
               child: IconButton(
                 color: const Color(0xffE25252),
-                onPressed: () {},
+                onPressed: () {
+                  // Make the isBarrierDismissible false, to prevent closing by not clicking cancel.
+                  setState(() {
+                    isBarrierDismissible = false;
+                  });
+                  showDeclineAlertDialog(theme);
+                },
                 icon: const Icon(Icons.close),
               ),
             ),
