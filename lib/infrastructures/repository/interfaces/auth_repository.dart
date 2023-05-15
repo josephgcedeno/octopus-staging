@@ -1,5 +1,6 @@
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/auth/auth_request.dart';
+import 'package:octopus/infrastructures/models/user/user_response.dart';
 
 abstract class IAuthRepository {
   /// This function will be use to login user.
@@ -9,7 +10,7 @@ abstract class IAuthRepository {
   /// [password] password provided to the account to authenticate.
   ///
   /// [email] email provided to the account to authenticate. It is nullable since username and password would be enough for authenticating.
-  Future<APIResponse<void>> loginUser(AuthLoginRequest payload);
+  Future<APIResponse<User>> loginUser(AuthLoginRequest payload);
 
   /// This function will be use to register user account.
   ///
