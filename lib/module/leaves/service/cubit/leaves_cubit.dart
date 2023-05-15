@@ -66,4 +66,22 @@ class LeavesCubit extends Cubit<LeavesState> {
       );
     }
   }
+
+  Future<void> fetchLeaveStatusToday() async {
+    try {
+      emit(FetchAllLeaveTodayLoading());
+      final APIListResponse<LeaveRequest> response =
+          await leaveRepository.getAllLeaveRequestForToday();
+      emit(FetchAllLeaveTodaySuccess(leaveRequests: response.data));
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+
+      emit(
+        FetchAllLeaveTodayFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
+    }
+  }
 }

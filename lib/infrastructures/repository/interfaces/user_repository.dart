@@ -152,11 +152,14 @@ abstract class IUserRepository {
   /// [email] - The email will be use to login the user.
   ///
   /// [password] - The password will be use to login the user.
-  /// 
+  ///
   /// [isAdmin] - This will deterimine what is the type of account.
   Future<APIResponse<String>> createUserAccount({
     required String email,
     required String password,
     required bool isAdmin,
   });
+
+  /// Fetch the current user logged in.
+  Future<APIResponse<UseWithrRole>> fetchCurrentUser();
 }

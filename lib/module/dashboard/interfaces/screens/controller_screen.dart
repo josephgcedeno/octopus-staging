@@ -1,12 +1,9 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
-import 'package:octopus/module/dashboard/interfaces/widgets/dashboard_button.dart';
+import 'package:octopus/module/dashboard/interfaces/widgets/leave_status.dart';
 import 'package:octopus/module/dashboard/interfaces/widgets/panel_reminder.dart';
-import 'package:octopus/module/hr_files/interfaces/screens/hr_files_screen.dart';
-import 'package:octopus/module/leaves/interfaces/screens/leaves_screen.dart';
-import 'package:octopus/module/standup_report/interfaces/screens/standup_report_screen.dart';
-import 'package:octopus/module/time_record/interfaces/screens/time_record_screen.dart';
+import 'package:octopus/module/dashboard/interfaces/widgets/tool_available.dart';
 
 class ControllerScreen extends StatefulWidget {
   const ControllerScreen({Key? key}) : super(key: key);
@@ -29,80 +26,30 @@ class _ControllerScreenState extends State<ControllerScreen> {
         child: SizedBox(
           width: kIsWeb ? 500 : width * 0.9,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              const PanelReminder(),
-              Container(
-                margin: EdgeInsets.symmetric(vertical: height * 0.02),
-                child: Text(
-                  'Tools',
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                ),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: PanelReminder(),
               ),
-              Column(
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(bottom: height * 0.02),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        DashboardButton(
-                          icon: Icons.timer_outlined,
-                          label: 'Daily Time Record',
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute<dynamic>(
-                                builder: (_) => const TimeRecordScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                        SizedBox(width: width * 0.03),
-                        DashboardButton(
-                          icon: Icons.collections_bookmark_outlined,
-                          label: 'Daily Stand-Up Report',
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute<dynamic>(
-                                builder: (_) => const StandupReportScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
+              Expanded(
+                child: ListView(
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.symmetric(vertical: height * 0.02),
+                      child: Text(
+                        'Tools',
+                        style: theme.textTheme.bodyMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      DashboardButton(
-                        icon: Icons.calendar_today_outlined,
-                        label: 'Leaves',
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute<dynamic>(
-                              builder: (_) => const LeavesScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      SizedBox(width: width * 0.03),
-                      DashboardButton(
-                        icon: Icons.collections_bookmark_outlined,
-                        label: 'HR Files',
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute<dynamic>(
-                              builder: (_) => const HRFilesScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                    const ToolsAvailable(),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 8.0),
+                      child: PanelLeavesStatus(),
+                    ),
+                  ],
+                ),
+              )
             ],
           ),
         ),

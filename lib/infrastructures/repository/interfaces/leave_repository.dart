@@ -119,12 +119,14 @@ abstract class ILeaveRepository {
   });
 
   /// This function will get the leave number of the user base from the fiscal year leave.
-  /// 
+  ///
   /// [userId] this identifies which user we will be getting no leave.
-  /// 
+  ///
   /// [leaveId] this identifies which leave record will be referenced.
   Future<APIResponse<LeaveRemaining>> getRemainingLeaves({
     required String userId,
-     String? leaveId,
+    String? leaveId,
   });
+
+  Future<APIListResponse<LeaveRequest>> getAllLeaveRequestForToday();
 }
