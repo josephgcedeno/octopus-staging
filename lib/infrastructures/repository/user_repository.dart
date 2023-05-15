@@ -567,6 +567,72 @@ class UserRepository extends IUserRepository {
   }
 
   @override
+  Future<APIListResponse<User>> getAllUser() async {
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final EmployeeInfoParseObject employeeInfoParseObject =
+            EmployeeInfoParseObject();
+        final ParseResponse employeeResponse =
+            await employeeInfoParseObject.getAll();
+
+        if (employeeResponse.error != null) {
+          formatAPIErrorResponse(error: employeeResponse.error!);
+        }
+
+        final List<User> users = <User>[];
+        if (employeeResponse.success && employeeResponse.results != null) {
+          final List<EmployeeInfoParseObject> allEmployeeCasted =
+              List<EmployeeInfoParseObject>.from(
+            employeeResponse.results ?? <dynamic>[],
+          );
+
+          for (final EmployeeInfoParseObject userInfo in allEmployeeCasted) {
+            users.add(
+              User(
+                id: userInfo.objectId!,
+                firstName: userInfo.firstName,
+                lastName: userInfo.lastName,
+                nuxifyId: userInfo.nuxifyId,
+                birthDateEpoch: userInfo.birthDateEpoch,
+                address: userInfo.address,
+                civilStatus: userInfo.civilStatus,
+                dateHiredEpoch: userInfo.dateHiredEpoch,
+                profileImageSource: userInfo.profileImageSource,
+                isDeactive: userInfo.isDeactive,
+                position: userInfo.position,
+                pagIbigNo: userInfo.pagIbigNo,
+                sssNo: userInfo.sssNo,
+                tinNo: userInfo.tinNo,
+                philHealtNo: userInfo.philHealthNo,
+              ),
+            );
+          }
+        }
+
+        return APIListResponse<User>(
+          success: true,
+          message: 'Successfully get all users info.',
+          errorCode: null,
+          data: users,
+        );
+      }
+
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
+      throw APIErrorResponse(
+        message: errorMessage,
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
+    }
+  }
+
+  @override
   Future<APIResponse<UseWithrRole>> fetchCurrentUser() async {
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;

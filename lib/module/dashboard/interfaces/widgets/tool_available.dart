@@ -8,6 +8,7 @@ import 'package:octopus/module/accomplishments_generator/interfaces/screens/acco
 import 'package:octopus/module/admin_registration/interfaces/screens/team_members_list_screen.dart';
 import 'package:octopus/module/dashboard/interfaces/widgets/dashboard_button.dart';
 import 'package:octopus/module/hr_files/interfaces/screens/hr_files_screen.dart';
+import 'package:octopus/module/leaves/interfaces/screens/leaves_admin_screen.dart';
 import 'package:octopus/module/leaves/interfaces/screens/leaves_screen.dart';
 import 'package:octopus/module/standup_report/interfaces/screens/standup_report_screen.dart';
 import 'package:octopus/module/time_record/interfaces/screens/time_record_screen.dart';
@@ -125,7 +126,13 @@ class _ToolsAvailableState extends State<ToolsAvailable> {
                           DashboardButton(
                             icon: Icons.folder_open_outlined,
                             label: 'Request Leaves',
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute<dynamic>(
+                                  builder: (_) => const LeavesAdminScreen(),
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),

@@ -105,8 +105,11 @@ abstract class ILeaveRepository {
   /// This function will declined a certain leave request.
   ///
   /// [requestId] this identifies which request record will be declined.
+  ///
+  /// [declineReason] this identifies what is the reason for declining the request.
   Future<APIResponse<LeaveRequest>> declineRequestLeave({
     required String requestId,
+    required String declineReason,
   });
 
   /// FOR: ADMIN USE ONLY

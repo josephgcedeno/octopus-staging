@@ -309,6 +309,7 @@ class LeaveRepository extends ILeaveRepository {
                 status: leaveReq.status,
                 dateFromEpoch: leaveReq.leaveDateFrom,
                 dateToEpoch: leaveReq.leaveDateTo,
+                declineReason: leaveReq.declineReason,
               ),
               errorCode: null,
             );
@@ -375,6 +376,7 @@ class LeaveRepository extends ILeaveRepository {
                 status: leaveReq.status,
                 dateFromEpoch: leaveReq.leaveDateFrom,
                 dateToEpoch: leaveReq.leaveDateTo,
+                declineReason: leaveReq.declineReason,
               ),
               errorCode: null,
             );
@@ -394,8 +396,9 @@ class LeaveRepository extends ILeaveRepository {
   @override
   Future<APIResponse<LeaveRequest>> declineRequestLeave({
     required String requestId,
+    required String declineReason,
   }) async {
-    checkFieldIsEmpty(<String>[requestId]);
+    checkFieldIsEmpty(<String>[requestId, declineReason]);
     try {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
       if (user != null && user.get<bool>(usersIsAdminField)!) {
@@ -404,7 +407,8 @@ class LeaveRepository extends ILeaveRepository {
 
         leaveRequests
           ..objectId = requestId
-          ..status = 'DECLINED';
+          ..status = 'DECLINED'
+          ..declineReason = declineReason;
 
         final ParseResponse updateReqRecordResponse =
             await leaveRequests.save();
@@ -437,6 +441,7 @@ class LeaveRepository extends ILeaveRepository {
                 status: leaveReq.status,
                 dateFromEpoch: leaveReq.leaveDateFrom,
                 dateToEpoch: leaveReq.leaveDateTo,
+                declineReason: leaveReq.declineReason,
               ),
               errorCode: null,
             );
@@ -480,10 +485,24 @@ class LeaveRepository extends ILeaveRepository {
     try {
       final LeavesRequestsParseObject leaveRequests =
           LeavesRequestsParseObject();
+      final EmployeeInfoParseObject employeeInfoParseObject =
+          EmployeeInfoParseObject();
+      final ParseResponse employeeResponse =
+          await employeeInfoParseObject.getAll();
+
+      if (employeeResponse.error != null) {
+        formatAPIErrorResponse(error: employeeResponse.error!);
+      }
+
+      final List<EmployeeInfoParseObject> allEmployeeCasted =
+          List<EmployeeInfoParseObject>.from(
+        employeeResponse.results ?? <dynamic>[],
+      );
 
       final QueryBuilder<LeavesRequestsParseObject> leaveReqQuery =
           QueryBuilder<LeavesRequestsParseObject>(leaveRequests)
-            ..whereEqualTo(LeavesRequestsParseObject.keyStatus, status);
+            ..whereEqualTo(LeavesRequestsParseObject.keyStatus, status)
+            ..orderByDescending('createdAt');
 
       if (leaveRequestId != null) checkFieldIsEmpty(<String>[leaveRequestId]);
 
@@ -523,6 +542,15 @@ class LeaveRepository extends ILeaveRepository {
               data: leaveRequest,
             );
 
+            final EmployeeInfoParseObject singleEmployeeInfo =
+                allEmployeeCasted.firstWhere(
+              (EmployeeInfoParseObject obj) =>
+                  obj.user.objectId == record.user.objectId,
+            );
+
+            final String userName =
+                '${singleEmployeeInfo.firstName} ${singleEmployeeInfo.lastName}';
+
             leaveRequests.add(
               LeaveRequest(
                 id: record.objectId!,
@@ -535,6 +563,8 @@ class LeaveRepository extends ILeaveRepository {
                 reason: record.reason,
                 dateFromEpoch: record.leaveDateFrom,
                 dateToEpoch: record.leaveDateTo,
+                userName: userName,
+                declineReason: record.declineReason,
               ),
             );
           }

@@ -35,6 +35,55 @@ class SubmitLeavesRequestFailed extends LeavesState {
   final String message;
 }
 
+class FetchAllLeaveRequestLoading extends LeavesState {}
+
+class FetchAllLeaveRequestSuccess extends LeavesState {
+  FetchAllLeaveRequestSuccess({
+    required this.leaves,
+  });
+
+  final List<LeaveRequest> leaves;
+}
+
+class FetchAllLeaveRequestFailed extends LeavesState {
+  FetchAllLeaveRequestFailed({required this.errorCode, required this.message});
+  final String errorCode;
+  final String message;
+}
+
+class ApprovedLeaveRequestLoading extends LeavesState {}
+
+class ApprovedLeaveRequestSuccess extends LeavesState {
+  ApprovedLeaveRequestSuccess({
+    required this.leaveRequest,
+  });
+
+  final LeaveRequest leaveRequest;
+}
+
+class ApprovedLeaveRequestFailed extends LeavesState {
+  ApprovedLeaveRequestFailed({required this.errorCode, required this.message});
+  final String errorCode;
+  final String message;
+}
+
+class DeclineLeaveRequestLoading extends LeavesState {}
+
+class DeclineLeaveRequestSuccess extends LeavesState {
+  DeclineLeaveRequestSuccess({
+    required this.leaveRequest,
+  });
+
+  final LeaveRequest leaveRequest;
+}
+
+class DeclineLeaveRequestFailed extends LeavesState {
+  DeclineLeaveRequestFailed({required this.errorCode, required this.message});
+
+  final String errorCode;
+  final String message;
+}
+
 class FetchAllLeaveTodayLoading extends LeavesState {}
 
 class FetchAllLeaveTodaySuccess extends LeavesState {
