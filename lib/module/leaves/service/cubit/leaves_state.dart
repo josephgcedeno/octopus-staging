@@ -79,6 +79,21 @@ class DeclineLeaveRequestSuccess extends LeavesState {
 
 class DeclineLeaveRequestFailed extends LeavesState {
   DeclineLeaveRequestFailed({required this.errorCode, required this.message});
+
+  final String errorCode;
+  final String message;
+}
+
+class FetchAllLeaveTodayLoading extends LeavesState {}
+
+class FetchAllLeaveTodaySuccess extends LeavesState {
+  FetchAllLeaveTodaySuccess({required this.leaveRequests});
+
+  final List<LeaveRequest> leaveRequests;
+}
+
+class FetchAllLeaveTodayFailed extends LeavesState {
+  FetchAllLeaveTodayFailed({required this.errorCode, required this.message});
   final String errorCode;
   final String message;
 }

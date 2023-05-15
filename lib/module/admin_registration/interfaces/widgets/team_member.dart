@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:octopus/infrastructures/models/user/user_response.dart';
+import 'package:octopus/interfaces/screens/members_profile_screen.dart';
 import 'package:octopus/interfaces/widgets/loading_indicator.dart';
-import 'package:octopus/module/admin_registration/interfaces/screens/members_profile_screen.dart';
 import 'package:octopus/module/admin_registration/services/bloc/admin_registration_cubit.dart';
 
 class TeamMember extends StatefulWidget {
@@ -92,6 +92,7 @@ class _TeamMemberState extends State<TeamMember> {
             MaterialPageRoute<dynamic>(
               builder: (_) => MembersProfileScreen(
                 user: widget.user,
+                userView: UserView.admin,
               ),
             ),
           );

@@ -1,3 +1,5 @@
+enum UserRole { admin, client }
+
 class User {
   User({
     required this.id,
@@ -33,4 +35,43 @@ class User {
   final String sssNo;
   final String tinNo;
   final String philHealtNo;
+}
+
+class UseWithrRole extends User {
+  UseWithrRole({
+    required this.userRole,
+    required String id,
+    required String firstName,
+    required String lastName,
+    required String nuxifyId,
+    required int birthDateEpoch,
+    required String address,
+    required String civilStatus,
+    required int dateHiredEpoch,
+    required String profileImageSource,
+    required bool isDeactive,
+    required String position,
+    required String pagIbigNo,
+    required String sssNo,
+    required String tinNo,
+    required String philHealtNo,
+  }) : super(
+          id: id,
+          firstName: firstName,
+          lastName: lastName,
+          nuxifyId: nuxifyId,
+          birthDateEpoch: birthDateEpoch,
+          address: address,
+          civilStatus: civilStatus,
+          dateHiredEpoch: dateHiredEpoch,
+          profileImageSource: profileImageSource,
+          isDeactive: isDeactive,
+          position: position,
+          pagIbigNo: pagIbigNo,
+          sssNo: sssNo,
+          tinNo: tinNo,
+          philHealtNo: philHealtNo,
+        );
+
+  final UserRole userRole;
 }

@@ -164,4 +164,7 @@ abstract class IUserRepository {
   ///
   /// This function will get all the user record.
   Future<APIListResponse<User>> getAllUser();
+
+  /// Fetch the current user logged in.
+  Future<APIResponse<UseWithrRole>> fetchCurrentUser();
 }

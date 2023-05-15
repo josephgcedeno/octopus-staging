@@ -553,7 +553,6 @@ class UserRepository extends IUserRepository {
         }
       }
 
-      if (user != null && user.get<bool>(usersIsAdminField)!) {}
       String errorMessage = errorSomethingWentWrong;
       if (user != null && !user.get<bool>(usersIsAdminField)!) {
         errorMessage = errorInvalidPermission;
@@ -626,6 +625,70 @@ class UserRepository extends IUserRepository {
       }
       throw APIErrorResponse(
         message: errorMessage,
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
+    }
+  }
+
+  @override
+  Future<APIResponse<UseWithrRole>> fetchCurrentUser() async {
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+
+      if (user != null) {
+        final QueryBuilder<EmployeeInfoParseObject> employeeInfoQuery =
+            QueryBuilder<EmployeeInfoParseObject>(EmployeeInfoParseObject())
+              ..whereEqualTo(
+                EmployeeInfoParseObject.keyUser,
+                ParseUser.forQuery()..objectId = user.objectId,
+              )
+              ..setLimit(1);
+        final ParseResponse userAccountResponse =
+            await employeeInfoQuery.query();
+
+        if (userAccountResponse.error != null) {
+          formatAPIErrorResponse(error: userAccountResponse.error!);
+        }
+
+        if (userAccountResponse.success &&
+            userAccountResponse.results != null) {
+          final EmployeeInfoParseObject employeeRecord =
+              EmployeeInfoParseObject.toCustomParseObject(
+            data: userAccountResponse.results!.first,
+          );
+
+          return APIResponse<UseWithrRole>(
+            success: true,
+            message: 'Successfully updated user info.',
+            data: UseWithrRole(
+              address: employeeRecord.address,
+              birthDateEpoch: employeeRecord.birthDateEpoch,
+              civilStatus: employeeRecord.civilStatus,
+              dateHiredEpoch: employeeRecord.dateHiredEpoch,
+              firstName: employeeRecord.firstName,
+              id: employeeRecord.objectId!,
+              isDeactive: employeeRecord.isDeactive,
+              lastName: employeeRecord.lastName,
+              nuxifyId: employeeRecord.nuxifyId,
+              pagIbigNo: employeeRecord.pagIbigNo,
+              philHealtNo: employeeRecord.philHealthNo,
+              position: employeeRecord.position,
+              profileImageSource: employeeRecord.profileImageSource,
+              sssNo: employeeRecord.sssNo,
+              tinNo: employeeRecord.tinNo,
+              userRole: user.get<bool>(usersIsAdminField)!
+                  ? UserRole.admin
+                  : UserRole.client,
+            ),
+            errorCode: null,
+          );
+        }
+      }
+
+      throw APIErrorResponse(
+        message: errorSomethingWentWrong,
         errorCode: null,
       );
     } on SocketException {

@@ -829,4 +829,83 @@ class LeaveRepository extends ILeaveRepository {
       throw APIErrorResponse.socketErrorResponse();
     }
   }
+
+  @override
+  Future<APIListResponse<LeaveRequest>> getAllLeaveRequestForToday() async {
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final LeavesRequestsParseObject leaveRequests =
+            LeavesRequestsParseObject();
+        final DateTime now = DateTime.now();
+
+        final DateTime currentDate = DateTime(now.year, now.month, now.day);
+        final QueryBuilder<LeavesRequestsParseObject> queryRequestsToday =
+            QueryBuilder<LeavesRequestsParseObject>(leaveRequests)
+              ..whereGreaterThanOrEqualsTo(
+                LeavesRequestsParseObject.keyLeaveDateFrom,
+                epochFromDateTime(
+                  date: currentDate,
+                ),
+              )
+              ..whereLessThan(
+                LeavesRequestsParseObject.keyLeaveDateFrom,
+                epochFromDateTime(
+                  date: DateTime(now.year, now.month, now.day + 1),
+                ),
+              );
+
+        final ParseResponse getAllLeaveRequestTodayResponse =
+            await queryRequestsToday.query();
+
+        if (getAllLeaveRequestTodayResponse.error != null) {
+          formatAPIErrorResponse(error: getAllLeaveRequestTodayResponse.error!);
+        }
+        final List<LeaveRequest> leaveReqs = <LeaveRequest>[];
+
+        if (getAllLeaveRequestTodayResponse.success &&
+            getAllLeaveRequestTodayResponse.results != null) {
+          final List<LeavesRequestsParseObject> allLeaveRequestsToday =
+              List<LeavesRequestsParseObject>.from(
+            getAllLeaveRequestTodayResponse.results ?? <dynamic>[],
+          );
+
+          for (final LeavesRequestsParseObject leaveReq
+              in allLeaveRequestsToday) {
+            leaveReqs.add(
+              LeaveRequest(
+                dateFiledEpoch: leaveReq.dateFiled,
+                dateFromEpoch: leaveReq.leaveDateFrom,
+                dateToEpoch: leaveReq.leaveDateTo,
+                dateUsedEpoch: leaveReq.dateUsed!,
+                id: leaveReq.objectId!,
+                leaveId: leaveReq.leave.objectId!,
+                leaveType: leaveReq.leaveType,
+                reason: leaveReq.reason,
+                status: leaveReq.status,
+                userId: leaveReq.user.objectId!,
+              ),
+            );
+          }
+        }
+        return APIListResponse<LeaveRequest>(
+          success: true,
+          message: 'Successfully approved leave request.',
+          data: leaveReqs,
+          errorCode: null,
+        );
+      }
+
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
+      throw APIErrorResponse(
+        message: errorMessage,
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
+    }
+  }
 }
