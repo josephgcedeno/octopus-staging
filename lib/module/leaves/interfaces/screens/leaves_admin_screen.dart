@@ -1,19 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:octopus/infrastructures/models/user/user_response.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/module/leaves/interfaces/widgets/leave_status_generator.dart';
 
-class LeavesAdminScreen extends StatefulWidget {
+class LeavesAdminScreen extends StatelessWidget {
   const LeavesAdminScreen({Key? key}) : super(key: key);
-
-  @override
-  State<LeavesAdminScreen> createState() => _LeavesAdminScreenState();
-}
-
-class _LeavesAdminScreenState extends State<LeavesAdminScreen> {
-  List<User> activated = <User>[];
-  List<User> deactivated = <User>[];
 
   @override
   Widget build(BuildContext context) {
