@@ -100,6 +100,7 @@ class _LeaveStatusGeneratorState extends State<LeaveStatusGenerator> {
               itemCount: leaves.length,
               itemBuilder: (BuildContext context, int index) {
                 return LeaveSlideableButton(
+                  key: UniqueKey(),
                   leaveRequest: leaves[index],
                 );
               },
