@@ -17,9 +17,10 @@ class User {
     required this.sssNo,
     required this.tinNo,
     required this.philHealtNo,
+    required this.userId,
   });
 
-  final String id;
+  final String id; // this id is from the employee record info
   final String firstName;
   final String lastName;
   final String nuxifyId;
@@ -35,6 +36,7 @@ class User {
   final String sssNo;
   final String tinNo;
   final String philHealtNo;
+  final String userId; // this id is from the main User id column.
 }
 
 class UseWithrRole extends User {
@@ -55,6 +57,7 @@ class UseWithrRole extends User {
     required String sssNo,
     required String tinNo,
     required String philHealtNo,
+    required String userId,
   }) : super(
           id: id,
           firstName: firstName,
@@ -71,6 +74,7 @@ class UseWithrRole extends User {
           sssNo: sssNo,
           tinNo: tinNo,
           philHealtNo: philHealtNo,
+          userId: userId,
         );
 
   final UserRole userRole;

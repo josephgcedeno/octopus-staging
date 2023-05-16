@@ -121,6 +121,7 @@ class UserRepository extends IUserRepository {
               profileImageSource: profileImageSource,
               sssNo: sssNo,
               tinNo: tinNo,
+              userId: userRecord.objectId!,
             ),
             errorCode: null,
           );
@@ -204,6 +205,7 @@ class UserRepository extends IUserRepository {
                 profileImageSource: resultParseObject.profileImageSource,
                 sssNo: resultParseObject.sssNo,
                 tinNo: resultParseObject.tinNo,
+                userId: resultParseObject.user.objectId!,
               ),
               errorCode: null,
             );
@@ -320,6 +322,7 @@ class UserRepository extends IUserRepository {
                 profileImageSource: resultParseObject.profileImageSource,
                 sssNo: resultParseObject.sssNo,
                 tinNo: resultParseObject.tinNo,
+                userId: resultParseObject.user.objectId!,
               ),
             );
           }
@@ -489,6 +492,9 @@ class UserRepository extends IUserRepository {
                     .get<String>(usersProfileImageSourceField)!,
                 sssNo: resultParseObject.get<String>(usersSSSNoField)!,
                 tinNo: resultParseObject.get<String>(usersTinNoField)!,
+                userId: resultParseObject
+                    .get<ParseUser>(EmployeeInfoParseObject.keyUser)!
+                    .objectId!,
               ),
               errorCode: null,
             );
@@ -606,6 +612,7 @@ class UserRepository extends IUserRepository {
                 sssNo: userInfo.sssNo,
                 tinNo: userInfo.tinNo,
                 philHealtNo: userInfo.philHealthNo,
+                userId: userInfo.user.objectId!,
               ),
             );
           }
@@ -681,6 +688,7 @@ class UserRepository extends IUserRepository {
               userRole: user.get<bool>(usersIsAdminField)!
                   ? UserRole.admin
                   : UserRole.client,
+              userId: employeeRecord.user.objectId!,
             ),
             errorCode: null,
           );
