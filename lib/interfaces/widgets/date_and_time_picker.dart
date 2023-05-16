@@ -100,9 +100,8 @@ class _DateTimePickerState<T> extends State<DateTimePicker<T>> {
           );
           fromTextController.clear();
           toTextController.clear();
+          return;
         }
-
-        return;
       }
       widget.callBack.call(from, to);
     }
