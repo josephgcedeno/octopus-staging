@@ -946,7 +946,7 @@ class TimeInOutRepository extends ITimeInOutRepository {
         }
         return APIListResponse<UserAttendance>(
           success: true,
-          message: "Successfully updated today's record",
+          message: 'Successfully fetched attendances.',
           data: userAttendances,
           errorCode: null,
         );
