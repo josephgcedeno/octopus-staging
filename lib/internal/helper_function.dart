@@ -21,6 +21,24 @@ String printDurationFrom(Duration duration) {
   return '${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds';
 }
 
+String computeOverTime({required int timeInEpoch, required int timeOutEpoch}) {
+  final DateTime startTime = dateTimeFromEpoch(
+    epoch: timeInEpoch,
+  );
+  final DateTime endTime = dateTimeFromEpoch(
+    epoch: timeOutEpoch,
+  );
+
+  final Duration duration = endTime.difference(startTime);
+  const Duration requiredTime = Duration(hours: 8);
+
+  if (duration > requiredTime) {
+    final Duration overtime = duration - requiredTime;
+    return '${overtime.inHours} hours ${overtime.inMinutes % 60}  min OT';
+  }
+  return '---';
+}
+
 String hourFormatFromSeconds(int value) {
   int h;
   int m;
