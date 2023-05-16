@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/module/historical_data/interfaces/screens/daily_time_record_screen.dart';
+import 'package:octopus/module/historical_data/interfaces/screens/dsr_screen.dart';
+import 'package:octopus/module/historical_data/interfaces/screens/leave_request_screen.dart';
 import 'package:octopus/module/historical_data/interfaces/widgets/historical_menu_button.dart';
 
 class HistoricalDataScreen extends StatelessWidget {
@@ -48,13 +50,27 @@ class HistoricalDataScreen extends StatelessWidget {
                         );
                       },
                     ),
-                    const HistoricalMenuButton(
+                    HistoricalMenuButton(
                       icon: Icons.folder_outlined,
                       title: 'Daily Standup Report',
+                      functionCall: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<dynamic>(
+                            builder: (_) => const DailyStandUpReportScreen(),
+                          ),
+                        );
+                      },
                     ),
-                    const HistoricalMenuButton(
+                    HistoricalMenuButton(
                       icon: Icons.calendar_today_outlined,
                       title: 'Leave Requests',
+                      functionCall: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<dynamic>(
+                            builder: (_) => const LeaveRequestScreen(),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
