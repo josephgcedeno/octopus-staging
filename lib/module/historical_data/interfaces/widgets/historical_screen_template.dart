@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
-
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/models/user/user_response.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
@@ -23,10 +22,29 @@ class DropDownValue {
   final String hintText;
 }
 
+class CallbackReturnData {
+  CallbackReturnData({
+    required this.users,
+    required this.pickTypeSelected,
+    this.today,
+    this.from,
+    this.to,
+    this.dropdownValueSelected,
+  });
+
+  final List<User> users;
+  final PickTypeSelected pickTypeSelected;
+  final DateTime? today;
+  final DateTime? from;
+  final DateTime? to;
+  final String? dropdownValueSelected;
+}
+
 class HistoricalScreenTemplate extends StatefulWidget {
   const HistoricalScreenTemplate({
     required this.title,
     required this.generateBtnText,
+    required this.callback,
     this.dropDownValue,
     this.isDropdownLoading = false,
     Key? key,
@@ -35,6 +53,7 @@ class HistoricalScreenTemplate extends StatefulWidget {
   final String generateBtnText;
   final DropDownValue? dropDownValue;
   final bool isDropdownLoading;
+  final void Function(CallbackReturnData) callback;
 
   @override
   State<HistoricalScreenTemplate> createState() =>
@@ -46,6 +65,12 @@ class _HistoricalScreenTemplateState extends State<HistoricalScreenTemplate> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool isShowOptions = false;
   String? dropdownValue;
+
+  // For picking date info, if selected is type today, expected today is not null.
+  PickTypeSelected? selected;
+  DateTime? today;
+  DateTime? from;
+  DateTime? to;
 
   @override
   void initState() {
@@ -183,11 +208,18 @@ class _HistoricalScreenTemplateState extends State<HistoricalScreenTemplate> {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 18.0),
                                   child: PickDate(
-                                    callBack: (
-                                      PickTypeSelected selected,
+                                    callBack: ({
+                                      required PickTypeSelected
+                                          pickTypeSelected,
                                       DateTime? today,
+                                      DateTime? from,
                                       DateTime? to,
-                                    ) {},
+                                    }) {
+                                      selected = pickTypeSelected;
+                                      this.today = today;
+                                      this.from = from;
+                                      this.to = to;
+                                    },
                                   ),
                                 ),
                                 if (isShowOptions)
@@ -252,7 +284,27 @@ class _HistoricalScreenTemplateState extends State<HistoricalScreenTemplate> {
                 ),
                 GestureDetector(
                   onTap: () async {
-                    if (_formKey.currentState!.validate()) {}
+                    if (_formKey.currentState!.validate()) {
+                      final List<User> selectedUsers =
+                          context.read<HistoricalCubit>().state.selectedUser ??
+                              <User>[];
+
+                      // If there is no selected user, then simply add all users.
+                      if (selectedUsers.isEmpty) {
+                        selectedUsers.addAll(users);
+                      }
+
+                      widget.callback.call(
+                        CallbackReturnData(
+                          pickTypeSelected: selected!,
+                          users: selectedUsers,
+                          today: today,
+                          from: from,
+                          to: to,
+                          dropdownValueSelected: dropdownValue,
+                        ),
+                      );
+                    }
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(
