@@ -2,23 +2,39 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
+
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/models/user/user_response.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
+import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/module/historical_data/interfaces/widgets/add_user.dart';
 import 'package:octopus/module/historical_data/interfaces/widgets/pick_date.dart';
 import 'package:octopus/module/historical_data/interfaces/widgets/user_icon.dart';
 import 'package:octopus/module/historical_data/interfaces/widgets/user_selection_builder.dart';
 import 'package:octopus/module/historical_data/services/cubit/historical_cubit.dart';
 
+class DropDownValue {
+  DropDownValue({
+    required this.options,
+    required this.hintText,
+  });
+
+  final List<String> options;
+  final String hintText;
+}
+
 class HistoricalScreenTemplate extends StatefulWidget {
   const HistoricalScreenTemplate({
     required this.title,
     required this.generateBtnText,
+    this.dropDownValue,
+    this.isDropdownLoading = false,
     Key? key,
   }) : super(key: key);
   final String title;
   final String generateBtnText;
+  final DropDownValue? dropDownValue;
+  final bool isDropdownLoading;
 
   @override
   State<HistoricalScreenTemplate> createState() =>
@@ -29,6 +45,7 @@ class _HistoricalScreenTemplateState extends State<HistoricalScreenTemplate> {
   final List<User> users = <User>[];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool isShowOptions = false;
+  String? dropdownValue;
 
   @override
   void initState() {
@@ -158,28 +175,76 @@ class _HistoricalScreenTemplateState extends State<HistoricalScreenTemplate> {
                               );
                             },
                           ),
-                          Stack(
-                            alignment: Alignment.centerLeft,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(top: 18.0),
-                                child: PickDate(
-                                  callBack: (
-                                    PickTypeSelected selected,
-                                    DateTime? today,
-                                    DateTime? to,
-                                  ) {},
-                                ),
-                              ),
-                              if (isShowOptions)
-                                GestureDetector(
-                                  onTap: () {},
-                                  child: UserSelectionBuilder(
-                                    users: users,
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 9.0),
+                            child: Stack(
+                              alignment: Alignment.centerLeft,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 18.0),
+                                  child: PickDate(
+                                    callBack: (
+                                      PickTypeSelected selected,
+                                      DateTime? today,
+                                      DateTime? to,
+                                    ) {},
                                   ),
                                 ),
-                            ],
+                                if (isShowOptions)
+                                  GestureDetector(
+                                    onTap: () {},
+                                    child: UserSelectionBuilder(
+                                      users: users,
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
+                          if (widget.dropDownValue != null)
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: const Color(0xFFf5f7f9),
+                              ),
+                              child: DropdownButtonFormField<String>(
+                                decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                  ),
+                                ),
+                                icon: const Icon(
+                                  Icons.keyboard_arrow_down_outlined,
+                                ),
+                                hint: Text(widget.dropDownValue!.hintText),
+                                elevation: 2,
+                                borderRadius: BorderRadius.circular(10),
+                                validator: (String? value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Fields cannot be empty.';
+                                  }
+                                  return null;
+                                },
+                                dropdownColor: Colors.white,
+                                onChanged: (String? value) {
+                                  dropdownValue = value;
+                                },
+                                items: widget.dropDownValue!.options
+                                    .map<DropdownMenuItem<String>>(
+                                        (String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                              ),
+                            )
+                          else if (widget.isDropdownLoading)
+                            lineLoader(
+                              height: height * 0.07,
+                              width: width,
+                            )
                         ],
                       ),
                     ),
@@ -207,7 +272,7 @@ class _HistoricalScreenTemplateState extends State<HistoricalScreenTemplate> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Text(
-                          'Generate Accomplishment',
+                          widget.generateBtnText,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: theme.primaryColor,
