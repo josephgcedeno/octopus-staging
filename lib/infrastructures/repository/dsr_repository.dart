@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:intl/intl.dart';
 import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_request.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
+import 'package:octopus/infrastructures/models/user/user_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/dsr_repository.dart';
 import 'package:octopus/internal/class_parse_object.dart';
 import 'package:octopus/internal/database_strings.dart';
@@ -903,6 +905,197 @@ class DSRRepository extends IDSRRepository {
 
       throw APIErrorResponse(
         message: 'Something went wrong',
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
+    }
+  }
+
+  @override
+  Future<APIListResponse<UserDSR>> fetchDSRRecord({
+    required List<User> users,
+    String? projectId,
+    DateTime? today,
+    DateTime? from,
+    DateTime? to,
+  }) async {
+    if (users.isEmpty) {
+      throw APIErrorResponse(
+        message: 'Users field cannot be empty',
+        errorCode: null,
+      );
+    } else if (today == null && (from == null && to == null)) {
+      throw APIErrorResponse(
+        message:
+            'Date must not be all null. Either today or date range should be filled.',
+        errorCode: null,
+      );
+    }
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final DSRsParseObject timeInOutParseObject = DSRsParseObject();
+
+        final QueryBuilder<DSRsParseObject> queryUsersDSR =
+            QueryBuilder<DSRsParseObject>(timeInOutParseObject);
+
+        if (today != null) {
+          final DateTime startDate =
+              DateTime(today.year, today.month, today.day);
+          final DateTime endDate =
+              DateTime(today.year, today.month, today.day, 23, 59, 59);
+
+          queryUsersDSR
+            ..whereGreaterThanOrEqualsTo(
+              DSRsParseObject.keyDate,
+              epochFromDateTime(
+                date: startDate,
+              ),
+            )
+            ..whereLessThanOrEqualTo(
+              DSRsParseObject.keyDate,
+              epochFromDateTime(
+                date: endDate,
+              ),
+            );
+        } else if (from != null && to != null) {
+          queryUsersDSR
+            ..whereGreaterThanOrEqualsTo(
+              DSRsParseObject.keyDate,
+              epochFromDateTime(date: from),
+            )
+            ..whereLessThanOrEqualTo(
+              DSRsParseObject.keyDate,
+              epochFromDateTime(date: to),
+            );
+        }
+
+        final List<UserDSR> userAttendances = <UserDSR>[];
+
+        /// Get all project info list of parse object.
+        final ParseResponse allProjects = await ProjectsParseObject().getAll();
+
+        final List<ProjectsParseObject> allProjectInfoCasted =
+            List<ProjectsParseObject>.from(
+          allProjects.results ?? <dynamic>[],
+        );
+
+        for (final User userRecord in users) {
+          final String userId = userRecord.userId;
+
+          queryUsersDSR.whereEqualTo(
+            DSRsParseObject.keyUser,
+            ParseUser.forQuery()..objectId = userId,
+          );
+
+          final ParseResponse queryDSRResponse = await queryUsersDSR.query();
+
+          if (queryDSRResponse.error != null) {
+            formatAPIErrorResponse(error: queryDSRResponse.error!);
+          }
+          final List<DSRWorks> done = <DSRWorks>[];
+          final List<DSRWorks> doing = <DSRWorks>[];
+          final List<DSRWorks> blockers = <DSRWorks>[];
+
+          if (queryDSRResponse.success && queryDSRResponse.count > 0) {
+            final List<DSRsParseObject> allTimeInInfoCasted =
+                List<DSRsParseObject>.from(
+              queryDSRResponse.results ?? <dynamic>[],
+            );
+
+            for (final DSRsParseObject attendance in allTimeInInfoCasted) {
+              for (final Task tasks in attendance.done!) {
+                // If the project is not null the project id should match the task project id, else skip the loop
+                if (projectId != null && projectId != tasks.projectTagId) {
+                  continue;
+                }
+
+                final ProjectsParseObject singleProjectInfo =
+                    allProjectInfoCasted.firstWhere(
+                  (ProjectsParseObject obj) =>
+                      obj.objectId == tasks.projectTagId,
+                );
+                done.add(
+                  DSRWorks(
+                    text: tasks.text,
+                    tagId: tasks.projectTagId,
+                    user: userId,
+                    projectName: singleProjectInfo.name,
+                    date: dateTimeFromEpoch(epoch: attendance.date).toString(),
+                    color: singleProjectInfo.color,
+                  ),
+                );
+              }
+              for (final Task tasks in attendance.wip!) {
+                // If the project is not null the project id should match the task project id, else skip the loop
+                if (projectId != null && projectId != tasks.projectTagId) {
+                  continue;
+                }
+
+                final ProjectsParseObject singleProjectInfo =
+                    allProjectInfoCasted.firstWhere(
+                  (ProjectsParseObject obj) =>
+                      obj.objectId == tasks.projectTagId,
+                );
+                doing.add(
+                  DSRWorks(
+                    text: tasks.text,
+                    tagId: tasks.projectTagId,
+                    user: userId,
+                    projectName: singleProjectInfo.name,
+                    date: dateTimeFromEpoch(epoch: attendance.date).toString(),
+                    color: singleProjectInfo.color,
+                  ),
+                );
+              }
+              for (final Task tasks in attendance.blockers!) {
+                // If the project is not null the project id should match the task project id, else skip the loop
+                if (projectId != null && projectId != tasks.projectTagId) {
+                  continue;
+                }
+
+                final ProjectsParseObject singleProjectInfo =
+                    allProjectInfoCasted.firstWhere(
+                  (ProjectsParseObject obj) =>
+                      obj.objectId == tasks.projectTagId,
+                );
+                blockers.add(
+                  DSRWorks(
+                    text: tasks.text,
+                    tagId: tasks.projectTagId,
+                    user: userId,
+                    projectName: singleProjectInfo.name,
+                    date: dateTimeFromEpoch(epoch: attendance.date).toString(),
+                    color: singleProjectInfo.color,
+                  ),
+                );
+              }
+            }
+          }
+          userAttendances.add(
+            UserDSR(
+              done: done,
+              doing: doing,
+              blockers: blockers,
+              userId: userId,
+            ),
+          );
+        }
+        return APIListResponse<UserDSR>(
+          success: true,
+          message: "Successfully updated today's record",
+          data: userAttendances,
+          errorCode: null,
+        );
+      }
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
+      throw APIErrorResponse(
+        message: errorMessage,
         errorCode: null,
       );
     } on SocketException {

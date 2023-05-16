@@ -1,6 +1,7 @@
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_request.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
+import 'package:octopus/infrastructures/models/user/user_response.dart';
 
 abstract class IDSRRepository {
   /// FOR: ADMIN USE ONLY
@@ -88,4 +89,24 @@ abstract class IDSRRepository {
 
   /// This function will get  the sprint info within the duration from start date and end date to set for today. It will return SprintRecord object that contains id, startDateEpoch (millisecondFromEpoch), and endDateEpoch (millisecondFromEpoch).
   Future<APIResponse<SprintRecord>> sprintInfoQueryToday();
+
+  /// Fetches DSR records from the server for the specified users and time range.
+  ///
+  /// [users] A list of [User] objects representing the users for which DSR records are to be fetched.
+  ///
+  /// [projectId] string representing the project ID. If provided, only DSR records for the specified project will be fetched.
+  ///
+  /// [today] object representing the current date. If provided, only DSR records for this
+  /// date will be fetched.
+  ///
+  /// [from] object representing the start of the time range. If provided, only DSR records from this date and onwards will be fetched.
+  ///
+  /// [to] object representing the end of the time range. If provided, only DSR records up to this date will be fetched.
+  Future<APIListResponse<UserDSR>> fetchDSRRecord({
+    required List<User> users,
+    String? projectId,
+    DateTime? today,
+    DateTime? from,
+    DateTime? to,
+  });
 }

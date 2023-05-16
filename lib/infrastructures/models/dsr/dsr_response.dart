@@ -60,3 +60,17 @@ class DSRWorks {
   final String date;
   final String color;
 }
+
+class UserDSR {
+  UserDSR({
+    required this.userId,
+    required this.done,
+    required this.doing,
+    required this.blockers,
+  });
+
+  final String userId;
+  final List<DSRWorks> done;
+  final List<DSRWorks> doing;
+  final List<DSRWorks> blockers;
+}
