@@ -15,7 +15,7 @@ class ReminderCubit extends Cubit<ReminderState> {
       emit(FetchReminderTodayLoading());
 
       final APIListResponse<Reminder> response =
-          await reminderRepository.getAllReminder();
+          await reminderRepository.getScheduledReminder();
 
       emit(FetchReminderTodaySuccess(reminders: response.data));
     } catch (e) {

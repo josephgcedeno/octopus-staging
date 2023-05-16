@@ -105,8 +105,11 @@ abstract class ILeaveRepository {
   /// This function will declined a certain leave request.
   ///
   /// [requestId] this identifies which request record will be declined.
+  ///
+  /// [declineReason] this identifies what is the reason for declining the request.
   Future<APIResponse<LeaveRequest>> declineRequestLeave({
     required String requestId,
+    required String declineReason,
   });
 
   /// FOR: ADMIN USE ONLY
@@ -119,12 +122,14 @@ abstract class ILeaveRepository {
   });
 
   /// This function will get the leave number of the user base from the fiscal year leave.
-  /// 
+  ///
   /// [userId] this identifies which user we will be getting no leave.
-  /// 
+  ///
   /// [leaveId] this identifies which leave record will be referenced.
   Future<APIResponse<LeaveRemaining>> getRemainingLeaves({
     required String userId,
-     String? leaveId,
+    String? leaveId,
   });
+
+  Future<APIListResponse<LeaveRequest>> getAllLeaveRequestForToday();
 }

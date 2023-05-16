@@ -66,4 +66,102 @@ class LeavesCubit extends Cubit<LeavesState> {
       );
     }
   }
+
+  Future<void> fetchAllLeaveRequest({
+    String? leaveRequestId,
+    String? leaveId,
+    String? userId,
+    String status = 'PENDING',
+  }) async {
+    try {
+      emit(FetchAllLeaveRequestLoading());
+
+      final APIListResponse<LeaveRequest> response =
+          await leaveRepository.getRequestLeaves(
+        leaveId: leaveId,
+        leaveRequestId: leaveRequestId,
+        userId: userId,
+        status: status,
+      );
+
+      emit(FetchAllLeaveRequestSuccess(leaves: response.data));
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+
+      emit(
+        FetchAllLeaveRequestFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
+    }
+  }
+
+  Future<void> fetchLeaveStatusToday() async {
+    try {
+      emit(FetchAllLeaveTodayLoading());
+      final APIListResponse<LeaveRequest> response =
+          await leaveRepository.getAllLeaveRequestForToday();
+      emit(FetchAllLeaveTodaySuccess(leaveRequests: response.data));
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+
+      emit(
+        FetchAllLeaveTodayFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
+    }
+  }
+
+  Future<void> approvedLeaveRequest({
+    required String requestId,
+    required String username,
+  }) async {
+    try {
+      emit(ApprovedLeaveRequestLoading());
+
+      final APIResponse<LeaveRequest> response =
+          await leaveRepository.approveRequestLeave(requestId: requestId);
+      response.data.userName = username;
+      emit(ApprovedLeaveRequestSuccess(leaveRequest: response.data));
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+
+      emit(
+        ApprovedLeaveRequestFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
+    }
+  }
+
+  Future<void> declineLeaveRequest({
+    required String requestId,
+    required String username,
+    required String declineReason,
+  }) async {
+    try {
+      emit(DeclineLeaveRequestLoading());
+
+      final APIResponse<LeaveRequest> response =
+          await leaveRepository.declineRequestLeave(
+        requestId: requestId,
+        declineReason: declineReason,
+      );
+      response.data.userName = username;
+      emit(DeclineLeaveRequestSuccess(leaveRequest: response.data));
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+
+      emit(
+        DeclineLeaveRequestFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
+    }
+  }
 }

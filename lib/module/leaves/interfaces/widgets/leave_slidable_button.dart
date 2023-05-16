@@ -2,17 +2,160 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:intl/intl.dart';
+import 'package:octopus/infrastructures/models/leaves/leaves_response.dart';
+import 'package:octopus/internal/debug_utils.dart';
+import 'package:octopus/internal/helper_function.dart';
+import 'package:octopus/internal/string_helper.dart';
+import 'package:octopus/internal/string_status.dart';
+import 'package:octopus/module/leaves/service/cubit/leaves_cubit.dart';
 
 class LeaveSlideableButton extends StatefulWidget {
-  const LeaveSlideableButton({Key? key}) : super(key: key);
+  const LeaveSlideableButton({required this.leaveRequest, Key? key})
+      : super(key: key);
+  final LeaveRequest leaveRequest;
 
   @override
   State<LeaveSlideableButton> createState() => _LeaveSlideableButtonState();
 }
 
 class _LeaveSlideableButtonState extends State<LeaveSlideableButton> {
+  late final String startAndEndDate;
   bool isExpanded = false;
+  bool isApprovedBtnDisabled = false;
+  String deniedReason = '';
+  bool isBarrierDismissible = true;
+
+  IconData getIconForLeaveType(String leaveType) {
+    late final IconData icon;
+
+    switch (leaveType) {
+      case leaveTypeSickLeave:
+        icon = Icons.sick_outlined;
+        break;
+      case leaveTypeVacationLeave:
+        icon = Icons.card_travel_outlined;
+        break;
+      case leaveTypeEmergencyLeave:
+        icon = Icons.my_location_outlined;
+        break;
+    }
+    return icon;
+  }
+
+  void showDeclineAlertDialog(ThemeData theme) => showDialog<void>(
+        barrierDismissible: isBarrierDismissible,
+        context: context,
+        builder: (BuildContext context) {
+          bool isSubmitted = false;
+          return StatefulBuilder(
+            builder: (
+              BuildContext context,
+              void Function(void Function()) setState,
+            ) {
+              return AlertDialog(
+                title: Text(
+                  'Leave Request Denial',
+                  style: theme.textTheme.titleMedium
+                      ?.copyWith(color: Colors.black),
+                ),
+                content: TextField(
+                  maxLines: 5,
+                  minLines: 5,
+                  keyboardType: TextInputType.multiline,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide.none,
+                    ),
+                    hintText: 'Write reason for the denial..',
+                    hintStyle: theme.textTheme.bodySmall,
+                    filled: true,
+                  ),
+                  onChanged: (String value) {
+                    deniedReason = value;
+                  },
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: isSubmitted
+                        ? null
+                        : () {
+                            isBarrierDismissible = true;
+                            Navigator.of(context).pop();
+                          },
+                    child: Text(
+                      'Cancel',
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0.0,
+                      backgroundColor: const Color(0xff017BFF),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    onPressed: () {
+                      if (deniedReason.isEmpty) {
+                        showSnackBar(
+                          message: 'Deny reason should not be empty!',
+                          snackBartState: SnackBartState.error,
+                        );
+                        return;
+                      }
+
+                      setState(() {
+                        isSubmitted = true;
+                      });
+                      context.read<LeavesCubit>().declineLeaveRequest(
+                            requestId: widget.leaveRequest.id,
+                            username: widget.leaveRequest.userName ?? '',
+                            declineReason: deniedReason,
+                          );
+                    },
+                    child: isSubmitted
+                        ? const SizedBox(
+                            width: 25,
+                            height: 25,
+                            child: Padding(
+                              padding: EdgeInsets.all(5.0),
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
+                        : Text(
+                            'Confirm',
+                            style: theme.textTheme.bodySmall
+                                ?.copyWith(color: Colors.white),
+                          ),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      );
+
+  @override
+  void initState() {
+    super.initState();
+
+    final DateTime dateTimeFrom =
+        dateTimeFromEpoch(epoch: widget.leaveRequest.dateFromEpoch);
+
+    final DateTime dateTimeTo =
+        dateTimeFromEpoch(epoch: widget.leaveRequest.dateToEpoch);
+
+    startAndEndDate = '${DateFormat(
+      'MMM dd',
+    ).format(dateTimeFrom)} - ${DateFormat(
+      'MMM dd',
+    ).format(dateTimeTo)}';
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -38,13 +181,23 @@ class _LeaveSlideableButtonState extends State<LeaveSlideableButton> {
             height: 50,
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(
-              color: const Color(0x4739C0C7),
+              color: isApprovedBtnDisabled
+                  ? const Color(0x1639C0C7)
+                  : const Color(0x4739C0C7),
               borderRadius: BorderRadius.circular(5),
             ),
             child: FittedBox(
               child: IconButton(
                 color: const Color(0xff39C0C7),
-                onPressed: () {},
+                onPressed: isApprovedBtnDisabled
+                    ? null
+                    : () {
+                        setState(() => isApprovedBtnDisabled = true);
+                        context.read<LeavesCubit>().approvedLeaveRequest(
+                              requestId: widget.leaveRequest.id,
+                              username: widget.leaveRequest.userName ?? '',
+                            );
+                      },
                 icon: const Icon(Icons.check),
               ),
             ),
@@ -59,7 +212,13 @@ class _LeaveSlideableButtonState extends State<LeaveSlideableButton> {
             child: FittedBox(
               child: IconButton(
                 color: const Color(0xffE25252),
-                onPressed: () {},
+                onPressed: () {
+                  // Make the isBarrierDismissible false, to prevent closing by not clicking cancel.
+                  setState(() {
+                    isBarrierDismissible = false;
+                  });
+                  showDeclineAlertDialog(theme);
+                },
                 icon: const Icon(Icons.close),
               ),
             ),
@@ -93,7 +252,7 @@ class _LeaveSlideableButtonState extends State<LeaveSlideableButton> {
                           ),
                         ),
                         Text(
-                          'Juana Dela Cruz',
+                          widget.leaveRequest.userName ?? '',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -104,15 +263,17 @@ class _LeaveSlideableButtonState extends State<LeaveSlideableButton> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      const Padding(
-                        padding: EdgeInsets.only(right: 3.0),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 3.0),
                         child: Icon(
-                          Icons.sick_outlined,
+                          getIconForLeaveType(widget.leaveRequest.leaveType),
                           size: 15,
                         ),
                       ),
                       Text(
-                        'Sick',
+                        widget.leaveRequest.leaveType
+                            .split(' ')[0]
+                            .toCapitalized(),
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -132,7 +293,7 @@ class _LeaveSlideableButtonState extends State<LeaveSlideableButton> {
                   ),
                 ),
                 Text(
-                  'Jan 18 -Jan 18',
+                  startAndEndDate,
                   style: theme.textTheme.bodySmall,
                 )
               ],
@@ -148,7 +309,7 @@ class _LeaveSlideableButtonState extends State<LeaveSlideableButton> {
                       style: theme.textTheme.bodySmall,
                     ),
                     Text(
-                      "I need a vacation from January 18 to January 20. My parents live in my village and they are very sick and I haven't spent time with them for a long time.",
+                      widget.leaveRequest.reason,
                       style: theme.textTheme.bodyMedium,
                     )
                   ],
