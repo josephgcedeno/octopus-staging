@@ -2,8 +2,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
+import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
 import 'package:octopus/infrastructures/models/time_in_out/attendance_response.dart';
 import 'package:octopus/infrastructures/models/user/user_response.dart';
+import 'package:octopus/infrastructures/repository/interfaces/dsr_repository.dart';
 import 'package:octopus/infrastructures/repository/interfaces/time_in_out_repository.dart';
 import 'package:octopus/infrastructures/repository/interfaces/user_repository.dart';
 import 'package:octopus/internal/helper_function.dart';
@@ -15,10 +17,12 @@ class HistoricalCubit extends Cubit<HistoricalState> {
   HistoricalCubit({
     required this.userRepository,
     required this.timeInOutRepository,
+    required this.dsrRepository,
   }) : super(HistoricalInitial());
 
   final IUserRepository userRepository;
   final ITimeInOutRepository timeInOutRepository;
+  final IDSRRepository dsrRepository;
 
   Future<void> fetchAllUser() async {
     try {
@@ -77,6 +81,39 @@ class HistoricalCubit extends Cubit<HistoricalState> {
 
       emit(
         FetchAttendancesReportFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
+    }
+  }
+
+  Future<void> fetchDSRReport({
+    required List<User> users,
+    String? projectsId,
+    DateTime? today,
+    DateTime? from,
+    DateTime? to,
+  }) async {
+    try {
+      emit(FetchDSRReportLoading());
+      final APIListResponse<UserDSR> response =
+          await dsrRepository.fetchDSRRecord(
+        users: users,
+        projectId: projectsId,
+        today: today,
+        to: to,
+        from: from,
+      );
+
+      emit(
+        FetchDSRReportSuccess(userDsr: response.data),
+      );
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+
+      emit(
+        FetchDSRReportFailed(
           errorCode: error.errorCode ?? '',
           message: error.message,
         ),

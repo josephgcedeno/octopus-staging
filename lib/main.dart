@@ -136,6 +136,7 @@ class _AppState extends State<App> {
           create: (BuildContext context) => HistoricalCubit(
             userRepository: userRepository,
             timeInOutRepository: timeInOutRepository,
+            dsrRepository: dsrRepository,
           ),
         ),
       ],

@@ -47,3 +47,23 @@ class FetchAttendancesReportFailed extends HistoricalState {
   final String errorCode;
   final String message;
 }
+
+class FetchDSRReportLoading extends HistoricalState {}
+
+class FetchDSRReportSuccess extends HistoricalState {
+  FetchDSRReportSuccess({
+    required this.userDsr,
+  });
+
+  final List<UserDSR> userDsr;
+}
+
+class FetchDSRReportFailed extends HistoricalState {
+  FetchDSRReportFailed({
+    required this.errorCode,
+    required this.message,
+  });
+
+  final String errorCode;
+  final String message;
+}
