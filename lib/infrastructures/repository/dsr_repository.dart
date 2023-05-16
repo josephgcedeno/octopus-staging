@@ -1080,6 +1080,8 @@ class DSRRepository extends IDSRRepository {
               doing: doing,
               blockers: blockers,
               userId: userId,
+              userName: '${userRecord.firstName} ${userRecord.lastName}',
+              position: userRecord.position,
             ),
           );
         }

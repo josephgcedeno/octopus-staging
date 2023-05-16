@@ -64,12 +64,16 @@ class DSRWorks {
 class UserDSR {
   UserDSR({
     required this.userId,
+    required this.userName,
+    required this.position,
     required this.done,
     required this.doing,
     required this.blockers,
   });
 
   final String userId;
+  final String userName;
+  final String position;
   final List<DSRWorks> done;
   final List<DSRWorks> doing;
   final List<DSRWorks> blockers;
