@@ -10,7 +10,12 @@ class PickDate extends StatefulWidget {
     required this.callBack,
     Key? key,
   }) : super(key: key);
-  final void Function(PickTypeSelected, DateTime?, DateTime?) callBack;
+  final void Function({
+    required PickTypeSelected pickTypeSelected,
+    DateTime? today,
+    DateTime? from,
+    DateTime? to,
+  }) callBack;
   @override
   State<PickDate> createState() => _PickDateState();
 }
@@ -27,7 +32,10 @@ class _PickDateState extends State<PickDate> {
     textController.text = DateFormat('yyyy/MM/dd').format(currentDate);
 
     /// By default trigger callback using today's date time, the "to" date will be set to null only the "from" date will be specified when type is today.
-    widget.callBack.call(PickTypeSelected.today, currentDate, null);
+    widget.callBack.call(
+      pickTypeSelected: PickTypeSelected.today,
+      today: currentDate,
+    );
   }
 
   @override
@@ -78,7 +86,11 @@ class _PickDateState extends State<PickDate> {
               showLabel: false,
               callBack: (DateTime from, DateTime to) {
                 /// On successfully selected from & to date, trigger callback and return theses values.
-                widget.callBack.call(PickTypeSelected.custom, from, to);
+                widget.callBack.call(
+                  pickTypeSelected: PickTypeSelected.custom,
+                  from: from,
+                  to: to,
+                );
               },
             ),
           ),
