@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/time_in_out/attendance_response.dart';
+import 'package:octopus/infrastructures/models/user/user_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/time_in_out_repository.dart';
 import 'package:octopus/internal/class_parse_object.dart';
 import 'package:octopus/internal/database_strings.dart';
@@ -803,6 +804,151 @@ class TimeInOutRepository extends ITimeInOutRepository {
           errorCode: updateTimeInOutResponse.error != null
               ? updateTimeInOutResponse.error!.code as String
               : '',
+        );
+      }
+
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
+      throw APIErrorResponse(
+        message: errorMessage,
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
+    }
+  }
+
+  @override
+  Future<APIListResponse<UserAttendance>> fetchAttendances({
+    required List<User> users,
+    DateTime? today,
+    DateTime? from,
+    DateTime? to,
+  }) async {
+    if (users.isEmpty) {
+      throw APIErrorResponse(
+        message: 'Users field cannot be empty',
+        errorCode: null,
+      );
+    } else if (today == null && (from == null && to == null)) {
+      throw APIErrorResponse(
+        message:
+            'Date must not be all null. Either today or date range should be filled.',
+        errorCode: null,
+      );
+    }
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final TimeInOutParseObject timeInOutParseObject =
+            TimeInOutParseObject();
+        final TimeAttendancesParseObject timeAttendancesParseObject =
+            TimeAttendancesParseObject();
+
+        final QueryBuilder<TimeInOutParseObject> queryUsersAttendance =
+            QueryBuilder<TimeInOutParseObject>(timeInOutParseObject);
+
+        if (today != null) {
+          final DateTime startDate =
+              DateTime(today.year, today.month, today.day);
+          final DateTime endDate =
+              DateTime(today.year, today.month, today.day, 23, 59, 59);
+
+          queryUsersAttendance
+            ..whereGreaterThanOrEqualsTo(
+              TimeInOutParseObject.keyDate,
+              epochFromDateTime(
+                date: startDate,
+              ),
+            )
+            ..whereLessThanOrEqualTo(
+              TimeInOutParseObject.keyDate,
+              epochFromDateTime(
+                date: endDate,
+              ),
+            );
+        } else if (from != null && to != null) {
+          queryUsersAttendance
+            ..whereGreaterThanOrEqualsTo(
+              TimeInOutParseObject.keyDate,
+              epochFromDateTime(date: from),
+            )
+            ..whereLessThanOrEqualTo(
+              TimeInOutParseObject.keyDate,
+              epochFromDateTime(date: to),
+            );
+        }
+
+        final List<UserAttendance> userAttendances = <UserAttendance>[];
+
+        for (final User userRecord in users) {
+          final String userId = userRecord.userId;
+          final QueryBuilder<TimeAttendancesParseObject> queryTimeAttendances =
+              QueryBuilder<TimeAttendancesParseObject>(
+            timeAttendancesParseObject,
+          );
+
+          queryTimeAttendances
+            ..whereEqualTo(
+              TimeAttendancesParseObject.keyUser,
+              ParseUser.forQuery()..objectId = userId,
+            )
+            ..whereMatchesQuery(
+              TimeAttendancesParseObject.keyTimeInOut,
+              queryUsersAttendance,
+            )
+            ..includeObject(
+              <String>[
+                TimeAttendancesParseObject.keyTimeInOut,
+              ],
+            );
+
+          final ParseResponse queryTimeAttendancesResponse =
+              await queryTimeAttendances.query();
+
+          if (queryTimeAttendancesResponse.error != null) {
+            formatAPIErrorResponse(error: queryTimeAttendancesResponse.error!);
+          }
+          final List<Attendance> attendances = <Attendance>[];
+
+          if (queryTimeAttendancesResponse.success &&
+              queryTimeAttendancesResponse.count > 0) {
+            final List<TimeAttendancesParseObject> allTimeInInfoCasted =
+                List<TimeAttendancesParseObject>.from(
+              queryTimeAttendancesResponse.results ?? <dynamic>[],
+            );
+
+            for (final TimeAttendancesParseObject attendance
+                in allTimeInInfoCasted) {
+              attendances.add(
+                Attendance(
+                  id: attendance.objectId!,
+                  timeInOutId: attendance.timeInOut.objectId!,
+                  timeInEpoch: attendance.timeIn,
+                  timeOutEpoch: attendance.timeOut,
+                  offsetStatus: attendance.offsetStatus,
+                  offsetDuration: attendance.offsetDuration,
+                  requiredDuration: attendance.requiredDuration,
+                  date: attendance.timeInOut.date,
+                ),
+              );
+            }
+          }
+          userAttendances.add(
+            UserAttendance(
+              attendances: attendances,
+              userId: userId,
+            ),
+          );
+        }
+        return APIListResponse<UserAttendance>(
+          success: true,
+          message: "Successfully updated today's record",
+          data: userAttendances,
+          errorCode: null,
         );
       }
 
