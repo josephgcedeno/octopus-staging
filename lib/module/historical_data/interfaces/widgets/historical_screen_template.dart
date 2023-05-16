@@ -64,7 +64,7 @@ class _HistoricalScreenTemplateState extends State<HistoricalScreenTemplate> {
   final List<User> users = <User>[];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool isShowOptions = false;
-  String? dropdownValue;
+  late String? dropdownValue = widget.dropDownValue?.options[0];
 
   // For picking date info, if selected is type today, expected today is not null.
   PickTypeSelected? selected;
@@ -246,6 +246,7 @@ class _HistoricalScreenTemplateState extends State<HistoricalScreenTemplate> {
                                     borderSide: BorderSide.none,
                                   ),
                                 ),
+                                value: dropdownValue,
                                 icon: const Icon(
                                   Icons.keyboard_arrow_down_outlined,
                                 ),
