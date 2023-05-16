@@ -27,3 +27,23 @@ class FetchAllUserFailed extends HistoricalState {
   final String errorCode;
   final String message;
 }
+
+class FetchAttendancesReportLoading extends HistoricalState {}
+
+class FetchAttendancesReportSucces extends HistoricalState {
+  FetchAttendancesReportSucces({
+    required this.employeeAttendances,
+  });
+
+  final List<EmployeeDailyTimeRecordDTO> employeeAttendances;
+}
+
+class FetchAttendancesReportFailed extends HistoricalState {
+  FetchAttendancesReportFailed({
+    required this.errorCode,
+    required this.message,
+  });
+
+  final String errorCode;
+  final String message;
+}

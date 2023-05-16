@@ -133,8 +133,10 @@ class _AppState extends State<App> {
           ),
         ),
         BlocProvider<HistoricalCubit>(
-          create: (BuildContext context) =>
-              HistoricalCubit(userRepository: userRepository),
+          create: (BuildContext context) => HistoricalCubit(
+            userRepository: userRepository,
+            timeInOutRepository: timeInOutRepository,
+          ),
         ),
       ],
       child: MaterialApp(
