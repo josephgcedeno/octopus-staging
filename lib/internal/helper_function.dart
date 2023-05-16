@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_request.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
@@ -19,6 +20,21 @@ String printDurationFrom(Duration duration) {
   final String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
   final String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
   return '${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds';
+}
+
+String startDateToEndDateLabel({
+  DateTime? from,
+  DateTime? to,
+  DateTime? today,
+}) {
+  if (today != null) {
+    return DateFormat('MMM dd, yyyy').format(today);
+  } else if (to != null && from != null) {
+    final String startDateFormatted = DateFormat('MMM dd, yyyy').format(from);
+    final String endDateFormatted = DateFormat('MMM dd, yyyy').format(to);
+    return '$startDateFormatted - $endDateFormatted';
+  }
+  return '';
 }
 
 String computeOverTime({required int timeInEpoch, required int timeOutEpoch}) {
