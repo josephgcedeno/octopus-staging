@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
-import 'package:octopus/module/historical_data/services/cubit/historical_dto.dart';
+import 'package:octopus/infrastructures/models/user/user_response.dart';
 
 class ReportDTRPage extends StatelessWidget {
   const ReportDTRPage({required this.employeeAttendances, Key? key})
       : super(key: key);
-  final List<EmployeeDailyTimeRecordDTO> employeeAttendances;
+  final List<EmployeeDailyTimeRecord> employeeAttendances;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class ReportDTRPage extends StatelessWidget {
         itemCount: employeeAttendances.length,
         scrollDirection: Axis.vertical,
         itemBuilder: (BuildContext context, int index) {
-          final EmployeeDailyTimeRecordDTO employeeDailyTimeRecordDTO =
+          final EmployeeDailyTimeRecord employeeDailyTimeRecordDTO =
               employeeAttendances[index];
 
           return Container(

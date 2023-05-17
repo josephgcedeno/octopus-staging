@@ -8,10 +8,10 @@ import 'package:octopus/infrastructures/models/time_in_out/attendance_response.d
 import 'package:octopus/infrastructures/models/user/user_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/dsr_repository.dart';
 import 'package:octopus/infrastructures/repository/interfaces/leave_repository.dart';
+import 'package:octopus/infrastructures/repository/interfaces/pdf_repository.dart';
 import 'package:octopus/infrastructures/repository/interfaces/time_in_out_repository.dart';
 import 'package:octopus/infrastructures/repository/interfaces/user_repository.dart';
 import 'package:octopus/internal/helper_function.dart';
-import 'package:octopus/module/historical_data/services/cubit/historical_dto.dart';
 
 part 'historical_state.dart';
 
@@ -21,12 +21,14 @@ class HistoricalCubit extends Cubit<HistoricalState> {
     required this.timeInOutRepository,
     required this.dsrRepository,
     required this.leaveRepository,
+    required this.pdfRepository,
   }) : super(HistoricalInitial());
 
   final IUserRepository userRepository;
   final ITimeInOutRepository timeInOutRepository;
   final IDSRRepository dsrRepository;
   final ILeaveRepository leaveRepository;
+  final IPDFRepository pdfRepository;
 
   Future<void> fetchAllUser() async {
     try {
@@ -55,8 +57,8 @@ class HistoricalCubit extends Cubit<HistoricalState> {
     try {
       emit(FetchAttendancesReportLoading(selectedUser: state.selectedUser));
 
-      final List<EmployeeDailyTimeRecordDTO> employeeAttendances =
-          <EmployeeDailyTimeRecordDTO>[];
+      final List<EmployeeDailyTimeRecord> employeeAttendances =
+          <EmployeeDailyTimeRecord>[];
       final APIListResponse<UserAttendance> response =
           await timeInOutRepository.fetchAttendances(
         users: users,
@@ -195,15 +197,15 @@ class HistoricalCubit extends Cubit<HistoricalState> {
     }
   }
 
-  List<EmployeeDailyTimeRecordDTO> manageDTRAttendance(
+  List<EmployeeDailyTimeRecord> manageDTRAttendance(
     List<UserAttendance> data,
     List<User> users, {
     DateTime? to,
     DateTime? from,
     DateTime? today,
   }) {
-    final List<EmployeeDailyTimeRecordDTO> employeeAttendances =
-        <EmployeeDailyTimeRecordDTO>[];
+    final List<EmployeeDailyTimeRecord> employeeAttendances =
+        <EmployeeDailyTimeRecord>[];
 
     for (final UserAttendance userAttendance in data) {
       final User userObject = users.firstWhere(
@@ -308,7 +310,7 @@ class HistoricalCubit extends Cubit<HistoricalState> {
       }
 
       employeeAttendances.add(
-        EmployeeDailyTimeRecordDTO(
+        EmployeeDailyTimeRecord(
           attendances: dtrAtttendance,
           firstName: userObject.firstName,
           lastName: userObject.lastName,

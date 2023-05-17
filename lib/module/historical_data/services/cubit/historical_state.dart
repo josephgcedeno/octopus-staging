@@ -40,7 +40,7 @@ class FetchAttendancesReportSucces extends HistoricalState {
     List<User>? selectedUser,
   }) : super(selectedUser: selectedUser);
 
-  final List<EmployeeDailyTimeRecordDTO> employeeAttendances;
+  final List<EmployeeDailyTimeRecord> employeeAttendances;
 }
 
 class FetchAttendancesReportFailed extends HistoricalState {
