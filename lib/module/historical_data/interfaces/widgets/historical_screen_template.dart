@@ -12,14 +12,18 @@ import 'package:octopus/module/historical_data/interfaces/widgets/user_icon.dart
 import 'package:octopus/module/historical_data/interfaces/widgets/user_selection_builder.dart';
 import 'package:octopus/module/historical_data/services/cubit/historical_cubit.dart';
 
+enum DropdownType { dsr, leave }
+
 class DropDownValue {
   DropDownValue({
     required this.options,
     required this.hintText,
+    required this.dropdownType,
   });
 
   final List<String> options;
   final String hintText;
+  final DropdownType dropdownType;
 }
 
 class CallbackReturnData {
@@ -64,7 +68,10 @@ class _HistoricalScreenTemplateState extends State<HistoricalScreenTemplate> {
   final List<User> users = <User>[];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool isShowOptions = false;
-  late String? dropdownValue = widget.dropDownValue?.options[0];
+  late String? dropdownValue =
+      widget.dropDownValue?.dropdownType == DropdownType.leave
+          ? null
+          : widget.dropDownValue?.options[0];
 
   // For picking date info, if selected is type today, expected today is not null.
   PickTypeSelected? selected;

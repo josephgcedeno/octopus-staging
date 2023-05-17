@@ -37,6 +37,7 @@ class _DailyStandUpReportScreenState extends State<DailyStandUpReportScreen> {
             dropDownValue: DropDownValue(
               hintText: 'All Projects',
               options: <String>['All Projects', ...projects],
+              dropdownType: DropdownType.dsr,
             ),
             callback: (CallbackReturnData callbackReturnData) {
               final String projectId = state.projects
