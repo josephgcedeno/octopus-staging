@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
+import 'package:octopus/internal/string_helper.dart';
 import 'package:octopus/module/historical_data/interfaces/widgets/report_screen_page_generator.dart';
 
 enum ReportType { attendance, dsr, leaveReques }
@@ -9,10 +10,12 @@ class ReportScreenGenerator extends StatefulWidget {
   const ReportScreenGenerator({
     required this.reportDate,
     required this.reportType,
+    this.leaveType,
     Key? key,
   }) : super(key: key);
   final String reportDate;
   final ReportType reportType;
+  final String? leaveType;
 
   @override
   State<ReportScreenGenerator> createState() => _ReportScreenGeneratorState();
@@ -26,7 +29,7 @@ class _ReportScreenGeneratorState extends State<ReportScreenGenerator> {
       case ReportType.dsr:
         return 'DAILY STANDUP REPORT';
       case ReportType.leaveReques:
-        return 'LEAVE REQUESTS';
+        return 'LEAVE REQUESTS - ${widget.leaveType!.toTitleCase()}';
     }
   }
 
@@ -70,17 +73,22 @@ class _ReportScreenGeneratorState extends State<ReportScreenGenerator> {
                         height: height * 0.055,
                         child: Image.asset(nuxifyLogoPng),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: <Widget>[
-                          Text(
-                            reportTitle,
-                          ),
-                          Text(
-                            widget.reportDate,
-                            style: theme.textTheme.bodySmall,
-                          ),
-                        ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                reportTitle,
+                              ),
+                            ),
+                            Text(
+                              widget.reportDate,
+                              style: theme.textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
