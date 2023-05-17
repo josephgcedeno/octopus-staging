@@ -55,3 +55,17 @@ class LeaveRemaining {
   final int remainingLeave;
   final int consumedLeave;
 }
+
+class UserLeaveRequest {
+  UserLeaveRequest({
+    required this.userId,
+    required this.userName,
+    required this.position,
+    required this.leaveRequest,
+  });
+
+  final String userId;
+  final String userName;
+  final String position;
+  final List<LeaveRequest> leaveRequest;
+}

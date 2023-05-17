@@ -1,5 +1,6 @@
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/leaves/leaves_response.dart';
+import 'package:octopus/infrastructures/models/user/user_response.dart';
 
 abstract class ILeaveRepository {
   /// FOR: ADMIN USE ONLY
@@ -132,4 +133,23 @@ abstract class ILeaveRepository {
   });
 
   Future<APIListResponse<LeaveRequest>> getAllLeaveRequestForToday();
+
+  /// Fetches leave request records from the API based on specified filters.
+  ///
+  /// [users] list of [User] objects representing the users for whom leave request records should be fetched.
+  ///
+  /// [leaveType] string representing the type of leave for which records should be fetched.
+  ///
+  /// [today] representing the specific date for which leave request records should be fetched.
+  ///
+  /// [from] representing the start date of the date range for which leave request records should be fetched.
+  ///
+  /// [to] representing the end date of the date range for which leave request records should be fetched.
+  Future<APIListResponse<UserLeaveRequest>> fetchLeaveRequestRecord({
+    required List<User> users,
+    required String leaveType,
+    DateTime? today,
+    DateTime? from,
+    DateTime? to,
+  });
 }
