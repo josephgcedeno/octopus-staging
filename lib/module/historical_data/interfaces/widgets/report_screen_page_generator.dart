@@ -70,7 +70,7 @@ class _ReportScreenPageGeneratorState extends State<ReportScreenPageGenerator> {
           padding: const EdgeInsets.only(top: 8.0),
           child: Center(
             child: Container(
-              child: lineLoader(height: height * 0.75, width: width),
+              child: lineLoader(height: height * 0.60, width: width),
             ),
           ),
         );
