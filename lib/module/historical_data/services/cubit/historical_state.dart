@@ -107,3 +107,28 @@ class FetchLeaveReportFailed extends HistoricalState {
   final String errorCode;
   final String message;
 }
+
+class ExportPDFLoading extends HistoricalState {
+  ExportPDFLoading({
+    List<User>? selectedUser,
+  }) : super(selectedUser: selectedUser);
+}
+
+class ExportPDFSucess extends HistoricalState {
+  ExportPDFSucess({
+    required this.document,
+  });
+
+  final Uint8List document;
+}
+
+class ExportPDFFailed extends HistoricalState {
+  ExportPDFFailed({
+    required this.errorCode,
+    required this.message,
+    List<User>? selectedUser,
+  }) : super(selectedUser: selectedUser);
+
+  final String errorCode;
+  final String message;
+}

@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:octopus/infrastructures/models/api_error_response.dart';
@@ -171,6 +172,52 @@ class HistoricalCubit extends Cubit<HistoricalState> {
 
       emit(
         FetchDSRReportFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+          selectedUser: state.selectedUser,
+        ),
+      );
+    }
+  }
+
+  Future<void> exportPDFReport({
+    required String title,
+    required String dateReport,
+  }) async {
+    final HistoricalState data = state;
+    try {
+      emit(ExportPDFLoading(selectedUser: state.selectedUser));
+
+      List<EmployeeDailyTimeRecord>? employeeAttendances;
+      List<UserDSR>? userDsr;
+      List<UserLeaveRequest>? userLeaveRequests;
+
+      if (data is FetchAttendancesReportSucces) {
+        employeeAttendances = data.employeeAttendances;
+      } else if (data is FetchDSRReportSuccess) {
+        userDsr = data.userDsr;
+      } else if (data is FetchLeaveReportSuccess) {
+        userLeaveRequests = data.userLeaveRequests;
+      }
+
+      final APIResponse<Uint8List> response =
+          await pdfRepository.generateHistoricalReport(
+        title: title,
+        dateReport: dateReport,
+        employeeAttendances: employeeAttendances,
+        userDsr: userDsr,
+        userLeaveRequests: userLeaveRequests,
+      );
+
+      emit(ExportPDFSucess(document: response.data));
+
+      /// To prevent losing the last data, emit the temporary event back
+      emit(data);
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+
+      emit(
+        ExportPDFFailed(
           errorCode: error.errorCode ?? '',
           message: error.message,
           selectedUser: state.selectedUser,
