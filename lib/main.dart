@@ -137,6 +137,7 @@ class _AppState extends State<App> {
             userRepository: userRepository,
             timeInOutRepository: timeInOutRepository,
             dsrRepository: dsrRepository,
+            leaveRepository: leaveRepository,
           ),
         ),
       ],

@@ -3,9 +3,11 @@ import 'package:intl/intl.dart';
 import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
+import 'package:octopus/infrastructures/models/leaves/leaves_response.dart';
 import 'package:octopus/infrastructures/models/time_in_out/attendance_response.dart';
 import 'package:octopus/infrastructures/models/user/user_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/dsr_repository.dart';
+import 'package:octopus/infrastructures/repository/interfaces/leave_repository.dart';
 import 'package:octopus/infrastructures/repository/interfaces/time_in_out_repository.dart';
 import 'package:octopus/infrastructures/repository/interfaces/user_repository.dart';
 import 'package:octopus/internal/helper_function.dart';
@@ -18,11 +20,13 @@ class HistoricalCubit extends Cubit<HistoricalState> {
     required this.userRepository,
     required this.timeInOutRepository,
     required this.dsrRepository,
+    required this.leaveRepository,
   }) : super(HistoricalInitial());
 
   final IUserRepository userRepository;
   final ITimeInOutRepository timeInOutRepository;
   final IDSRRepository dsrRepository;
+  final ILeaveRepository leaveRepository;
 
   Future<void> fetchAllUser() async {
     try {
@@ -108,6 +112,39 @@ class HistoricalCubit extends Cubit<HistoricalState> {
 
       emit(
         FetchDSRReportSuccess(userDsr: response.data),
+      );
+    } catch (e) {
+      final APIErrorResponse error = e as APIErrorResponse;
+
+      emit(
+        FetchDSRReportFailed(
+          errorCode: error.errorCode ?? '',
+          message: error.message,
+        ),
+      );
+    }
+  }
+
+  Future<void> fetchLeave({
+    required List<User> users,
+    required String leaveType,
+    DateTime? today,
+    DateTime? from,
+    DateTime? to,
+  }) async {
+    try {
+      emit(FetchLeaveReportLoading());
+      final APIListResponse<UserLeaveRequest> response =
+          await leaveRepository.fetchLeaveRequestRecord(
+        leaveType: leaveType,
+        users: users,
+        to: to,
+        today: today,
+        from: from,
+      );
+
+      emit(
+        FetchLeaveReportSuccess(userLeaveRequests: response.data),
       );
     } catch (e) {
       final APIErrorResponse error = e as APIErrorResponse;

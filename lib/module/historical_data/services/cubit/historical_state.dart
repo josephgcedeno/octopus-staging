@@ -67,3 +67,23 @@ class FetchDSRReportFailed extends HistoricalState {
   final String errorCode;
   final String message;
 }
+
+class FetchLeaveReportLoading extends HistoricalState {}
+
+class FetchLeaveReportSuccess extends HistoricalState {
+  FetchLeaveReportSuccess({
+    required this.userLeaveRequests,
+  });
+
+  final List<UserLeaveRequest> userLeaveRequests;
+}
+
+class FetchLeaveReportFailed extends HistoricalState {
+  FetchLeaveReportFailed({
+    required this.errorCode,
+    required this.message,
+  });
+
+  final String errorCode;
+  final String message;
+}

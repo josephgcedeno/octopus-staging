@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
