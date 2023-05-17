@@ -1,3 +1,7 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'user_response.g.dart';
+
 enum UserRole { admin, client }
 
 class User {
@@ -80,6 +84,7 @@ class UseWithrRole extends User {
   final UserRole userRole;
 }
 
+@JsonSerializable()
 class EmployeeDailyTimeRecord {
   EmployeeDailyTimeRecord({
     required this.firstName,
@@ -87,6 +92,12 @@ class EmployeeDailyTimeRecord {
     required this.position,
     required this.attendances,
   });
+  
+  factory EmployeeDailyTimeRecord.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      _$EmployeeDailyTimeRecordFromJson(json);
+  Map<String, dynamic> toJson() => _$EmployeeDailyTimeRecordToJson(this);
 
   final String firstName;
   final String lastName;
@@ -94,12 +105,19 @@ class EmployeeDailyTimeRecord {
   final List<DTRAttendance> attendances;
 }
 
+@JsonSerializable()
 class DTRAttendance {
   DTRAttendance({
     required this.date,
     required this.timeInOut,
     required this.overTime,
   });
+
+  factory DTRAttendance.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      _$DTRAttendanceFromJson(json);
+  Map<String, dynamic> toJson() => _$DTRAttendanceToJson(this);
 
   final String date;
   final String timeInOut;
