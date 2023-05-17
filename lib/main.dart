@@ -138,6 +138,7 @@ class _AppState extends State<App> {
             timeInOutRepository: timeInOutRepository,
             dsrRepository: dsrRepository,
             leaveRepository: leaveRepository,
+            pdfRepository: pdfRepository,
           ),
         ),
       ],
