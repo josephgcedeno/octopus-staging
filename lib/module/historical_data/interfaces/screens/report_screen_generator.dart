@@ -2,9 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/configs/themes.dart';
+import 'package:octopus/interfaces/screens/pdf_viewer_screen.dart';
 import 'package:octopus/interfaces/widgets/upload_progress.dart';
 import 'package:octopus/internal/string_helper.dart';
-import 'package:octopus/module/accomplishments_generator/interfaces/screens/daily_accomplishment_pdf_screen.dart';
 import 'package:octopus/module/historical_data/interfaces/widgets/export_pdf_button.dart';
 import 'package:octopus/module/historical_data/interfaces/widgets/report_screen_page_generator.dart';
 import 'package:octopus/module/historical_data/services/cubit/historical_cubit.dart';
@@ -65,8 +65,7 @@ class _ReportScreenGeneratorState extends State<ReportScreenGenerator> {
 
           Navigator.of(context).push(
             MaterialPageRoute<dynamic>(
-              builder: (_) => DailyAccomplishmentPDFScreen(
-                clientName: 'clientName',
+              builder: (_) => PDFViewerScreen(
                 pdf: state.document,
               ),
             ),
