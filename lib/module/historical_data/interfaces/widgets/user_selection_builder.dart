@@ -81,7 +81,7 @@ class _UserSelectionBuilderState extends State<UserSelectionBuilder> {
                             fit: BoxFit.scaleDown,
                           ),
                         ),
-                        Text(user.firstName),
+                        Text('${user.firstName} ${user.lastName}'),
                       ],
                     ),
                   ),
