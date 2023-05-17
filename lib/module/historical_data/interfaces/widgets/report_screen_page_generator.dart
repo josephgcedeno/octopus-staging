@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/module/historical_data/interfaces/widgets/report_dsr_page.dart';
 import 'package:octopus/module/historical_data/interfaces/widgets/report_dtr_page.dart';
+import 'package:octopus/module/historical_data/interfaces/widgets/report_leave_page.dart';
 import 'package:octopus/module/historical_data/services/cubit/historical_cubit.dart';
 
 class ReportScreenPageGenerator extends StatefulWidget {
@@ -21,6 +22,8 @@ class _ReportScreenPageGeneratorState extends State<ReportScreenPageGenerator> {
 
     return BlocBuilder<HistoricalCubit, HistoricalState>(
       buildWhen: (HistoricalState previous, HistoricalState current) =>
+          current is FetchLeaveReportLoading ||
+          current is FetchLeaveReportSuccess ||
           current is FetchAttendancesReportLoading ||
           current is FetchAttendancesReportSucces ||
           current is FetchDSRReportLoading ||
@@ -32,6 +35,11 @@ class _ReportScreenPageGeneratorState extends State<ReportScreenPageGenerator> {
           );
         } else if (state is FetchDSRReportSuccess) {
           return ReportDSRPage(userDsr: state.userDsr);
+        } else if (state is FetchLeaveReportSuccess) {
+          return ReportLeavePage(
+            userLeaveRequests: state.userLeaveRequests,
+            leaveType: state.leaveType,
+          );
         }
         return Padding(
           padding: const EdgeInsets.only(top: 8.0),
