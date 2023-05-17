@@ -46,6 +46,7 @@ class PDFRepository implements IPDFRepository {
         } else if (userLeaveRequests != null) {
           generateReportUrlPath = 'leave-requests-report';
           jsonBody['leave_requests'] = userLeaveRequests;
+          jsonBody['leave_tyoe'] = leaveType;
         }
 
         final http.Response response = await http.post(

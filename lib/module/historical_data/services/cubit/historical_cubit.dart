@@ -183,6 +183,7 @@ class HistoricalCubit extends Cubit<HistoricalState> {
   Future<void> exportPDFReport({
     required String title,
     required String dateReport,
+    String? leaveType,
   }) async {
     final HistoricalState data = state;
     try {
@@ -198,6 +199,7 @@ class HistoricalCubit extends Cubit<HistoricalState> {
         userDsr = data.userDsr;
       } else if (data is FetchLeaveReportSuccess) {
         userLeaveRequests = data.userLeaveRequests;
+        leaveType = data.leaveType;
       }
 
       final APIResponse<Uint8List> response =
@@ -207,6 +209,7 @@ class HistoricalCubit extends Cubit<HistoricalState> {
         employeeAttendances: employeeAttendances,
         userDsr: userDsr,
         userLeaveRequests: userLeaveRequests,
+        leaveType: leaveType,
       );
 
       emit(ExportPDFSucess(document: response.data));
