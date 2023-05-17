@@ -144,7 +144,10 @@ class HistoricalCubit extends Cubit<HistoricalState> {
       );
 
       emit(
-        FetchLeaveReportSuccess(userLeaveRequests: response.data),
+        FetchLeaveReportSuccess(
+          userLeaveRequests: response.data,
+          leaveType: leaveType,
+        ),
       );
     } catch (e) {
       final APIErrorResponse error = e as APIErrorResponse;

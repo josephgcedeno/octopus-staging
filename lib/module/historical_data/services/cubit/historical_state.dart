@@ -73,9 +73,11 @@ class FetchLeaveReportLoading extends HistoricalState {}
 class FetchLeaveReportSuccess extends HistoricalState {
   FetchLeaveReportSuccess({
     required this.userLeaveRequests,
+    required this.leaveType,
   });
 
   final List<UserLeaveRequest> userLeaveRequests;
+  final String leaveType;
 }
 
 class FetchLeaveReportFailed extends HistoricalState {
