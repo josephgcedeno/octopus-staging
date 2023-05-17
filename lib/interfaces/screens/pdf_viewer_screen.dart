@@ -17,23 +17,19 @@ import 'package:share_plus/share_plus.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
-class DailyAccomplishmentPDFScreen extends StatefulWidget {
-  const DailyAccomplishmentPDFScreen({
-    required this.clientName,
+class PDFViewerScreen extends StatefulWidget {
+  const PDFViewerScreen({
     required this.pdf,
     Key? key,
   }) : super(key: key);
 
-  final String clientName;
   final Uint8List pdf;
 
   @override
-  State<DailyAccomplishmentPDFScreen> createState() =>
-      _DailyAccomplishmentPDFScreenState();
+  State<PDFViewerScreen> createState() => _PDFViewerScreenState();
 }
 
-class _DailyAccomplishmentPDFScreenState
-    extends State<DailyAccomplishmentPDFScreen> {
+class _PDFViewerScreenState extends State<PDFViewerScreen> {
   late Map<String, List<DSRWorks>>? selectedTasks =
       context.read<AccomplishmentsCubit>().state.selectedTasks;
 
