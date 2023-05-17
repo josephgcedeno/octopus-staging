@@ -53,7 +53,7 @@ class HistoricalCubit extends Cubit<HistoricalState> {
     DateTime? to,
   }) async {
     try {
-      emit(FetchAttendancesReportLoading());
+      emit(FetchAttendancesReportLoading(selectedUser: state.selectedUser));
 
       final List<EmployeeDailyTimeRecordDTO> employeeAttendances =
           <EmployeeDailyTimeRecordDTO>[];
@@ -78,6 +78,7 @@ class HistoricalCubit extends Cubit<HistoricalState> {
       emit(
         FetchAttendancesReportSucces(
           employeeAttendances: employeeAttendances,
+          selectedUser: state.selectedUser,
         ),
       );
     } catch (e) {
@@ -87,6 +88,7 @@ class HistoricalCubit extends Cubit<HistoricalState> {
         FetchAttendancesReportFailed(
           errorCode: error.errorCode ?? '',
           message: error.message,
+          selectedUser: state.selectedUser,
         ),
       );
     }
@@ -100,7 +102,11 @@ class HistoricalCubit extends Cubit<HistoricalState> {
     DateTime? to,
   }) async {
     try {
-      emit(FetchDSRReportLoading());
+      emit(
+        FetchDSRReportLoading(
+          selectedUser: state.selectedUser,
+        ),
+      );
       final APIListResponse<UserDSR> response =
           await dsrRepository.fetchDSRRecord(
         users: users,
@@ -111,7 +117,10 @@ class HistoricalCubit extends Cubit<HistoricalState> {
       );
 
       emit(
-        FetchDSRReportSuccess(userDsr: response.data),
+        FetchDSRReportSuccess(
+          userDsr: response.data,
+          selectedUser: state.selectedUser,
+        ),
       );
     } catch (e) {
       final APIErrorResponse error = e as APIErrorResponse;
@@ -120,6 +129,7 @@ class HistoricalCubit extends Cubit<HistoricalState> {
         FetchDSRReportFailed(
           errorCode: error.errorCode ?? '',
           message: error.message,
+          selectedUser: state.selectedUser,
         ),
       );
     }
@@ -133,7 +143,11 @@ class HistoricalCubit extends Cubit<HistoricalState> {
     DateTime? to,
   }) async {
     try {
-      emit(FetchLeaveReportLoading());
+      emit(
+        FetchLeaveReportLoading(
+          selectedUser: state.selectedUser,
+        ),
+      );
       final APIListResponse<UserLeaveRequest> response =
           await leaveRepository.fetchLeaveRequestRecord(
         leaveType: leaveType,
@@ -147,6 +161,7 @@ class HistoricalCubit extends Cubit<HistoricalState> {
         FetchLeaveReportSuccess(
           userLeaveRequests: response.data,
           leaveType: leaveType,
+          selectedUser: state.selectedUser,
         ),
       );
     } catch (e) {
@@ -156,6 +171,7 @@ class HistoricalCubit extends Cubit<HistoricalState> {
         FetchDSRReportFailed(
           errorCode: error.errorCode ?? '',
           message: error.message,
+          selectedUser: state.selectedUser,
         ),
       );
     }
