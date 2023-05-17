@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
+import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/historical_data/interfaces/widgets/report_dsr_page.dart';
 import 'package:octopus/module/historical_data/interfaces/widgets/report_dtr_page.dart';
 import 'package:octopus/module/historical_data/interfaces/widgets/report_leave_page.dart';
@@ -20,7 +21,31 @@ class _ReportScreenPageGeneratorState extends State<ReportScreenPageGenerator> {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
 
-    return BlocBuilder<HistoricalCubit, HistoricalState>(
+    return BlocConsumer<HistoricalCubit, HistoricalState>(
+      listenWhen: (HistoricalState previous, HistoricalState current) =>
+          current is FetchLeaveReportFailed ||
+          current is FetchAttendancesReportFailed ||
+          current is FetchDSRReportFailed,
+      listener: (BuildContext context, HistoricalState state) {
+        if (state is FetchLeaveReportFailed) {
+          showSnackBar(
+            message: state.message,
+            snackBartState: SnackBartState.error,
+          );
+        }
+        if (state is FetchAttendancesReportFailed) {
+          showSnackBar(
+            message: state.message,
+            snackBartState: SnackBartState.error,
+          );
+        }
+        if (state is FetchDSRReportFailed) {
+          showSnackBar(
+            message: state.message,
+            snackBartState: SnackBartState.error,
+          );
+        }
+      },
       buildWhen: (HistoricalState previous, HistoricalState current) =>
           current is FetchLeaveReportLoading ||
           current is FetchLeaveReportSuccess ||
