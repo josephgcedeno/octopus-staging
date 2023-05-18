@@ -101,64 +101,67 @@ class ReportLeavePage extends StatelessWidget {
             decoration: const BoxDecoration(
               color: Colors.white,
             ),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        leaveRequest.userName,
-                        style: theme.textTheme.bodyMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        leaveRequest.position,
-                        style: theme.textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 24),
-                    child: Column(
+            child: Scrollbar(
+              thumbVisibility: true,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        if (leaveType == leaveTypeVacationLeave)
-                          for (String status in leaveStatus)
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    status.toCapitalized(),
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                      top: 8.0,
-                                      left: 8.0,
-                                    ),
-                                    child: resultsColumn(
-                                      getAllListRequest(
-                                        status,
-                                        leaveRequest.leaveRequest,
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            )
-                        else
-                          resultsColumn(leaveRequest.leaveRequest)
+                        Text(
+                          leaveRequest.userName,
+                          style: theme.textTheme.bodyMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          leaveRequest.position,
+                          style: theme.textTheme.bodySmall,
+                        ),
                       ],
                     ),
-                  ),
-                ],
+                    Padding(
+                      padding: const EdgeInsets.only(top: 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          if (leaveType == leaveTypeVacationLeave)
+                            for (String status in leaveStatus)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      status.toCapitalized(),
+                                      style: theme.textTheme.bodySmall?.copyWith(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: 8.0,
+                                        left: 8.0,
+                                      ),
+                                      child: resultsColumn(
+                                        getAllListRequest(
+                                          status,
+                                          leaveRequest.leaveRequest,
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              )
+                          else
+                            resultsColumn(leaveRequest.leaveRequest)
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );

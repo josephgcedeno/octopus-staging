@@ -36,90 +36,93 @@ class ReportDSRPage extends StatelessWidget {
             decoration: const BoxDecoration(
               color: Colors.white,
             ),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        userDSR.userName,
-                        style: theme.textTheme.bodyMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        userDSR.position,
-                        style: theme.textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 24),
-                    child: Column(
+            child: Scrollbar(
+              thumbVisibility: true,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        for (MapEntry<String, List<DSRWorks>> entry
-                            in dsrs.entries)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  entry.key.toCapitalized(),
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                if (dsrs[entry.key]!.isNotEmpty)
-                                  for (final DSRWorks userDSRRecord
-                                      in dsrs[entry.key]!)
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                        top: 8.0,
-                                        left: 8.0,
-                                      ),
-                                      child: Column(
-                                        children: <Widget>[
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                              bottom: 8.0,
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: <Widget>[
-                                                Text(userDSRRecord.text),
-                                                ProjectChip(
-                                                  color: Color(
-                                                    int.parse(
-                                                      userDSRRecord.color,
-                                                    ),
-                                                  ),
-                                                  id: userDSRRecord.tagId,
-                                                  name:
-                                                      userDSRRecord.projectName,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                else
-                                  const Center(
-                                    child: Text('No record found.'),
-                                  )
-                              ],
-                            ),
-                          ),
+                        Text(
+                          userDSR.userName,
+                          style: theme.textTheme.bodyMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          userDSR.position,
+                          style: theme.textTheme.bodySmall,
+                        ),
                       ],
                     ),
-                  ),
-                ],
+                    Padding(
+                      padding: const EdgeInsets.only(top: 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          for (MapEntry<String, List<DSRWorks>> entry
+                              in dsrs.entries)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    entry.key.toCapitalized(),
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  if (dsrs[entry.key]!.isNotEmpty)
+                                    for (final DSRWorks userDSRRecord
+                                        in dsrs[entry.key]!)
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          top: 8.0,
+                                          left: 8.0,
+                                        ),
+                                        child: Column(
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                bottom: 8.0,
+                                              ),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: <Widget>[
+                                                  Text(userDSRRecord.text),
+                                                  ProjectChip(
+                                                    color: Color(
+                                                      int.parse(
+                                                        userDSRRecord.color,
+                                                      ),
+                                                    ),
+                                                    id: userDSRRecord.tagId,
+                                                    name:
+                                                        userDSRRecord.projectName,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                  else
+                                    const Center(
+                                      child: Text('No record found.'),
+                                    )
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
