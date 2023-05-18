@@ -46,7 +46,7 @@ class PDFRepository implements IPDFRepository {
         }
 
         final http.Response response = await http.post(
-          Uri.http(
+          Uri.https(
             _baseUrlApi,
             '$_generatePdfUrl/historical-report',
           ),
