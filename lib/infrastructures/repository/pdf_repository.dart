@@ -31,20 +31,16 @@ class PDFRepository implements IPDFRepository {
       final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
 
       if (user != null && user.get<bool>(usersIsAdminField)!) {
-        late final String generateReportUrlPath;
         final Map<String, dynamic> jsonBody = <String, dynamic>{
           'date_report': dateReport,
           'title': title,
         };
 
         if (employeeAttendances != null) {
-          generateReportUrlPath = 'attendances-report';
           jsonBody['attendaces'] = employeeAttendances;
         } else if (userDsr != null) {
-          generateReportUrlPath = 'dsr-report';
           jsonBody['dsrs'] = userDsr;
         } else if (userLeaveRequests != null) {
-          generateReportUrlPath = 'leave-requests-report';
           jsonBody['leave_requests'] = userLeaveRequests;
           jsonBody['leave_tyoe'] = leaveType;
         }
@@ -52,7 +48,7 @@ class PDFRepository implements IPDFRepository {
         final http.Response response = await http.post(
           Uri.http(
             _baseUrlApi,
-            '$_generatePdfUrl/$generateReportUrlPath',
+            '$_generatePdfUrl/historical-report',
           ),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
