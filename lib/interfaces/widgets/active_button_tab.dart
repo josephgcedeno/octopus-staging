@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
 
-class AccomplishmentTaskButton extends StatelessWidget {
-  const AccomplishmentTaskButton({
+class ActiveButtonTab extends StatelessWidget {
+  const ActiveButtonTab({
     required this.isClicked,
     required this.title,
     required this.onPressed,

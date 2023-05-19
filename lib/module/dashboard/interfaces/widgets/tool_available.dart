@@ -7,6 +7,7 @@ import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/screens/accomplishments_generator_screen.dart';
 import 'package:octopus/module/admin_registration/interfaces/screens/team_members_list_screen.dart';
 import 'package:octopus/module/dashboard/interfaces/widgets/dashboard_button.dart';
+import 'package:octopus/module/historical_data/interfaces/screens/historical_data_screen.dart';
 import 'package:octopus/module/hr_files/interfaces/screens/hr_files_screen.dart';
 import 'package:octopus/module/leaves/interfaces/screens/leaves_admin_screen.dart';
 import 'package:octopus/module/leaves/interfaces/screens/leaves_screen.dart';
@@ -155,7 +156,13 @@ class _ToolsAvailableState extends State<ToolsAvailable> {
                         DashboardButton(
                           icon: Icons.collections_bookmark_outlined,
                           label: 'Historical Data',
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute<dynamic>(
+                                builder: (_) => const HistoricalDataScreen(),
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),

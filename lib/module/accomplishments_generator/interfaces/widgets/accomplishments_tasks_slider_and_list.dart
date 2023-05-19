@@ -5,11 +5,11 @@ import 'package:intl/intl.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
 import 'package:octopus/infrastructures/models/project/project_response.dart';
+import 'package:octopus/interfaces/widgets/active_button_tab.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_date_picker.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_dots_indicator.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_project_card.dart';
-import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_task_button.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_tasks_checker.dart';
 import 'package:octopus/module/accomplishments_generator/service/cubit/accomplishments_cubit.dart';
 
@@ -427,17 +427,17 @@ class _AccomplishmentsSliderAndTasksListState
                     Wrap(
                       spacing: 10,
                       children: <Widget>[
-                        AccomplishmentTaskButton(
+                        ActiveButtonTab(
                           title: 'Done',
                           onPressed: () => toggleCategory('done'),
                           isClicked: shouldHighlightButton('done'),
                         ),
-                        AccomplishmentTaskButton(
+                        ActiveButtonTab(
                           title: 'Doing',
                           onPressed: () => toggleCategory('doing'),
                           isClicked: shouldHighlightButton('doing'),
                         ),
-                        AccomplishmentTaskButton(
+                        ActiveButtonTab(
                           title: 'Blocked',
                           onPressed: () => toggleCategory('blockers'),
                           isClicked: shouldHighlightButton('blockers'),

@@ -59,7 +59,7 @@ class LeavesCubit extends Cubit<LeavesState> {
       final APIErrorResponse error = e as APIErrorResponse;
 
       emit(
-        FetchAllLeavesDataFailed(
+        SubmitLeavesRequestFailed(
           errorCode: error.errorCode ?? '',
           message: error.message,
         ),

@@ -1,5 +1,6 @@
 // Local storage keys
 const String lsId = 'lsID';
+const String lsUserId = 'lsUserId';
 const String lsFirstName = 'lsFirstName';
 const String lsLastName = 'lsLastName';
 const String lsNuxifyId = 'lsNuxifyId';

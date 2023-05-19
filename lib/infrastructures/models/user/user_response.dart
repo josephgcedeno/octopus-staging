@@ -1,3 +1,7 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'user_response.g.dart';
+
 enum UserRole { admin, client }
 
 class User {
@@ -17,9 +21,10 @@ class User {
     required this.sssNo,
     required this.tinNo,
     required this.philHealtNo,
+    required this.userId,
   });
 
-  final String id;
+  final String id; // this id is from the employee record info
   final String firstName;
   final String lastName;
   final String nuxifyId;
@@ -35,6 +40,7 @@ class User {
   final String sssNo;
   final String tinNo;
   final String philHealtNo;
+  final String userId; // this id is from the main User id column.
 }
 
 class UseWithrRole extends User {
@@ -55,6 +61,7 @@ class UseWithrRole extends User {
     required String sssNo,
     required String tinNo,
     required String philHealtNo,
+    required String userId,
   }) : super(
           id: id,
           firstName: firstName,
@@ -71,7 +78,48 @@ class UseWithrRole extends User {
           sssNo: sssNo,
           tinNo: tinNo,
           philHealtNo: philHealtNo,
+          userId: userId,
         );
 
   final UserRole userRole;
+}
+
+@JsonSerializable()
+class EmployeeDailyTimeRecord {
+  EmployeeDailyTimeRecord({
+    required this.firstName,
+    required this.lastName,
+    required this.position,
+    required this.attendances,
+  });
+  
+  factory EmployeeDailyTimeRecord.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      _$EmployeeDailyTimeRecordFromJson(json);
+  Map<String, dynamic> toJson() => _$EmployeeDailyTimeRecordToJson(this);
+
+  final String firstName;
+  final String lastName;
+  final String position;
+  final List<DTRAttendance> attendances;
+}
+
+@JsonSerializable()
+class DTRAttendance {
+  DTRAttendance({
+    required this.date,
+    required this.timeInOut,
+    required this.overTime,
+  });
+
+  factory DTRAttendance.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      _$DTRAttendanceFromJson(json);
+  Map<String, dynamic> toJson() => _$DTRAttendanceToJson(this);
+
+  final String date;
+  final String timeInOut;
+  final String overTime;
 }

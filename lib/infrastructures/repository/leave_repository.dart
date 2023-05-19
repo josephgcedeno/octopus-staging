@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:octopus/infrastructures/models/api_error_response.dart';
 import 'package:octopus/infrastructures/models/api_response.dart';
 import 'package:octopus/infrastructures/models/leaves/leaves_response.dart';
+import 'package:octopus/infrastructures/models/user/user_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/leave_repository.dart';
 import 'package:octopus/internal/class_parse_object.dart';
 import 'package:octopus/internal/database_strings.dart';
@@ -896,6 +897,144 @@ class LeaveRepository extends ILeaveRepository {
         );
       }
 
+      String errorMessage = errorSomethingWentWrong;
+      if (user != null && !user.get<bool>(usersIsAdminField)!) {
+        errorMessage = errorInvalidPermission;
+      }
+      throw APIErrorResponse(
+        message: errorMessage,
+        errorCode: null,
+      );
+    } on SocketException {
+      throw APIErrorResponse.socketErrorResponse();
+    }
+  }
+
+  @override
+  Future<APIListResponse<UserLeaveRequest>> fetchLeaveRequestRecord({
+    required List<User> users,
+    required String leaveType,
+    DateTime? today,
+    DateTime? from,
+    DateTime? to,
+  }) async {
+    if (users.isEmpty || leaveType.isEmpty) {
+      throw APIErrorResponse(
+        message: 'These fields cannot be empty',
+        errorCode: null,
+      );
+    } else if (today == null && (from == null && to == null)) {
+      throw APIErrorResponse(
+        message:
+            'Date must not be all null. Either today or date range should be filled.',
+        errorCode: null,
+      );
+    }
+    try {
+      final ParseUser? user = await ParseUser.currentUser() as ParseUser?;
+
+      if (user != null && user.get<bool>(usersIsAdminField)!) {
+        final LeavesRequestsParseObject leavesRequestsParseObject =
+            LeavesRequestsParseObject();
+
+        final QueryBuilder<LeavesRequestsParseObject> queryUserLeaveRequest =
+            QueryBuilder<LeavesRequestsParseObject>(leavesRequestsParseObject);
+
+        if (today != null) {
+          final DateTime startDate =
+              DateTime(today.year, today.month, today.day);
+          final DateTime endDate =
+              DateTime(today.year, today.month, today.day, 23, 59, 59);
+
+          queryUserLeaveRequest
+            ..whereGreaterThanOrEqualsTo(
+              LeavesRequestsParseObject.keyLeaveDateFrom,
+              epochFromDateTime(
+                date: startDate,
+              ),
+            )
+            ..whereLessThanOrEqualTo(
+              LeavesRequestsParseObject.keyLeaveDateFrom,
+              epochFromDateTime(
+                date: endDate,
+              ),
+            );
+        } else if (from != null && to != null) {
+          queryUserLeaveRequest
+            ..whereGreaterThanOrEqualsTo(
+              LeavesRequestsParseObject.keyLeaveDateFrom,
+              epochFromDateTime(date: from),
+            )
+            ..whereLessThanOrEqualTo(
+              LeavesRequestsParseObject.keyLeaveDateFrom,
+              epochFromDateTime(date: to),
+            );
+        }
+
+        final List<UserLeaveRequest> userLeaveRequest = <UserLeaveRequest>[];
+
+        for (final User userRecord in users) {
+          final String userId = userRecord.userId;
+
+          queryUserLeaveRequest
+            ..whereEqualTo(
+              LeavesRequestsParseObject.keyUser,
+              ParseUser.forQuery()..objectId = userId,
+            )
+            ..whereEqualTo(LeavesRequestsParseObject.keyLeaveType, leaveType);
+
+          final ParseResponse queryLeaveRequestResponse =
+              await queryUserLeaveRequest.query();
+
+          if (queryLeaveRequestResponse.error != null) {
+            formatAPIErrorResponse(error: queryLeaveRequestResponse.error!);
+          }
+          final List<LeaveRequest> leaveRequest = <LeaveRequest>[];
+
+          if (queryLeaveRequestResponse.success &&
+              queryLeaveRequestResponse.count > 0) {
+            final List<LeavesRequestsParseObject> allLeaveRequestCasted =
+                List<LeavesRequestsParseObject>.from(
+              queryLeaveRequestResponse.results ?? <dynamic>[],
+            );
+
+            for (final LeavesRequestsParseObject leaveReq
+                in allLeaveRequestCasted) {
+              leaveRequest.add(
+                LeaveRequest(
+                  dateFiledEpoch: leaveReq.dateFiled,
+                  dateFromEpoch: leaveReq.leaveDateFrom,
+                  dateToEpoch: leaveReq.leaveDateTo,
+                  dateUsedEpoch: leaveReq.dateUsed ?? 0,
+                  id: leaveReq.objectId!,
+                  leaveId: leaveReq.leave.objectId!,
+                  leaveType: leaveReq.leaveType,
+                  reason: leaveReq.reason,
+                  status: leaveReq.status,
+                  userId: leaveReq.user.objectId!,
+                  declineReason: leaveReq.declineReason,
+                ),
+              );
+            }
+          }
+
+          userLeaveRequest.add(
+            UserLeaveRequest(
+              userId: userId,
+              userName: '${userRecord.firstName} ${userRecord.lastName}',
+              position: userRecord.position,
+              leaveRequest: leaveRequest,
+            ),
+          );
+        }
+
+        return APIListResponse<UserLeaveRequest>(
+          success: true,
+          message: "Successfully fetch user's record",
+          data: userLeaveRequest,
+          errorCode: null,
+        );
+      }
       String errorMessage = errorSomethingWentWrong;
       if (user != null && !user.get<bool>(usersIsAdminField)!) {
         errorMessage = errorInvalidPermission;

@@ -54,6 +54,7 @@ class _MembersProfileScreenState extends State<MembersProfileScreen> {
     final String sssNo = await getFromSecureStorage(lsSssNo);
     final String tinNo = await getFromSecureStorage(lsTinNo);
     final String philHealthNo = await getFromSecureStorage(lsPhilHealthNo);
+    final String userId = await getFromSecureStorage(lsUserId);
 
     return User(
       id: id,
@@ -71,6 +72,7 @@ class _MembersProfileScreenState extends State<MembersProfileScreen> {
       sssNo: sssNo,
       tinNo: tinNo,
       philHealtNo: philHealthNo,
+      userId: userId,
     );
   }
 

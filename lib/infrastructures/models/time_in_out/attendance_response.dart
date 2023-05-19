@@ -21,6 +21,7 @@ class Attendance {
     this.offsetStatus,
     this.offsetDuration,
     this.requiredDuration,
+    this.date,
   });
   final String id;
   final int? timeInEpoch;
@@ -29,4 +30,15 @@ class Attendance {
   final String? offsetStatus;
   final int? offsetDuration;
   final int? requiredDuration;
+  final int? date;
+}
+
+class UserAttendance {
+  UserAttendance({
+    required this.userId,
+    required this.attendances,
+  });
+
+  final String userId;
+  final List<Attendance> attendances;
 }
