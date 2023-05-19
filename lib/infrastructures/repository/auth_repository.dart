@@ -110,6 +110,7 @@ class AuthRepository extends IAuthRepository {
               profileImageSource: result.profileImageSource,
               sssNo: result.sssNo,
               tinNo: result.tinNo,
+              userId: result.user.objectId!,
             ),
           );
         }

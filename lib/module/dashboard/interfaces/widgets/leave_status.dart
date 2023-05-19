@@ -121,44 +121,49 @@ class _PanelLeavesStatusState extends State<PanelLeavesStatus> {
             state.message == errorInvalidPermission) {
           return const SizedBox.shrink();
         } else if (state is FetchAllLeaveTodaySuccess) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.symmetric(vertical: height * 0.02),
-                child: Text(
-                  'Leave Status',
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(fontWeight: FontWeight.bold),
+          if (state.leaveRequests.isNotEmpty) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: height * 0.02),
+                  child: Text(
+                    'Leave Status',
+                    style: theme.textTheme.bodyMedium
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: state.leaveRequests.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final LeaveRequest leaveRequest = state.leaveRequests[index];
-                  final DateTime dateTimeFrom =
-                      dateTimeFromEpoch(epoch: leaveRequest.dateFromEpoch);
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: state.leaveRequests.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final LeaveRequest leaveRequest =
+                        state.leaveRequests[index];
+                    final DateTime dateTimeFrom =
+                        dateTimeFromEpoch(epoch: leaveRequest.dateFromEpoch);
 
-                  final DateTime dateTimeTo =
-                      dateTimeFromEpoch(epoch: leaveRequest.dateToEpoch);
+                    final DateTime dateTimeTo =
+                        dateTimeFromEpoch(epoch: leaveRequest.dateToEpoch);
 
-                  final String startAndEndDate = '${DateFormat(
-                    'MMM dd',
-                  ).format(dateTimeFrom)} - ${DateFormat(
-                    'MMM dd',
-                  ).format(dateTimeTo)}';
+                    final String startAndEndDate = '${DateFormat(
+                      'MMM dd',
+                    ).format(dateTimeFrom)} - ${DateFormat(
+                      'MMM dd',
+                    ).format(dateTimeTo)}';
 
-                  return listView(
-                    startAndEndDate: startAndEndDate,
-                    status: leaveRequest.status,
-                    leaveType: leaveRequest.leaveType,
-                    theme: theme,
-                  );
-                },
-              ),
-            ],
-          );
+                    return listView(
+                      startAndEndDate: startAndEndDate,
+                      status: leaveRequest.status,
+                      leaveType: leaveRequest.leaveType,
+                      theme: theme,
+                    );
+                  },
+                ),
+              ],
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
         }
         return Column(
           children: <Widget>[

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
+import 'package:octopus/interfaces/screens/pdf_viewer_screen.dart';
 import 'package:octopus/interfaces/widgets/upload_progress.dart';
-import 'package:octopus/module/accomplishments_generator/interfaces/screens/daily_accomplishment_pdf_screen.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/daily_accomplishment_tabs.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/daily_accomplishment_text_field.dart';
 import 'package:octopus/module/accomplishments_generator/service/cubit/accomplishments_cubit.dart';
@@ -61,8 +61,7 @@ class _DailyAccomplishmentReportScreenState
           Navigator.of(context).pop(); // pop the alert dialog
           Navigator.of(context).push(
             MaterialPageRoute<dynamic>(
-              builder: (_) => DailyAccomplishmentPDFScreen(
-                clientName: clientName,
+              builder: (_) => PDFViewerScreen(
                 pdf: state.document,
               ),
             ),

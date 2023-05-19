@@ -92,6 +92,10 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
       key: lsPhilHealthNo,
       value: user.philHealtNo,
     );
+    await storageRepository.write(
+      key: lsUserId,
+      value: user.userId,
+    );
   }
 
   /// This flush the user info from secure storage after logout.
