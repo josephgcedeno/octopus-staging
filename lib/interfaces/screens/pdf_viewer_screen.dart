@@ -1,23 +1,16 @@
 import 'dart:io';
-import 'dart:math';
-
 import 'package:download/download.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/configs/themes.dart';
-import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
-import 'package:octopus/interfaces/widgets/loading_indicator.dart';
-import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/internal/debug_utils.dart';
-import 'package:octopus/module/accomplishments_generator/service/cubit/accomplishments_cubit.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
-class PDFViewerScreen extends StatefulWidget {
+class PDFViewerScreen extends StatelessWidget {
   const PDFViewerScreen({
     required this.pdf,
     Key? key,
@@ -25,26 +18,12 @@ class PDFViewerScreen extends StatefulWidget {
 
   final Uint8List pdf;
 
-  @override
-  State<PDFViewerScreen> createState() => _PDFViewerScreenState();
-}
-
-class _PDFViewerScreenState extends State<PDFViewerScreen> {
-  late Map<String, List<DSRWorks>>? selectedTasks =
-      context.read<AccomplishmentsCubit>().state.selectedTasks;
-
-  bool isDownloading = false;
-  bool isLoading = true;
-  bool isLoadingFailed = false;
-
-  final int loaderItems = 13;
-
   Future<void> sharePDF() async {
     try {
       Share.shareXFiles(
         <XFile>[
           XFile.fromData(
-            widget.pdf,
+            pdf,
             mimeType: 'application/pdf',
             name: 'Daily Report',
           )
@@ -103,10 +82,6 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
 
   Future<void> downloadPDF(String title, Uint8List file) async {
     try {
-      setState(() {
-        isDownloading = true;
-      });
-
       final Stream<int> stream = Stream<int>.fromIterable(file);
       final String fileName = (title.replaceAll(' ', '-')).toLowerCase();
       final Directory? directory = await _getAppDirectory();
@@ -114,8 +89,6 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
 
       await download(stream, '$appDirectory$fileName.pdf');
       showSnackBar(message: 'File downloaded successfully $appDirectory');
-
-      setState(() => isDownloading = false);
     } catch (error) {
       showSnackBar(
         message: error.toString(),
@@ -151,103 +124,26 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
             ),
           ),
           GestureDetector(
-            onTap: () => downloadPDF('report', widget.pdf),
+            onTap: () => downloadPDF('report', pdf),
             child: Container(
               margin: EdgeInsets.only(
                 right: width * 0.04,
               ),
               height: height * 0.0003,
-              child: isDownloading
-                  ? const Center(
-                      child: LoadingIndicator(
-                        color: kLightBlack,
-                      ),
-                    )
-                  : const Icon(
-                      Icons.file_download_outlined,
-                      color: kLightBlack,
-                      size: 25,
-                    ),
-            ),
-          ),
-        ],
-      ),
-      body: CustomScrollView(
-        slivers: <Widget>[
-          SliverFillRemaining(
-            child: SizedBox(
-              width: width,
-              height: height,
-              child: Stack(
-                children: <Widget>[
-                  SfPdfViewerTheme(
-                    data: SfPdfViewerThemeData(
-                      progressBarColor: ktransparent,
-                    ),
-                    child: SfPdfViewer.memory(
-                      widget.pdf,
-                      onDocumentLoaded: (_) {
-                        setState(() {
-                          isLoading = false;
-                        });
-                      },
-                      onDocumentLoadFailed: (_) {
-                        setState(() {
-                          isLoadingFailed = true;
-                        });
-                      },
-                    ),
-                  ),
-                  Visibility(
-                    visible: isLoading,
-                    child: Container(
-                      width: double.infinity,
-                      color: kLightGrey,
-                      padding: EdgeInsets.all(width * 0.035),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          for (int i = 0; i < loaderItems; i++)
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                vertical: height * 0.008,
-                                horizontal: width * 0.025,
-                              ),
-                              child: lineLoader(
-                                height: Random().nextInt(15) + 10,
-                                width: double.infinity,
-                              ),
-                            )
-                        ],
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: isLoadingFailed,
-                    child: Container(
-                      width: double.infinity,
-                      color: kLightGrey,
-                      padding: EdgeInsets.all(width * 0.035),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.all(height * 0.015),
-                            child: const Icon(
-                              Icons.error_outline_outlined,
-                            ),
-                          ),
-                          const Text('Document failed to load'),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+              child: const Icon(
+                Icons.file_download_outlined,
+                color: kLightBlack,
+                size: 25,
               ),
             ),
           ),
         ],
+      ),
+      body: SfPdfViewerTheme(
+        data: SfPdfViewerThemeData(
+          progressBarColor: ktransparent,
+        ),
+        child: SfPdfViewer.memory(pdf),
       ),
     );
   }
