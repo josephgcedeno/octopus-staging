@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/internal/debug_utils.dart';
+import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
@@ -99,6 +100,7 @@ class PDFViewerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
 
@@ -139,11 +141,50 @@ class PDFViewerScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: SfPdfViewerTheme(
-        data: SfPdfViewerThemeData(
-          progressBarColor: ktransparent,
-        ),
-        child: SfPdfViewer.memory(pdf),
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            flex: 7,
+            child: SfPdfViewerTheme(
+              data: SfPdfViewerThemeData(
+                progressBarColor: ktransparent,
+              ),
+              child: SfPdfViewer.memory(pdf),
+            ),
+          ),
+          Expanded(
+            child: GestureDetector(
+              onTap: () => Navigator.pushReplacement(
+                context,
+                MaterialPageRoute<dynamic>(
+                  builder: (_) => const ControllerScreen(),
+                ),
+              ),
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: width * 0.06,
+                  vertical: height * 0.02,
+                ),
+                margin: EdgeInsets.symmetric(
+                  vertical: height * 0.02,
+                  horizontal: width * 0.04,
+                ),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: theme.primaryColor,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Text(
+                  'Go to Dashboard',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: kWhite,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
