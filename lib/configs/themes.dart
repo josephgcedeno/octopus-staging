@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 final ThemeData defaultTheme = _buildDefaultTheme();
@@ -57,6 +58,18 @@ TextTheme _buildDefaultTextTheme(TextTheme base) {
     labelSmall: base.labelSmall?.copyWith(fontFamily: 'Gilroy'),
   );
 }
+
+ButtonStyle primaryButtonStyle = ButtonStyle(
+  elevation: MaterialStateProperty.all(0),
+  shape: MaterialStateProperty.all(
+    RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(6),
+    ),
+  ),
+  padding: kIsWeb
+      ? MaterialStateProperty.all(const EdgeInsets.symmetric(vertical: 20))
+      : MaterialStateProperty.all(const EdgeInsets.all(10)),
+);
 
 const Color shimmerBase = Colors.white38;
 const Color shimmerGlow = Colors.white60;
