@@ -31,9 +31,10 @@
 .packages
 .pub-cache/
 .pub/
-/build/
+/build/*
 
 # Web related
+!/build/web/
 lib/generated_plugin_registrant.dart
 
 # Symbolication related
