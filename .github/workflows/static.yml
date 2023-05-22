@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy Flutter Web Octopus with GitHub Pages
 
 on:
   push:
@@ -17,6 +17,10 @@ jobs:
       uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
+        flutter-version: '3.7.8'
+        
+    - name: Clean flutter to be able to generate flutter.js every build
+      run: flutter clean
 
     - name: Install dependencies
       run: flutter pub get
