@@ -29,7 +29,14 @@ jobs:
       run: flutter pub run build_runner build --delete-conflicting-outputs
 
     - name: Build web
-      run: flutter build web --release
+      run: |
+        echo "APP_ID=${{ secrets.APP_ID }}" >> .env
+        echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
+        echo "MASTER_KEY=${{ secrets.MASTER_KEY }}" >> .env
+        echo "TITLE=${{ secrets.TITLE }}" >> .env
+        echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env
+        echo "STAGING_PARSE_SERVER_API=${{ secrets.STAGING_PARSE_SERVER_API }}" >> .env
+        flutter build web --release
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
