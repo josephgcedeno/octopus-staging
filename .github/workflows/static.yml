@@ -33,8 +33,8 @@ jobs:
       run: |
         if [ "${{ secrets.API_ENV }}" = "staging" ]; then
           
-          echo "SAMPLE=${{ secrets.SAMPLE }}" >> .env
-          echo "SAMPLE=$SAMPLE" >> .env
+          echo "SAMPLE=${{ secrets.API_ENVV2 }}" >> .env
+          echo "SAMPLE=${{ vars.API_ENVV2 }}" >> .env
           
           echo "STAGING_APP_ID=${{ secrets.STAGING_APP_ID }}" >> .env
           echo "STAGING_SERVER_URL=${{ secrets.STAGING_SERVER_URL }}" >> .env
