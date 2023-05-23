@@ -3,7 +3,7 @@ name: Deploy Flutter Web Octopus with GitHub Pages
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ["release/staging"]
+    branches: ["feature/gh-flutter-web-deployment"]
   
 jobs:
   build-and-deploy:
