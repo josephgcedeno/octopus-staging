@@ -14,7 +14,10 @@ import 'package:octopus/internal/helper_function.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class HRRepository extends IHRRepository {
-  final String encryptionKey = dotenv.get('ENCRYPTION_KEY');
+  final String encryptionKey = dotenv.get('API_ENV') == 'staging'
+      ? dotenv.get('STAGING_ENCRYPTION_KEY')
+      : dotenv.get('ENCRYPTION_KEY');
+
   late final EncryptionService encryptionService =
       EncryptionService(encryptionKey);
 

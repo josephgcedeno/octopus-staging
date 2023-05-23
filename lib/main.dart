@@ -37,9 +37,17 @@ void main() async {
   /// Load env file
   await dotenv.load();
 
-  final String appId = dotenv.get('APP_ID');
-  final String serverUrl = dotenv.get('SERVER_URL');
-  final String masterKey = dotenv.get('MASTER_KEY');
+  final String appId = dotenv.get('API_ENV') == 'staging'
+      ? dotenv.get('STAGING_APP_ID')
+      : dotenv.get('APP_ID');
+
+  final String serverUrl = dotenv.get('API_ENV') == 'staging'
+      ? dotenv.get('STAGING_SERVER_URL')
+      : dotenv.get('SERVER_URL');
+
+  final String masterKey = dotenv.get('API_ENV') == 'staging'
+      ? dotenv.get('STAGING_MASTER_KEY')
+      : dotenv.get('MASTER_KEY');
 
   final String liveQueryUrl = 'ws://${serverUrl.split('/')[2]}/';
 
@@ -144,7 +152,6 @@ class _AppState extends State<App> {
       ],
       child: MaterialApp(
         scaffoldMessengerKey: snackbarKey,
-        title: dotenv.get('TITLE'),
         home: _HomePageState(),
         theme: defaultTheme,
         supportedLocales: const <Locale>[
