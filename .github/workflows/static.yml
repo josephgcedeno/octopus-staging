@@ -13,9 +13,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-      with:
-        github_token: ${{ secrets.PAT_TOKEN }} # We use Personal access token instead of Github token since it is set to create a branch container the static page generated from flutter
-        ref: release-production
 
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
