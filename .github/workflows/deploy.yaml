@@ -1,4 +1,4 @@
-name: Deploy Flutter Web Octopus with GitHub Pages
+name: Build Static Website branch from Octopus
 
 on:
   # Runs on pushes targeting the default branch
