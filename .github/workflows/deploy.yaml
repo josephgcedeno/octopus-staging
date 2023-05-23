@@ -30,18 +30,18 @@ jobs:
 
       - name: Build web
         run: |
-          if [ "${{ secrets.API_ENV }}" = "staging" ]; then
-            echo "STAGING_APP_ID=${{ secrets.STAGING_APP_ID }}" >> .env
-            echo "STAGING_SERVER_URL=${{ secrets.STAGING_SERVER_URL }}" >> .env
-            echo "STAGING_MASTER_KEY=${{ secrets.STAGING_MASTER_KEY }}" >> .env
-            echo "STAGING_ENCRYPTION_KEY=${{ secrets.STAGING_ENCRYPTION_KEY }}" >> .env
-            echo "STAGING_PARSE_SERVER_API=${{ secrets.STAGING_PARSE_SERVER_API }}" >> .env
+          if [ "${{ vars.API_ENV }}" = "staging" ]; then
+            echo "STAGING_APP_ID=${{ vars.STAGING_APP_ID }}" >> .env
+            echo "STAGING_SERVER_URL=${{ vars.STAGING_SERVER_URL }}" >> .env
+            echo "STAGING_MASTER_KEY=${{ vars.STAGING_MASTER_KEY }}" >> .env
+            echo "STAGING_ENCRYPTION_KEY=${{ vars.STAGING_ENCRYPTION_KEY }}" >> .env
+            echo "STAGING_PARSE_SERVER_API=${{ vars.STAGING_PARSE_SERVER_API }}" >> .env
           else
-            echo "APP_ID=${{ secrets.APP_ID }}" >> .env
-            echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
-            echo "MASTER_KEY=${{ secrets.MASTER_KEY }}" >> .env
-            echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env
-            echo "PARSE_SERVER_API=${{ secrets.PARSE_SERVER_API }}" >> .env
+            echo "APP_ID=${{ vars.APP_ID }}" >> .env
+            echo "SERVER_URL=${{ vars.SERVER_URL }}" >> .env
+            echo "MASTER_KEY=${{ vars.MASTER_KEY }}" >> .env
+            echo "ENCRYPTION_KEY=${{ vars.ENCRYPTION_KEY }}" >> .env
+            echo "PARSE_SERVER_API=${{ vars.PARSE_SERVER_API }}" >> .env
           fi
 
           flutter build web --release
@@ -49,7 +49,7 @@ jobs:
       - name: Set Publish Branch
         id: set_publish_branch
         run: |
-          if [ "${{ secrets.API_ENV }}" = "staging" ]; then
+          if [ "${{ vars.API_ENV }}" = "staging" ]; then
             echo "publish_branch=release/flutter-web-staging" >> $GITHUB_ENV
           else
             echo "publish_branch=release/flutter-web-production" >> $GITHUB_ENV
