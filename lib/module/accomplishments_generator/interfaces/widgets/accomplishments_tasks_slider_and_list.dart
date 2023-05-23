@@ -8,6 +8,7 @@ import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
 import 'package:octopus/infrastructures/models/project/project_response.dart';
 import 'package:octopus/interfaces/widgets/active_button_tab.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_date_picker.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_dots_indicator.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_project_card.dart';
@@ -496,33 +497,26 @@ class _AccomplishmentsSliderAndTasksListState
                       ],
                     ),
                   ),
-                  if (showSelectedTasks)
+                  if (showSelectedTasks && !(kIsWeb && width > smWebMinWidth))
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: height * 0.010),
                       child: const Text('Added tasks'),
                     ),
-                  if (selectedTasks.isNotEmpty)
+                  if (selectedTasks.isNotEmpty &&
+                      !(kIsWeb && width > smWebMinWidth))
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: selectedTaskWidgets.toList(),
                     ),
-                  Visibility(
-                    visible: showSelectedTasks & shouldShowTaskstoAdd(),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        const Divider(
-                          height: 4,
-                          color: kDarkGrey,
-                        ),
-                        Padding(
-                          padding:
-                              EdgeInsets.symmetric(vertical: height * 0.014),
-                          child: const Text('Select tasks to add'),
-                        ),
-                      ],
+                  if (showSelectedTasks & shouldShowTaskstoAdd() &&
+                      !(kIsWeb && width > smWebMinWidth))
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8.0),
+                      child: Divider(
+                        height: 4,
+                        color: kDarkGrey,
+                      ),
                     ),
-                  ),
                   BlocBuilder<AccomplishmentsCubit, AccomplishmentsState>(
                     buildWhen: (
                       AccomplishmentsState previous,
@@ -535,36 +529,114 @@ class _AccomplishmentsSliderAndTasksListState
                       if (state is FetchAllAccomplishmentsDataLoading) {
                         return tasksLoader(context);
                       } else if (state is FetchAllAccomplishmentsDataSuccess) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            if ((tasks.isEmpty ||
-                                    tasks.values.any(
-                                      (List<DSRWorks> category) =>
-                                          category.isEmpty,
-                                    )) &&
-                                (selectedTasks.isEmpty ||
-                                    selectedTasks.values.any(
-                                      (List<DSRWorks> category) =>
-                                          category.isEmpty,
-                                    )))
-                              Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Padding(
-                                      padding: EdgeInsets.all(height * 0.02),
-                                      child: const Icon(
-                                        Icons.error_outline_outlined,
-                                      ),
-                                    ),
-                                    const Text('No data available'),
-                                  ],
+                        if (tasks.isEmpty ||
+                            !tasks.values.any(
+                              (List<DSRWorks> category) => category.isEmpty,
+                            )) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.all(height * 0.02),
+                                  child: const Icon(
+                                    Icons.error_outline_outlined,
+                                  ),
                                 ),
-                              ),
-                            ...taskWidgets.toList(),
-                          ],
-                        );
+                                const Text('No data available'),
+                              ],
+                            ),
+                          );
+                        }
+                        return kIsWeb && width > smWebMinWidth
+                            ? Padding(
+                                padding: const EdgeInsets.only(top: 18.0),
+                                child: IntrinsicHeight(
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      SizedBox(
+                                        width: width * 0.45,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                vertical: height * 0.014,
+                                              ),
+                                              child: Text(
+                                                'Select tasks to add',
+                                                style: theme.textTheme.bodyLarge
+                                                    ?.copyWith(
+                                                  color:
+                                                      kLightBlack.withOpacity(
+                                                    0.7,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            ...taskWidgets.toList(),
+                                          ],
+                                        ),
+                                      ),
+                                      if (showSelectedTasks && kIsWeb)
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                            left: width * 0.03,
+                                            right: width * 0.03,
+                                            top: height * 0.050,
+                                          ),
+                                          child: VerticalDivider(
+                                            color:
+                                                kLightBlack.withOpacity(0.16),
+                                            thickness: 2,
+                                          ),
+                                        ),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            if (showSelectedTasks && kIsWeb)
+                                              Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                  vertical: height * 0.010,
+                                                ),
+                                                child: Text(
+                                                  'Added tasks',
+                                                  style: theme
+                                                      .textTheme.bodyLarge
+                                                      ?.copyWith(
+                                                    color:
+                                                        kLightBlack.withOpacity(
+                                                      0.7,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            if (selectedTasks.isNotEmpty)
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: selectedTaskWidgets
+                                                    .toList(),
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : Padding(
+                                padding: const EdgeInsets.only(top: 18.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: taskWidgets.toList(),
+                                ),
+                              );
                       }
                       return const Placeholder();
                     },
