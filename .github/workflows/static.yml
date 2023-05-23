@@ -13,8 +13,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-      with:
-          ref: production
 
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
