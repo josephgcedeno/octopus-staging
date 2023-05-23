@@ -425,16 +425,25 @@ class _AccomplishmentsSliderAndTasksListState
                                   _selectedDate.day == _today.day)
                               ? 'Today'
                               : formattedDate,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.primaryColor,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: kIsWeb
+                              ? theme.textTheme.titleMedium?.copyWith(
+                                  color: theme.primaryColor,
+                                  fontWeight: FontWeight.w600,
+                                )
+                              : theme.textTheme.bodyMedium?.copyWith(
+                                  color: theme.primaryColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
                         ),
                         TextSpan(
                           text: "'s Task",
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: kIsWeb
+                              ? theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                )
+                              : theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
                         ),
                       ],
                     ),
@@ -461,25 +470,31 @@ class _AccomplishmentsSliderAndTasksListState
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Wrap(
-                    spacing: 10,
-                    children: <Widget>[
-                      ActiveButtonTab(
-                        title: 'Done',
-                        onPressed: () => toggleCategory('done'),
-                        isClicked: shouldHighlightButton('done'),
-                      ),
-                      ActiveButtonTab(
-                        title: 'Doing',
-                        onPressed: () => toggleCategory('doing'),
-                        isClicked: shouldHighlightButton('doing'),
-                      ),
-                      ActiveButtonTab(
-                        title: 'Blocked',
-                        onPressed: () => toggleCategory('blockers'),
-                        isClicked: shouldHighlightButton('blockers'),
-                      ),
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Wrap(
+                      spacing: kIsWeb ? 0 : 10,
+                      children: <Widget>[
+                        ActiveButtonTab(
+                          title: 'Done',
+                          onPressed: () => toggleCategory('done'),
+                          isClicked: shouldHighlightButton('done'),
+                          isWeb: kIsWeb,
+                        ),
+                        ActiveButtonTab(
+                          title: 'Doing',
+                          onPressed: () => toggleCategory('doing'),
+                          isClicked: shouldHighlightButton('doing'),
+                          isWeb: kIsWeb,
+                        ),
+                        ActiveButtonTab(
+                          title: 'Blocked',
+                          onPressed: () => toggleCategory('blockers'),
+                          isClicked: shouldHighlightButton('blockers'),
+                          isWeb: kIsWeb,
+                        ),
+                      ],
+                    ),
                   ),
                   if (showSelectedTasks)
                     Padding(
