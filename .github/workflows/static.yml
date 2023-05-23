@@ -52,7 +52,7 @@ jobs:
     - name: Set Publish Branch
       id: set_publish_branch
       run: |
-        if [ "${{ secrets.Environment }}" = "staging" ]; then
+        if [ "${{ secrets.API_ENV }}" = "staging" ]; then
           echo "publish_branch=release/flutter-web-staging" >> $GITHUB_ENV
         else
           echo "publish_branch=release/flutter-web-production" >> $GITHUB_ENV
