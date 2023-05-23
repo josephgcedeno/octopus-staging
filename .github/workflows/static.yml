@@ -32,6 +32,10 @@ jobs:
     - name: Build web
       run: |
         if [ "${{ secrets.API_ENV }}" = "staging" ]; then
+          
+          echo "SAMPLE=${{ secrets.SAMPLE }}" >> .env
+          echo "SAMPLE=$SAMPLE" >> .env
+          
           echo "STAGING_APP_ID=${{ secrets.STAGING_APP_ID }}" >> .env
           echo "STAGING_SERVER_URL=${{ secrets.STAGING_SERVER_URL }}" >> .env
           echo "STAGING_MASTER_KEY=${{ secrets.STAGING_MASTER_KEY }}" >> .env
