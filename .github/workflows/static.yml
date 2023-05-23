@@ -31,12 +31,20 @@ jobs:
 
     - name: Build web
       run: |
-        echo "APP_ID=${{ secrets.APP_ID }}" >> .env
-        echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
-        echo "MASTER_KEY=${{ secrets.MASTER_KEY }}" >> .env
-        echo "TITLE=${{ secrets.TITLE }}" >> .env
-        echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env
-        echo "STAGING_PARSE_SERVER_API=${{ secrets.STAGING_PARSE_SERVER_API }}" >> .env
+        if [ "${{ secrets.API_ENV }}" = "staging" ]; then
+          echo "STAGING_APP_ID=${{ secrets.STAGING_APP_ID }}" >> .env
+          echo "STAGING_SERVER_URL=${{ secrets.STAGING_SERVER_URL }}" >> .env
+          echo "STAGING_MASTER_KEY=${{ secrets.STAGING_MASTER_KEY }}" >> .env
+          echo "STAGING_ENCRYPTION_KEY=${{ secrets.STAGING_ENCRYPTION_KEY }}" >> .env
+          echo "STAGING_PARSE_SERVER_API=${{ secrets.STAGING_PARSE_SERVER_API }}" >> .env
+        else
+          echo "APP_ID=${{ secrets.APP_ID }}" >> .env
+          echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
+          echo "MASTER_KEY=${{ secrets.MASTER_KEY }}" >> .env
+          echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env
+          echo "PARSE_SERVER_API=${{ secrets.PARSE_SERVER_API }}" >> .env
+        fi
+
         flutter build web --release
 
     - name: Set Publish Branch
