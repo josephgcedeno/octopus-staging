@@ -43,6 +43,7 @@ jobs:
             echo "ENCRYPTION_KEY=${{ vars.ENCRYPTION_KEY }}" >> .env
             echo "PARSE_SERVER_API=${{ vars.PARSE_SERVER_API }}" >> .env
           fi
+          echo "API_ENV=${{ vars.API_ENV }}" >> .env
 
           flutter build web --release
 
