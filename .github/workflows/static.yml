@@ -63,6 +63,6 @@ jobs:
       with:
         github_token: ${{ secrets.PAT_TOKEN }} # We use Personal access token instead of Github token since it is set to create a branch container the static page generated from flutter
         publish_dir: build/web
-        publish_branch: ${{ env.publish_branch }
+        publish_branch: ${{ env.publish_branch }}
 
        
