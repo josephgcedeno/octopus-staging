@@ -4,7 +4,6 @@ on:
   # Runs on pushes targeting the default branch
   push:
     branches: ["release/staging"]
-
   
 jobs:
   build-and-deploy:
