@@ -12,6 +12,7 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+    - run: git checkout -b release/staging
 
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
