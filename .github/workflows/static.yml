@@ -3,7 +3,7 @@ name: Deploy Flutter Web Octopus with GitHub Pages
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ["release-staging"]
+    branches: ["feature/gh-flutter-web-deployment"]
   
 jobs:
   build-and-deploy:
@@ -44,3 +44,4 @@ jobs:
       with:
         github_token: ${{ secrets.PAT_TOKEN }} # We use Personal access token instead of Github token since it is set to create a branch container the static page generated from flutter
         publish_dir: build/web
+        publish_branch: release/flutter-web-staging
