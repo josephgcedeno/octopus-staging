@@ -38,19 +38,23 @@ class _AccomplishmentsGeneratorScreenState
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Center(
-                      child: Text(
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: width * 0.05),
+                  child: Column(
+                    crossAxisAlignment: kIsWeb && width > 1200
+                        ? CrossAxisAlignment.start
+                        : CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
                         'Accomplishment Generator',
                         style: kIsWeb
                             ? theme.textTheme.titleLarge
                             : theme.textTheme.titleMedium,
                       ),
-                    ),
-                    const AccomplishmentsSliderAndTasksList(),
-                  ],
+                      const AccomplishmentsSliderAndTasksList(),
+                    ],
+                  ),
                 ),
                 GestureDetector(
                   onTap: () {
