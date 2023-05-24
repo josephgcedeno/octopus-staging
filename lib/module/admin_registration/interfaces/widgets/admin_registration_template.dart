@@ -72,6 +72,9 @@ class AdminRegistrationTemplate extends StatelessWidget {
                     ),
                     if (templateVariation != TemplateVariation.teamMembers)
                       Container(
+                        width: kIsWeb && width > smWebMinWidth
+                            ? width * 0.10
+                            : width,
                         margin: EdgeInsets.only(bottom: height * 0.02),
                         height: height * 0.003,
                         child: Row(
