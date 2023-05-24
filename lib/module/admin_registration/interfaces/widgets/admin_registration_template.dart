@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/interfaces/widgets/loading_indicator.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/admin_registration/services/bloc/admin_registration_cubit.dart';
 
 enum TemplateVariation {
@@ -55,14 +56,15 @@ class AdminRegistrationTemplate extends StatelessWidget {
                         Padding(
                           padding:
                               EdgeInsets.only(bottom: height * 0.03, top: 20),
-                          child: Center(
+                          child: Align(
+                            alignment: kIsWeb && width > smWebMinWidth
+                                ? Alignment.centerLeft
+                                : Alignment.center,
                             child: Text(
                               title,
-                              style: kIsWeb
-                                  ? theme.textTheme.titleLarge
-                                  : theme.textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
