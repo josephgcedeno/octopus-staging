@@ -165,8 +165,10 @@ class AdminRegistrationTemplate extends StatelessWidget {
         Align(
           alignment: FractionalOffset.bottomCenter,
           child: Container(
-            width: width,
-            padding: const EdgeInsets.symmetric(horizontal: 25.0),
+            width: kIsWeb && width > smWebMinWidth ? width * 0.25 : width,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 25.0,
+            ),
             margin: EdgeInsets.only(
               bottom: height * 0.02,
             ),
@@ -199,7 +201,10 @@ class AdminRegistrationTemplate extends StatelessWidget {
                       ),
                     ),
                     onPressed: buttonFunction,
-                    child: Text(buttonName),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 13.0),
+                      child: Text(buttonName),
+                    ),
                   );
                 }
               },
