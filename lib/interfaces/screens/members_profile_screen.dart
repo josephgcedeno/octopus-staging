@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -8,6 +9,7 @@ import 'package:octopus/interfaces/widgets/loading_indicator.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/helper_function.dart';
 import 'package:octopus/internal/local_storage.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/admin_registration/interfaces/screens/team_members_list_screen.dart';
 import 'package:octopus/module/admin_registration/interfaces/widgets/member_information_component.dart';
 import 'package:octopus/module/admin_registration/services/bloc/admin_registration_cubit.dart';
@@ -181,165 +183,173 @@ class _MembersProfileScreenState extends State<MembersProfileScreen> {
               } else {
                 user = snapshot.data!;
               }
-              return Stack(
-                children: <Widget>[
-                  Container(
-                    height: height * 0.8,
-                    width: width,
-                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: <Widget>[
-                          CircleAvatar(
-                            minRadius: width * 0.18,
-                            maxRadius: width * 0.18,
-                            backgroundImage: NetworkImage(
-                              user.profileImageSource,
-                            ),
-                          ),
-                          SizedBox(
-                            height: height * 0.02,
-                          ),
-                          Text(
-                            '${user.firstName} ${user.lastName}',
-                            style: theme.textTheme.headlineSmall
-                                ?.copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(
-                            height: height * 0.01,
-                          ),
-                          Text(user.position),
-                          SizedBox(
-                            height: height * 0.01,
-                          ),
-                          const Icon(
-                            Icons.keyboard_arrow_down,
-                          ),
-                          SizedBox(
-                            height: height * 0.01,
-                          ),
-                          SingleChildScrollView(
-                            child: Column(
-                              children: <Widget>[
-                                InformationComponent(
-                                  type: 'ID',
-                                  value: user.nuxifyId,
+              return SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Center(
+                      child: Container(
+                        width: kIsWeb && width > smWebMinWidth
+                            ? width * 0.40
+                            : width * 0.80,
+                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: <Widget>[
+                              CircleAvatar(
+                                minRadius: kIsWeb && width > smWebMinWidth
+                                    ? width * 0.04
+                                    : width * 0.18,
+                                maxRadius: kIsWeb && width > smWebMinWidth
+                                    ? width * 0.04
+                                    : width * 0.18,
+                                backgroundImage: NetworkImage(
+                                  user.profileImageSource,
                                 ),
-                                InformationComponent(
-                                  type: 'Name',
-                                  value: '${user.firstName} ${user.lastName}',
-                                ),
-                                InformationComponent(
-                                  type: 'Birthdate',
-                                  value: DateFormat('MM/dd/yyyy').format(
-                                    dateTimeFromEpoch(
-                                      epoch: user.birthDateEpoch,
+                              ),
+                              SizedBox(
+                                height: height * 0.02,
+                              ),
+                              Text(
+                                '${user.firstName} ${user.lastName}',
+                                style: theme.textTheme.headlineSmall
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(
+                                height: height * 0.01,
+                              ),
+                              Text(user.position),
+                              SizedBox(
+                                height: height * 0.01,
+                              ),
+                              const Icon(
+                                Icons.keyboard_arrow_down,
+                              ),
+                              SizedBox(
+                                height: height * 0.01,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(left: width * 0.08),
+                                child: Column(
+                                  children: <Widget>[
+                                    InformationComponent(
+                                      type: 'ID',
+                                      value: user.nuxifyId,
                                     ),
-                                  ),
-                                ),
-                                InformationComponent(
-                                  type: 'Address',
-                                  value: user.address,
-                                ),
-                                InformationComponent(
-                                  type: 'TIN No.',
-                                  value: user.tinNo,
-                                ),
-                                InformationComponent(
-                                  type: 'SSS No.',
-                                  value: user.sssNo,
-                                ),
-                                InformationComponent(
-                                  type: 'PAG-IBIG No.',
-                                  value: user.pagIbigNo,
-                                ),
-                                InformationComponent(
-                                  type: 'Philhealth No.',
-                                  value: user.philHealtNo,
-                                ),
-                                InformationComponent(
-                                  type: 'Date Hired',
-                                  value: DateFormat('MMdd/yyyy').format(
-                                    dateTimeFromEpoch(
-                                      epoch: user.dateHiredEpoch,
+                                    InformationComponent(
+                                      type: 'Name',
+                                      value:
+                                          '${user.firstName} ${user.lastName}',
                                     ),
-                                  ),
+                                    InformationComponent(
+                                      type: 'Birthdate',
+                                      value: DateFormat('MM/dd/yyyy').format(
+                                        dateTimeFromEpoch(
+                                          epoch: user.birthDateEpoch,
+                                        ),
+                                      ),
+                                    ),
+                                    InformationComponent(
+                                      type: 'Address',
+                                      value: user.address,
+                                    ),
+                                    InformationComponent(
+                                      type: 'TIN No.',
+                                      value: user.tinNo,
+                                    ),
+                                    InformationComponent(
+                                      type: 'SSS No.',
+                                      value: user.sssNo,
+                                    ),
+                                    InformationComponent(
+                                      type: 'PAG-IBIG No.',
+                                      value: user.pagIbigNo,
+                                    ),
+                                    InformationComponent(
+                                      type: 'Philhealth No.',
+                                      value: user.philHealtNo,
+                                    ),
+                                    InformationComponent(
+                                      type: 'Date Hired',
+                                      value: DateFormat('MMdd/yyyy').format(
+                                        dateTimeFromEpoch(
+                                          epoch: user.dateHiredEpoch,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                  if (widget.userView == UserView.admin)
-                    Align(
-                      alignment: FractionalOffset.bottomCenter,
-                      child: Container(
-                        width: width,
-                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                        margin: EdgeInsets.only(
-                          bottom: height * 0.02,
-                        ),
-                        child: BlocBuilder<AdminRegistrationCubit,
-                            AdminRegistrationState>(
-                          builder: (
-                            BuildContext context,
-                            AdminRegistrationState state,
-                          ) {
-                            if (state is UpdateUserStatusLoading) {
-                              return ElevatedButton(
-                                style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(
-                                    Colors.grey,
-                                  ),
-                                  elevation: MaterialStateProperty.all(0),
-                                  shape: MaterialStateProperty.all(
-                                    RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(6),
+                    if (widget.userView == UserView.admin)
+                      Align(
+                        alignment: FractionalOffset.bottomCenter,
+                        child: Container(
+                          width: width,
+                          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                          child: BlocBuilder<AdminRegistrationCubit,
+                              AdminRegistrationState>(
+                            builder: (
+                              BuildContext context,
+                              AdminRegistrationState state,
+                            ) {
+                              if (state is UpdateUserStatusLoading) {
+                                return ElevatedButton(
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(
+                                      Colors.grey,
+                                    ),
+                                    elevation: MaterialStateProperty.all(0),
+                                    shape: MaterialStateProperty.all(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                onPressed: null,
-                                child: const LoadingIndicator(),
-                              );
-                            } else {
-                              return ElevatedButton(
-                                style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(
-                                    !user.isDeactive
-                                        ? const Color(0xFFE25252)
-                                            .withOpacity(0.2)
-                                        : const Color(0xff39C0C7)
-                                            .withOpacity(0.2),
-                                  ),
-                                  foregroundColor: MaterialStateProperty.all(
-                                    !user.isDeactive
-                                        ? const Color(0xFFE25252)
-                                        : const Color(0xff39C0C7),
-                                  ),
-                                  elevation: MaterialStateProperty.all(0),
-                                  shape: MaterialStateProperty.all(
-                                    RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(6),
+                                  onPressed: null,
+                                  child: const LoadingIndicator(),
+                                );
+                              } else {
+                                return ElevatedButton(
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(
+                                      !user.isDeactive
+                                          ? const Color(0xFFE25252)
+                                              .withOpacity(0.2)
+                                          : const Color(0xff39C0C7)
+                                              .withOpacity(0.2),
+                                    ),
+                                    foregroundColor: MaterialStateProperty.all(
+                                      !user.isDeactive
+                                          ? const Color(0xFFE25252)
+                                          : const Color(0xff39C0C7),
+                                    ),
+                                    elevation: MaterialStateProperty.all(0),
+                                    shape: MaterialStateProperty.all(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                onPressed: () {
-                                  showAlertDialogOnDeactivateAccount(context);
-                                },
-                                child: Text(
-                                  !user.isDeactive
-                                      ? 'Deactivate Account'
-                                      : 'Activate Account',
-                                ),
-                              );
-                            }
-                          },
+                                  onPressed: () {
+                                    showAlertDialogOnDeactivateAccount(context);
+                                  },
+                                  child: Text(
+                                    !user.isDeactive
+                                        ? 'Deactivate Account'
+                                        : 'Activate Account',
+                                  ),
+                                );
+                              }
+                            },
+                          ),
                         ),
-                      ),
-                    )
-                ],
+                      )
+                  ],
+                ),
               );
             }
             return SizedBox.fromSize();

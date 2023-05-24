@@ -13,31 +13,36 @@ class InformationComponent extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final double height = MediaQuery.of(context).size.height;
-    final double width = MediaQuery.of(context).size.width;
     return Container(
       margin: EdgeInsets.symmetric(vertical: height * 0.015),
-      width: width * 0.8,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          SizedBox(
-            width: width * 0.3,
-            child: Text(
-              type,
-              textAlign: TextAlign.left,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: Colors.grey,
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constrain) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                type,
+                textAlign: TextAlign.left,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: Colors.grey,
+                ),
               ),
-            ),
-          ),
-          SizedBox(
-            width: width * 0.45,
-            child: Text(
-              value,
-              textAlign: TextAlign.left,
-            ),
-          ),
-        ],
+              SizedBox(
+                width: constrain.maxWidth * 0.60,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      value,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
