@@ -228,7 +228,11 @@ class _MembersProfileScreenState extends State<MembersProfileScreen> {
                                 height: height * 0.01,
                               ),
                               Padding(
-                                padding: EdgeInsets.only(left: width * 0.08),
+                                padding: EdgeInsets.only(
+                                  left: kIsWeb && width > smWebMinWidth
+                                      ? width * 0.08
+                                      : 0,
+                                ),
                                 child: Column(
                                   children: <Widget>[
                                     InformationComponent(
