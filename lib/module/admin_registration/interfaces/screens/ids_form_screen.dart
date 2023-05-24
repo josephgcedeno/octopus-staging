@@ -84,7 +84,6 @@ class _IdsFormScreenState extends State<IdsFormScreen> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
 
     return BlocListener<AdminRegistrationCubit, AdminRegistrationState>(
