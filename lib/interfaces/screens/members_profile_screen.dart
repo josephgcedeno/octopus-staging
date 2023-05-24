@@ -292,8 +292,14 @@ class _MembersProfileScreenState extends State<MembersProfileScreen> {
                       Align(
                         alignment: FractionalOffset.bottomCenter,
                         child: Container(
-                          width: width,
-                          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                          width: kIsWeb && width > smWebMinWidth
+                              ? width * 0.30
+                              : width * 0.90,
+                          margin: const EdgeInsets.only(top: 20),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 25.0,
+                            vertical: 15,
+                          ),
                           child: BlocBuilder<AdminRegistrationCubit,
                               AdminRegistrationState>(
                             builder: (
@@ -341,10 +347,15 @@ class _MembersProfileScreenState extends State<MembersProfileScreen> {
                                   onPressed: () {
                                     showAlertDialogOnDeactivateAccount(context);
                                   },
-                                  child: Text(
-                                    !user.isDeactive
-                                        ? 'Deactivate Account'
-                                        : 'Activate Account',
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 13.0,
+                                    ),
+                                    child: Text(
+                                      !user.isDeactive
+                                          ? 'Deactivate Account'
+                                          : 'Activate Account',
+                                    ),
                                   ),
                                 );
                               }
