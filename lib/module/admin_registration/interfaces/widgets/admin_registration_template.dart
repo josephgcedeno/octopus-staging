@@ -15,7 +15,6 @@ class AdminRegistrationTemplate extends StatelessWidget {
   const AdminRegistrationTemplate({
     required this.body,
     required this.title,
-    required this.subtitle,
     required this.buttonName,
     required this.buttonFunction,
     required this.templateVariation,
@@ -24,7 +23,6 @@ class AdminRegistrationTemplate extends StatelessWidget {
   }) : super(key: key);
   final Widget body;
   final String title;
-  final String subtitle;
   final String buttonName;
   final TemplateVariation templateVariation;
   final void Function() buttonFunction;
@@ -105,11 +103,6 @@ class AdminRegistrationTemplate extends StatelessWidget {
                           ],
                         ),
                       ),
-                    Text(
-                      subtitle,
-                      style: theme.textTheme.titleSmall
-                          ?.copyWith(fontWeight: FontWeight.w500),
-                    ),
                     Container(
                       margin: const EdgeInsets.only(top: 10),
                       child: body,
