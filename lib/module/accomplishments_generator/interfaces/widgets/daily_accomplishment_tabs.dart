@@ -57,7 +57,7 @@ class _DailyAccomplishmentTabsState extends State<DailyAccomplishmentTabs>
 
     return SizedBox(
       width: width,
-      height: height * 0.44,
+      height: height * 0.40,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,23 +110,26 @@ class _DailyAccomplishmentTabsState extends State<DailyAccomplishmentTabs>
               padding: EdgeInsets.only(bottom: height * 0.02),
               child: TabBarView(
                 controller: _tabController,
-                children: selectedTasks!.keys
-                    .map(
-                      (String key) => SingleChildScrollView(
-                        child: Column(
-                          children: <Widget>[
-                            for (DSRWorks task in selectedTasks![key]!)
-                              AccomplishmentsTaskChecker(
-                                onTap: () => _updateTabTasks(key, task),
-                                title: task.text,
-                                type: CheckerType.selected,
-                                hasProfile: false,
-                              )
-                          ],
-                        ),
-                      ),
-                    )
-                    .toList(),
+                children: selectedTasks!.keys.map((String key) {
+                  final ScrollController scrollController = ScrollController();
+
+                  return Scrollbar(
+                    thumbVisibility: true,
+                    controller: scrollController,
+                    child: ListView(
+                      controller: scrollController,
+                      children: <Widget>[
+                        for (DSRWorks task in selectedTasks![key]!)
+                          AccomplishmentsTaskChecker(
+                            onTap: () => _updateTabTasks(key, task),
+                            title: task.text,
+                            type: CheckerType.selected,
+                            hasProfile: false,
+                          )
+                      ],
+                    ),
+                  );
+                }).toList(),
               ),
             ),
           ),
