@@ -102,7 +102,6 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
         body: AdminRegistrationTemplate(
           templateVariation: TemplateVariation.teamMembers,
           buttonName: 'Add Member',
-          subtitle: 'Current Members',
           title: 'Team Members',
           buttonFunction: () {
             Navigator.of(context).push(
@@ -132,7 +131,16 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
               } else {
                 return SizedBox(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 11.0),
+                        child: Text(
+                          'Current Members',
+                          style: theme.textTheme.titleSmall
+                              ?.copyWith(fontWeight: FontWeight.w500),
+                        ),
+                      ),
                       if (activated.isEmpty)
                         const Center(
                           child: Text('There is no Activated Members'),
