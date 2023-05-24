@@ -3,7 +3,7 @@ name: Build Static Website branch from Octopus
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ["feature/deployment-flutter-web"]
+    branches: ["main","feature/deployment-flutter-web"]
 
 jobs:
   build-and-deploy:
