@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/internal/debug_utils.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -14,9 +15,10 @@ import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 class PDFViewerScreen extends StatelessWidget {
   const PDFViewerScreen({
     required this.pdf,
+    this.title,
     Key? key,
   }) : super(key: key);
-
+  final String? title;
   final Uint8List pdf;
 
   Future<void> sharePDF() async {
@@ -109,6 +111,15 @@ class PDFViewerScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: kLightGrey.withOpacity(0.5),
         elevation: 0,
+        title: kIsWeb && width > smWebMinWidth
+            ? Text(
+                title ?? '',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              )
+            : null,
+        centerTitle: kIsWeb && width > smWebMinWidth ? false : null,
         leading: IconButton(
           icon: const Icon(Icons.chevron_left, color: kBlack),
           onPressed: () => Navigator.of(context).pop(),
