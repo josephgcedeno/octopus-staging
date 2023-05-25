@@ -18,29 +18,17 @@ class ActiveButtonTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final double width = MediaQuery.of(context).size.width;
 
     return InkWell(
       splashColor: ktransparent,
       highlightColor: ktransparent,
       onTap: onPressed,
+      hoverColor: Colors.transparent,
       child: Container(
-        padding: isWeb
-            ? const EdgeInsets.symmetric(
-                vertical: 12,
-                horizontal: 34,
-              )
-            : EdgeInsets.symmetric(
-                vertical: width * 0.02,
-                horizontal: width * 0.05,
-              ),
-        margin: isWeb
-            ? null
-            : EdgeInsets.only(
-                top: width * 0.02,
-                bottom: width * 0.02,
-                right: width * 0.03,
-              ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 22,
+          vertical: 9.5,
+        ),
         decoration: isWeb
             ? BoxDecoration(
                 color: isClicked
