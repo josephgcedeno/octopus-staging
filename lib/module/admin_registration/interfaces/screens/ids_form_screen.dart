@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/internal/debug_utils.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/admin_registration/interfaces/screens/team_members_list_screen.dart';
 import 'package:octopus/module/admin_registration/interfaces/widgets/admin_registration_template.dart';
 import 'package:octopus/module/admin_registration/interfaces/widgets/full_width_reg_textfield.dart';
@@ -81,6 +83,9 @@ class _IdsFormScreenState extends State<IdsFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final double width = MediaQuery.of(context).size.width;
+
     return BlocListener<AdminRegistrationCubit, AdminRegistrationState>(
       listenWhen:
           (AdminRegistrationState previous, AdminRegistrationState current) =>
@@ -110,7 +115,6 @@ class _IdsFormScreenState extends State<IdsFormScreen> {
         body: AdminRegistrationTemplate(
           templateVariation: TemplateVariation.iDs,
           title: 'Registration',
-          subtitle: "ID's",
           skipFunction: () {
             skipForm();
           },
@@ -120,35 +124,49 @@ class _IdsFormScreenState extends State<IdsFormScreen> {
             }
           },
           buttonName: 'Save',
-          body: Form(
-            key: _formKey,
-            child: Column(
-              children: <FullWidthTextField>[
-                FullWidthTextField(
-                  tapFunction: () {},
-                  textEditingController: tinIDTextController,
-                  hint: 'TIN',
-                  type: Type.normal,
+          body: Center(
+            child: SizedBox(
+              width: kIsWeb && width > smWebMinWidth ? width * 0.50 : width,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Text(
+                        "ID's",
+                        style: theme.textTheme.titleSmall
+                            ?.copyWith(fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    FullWidthTextField(
+                      tapFunction: () {},
+                      textEditingController: tinIDTextController,
+                      hint: 'TIN',
+                      type: Type.normal,
+                    ),
+                    FullWidthTextField(
+                      tapFunction: () {},
+                      textEditingController: sssIDTextController,
+                      hint: 'SSS No.',
+                      type: Type.normal,
+                    ),
+                    FullWidthTextField(
+                      tapFunction: () {},
+                      textEditingController: pagibigIDTextController,
+                      hint: 'Pag-Ibig No.',
+                      type: Type.normal,
+                    ),
+                    FullWidthTextField(
+                      tapFunction: () {},
+                      textEditingController: philhealthIDTextController,
+                      hint: 'PhilHealth No.',
+                      type: Type.normal,
+                    ),
+                  ],
                 ),
-                FullWidthTextField(
-                  tapFunction: () {},
-                  textEditingController: sssIDTextController,
-                  hint: 'SSS No.',
-                  type: Type.normal,
-                ),
-                FullWidthTextField(
-                  tapFunction: () {},
-                  textEditingController: pagibigIDTextController,
-                  hint: 'Pag-Ibig No.',
-                  type: Type.normal,
-                ),
-                FullWidthTextField(
-                  tapFunction: () {},
-                  textEditingController: philhealthIDTextController,
-                  hint: 'PhilHealth No.',
-                  type: Type.normal,
-                ),
-              ],
+              ),
             ),
           ),
         ),

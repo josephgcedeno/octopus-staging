@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/interfaces/widgets/loading_indicator.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/admin_registration/services/bloc/admin_registration_cubit.dart';
 
 enum TemplateVariation {
@@ -14,7 +15,6 @@ class AdminRegistrationTemplate extends StatelessWidget {
   const AdminRegistrationTemplate({
     required this.body,
     required this.title,
-    required this.subtitle,
     required this.buttonName,
     required this.buttonFunction,
     required this.templateVariation,
@@ -23,7 +23,6 @@ class AdminRegistrationTemplate extends StatelessWidget {
   }) : super(key: key);
   final Widget body;
   final String title;
-  final String subtitle;
   final String buttonName;
   final TemplateVariation templateVariation;
   final void Function() buttonFunction;
@@ -55,14 +54,15 @@ class AdminRegistrationTemplate extends StatelessWidget {
                         Padding(
                           padding:
                               EdgeInsets.only(bottom: height * 0.03, top: 20),
-                          child: Center(
+                          child: Align(
+                            alignment: kIsWeb && width > smWebMinWidth
+                                ? Alignment.centerLeft
+                                : Alignment.center,
                             child: Text(
                               title,
-                              style: kIsWeb
-                                  ? theme.textTheme.titleLarge
-                                  : theme.textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
@@ -70,6 +70,9 @@ class AdminRegistrationTemplate extends StatelessWidget {
                     ),
                     if (templateVariation != TemplateVariation.teamMembers)
                       Container(
+                        width: kIsWeb && width > smWebMinWidth
+                            ? width * 0.10
+                            : width,
                         margin: EdgeInsets.only(bottom: height * 0.02),
                         height: height * 0.003,
                         child: Row(
@@ -100,11 +103,6 @@ class AdminRegistrationTemplate extends StatelessWidget {
                           ],
                         ),
                       ),
-                    Text(
-                      subtitle,
-                      style: theme.textTheme.titleSmall
-                          ?.copyWith(fontWeight: FontWeight.w500),
-                    ),
                     Container(
                       margin: const EdgeInsets.only(top: 10),
                       child: body,
@@ -163,8 +161,10 @@ class AdminRegistrationTemplate extends StatelessWidget {
         Align(
           alignment: FractionalOffset.bottomCenter,
           child: Container(
-            width: width,
-            padding: const EdgeInsets.symmetric(horizontal: 25.0),
+            width: kIsWeb && width > smWebMinWidth ? width * 0.25 : width,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 25.0,
+            ),
             margin: EdgeInsets.only(
               bottom: height * 0.02,
             ),
@@ -197,7 +197,10 @@ class AdminRegistrationTemplate extends StatelessWidget {
                       ),
                     ),
                     onPressed: buttonFunction,
-                    child: Text(buttonName),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 13.0),
+                      child: Text(buttonName),
+                    ),
                   );
                 }
               },
