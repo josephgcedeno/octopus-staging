@@ -50,7 +50,7 @@ class ExportPDFButton extends StatelessWidget {
                   elevation: 0, // Adjust the elevation as needed
                   backgroundColor: theme.primaryColor.withOpacity(0.10),
                   padding: const EdgeInsets.symmetric(
-                    vertical: 23,
+                    vertical: kIsWeb ? 23 : 10,
                     horizontal: 15,
                   ),
                   shape: RoundedRectangleBorder(
@@ -92,7 +92,7 @@ class ExportPDFButton extends StatelessWidget {
                 elevation: 0, // Adjust the elevation as needed
                 backgroundColor: kBlue.withOpacity(0.10),
                 padding: const EdgeInsets.symmetric(
-                  vertical: 23,
+                  vertical: kIsWeb ? 23 : 10,
                   horizontal: 15,
                 ),
                 shape: RoundedRectangleBorder(

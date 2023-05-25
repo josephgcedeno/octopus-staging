@@ -394,7 +394,7 @@ class _HistoricalScreenTemplateState extends State<HistoricalScreenTemplate> {
                                       ? width * 0.30
                                       : width,
                                   padding: const EdgeInsets.symmetric(
-                                    vertical: 17,
+                                    vertical: kIsWeb ? 17 : 10,
                                     horizontal: 15,
                                   ),
                                   decoration: BoxDecoration(
