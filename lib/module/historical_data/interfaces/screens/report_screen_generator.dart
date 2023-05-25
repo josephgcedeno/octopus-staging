@@ -68,6 +68,7 @@ class _ReportScreenGeneratorState extends State<ReportScreenGenerator> {
             MaterialPageRoute<dynamic>(
               builder: (_) => PDFViewerScreen(
                 pdf: state.document,
+                title: 'Historical Data',
               ),
             ),
           );
@@ -76,6 +77,15 @@ class _ReportScreenGeneratorState extends State<ReportScreenGenerator> {
       child: Scaffold(
         backgroundColor: const Color(0xffECECEC),
         appBar: AppBar(
+          title: kIsWeb && width > smWebMinWidth
+              ? Text(
+                  'Historical Data',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              : null,
+          centerTitle: kIsWeb && width > smWebMinWidth ? false : null,
           backgroundColor: kWhite,
           elevation: 0,
           leading: IconButton(
@@ -94,7 +104,6 @@ class _ReportScreenGeneratorState extends State<ReportScreenGenerator> {
             color: Colors.white,
             child: LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constrains) {
-
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
