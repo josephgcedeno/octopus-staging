@@ -390,6 +390,9 @@ class _HistoricalScreenTemplateState extends State<HistoricalScreenTemplate> {
                                   }
                                 },
                                 child: Container(
+                                  width: kIsWeb && width > smWebMinWidth
+                                      ? width * 0.30
+                                      : width,
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 17,
                                     horizontal: 15,
