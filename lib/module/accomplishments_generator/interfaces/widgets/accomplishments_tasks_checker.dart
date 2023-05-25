@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 
 enum CheckerType {
   selected,
@@ -35,8 +36,12 @@ class AccomplishmentsTaskChecker extends StatelessWidget {
             children: <Widget>[
               if (hasProfile)
                 CircleAvatar(
-                  minRadius: kIsWeb ? width * 0.007 : width * 0.04,
-                  maxRadius: kIsWeb ? width * 0.007 : width * 0.04,
+                  minRadius: kIsWeb && width > smWebMinWidth
+                      ? width * 0.009
+                      : width * 0.04,
+                  maxRadius: kIsWeb && width > smWebMinWidth
+                      ? width * 0.009
+                      : width * 0.04,
                   backgroundImage: const NetworkImage(
                     'https://cdn-icons-png.flaticon.com/512/201/201634.png',
                   ),

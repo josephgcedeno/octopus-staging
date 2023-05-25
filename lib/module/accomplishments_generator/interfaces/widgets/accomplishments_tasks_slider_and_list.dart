@@ -351,7 +351,7 @@ class _AccomplishmentsSliderAndTasksListState
                   width: width,
                   margin: EdgeInsets.symmetric(vertical: height * 0.03),
                   height: height * 0.2,
-                  child: kIsWeb
+                  child: kIsWeb && width > smWebMinWidth
                       ? Scrollbar(
                           controller: scrollController,
                           child: SingleChildScrollView(
@@ -474,7 +474,7 @@ class _AccomplishmentsSliderAndTasksListState
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Wrap(
-                      spacing: kIsWeb ? 0 : 10,
+                      spacing: kIsWeb && width > smWebMinWidth ? 0 : 10,
                       children: <Widget>[
                         ActiveButtonTab(
                           title: 'Done',
