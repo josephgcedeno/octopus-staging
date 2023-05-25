@@ -39,6 +39,7 @@ class _DailyAccomplishmentTextFieldState
         controller: textController,
         onChanged: _onChangeTopTextField,
         style: TextStyle(
+          fontSize: height * 0.030,
           color: theme.primaryColor,
         ),
         decoration: InputDecoration(

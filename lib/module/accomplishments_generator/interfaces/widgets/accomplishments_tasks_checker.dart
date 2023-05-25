@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
 
@@ -26,7 +27,7 @@ class AccomplishmentsTaskChecker extends StatelessWidget {
     final double width = MediaQuery.of(context).size.width;
 
     return Container(
-      margin: EdgeInsets.symmetric(vertical: height * 0.015),
+      margin: EdgeInsets.only(bottom: height * 0.015),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -34,14 +35,14 @@ class AccomplishmentsTaskChecker extends StatelessWidget {
             children: <Widget>[
               if (hasProfile)
                 CircleAvatar(
-                  minRadius: width * 0.04,
-                  maxRadius: width * 0.04,
+                  minRadius: kIsWeb ? width * 0.007 : width * 0.04,
+                  maxRadius: kIsWeb ? width * 0.007 : width * 0.04,
                   backgroundImage: const NetworkImage(
                     'https://cdn-icons-png.flaticon.com/512/201/201634.png',
                   ),
                 ),
               Padding(
-                padding: EdgeInsets.only(left: width * 0.03),
+                padding: const EdgeInsets.only(left: 8),
                 child: Text(title),
               ),
             ],
@@ -49,7 +50,7 @@ class AccomplishmentsTaskChecker extends StatelessWidget {
           GestureDetector(
             onTap: onTap,
             child: Container(
-              padding: EdgeInsets.all(width * 0.01),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: type == CheckerType.selected
                     ? kLightRed.withOpacity(0.08)
