@@ -1,0 +1,76 @@
+name: Deploy Flutter Web Octopus with GitHub Pages
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["feature/gh-flutter-web-deployment"]
+
+  
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        flutter-version: '3.7.8'
+        
+    - name: Clean flutter to be able to generate flutter.js every build
+      run: flutter clean
+
+    - name: Install dependencies
+      run: flutter pub get
+    
+    - name: Build serialize data
+      run: flutter pub run build_runner build --delete-conflicting-outputs
+
+    - name: Build web
+      run: |
+        if [ "${{ secrets.API_ENV }}" = "staging" ]; then
+          
+          echo "SAMPLE=${{ secrets.API_ENVV2 }}" >> .env
+          echo "SAMPLE=${{ vars.API_ENVV2 }}" >> .env
+          
+          echo "STAGING_APP_ID=${{ secrets.STAGING_APP_ID }}" >> .env
+          echo "STAGING_SERVER_URL=${{ secrets.STAGING_SERVER_URL }}" >> .env
+          echo "STAGING_MASTER_KEY=${{ secrets.STAGING_MASTER_KEY }}" >> .env
+          echo "STAGING_ENCRYPTION_KEY=${{ secrets.STAGING_ENCRYPTION_KEY }}" >> .env
+          echo "STAGING_PARSE_SERVER_API=${{ secrets.STAGING_PARSE_SERVER_API }}" >> .env
+        else
+          echo "APP_ID=${{ secrets.APP_ID }}" >> .env
+          echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
+          echo "MASTER_KEY=${{ secrets.MASTER_KEY }}" >> .env
+          echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env
+          echo "PARSE_SERVER_API=${{ secrets.PARSE_SERVER_API }}" >> .env
+        fi
+
+        flutter build web --release
+
+    - name: Set Publish Branch
+      id: set_publish_branch
+      run: |
+        if [ "${{ secrets.API_ENV }}" = "staging" ]; then
+          echo "publish_branch=release/flutter-web-staging" >> $GITHUB_ENV
+        else
+          echo "publish_branch=release/flutter-web-production" >> $GITHUB_ENV
+        fi
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.PAT_TOKEN }} # We use Personal access token instead of Github token since it is set to create a branch container the static page generated from flutter
+        publish_dir: build/web
+        publish_branch: ${{ env.publish_branch }}
+        
+    - name: Cherry-pick commit
+      run: |
+        git checkout ${{ env.publish_branch }}
+        git cherry-pick e356df043311f5a324a085b06aeeae355e09954d
+        git push origin ${{ env.publish_branch }}
+
+       
