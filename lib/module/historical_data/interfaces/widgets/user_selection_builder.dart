@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/models/user/user_response.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/historical_data/services/cubit/historical_cubit.dart';
 
 class UserSelectionBuilder extends StatefulWidget {
@@ -21,7 +23,9 @@ class _UserSelectionBuilderState extends State<UserSelectionBuilder> {
 
     return Container(
       height: height * 0.30,
-      padding: const EdgeInsets.all(10),
+      padding: EdgeInsets.all(
+        kIsWeb && width > smWebMinWidth ? 25 : 15,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(5),
