@@ -163,14 +163,14 @@ class PDFViewerScreen extends StatelessWidget {
               child: SfPdfViewer.memory(pdf),
             ),
           ),
-          Expanded(
-            child: GestureDetector(
-              onTap: () => Navigator.pushReplacement(
-                context,
-                MaterialPageRoute<dynamic>(
-                  builder: (_) => const ControllerScreen(),
-                ),
+          GestureDetector(
+            onTap: () => Navigator.pushReplacement(
+              context,
+              MaterialPageRoute<dynamic>(
+                builder: (_) => const ControllerScreen(),
               ),
+            ),
+            child: Align(
               child: Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: width * 0.06,
@@ -180,7 +180,9 @@ class PDFViewerScreen extends StatelessWidget {
                   vertical: height * 0.02,
                   horizontal: width * 0.04,
                 ),
-                width: double.infinity,
+                width: kIsWeb && width > smWebMinWidth
+                    ? width * 0.30
+                    : double.infinity,
                 decoration: BoxDecoration(
                   color: theme.primaryColor,
                   borderRadius: BorderRadius.circular(10),

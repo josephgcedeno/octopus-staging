@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -145,7 +146,7 @@ Widget sliderLoader(BuildContext context) {
   return Column(
     children: <Widget>[
       Container(
-        margin: kIsWeb
+        margin: kIsWeb && width > smWebMinWidth
             ? const EdgeInsets.symmetric(vertical: 15)
             : EdgeInsets.symmetric(
                 vertical: height * 0.03,
