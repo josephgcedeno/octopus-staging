@@ -6,14 +6,15 @@ import 'package:octopus/interfaces/widgets/loading_indicator.dart';
 import 'package:octopus/module/login/service/cubit/authentication_cubit.dart';
 
 class LoginForm extends StatefulWidget {
-  const LoginForm({required this.formKey, Key? key}) : super(key: key);
-  final GlobalKey<FormState> formKey;
+  const LoginForm({Key? key}) : super(key: key);
 
   @override
   State<LoginForm> createState() => _LoginFormState();
 }
 
 class _LoginFormState extends State<LoginForm> {
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   final RegExp _emailRegex = RegExp(
     r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
   );
@@ -29,7 +30,7 @@ class _LoginFormState extends State<LoginForm> {
     final double height = MediaQuery.of(context).size.height;
 
     return Form(
-      key: widget.formKey,
+      key: formKey,
       child: Column(
         mainAxisAlignment:
             kIsWeb ? MainAxisAlignment.center : MainAxisAlignment.end,
@@ -114,7 +115,7 @@ class _LoginFormState extends State<LoginForm> {
             child: ElevatedButton(
               style: primaryButtonStyle,
               onPressed: () {
-                if (widget.formKey.currentState!.validate()) {
+                if (formKey.currentState!.validate()) {
                   context.read<AuthenticationCubit>().login(
                         email: emailController.text,
                         password: passwordController.text,
