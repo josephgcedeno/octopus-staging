@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:octopus/infrastructures/models/project/project_response.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/task_card.dart';
 import 'package:octopus/module/standup_report/service/cubit/task_card_dto.dart';
 
@@ -27,6 +29,7 @@ class StatusColumn extends StatefulWidget {
 }
 
 class _StatusColumnState extends State<StatusColumn> {
+  final ScrollController scrollController = ScrollController();
   Project emptyProject = Project(
     id: '-1',
     projectName: 'Unknown',
@@ -74,26 +77,34 @@ class _StatusColumnState extends State<StatusColumn> {
 
     return Container(
       width: width * 0.3,
-      padding: widget.status == ProjectStatus.blockers
-          ? EdgeInsets.only(bottom: height * 0.2, left: 8, right: 8, top: 8)
+      padding: widget.status == ProjectStatus.blockers &&
+              !(kIsWeb && width > smWebMinWidth)
+          ? const EdgeInsets.only(left: 8, right: 8, top: 8)
           : const EdgeInsets.all(8.0),
-      child: Column(
-        children: <Widget>[
-          Container(
-            width: width,
-            padding: EdgeInsets.only(
-              left: width * 0.1,
-              bottom: widget.data.isEmpty ? height * 0.1 : 8,
-            ),
-            child: Text(intToStatusCode()),
+      child: Scrollbar(
+        thumbVisibility: true,
+        controller: scrollController,
+        child: SingleChildScrollView(
+          controller: scrollController,
+          child: Column(
+            children: <Widget>[
+              Container(
+                width: width,
+                padding: EdgeInsets.only(
+                  left: width * 0.1,
+                  bottom: widget.data.isEmpty ? height * 0.1 : 8,
+                ),
+                child: Text(intToStatusCode()),
+              ),
+              for (int i = 0; i < widget.data.length; i++)
+                TaskCard(
+                  task: widget.data[i],
+                  projectTag:
+                      getTaskProject(widget.data[i].projectId) ?? emptyProject,
+                )
+            ],
           ),
-          for (int i = 0; i < widget.data.length; i++)
-            TaskCard(
-              task: widget.data[i],
-              projectTag:
-                  getTaskProject(widget.data[i].projectId) ?? emptyProject,
-            )
-        ],
+        ),
       ),
     );
   }
