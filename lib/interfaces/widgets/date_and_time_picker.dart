@@ -162,12 +162,10 @@ class _DateTimePickerState<T> extends State<DateTimePicker<T>> {
                         ),
                         child: Text(
                           i == 0 ? 'From' : 'To',
-                          style: kIsWeb
-                              ? theme.textTheme.titleLarge
-                              : theme.textTheme.titleMedium?.copyWith(
-                                  color: blackColor,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: blackColor,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     SizedBox(
