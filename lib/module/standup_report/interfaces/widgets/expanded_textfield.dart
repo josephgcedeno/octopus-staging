@@ -55,7 +55,11 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
           setState(() => projectIsActive = !projectIsActive);
         }
       },
-      child: DecoratedBox(
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 5,
+          vertical: 10,
+        ),
         decoration: BoxDecoration(
           color: const Color(0xFFf5f7f9),
           borderRadius: BorderRadius.circular(10),
