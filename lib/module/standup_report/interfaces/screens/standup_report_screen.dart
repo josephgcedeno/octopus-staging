@@ -10,8 +10,11 @@ import 'package:octopus/infrastructures/models/project/project_response.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/internal/debug_utils.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/date_card.dart';
+import 'package:octopus/module/standup_report/interfaces/widgets/project_list.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/status_column.dart';
+import 'package:octopus/module/standup_report/interfaces/widgets/status_list.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/task_textarea.dart';
 import 'package:octopus/module/standup_report/service/cubit/dsr_cubit.dart';
 import 'package:octopus/module/standup_report/service/cubit/task_card_dto.dart';
@@ -199,11 +202,12 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
       child: Scaffold(
         appBar: const GlobalAppBar(leading: LeadingButton.menu),
         backgroundColor: Colors.white,
-        body: Stack(
-          children: <Widget>[
-            Positioned(
-              top: 0,
-              child: Column(
+        body: SizedBox(
+          width: width,
+          height: height,
+          child: Column(
+            children: <Widget>[
+              Column(
                 children: <Widget>[
                   Text(
                     'Daily Stand-Up Report',
@@ -212,42 +216,67 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
                         : theme.textTheme.titleMedium,
                   ),
                   const DateCard(),
-                  Container(
-                    padding: EdgeInsets.only(top: height * 0.02),
-                    height: isLoading ? height * 0.6 : height,
-                    width: width,
-                    child: isLoading
-                        ? ListView(
-                            padding: EdgeInsets.only(
-                              bottom: height * 0.2,
-                              top: 20,
-                              left: 5,
-                            ),
-                            children: itemLoader(
-                              innerItem: 2,
-                              outerItem: 3,
-                            ),
-                          )
-                        : kIsWeb
-                            ? Row(
-                                children:
-                                    noCardsYet ? noCardsImage : statusWidgets,
-                              )
-                            : FadeIn(
-                                duration: fadeInDuration,
-                                child: ListView(
-                                  padding:
-                                      EdgeInsets.only(bottom: height * 0.2),
-                                  children:
-                                      noCardsYet ? noCardsImage : statusWidgets,
-                                ),
-                              ),
-                  )
                 ],
               ),
-            ),
-            const TaskTextArea()
-          ],
+              Expanded(
+                child: Stack(
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.only(top: height * 0.02),
+                      child: isLoading
+                          ? ListView(
+                              padding: EdgeInsets.only(
+                                bottom: height * 0.2,
+                                top: 20,
+                                left: 5,
+                              ),
+                              children: itemLoader(
+                                innerItem: 2,
+                                outerItem: 3,
+                              ),
+                            )
+                          : kIsWeb && width > smWebMinWidth
+                              ? Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children:
+                                      noCardsYet ? noCardsImage : statusWidgets,
+                                )
+                              : FadeIn(
+                                  duration: fadeInDuration,
+                                  child: ListView(
+                                    children: noCardsYet
+                                        ? noCardsImage
+                                        : statusWidgets,
+                                  ),
+                                ),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: BlocBuilder<DSRCubit, DSRState>(
+                        buildWhen: (DSRState previous, DSRState current) =>
+                            current is ShowProjectPane ||
+                            current is ShowStatusPane ||
+                            current is HideProjectPane ||
+                            current is HideStatusPane,
+                        builder: (BuildContext context, DSRState state) {
+                          if (state is ShowProjectPane) {
+                            return ProjectList(
+                              projects: projects,
+                            );
+                          } else if (state is ShowStatusPane) {
+                            return const StatusList();
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const TaskTextArea()
+            ],
+          ),
         ),
       ),
     );
