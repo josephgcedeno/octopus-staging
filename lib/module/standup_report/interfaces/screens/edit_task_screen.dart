@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/infrastructures/models/project/project_response.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/status_chips.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/status_column.dart';
 import 'package:octopus/module/standup_report/service/cubit/dsr_cubit.dart';
@@ -129,135 +131,162 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             children: <Widget>[
               Text(
                 'Task Information',
-                style: theme.textTheme.titleLarge?.copyWith(fontSize: 17),
-              ),
-              Container(
-                margin: const EdgeInsets.only(top: 10),
-                child: TextField(
-                  controller: textController,
-                  decoration: InputDecoration(
-                    hintText: 'Description ',
-                    fillColor: formBackgroundColor,
-                    filled: true,
-                    enabledBorder: descriptionBorder,
-                    border: descriptionBorder,
-                    focusedBorder: descriptionBorder,
-                  ),
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(top: 10),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: formBackgroundColor,
-                ),
-                child: DropdownButton<Project>(
-                  isExpanded: true,
-                  icon: const Icon(Icons.keyboard_arrow_down_outlined),
-                  hint: LinearProgressIndicator(
-                    minHeight: 1,
-                    color: Colors.black26,
-                    backgroundColor: formBackgroundColor,
-                  ),
-                  elevation: 2,
-                  borderRadius: BorderRadius.circular(10),
-                  underline: const SizedBox.shrink(),
-                  dropdownColor: Colors.white,
-                  onChanged: (Project? value) {
-                    setState(() {
-                      projectTag = value;
-                    });
-                  },
-                  value: projectTag,
-                  items: projectList
-                      .map<DropdownMenuItem<Project>>((Project value) {
-                    return DropdownMenuItem<Project>(
-                      value: value,
-                      child: Text(value.projectName),
-                    );
-                  }).toList(),
-                ),
-              ),
-              Row(
-                children: <Widget>[
-                  GestureDetector(
-                    onTap: () => updateStatus(ProjectStatus.done),
-                    child: StatusChips(
-                      status: TaskStatus.done,
-                      isActive: doneIsActive,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => updateStatus(ProjectStatus.doing),
-                    child: StatusChips(
-                      status: TaskStatus.doing,
-                      isActive: doingIsActive,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => updateStatus(ProjectStatus.blockers),
-                    child: StatusChips(
-                      status: TaskStatus.blockers,
-                      isActive: blockersIsActive,
-                    ),
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 15),
-                child: Text(
-                  'Remove Task',
-                  style: theme.textTheme.bodyMedium?.copyWith(fontSize: 13),
-                ),
-              ),
-              Text(
-                'This task will be permanently removed from your Daily Standup Report.',
-                style: theme.textTheme.bodySmall,
-              ),
-              SizedBox(
-                width: width,
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                    elevation: MaterialStateProperty.all(0),
-                    backgroundColor: MaterialStateProperty.all(
-                      theme.colorScheme.error.withAlpha(40),
-                    ),
-                    shape: MaterialStateProperty.all(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                    ),
-                  ),
-                  onPressed: () {
-                    context.read<DSRCubit>().deleteTask(widget.task);
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    'Delete Task',
-                    style: theme.textTheme.bodyMedium
-                        ?.copyWith(color: theme.colorScheme.error),
-                  ),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               Expanded(
                 child: Align(
-                  alignment: FractionalOffset.bottomCenter,
-                  child: Container(
-                    width: width,
-                    margin: EdgeInsets.only(bottom: height * 0.03),
-                    child: ElevatedButton(
-                      style: ButtonStyle(
-                        elevation: MaterialStateProperty.all(0),
-                        shape: MaterialStateProperty.all(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6),
+                  child: SizedBox(
+                    width:
+                        kIsWeb && width > smWebMinWidth ? width * 0.40 : width,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              margin: const EdgeInsets.only(top: 10),
+                              child: TextField(
+                                controller: textController,
+                                decoration: InputDecoration(
+                                  hintText: 'Description ',
+                                  fillColor: formBackgroundColor,
+                                  filled: true,
+                                  enabledBorder: descriptionBorder,
+                                  border: descriptionBorder,
+                                  focusedBorder: descriptionBorder,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(top: 10),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 5,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: formBackgroundColor,
+                              ),
+                              child: DropdownButton<Project>(
+                                isExpanded: true,
+                                icon: const Icon(
+                                  Icons.keyboard_arrow_down_outlined,
+                                ),
+                                hint: LinearProgressIndicator(
+                                  minHeight: 1,
+                                  color: Colors.black26,
+                                  backgroundColor: formBackgroundColor,
+                                ),
+                                elevation: 2,
+                                borderRadius: BorderRadius.circular(10),
+                                underline: const SizedBox.shrink(),
+                                dropdownColor: Colors.white,
+                                onChanged: (Project? value) {
+                                  setState(() {
+                                    projectTag = value;
+                                  });
+                                },
+                                value: projectTag,
+                                items: projectList
+                                    .map<DropdownMenuItem<Project>>(
+                                        (Project value) {
+                                  return DropdownMenuItem<Project>(
+                                    value: value,
+                                    child: Text(value.projectName),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                            Row(
+                              children: <Widget>[
+                                GestureDetector(
+                                  onTap: () => updateStatus(ProjectStatus.done),
+                                  child: StatusChips(
+                                    status: TaskStatus.done,
+                                    isActive: doneIsActive,
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () =>
+                                      updateStatus(ProjectStatus.doing),
+                                  child: StatusChips(
+                                    status: TaskStatus.doing,
+                                    isActive: doingIsActive,
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () =>
+                                      updateStatus(ProjectStatus.blockers),
+                                  child: StatusChips(
+                                    status: TaskStatus.blockers,
+                                    isActive: blockersIsActive,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 15),
+                              child: Text(
+                                'Remove Task',
+                                style: theme.textTheme.bodyMedium
+                                    ?.copyWith(fontSize: 13),
+                              ),
+                            ),
+                            Text(
+                              'This task will be permanently removed from your Daily Standup Report.',
+                              style: theme.textTheme.bodySmall,
+                            ),
+                            SizedBox(
+                              width: width,
+                              child: ElevatedButton(
+                                style: ButtonStyle(
+                                  elevation: MaterialStateProperty.all(0),
+                                  backgroundColor: MaterialStateProperty.all(
+                                    theme.colorScheme.error.withAlpha(40),
+                                  ),
+                                  shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  context
+                                      .read<DSRCubit>()
+                                      .deleteTask(widget.task);
+                                  Navigator.pop(context);
+                                },
+                                child: Text(
+                                  'Delete Task',
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.error,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          width: width,
+                          margin: EdgeInsets.only(bottom: height * 0.03),
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              elevation: MaterialStateProperty.all(0),
+                              shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                              ),
+                            ),
+                            onPressed: projectTag == null ? null : save,
+                            child: const Text('Save'),
                           ),
                         ),
-                      ),
-                      onPressed: projectTag == null ? null : save,
-                      child: const Text('Save'),
+                      ],
                     ),
                   ),
                 ),
