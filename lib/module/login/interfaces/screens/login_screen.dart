@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/internal/debug_utils.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
 import 'package:octopus/module/login/interfaces/widgets/greeting_text.dart';
 import 'package:octopus/module/login/interfaces/widgets/login_form.dart';
@@ -51,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
             margin: EdgeInsets.symmetric(
               horizontal: width * 0.1,
             ),
-            child: kIsWeb
+            child: kIsWeb && width > smWebMinWidth
                 ? Row(
                     children: <Widget>[
                       Expanded(
@@ -85,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ],
                           ),
-                          child: LoginForm(formKey: formKey),
+                          child: const LoginForm(),
                         ),
                       )
                     ],
@@ -103,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       const GreetingText(),
-                      LoginForm(formKey: formKey)
+                      const LoginForm()
                     ],
                   ),
           ),
