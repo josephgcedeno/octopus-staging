@@ -78,52 +78,41 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
                 hintText: 'Enter task name',
               ),
             ),
-            FittedBox(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              context
-                                  .read<DSRCubit>()
-                                  .toggleProjectPane(isVisible: !projectIsActive);
-                            },
-                            style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStateProperty.all(Colors.transparent),
-                              elevation: MaterialStateProperty.all(0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            context
+                                .read<DSRCubit>()
+                                .toggleProjectPane(isVisible: !projectIsActive);
+                          },
+                          style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(Colors.transparent),
+                            elevation: MaterialStateProperty.all(0),
+                          ),
+                          icon: RotatedBox(
+                            quarterTurns: -1,
+                            child: Icon(
+                              Icons.view_stream_outlined,
+                              color: projectIsActive
+                                  ? theme.primaryColor
+                                  : Colors.grey,
                             ),
-                            icon: RotatedBox(
-                              quarterTurns: -1,
-                              child: Icon(
-                                Icons.view_stream_outlined,
-                                color: projectIsActive
-                                    ? theme.primaryColor
-                                    : Colors.grey,
-                              ),
-                            ),
-                            label: BlocBuilder<DSRCubit, DSRState>(
-                              buildWhen: (DSRState previous, DSRState current) =>
-                                  current is SetProjectSuccess,
-                              builder: (BuildContext context, DSRState state) {
-                                if (state is SetProjectSuccess) {
-                                  projectHasBeenSet = true;
-                                  return Text(
-                                    state.project.projectName,
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: projectIsActive
-                                          ? theme.primaryColor
-                                          : Colors.grey,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  );
-                                }
+                          ),
+                          label: BlocBuilder<DSRCubit, DSRState>(
+                            buildWhen: (DSRState previous, DSRState current) =>
+                                current is SetProjectSuccess,
+                            builder: (BuildContext context, DSRState state) {
+                              if (state is SetProjectSuccess) {
+                                projectHasBeenSet = true;
                                 return Text(
-                                  'Project',
+                                  state.project.projectName,
                                   style: theme.textTheme.bodyMedium?.copyWith(
                                     color: projectIsActive
                                         ? theme.primaryColor
@@ -131,45 +120,45 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
                                     fontWeight: FontWeight.w600,
                                   ),
                                 );
-                              },
-                            ),
-                          ),
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              context
-                                  .read<DSRCubit>()
-                                  .toggleStatusPane(isVisible: !statusIsActive);
+                              }
+                              return Text(
+                                'Project',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: projectIsActive
+                                      ? theme.primaryColor
+                                      : Colors.grey,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              );
                             },
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(
-                                Colors.transparent,
-                              ),
-                              elevation: MaterialStateProperty.all(0),
+                          ),
+                        ),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            context
+                                .read<DSRCubit>()
+                                .toggleStatusPane(isVisible: !statusIsActive);
+                          },
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(
+                              Colors.transparent,
                             ),
-                            icon: Icon(
-                              Icons.padding_outlined,
-                              color: statusIsActive
-                                  ? theme.primaryColor
-                                  : Colors.grey,
-                            ),
-                            label: BlocBuilder<DSRCubit, DSRState>(
-                              buildWhen: (DSRState previous, DSRState current) =>
-                                  current is UpdateTaskStatus,
-                              builder: (BuildContext context, DSRState state) {
-                                if (state is UpdateTaskStatus) {
-                                  statusHasBeenSet = true;
-                                  return Text(
-                                    state.status,
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: statusIsActive
-                                          ? theme.primaryColor
-                                          : Colors.grey,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  );
-                                }
+                            elevation: MaterialStateProperty.all(0),
+                          ),
+                          icon: Icon(
+                            Icons.padding_outlined,
+                            color: statusIsActive
+                                ? theme.primaryColor
+                                : Colors.grey,
+                          ),
+                          label: BlocBuilder<DSRCubit, DSRState>(
+                            buildWhen: (DSRState previous, DSRState current) =>
+                                current is UpdateTaskStatus,
+                            builder: (BuildContext context, DSRState state) {
+                              if (state is UpdateTaskStatus) {
+                                statusHasBeenSet = true;
                                 return Text(
-                                  'Status',
+                                  state.status,
                                   style: theme.textTheme.bodyMedium?.copyWith(
                                     color: statusIsActive
                                         ? theme.primaryColor
@@ -177,31 +166,40 @@ class _ExpandedTextFieldState extends State<ExpandedTextField> {
                                     fontWeight: FontWeight.w600,
                                   ),
                                 );
-                              },
-                            ),
-                          )
-                        ],
-                      ),
-                    ],
+                              }
+                              return Text(
+                                'Status',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: statusIsActive
+                                      ? theme.primaryColor
+                                      : Colors.grey,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+                Container(
+                  margin: const EdgeInsets.only(
+                    right: 10,
+                    bottom: 2,
                   ),
-                  Container(
-                    margin: const EdgeInsets.only(
-                      right: 10,
-                      bottom: 2,
-                    ),
-                    child: ElevatedButton(
-                      onPressed: save,
-                      style: ButtonStyle(
-                        elevation: MaterialStateProperty.all(0),
-                        backgroundColor: MaterialStateProperty.all(
-                          theme.primaryColor,
-                        ),
+                  child: ElevatedButton(
+                    onPressed: save,
+                    style: ButtonStyle(
+                      elevation: MaterialStateProperty.all(0),
+                      backgroundColor: MaterialStateProperty.all(
+                        theme.primaryColor,
                       ),
-                      child: const Text('Save'),
                     ),
-                  )
-                ],
-              ),
+                    child: const Text('Save'),
+                  ),
+                )
+              ],
             ),
           ],
         ),
