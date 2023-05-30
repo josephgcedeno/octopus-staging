@@ -16,6 +16,11 @@ class CredentialListScreen extends StatefulWidget {
 }
 
 class _CredentialListScreenState extends State<CredentialListScreen> {
+  Widget wrapItems({required List<Widget> children}) => Align(
+        child: Wrap(
+          children: children,
+        ),
+      );
   @override
   void initState() {
     super.initState();
@@ -51,9 +56,9 @@ class _CredentialListScreenState extends State<CredentialListScreen> {
                       child: Text(
                         'Credentials List',
                         textAlign: TextAlign.left,
-                        style: kIsWeb
-                            ? theme.textTheme.titleLarge
-                            : theme.textTheme.titleMedium,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],
@@ -64,40 +69,42 @@ class _CredentialListScreenState extends State<CredentialListScreen> {
                       current is FetchAllCredentialsSuccess,
                   builder: (BuildContext context, HrState state) {
                     if (state is FetchAllCredentialsSuccess) {
-                      return Column(
+                      return wrapItems(
                         children: <Widget>[
                           for (final Credential credential in state.credential)
-                            CredentialsCard(
-                              appTitle: credential.accountType,
-                              email: credential.username,
-                              password: credential.password,
+                            SizedBox(
+                              width: kIsWeb && width > smWebMinWidth
+                                  ? width * 0.38
+                                  : width,
+                              child: CredentialsCard(
+                                appTitle: credential.accountType,
+                                email: credential.username,
+                                password: credential.password,
+                              ),
                             ),
                         ],
                       );
                     }
-                    return Column(
+                    return wrapItems(
                       children: <Widget>[
-                        for (int i = 0; i < 5; i++)
-                          Center(
-                            child: Container(
-                              padding: EdgeInsets.all(width * 0.04),
-                              margin: EdgeInsets.only(
-                                left: width * 0.03,
-                                right: width * 0.03,
-                                bottom: height * 0.02,
-                                top: height * 0.035,
-                              ),
-                              child: lineLoader(
-                                // height: kIsWeb ? 300 : height * 0.30,
-                                height: height >= smMinHeight &&
-                                        height <= smMaxHeight
-                                    ? height * 0.28
-                                    : 200.01,
-                                // width: kIsWeb ? 370 : width * 0.8,
-                                width: width,
-                              ),
+                        for (int i = 0; i < 4; i++)
+                          Container(
+                            margin: EdgeInsets.only(
+                              left: width * 0.03,
+                              right: width * 0.03,
+                              bottom: height * 0.02,
+                              top: height * 0.035,
                             ),
-                          )
+                            child: lineLoader(
+                              height:
+                                  height >= smMinHeight && height <= smMaxHeight
+                                      ? height * 0.28
+                                      : 200.01,
+                              width: kIsWeb && width > smWebMinWidth
+                                  ? width * 0.30
+                                  : width,
+                            ),
+                          ),
                       ],
                     );
                   },
