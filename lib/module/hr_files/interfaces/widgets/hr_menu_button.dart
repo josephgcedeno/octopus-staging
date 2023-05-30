@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/models/hr/hr_response.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/hr_files/interfaces/screens/pdf_viewer_screen.dart';
 
 class HrMenuButton extends StatefulWidget {
@@ -63,14 +65,15 @@ class _HrMenuButtonState extends State<HrMenuButton> {
                         }
                       : null,
                   child: Container(
-                    width: isPortrait ? width * 0.887 : width * 0.880,
-                    margin: isPortrait
-                        ? EdgeInsets.symmetric(horizontal: width * 0.015)
-                        : EdgeInsets.symmetric(horizontal: width * 0.02),
-                    padding: EdgeInsets.symmetric(
-                      vertical: height * 0.025,
-                      horizontal: width * 0.053,
+                    width:
+                        kIsWeb && width > smWebMinWidth ? width * 0.25 : width,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 18.5,
                     ),
+                    margin: kIsWeb && width > smWebMinWidth
+                        ? const EdgeInsets.only(right: 25)
+                        : const EdgeInsets.only(top: 20),
                     decoration: BoxDecoration(
                       color: theme.primaryColor.withOpacity(0.06),
                       borderRadius: const BorderRadius.only(
@@ -108,8 +111,14 @@ class _HrMenuButtonState extends State<HrMenuButton> {
               });
             },
             child: Container(
-              padding:
-                  EdgeInsets.all(isPortrait ? width * 0.03 : height * 0.03),
+              width: kIsWeb && width > smWebMinWidth ? width * 0.25 : width,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 18.5,
+              ),
+              margin: kIsWeb && width > smWebMinWidth
+                  ? const EdgeInsets.only(right: 25)
+                  : const EdgeInsets.only(top: 20),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
@@ -123,15 +132,6 @@ class _HrMenuButtonState extends State<HrMenuButton> {
                       ]
                     : null,
               ),
-              margin: isPortrait
-                  ? EdgeInsets.symmetric(
-                      vertical: height * 0.017,
-                      horizontal: width * 0.020,
-                    )
-                  : EdgeInsets.symmetric(
-                      vertical: height * 0.01,
-                      horizontal: width * 0.008,
-                    ),
               child: Row(
                 children: <Widget>[
                   Expanded(

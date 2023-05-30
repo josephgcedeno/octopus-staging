@@ -40,7 +40,7 @@ class HRFilesScreen extends StatelessWidget {
                 right: width * 0.04,
               ),
               width: width,
-              child: Column(
+              child: Wrap(
                 children: <Widget>[
                   const HrMenuButton(
                     icon: Icons.policy_outlined,
