@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:octopus/infrastructures/models/hr/hr_response.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/hr_files/interfaces/screens/credential_list_screen.dart';
 import 'package:octopus/module/hr_files/interfaces/widgets/hr_menu_button.dart';
 
@@ -25,22 +26,30 @@ class HRFilesScreen extends StatelessWidget {
       appBar: const GlobalAppBar(leading: LeadingButton.back),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Text(
-              'HR Files',
-              style: kIsWeb
-                  ? theme.textTheme.titleLarge
-                  : theme.textTheme.titleMedium,
-            ),
-            Container(
-              padding: EdgeInsets.only(
-                left: width * 0.04,
-                right: width * 0.04,
+        child: Container(
+          padding: EdgeInsets.only(
+            left: width * 0.04,
+            right: width * 0.04,
+          ),
+          width: width,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20.0),
+                child: Align(
+                  alignment: kIsWeb && width > smWebMinWidth
+                      ? Alignment.centerLeft
+                      : Alignment.center,
+                  child: Text(
+                    'HR Files',
+                    style: kIsWeb
+                        ? theme.textTheme.titleLarge
+                        : theme.textTheme.titleMedium,
+                  ),
+                ),
               ),
-              width: width,
-              child: Wrap(
+              Wrap(
                 children: <Widget>[
                   const HrMenuButton(
                     icon: Icons.policy_outlined,
@@ -70,8 +79,8 @@ class HRFilesScreen extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
