@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/interfaces/widgets/dismissible_notification.dart';
 import 'package:octopus/internal/class_parse_object.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/internal/string_status.dart';
 import 'package:octopus/module/time_record/interfaces/widgets/details.dart';
 import 'package:octopus/module/time_record/interfaces/widgets/dtr_clock.dart';
@@ -87,30 +88,50 @@ class _TimeRecordScreenState extends State<TimeRecordScreen> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final double height = MediaQuery.of(context).size.height;
+    final double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: const GlobalAppBar(leading: LeadingButton.back),
       body: SingleChildScrollView(
         child: Stack(
           children: <Widget>[
-            Column(
-              children: <Widget>[
-                Center(
-                  child: Padding(
-                    padding: EdgeInsets.only(bottom: height * 0.03),
-                    child: Text(
-                      'Daily Time Record',
-                      style: kIsWeb
-                          ? theme.textTheme.titleLarge
-                          : theme.textTheme.titleMedium,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              child: Column(
+                children: <Widget>[
+                  Align(
+                    alignment: kIsWeb && width > smWebMinWidth
+                        ? Alignment.centerLeft
+                        : Alignment.center,
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: height * 0.03),
+                      child: Text(
+                        'Daily Time Record',
+                        style: kIsWeb
+                            ? theme.textTheme.titleLarge
+                            : theme.textTheme.titleMedium,
+                      ),
                     ),
                   ),
-                ),
-                const DTRClock(),
-                const DTRDetails(),
-                const OffsetButton(),
-                const TimeInSlider()
-              ],
+                  Center(
+                    child: Wrap(
+                      spacing: width * 0.10,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      alignment: WrapAlignment.center,
+                      children: <Widget>[
+                        const DTRClock(),
+                        Column(
+                          children: const <Widget>[
+                            DTRDetails(),
+                            OffsetButton(),
+                            TimeInSlider()
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
             if (notificationDialog != null) notificationDialog!
           ],
