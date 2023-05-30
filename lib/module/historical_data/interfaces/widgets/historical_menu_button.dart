@@ -34,7 +34,12 @@ class _HrMenuButtonState extends State<HistoricalMenuButton> {
           return GestureDetector(
             onTap: () => setState(() {
               isClicked = !isClicked;
-              widget.functionCall?.call();
+              Future<void>.delayed(const Duration(milliseconds: 500), () {
+                setState(() {
+                  isClicked = false;
+                });
+                widget.functionCall?.call();
+              });
             }),
             child: Container(
               padding: const EdgeInsets.symmetric(
