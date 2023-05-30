@@ -43,13 +43,15 @@ class HRFilesScreen extends StatelessWidget {
                       : Alignment.center,
                   child: Text(
                     'HR Files',
-                    style: kIsWeb
-                        ? theme.textTheme.titleLarge
-                        : theme.textTheme.titleMedium,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
               Wrap(
+                spacing: 10,
+                runSpacing: 10,
                 children: <Widget>[
                   const HrMenuButton(
                     icon: Icons.policy_outlined,
