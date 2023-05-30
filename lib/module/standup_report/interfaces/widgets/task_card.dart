@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:octopus/infrastructures/models/project/project_response.dart';
 import 'package:octopus/module/standup_report/interfaces/screens/edit_task_screen.dart';
@@ -36,7 +35,7 @@ class TaskCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(7),
           color: task.taskName.isEmpty ? Colors.black12 : Colors.white,
         ),
-        width: kIsWeb ? width * 0.3 : width * 0.8,
+        width: width * 0.8,
         padding: const EdgeInsets.all(10),
         margin: const EdgeInsets.only(bottom: 10),
         child: Row(
