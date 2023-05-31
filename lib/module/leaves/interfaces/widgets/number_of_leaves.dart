@@ -94,7 +94,7 @@ class _NumberOfLeavesState extends State<NumberOfLeaves> {
                         if (state is FetchAllLeavesDataLoading) {
                           return lineLoader(
                             height: height * 0.03,
-                            width: width * 0.3,
+                            width: width * 0.10,
                           );
                         } else {
                           return Text(
