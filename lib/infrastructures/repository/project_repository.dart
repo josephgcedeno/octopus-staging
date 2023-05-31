@@ -16,13 +16,12 @@ class ProjectRepository extends IProjectRepository {
   Future<APIResponse<Project>> addProject({
     required String projectName,
     required String projectColor,
-    required String logoImage,
+    String? logoImage,
     String? status,
     DateTime? date,
   }) async {
     if (projectName.isEmpty ||
         projectColor.isEmpty ||
-        logoImage.isEmpty ||
         (status != null && status.isEmpty)) {
       throw APIErrorResponse(
         message: 'This fields cannot be empty.',
@@ -40,7 +39,7 @@ class ProjectRepository extends IProjectRepository {
           ..date = epochFromDateTime(
             date: date ?? DateTime.now(),
           )
-          ..logoImage = logoImage;
+          ..logoImage = logoImage ?? '';
 
         final ParseResponse projectTagResponse = await projectTag.save();
 
@@ -58,7 +57,7 @@ class ProjectRepository extends IProjectRepository {
               projectName: projectName,
               status: status ?? active,
               color: projectColor,
-              logoImage: logoImage,
+              logoImage: logoImage ?? '',
             ),
             errorCode: null,
           );
