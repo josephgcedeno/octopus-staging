@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/models/hr/hr_response.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/hr_files/interfaces/screens/pdf_viewer_screen.dart';
 
 class HrMenuButton extends StatefulWidget {
@@ -31,17 +33,18 @@ class _HrMenuButtonState extends State<HrMenuButton> {
     final ThemeData theme = Theme.of(context);
     final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
-    final bool isPortrait =
-        MediaQuery.of(context).orientation == Orientation.portrait;
-
     return SizedBox(
-      height: isClicked ? (isPortrait ? height * 0.15 : height * 0.20) : null,
+      width: kIsWeb && width > smWebMinWidth ? width * 0.25 : width,
+      height: isClicked ? height * 0.20 : null,
       child: Stack(
         children: <Widget>[
           if (widget.isDropdown)
             AnimatedPositioned(
               duration: const Duration(milliseconds: 400),
-              top: isClicked ? (isPortrait ? height * 0.07 : height * 0.10) : 0,
+              top: isClicked ? height * 0.08 : 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
               child: AnimatedOpacity(
                 opacity: isClicked ? 1 : 0,
                 duration: const Duration(milliseconds: 250),
@@ -63,13 +66,14 @@ class _HrMenuButtonState extends State<HrMenuButton> {
                         }
                       : null,
                   child: Container(
-                    width: isPortrait ? width * 0.887 : width * 0.880,
-                    margin: isPortrait
-                        ? EdgeInsets.symmetric(horizontal: width * 0.015)
-                        : EdgeInsets.symmetric(horizontal: width * 0.02),
-                    padding: EdgeInsets.symmetric(
-                      vertical: height * 0.025,
-                      horizontal: width * 0.053,
+                    width:
+                        kIsWeb && width > smWebMinWidth ? width * 0.25 : width,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 25,
+                      vertical: 18.5,
+                    ),
+                    margin: EdgeInsets.only(
+                      top: kIsWeb && width > smWebMinWidth ? 5 : 20,
                     ),
                     decoration: BoxDecoration(
                       color: theme.primaryColor.withOpacity(0.06),
@@ -80,7 +84,6 @@ class _HrMenuButtonState extends State<HrMenuButton> {
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: <Widget>[
                         const Text('PDF File'),
                         Icon(
@@ -108,8 +111,13 @@ class _HrMenuButtonState extends State<HrMenuButton> {
               });
             },
             child: Container(
-              padding:
-                  EdgeInsets.all(isPortrait ? width * 0.03 : height * 0.03),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 18.5,
+              ),
+              margin: EdgeInsets.only(
+                top: kIsWeb && width > smWebMinWidth ? 5 : 20,
+              ),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
@@ -123,15 +131,6 @@ class _HrMenuButtonState extends State<HrMenuButton> {
                       ]
                     : null,
               ),
-              margin: isPortrait
-                  ? EdgeInsets.symmetric(
-                      vertical: height * 0.017,
-                      horizontal: width * 0.020,
-                    )
-                  : EdgeInsets.symmetric(
-                      vertical: height * 0.01,
-                      horizontal: width * 0.008,
-                    ),
               child: Row(
                 children: <Widget>[
                   Expanded(
