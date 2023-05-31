@@ -35,7 +35,11 @@ class _HrMenuButtonState extends State<HrMenuButton> {
     final double height = MediaQuery.of(context).size.height;
     return SizedBox(
       width: kIsWeb && width > smWebMinWidth ? width * 0.25 : width,
-      height: isClicked ? height * 0.20 : null,
+      height: isClicked
+          ? kIsWeb && width > smWebMinWidth
+              ? height * 0.17
+              : height * 0.20
+          : null,
       child: Stack(
         children: <Widget>[
           if (widget.isDropdown)

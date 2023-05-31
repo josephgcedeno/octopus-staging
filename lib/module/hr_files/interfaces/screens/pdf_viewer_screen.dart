@@ -31,8 +31,6 @@ class PDFViewerScreen extends StatefulWidget {
 }
 
 class _PDFViewerScreenState extends State<PDFViewerScreen> {
-  bool isLoading = true;
-
   String? urlPDF;
 
   @override
@@ -81,7 +79,7 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                   DownloadButton(
                     title: widget.title,
                     url: urlPDF!,
-                    documentLoading: isLoading,
+                    documentLoading: false,
                   ),
               ],
             ),
@@ -95,67 +93,64 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
               width: kIsWeb && width > smWebMinWidth ? width * 0.50 : width,
               height: height * 0.80,
               padding: const EdgeInsets.all(10),
-              child: Expanded(
-                child: BlocConsumer<HrCubit, HrState>(
-                  listenWhen: (HrState previous, HrState current) =>
-                      current is FetchPDFFileFailed ||
-                      current is FetchPDFFileSuccess,
-                  listener: (BuildContext context, HrState state) {
-                    if (state is FetchPDFFileSuccess) {
-                      setState(() {
-                        urlPDF = state.companyFiles[0].fileSource;
-                      });
-                    } else if (state is FetchPDFFileFailed) {
-                      showSnackBar(message: state.message);
-                    }
-                  },
-                  buildWhen: (HrState previous, HrState current) =>
-                      current is FetchPDFFileFailed ||
-                      current is FetchPDFFileLoading ||
-                      current is FetchPDFFileSuccess,
-                  builder: (BuildContext context, HrState state) {
-                    if (state is FetchPDFFileSuccess) {
-                      return SfPdfViewerTheme(
-                        data: SfPdfViewerThemeData(
-                          progressBarColor: ktransparent,
-                        ),
-                        child: SfPdfViewer.network(
-                          state.companyFiles[0].fileSource,
-                          onDocumentLoadFailed: (_) {
-                            showSnackBar(
-                              message: 'Document failed to load',
-                              snackBartState: SnackBartState.error,
-                            );
-                          },
-                        ),
-                      );
-                    } else if (state is FetchPDFFileFailed) {
-                      showSnackBar(message: state.message);
-                    }
-                    return Container(
-                      width: double.infinity,
-                      color: kLightGrey,
-                      padding: EdgeInsets.all(width * 0.035),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          for (int i = 0; i < loaderItems; i++)
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                vertical: height * 0.008,
-                                horizontal: width * 0.025,
-                              ),
-                              child: lineLoader(
-                                height: Random().nextInt(15) + 10,
-                                width: double.infinity,
-                              ),
-                            )
-                        ],
+              child: BlocConsumer<HrCubit, HrState>(
+                listenWhen: (HrState previous, HrState current) =>
+                    current is FetchPDFFileFailed ||
+                    current is FetchPDFFileSuccess,
+                listener: (BuildContext context, HrState state) {
+                  if (state is FetchPDFFileSuccess) {
+                    setState(() {
+                      urlPDF = state.companyFiles[0].fileSource;
+                    });
+                  } else if (state is FetchPDFFileFailed) {
+                    showSnackBar(message: state.message);
+                  }
+                },
+                buildWhen: (HrState previous, HrState current) =>
+                    current is FetchPDFFileFailed ||
+                    current is FetchPDFFileLoading ||
+                    current is FetchPDFFileSuccess,
+                builder: (BuildContext context, HrState state) {
+                  if (state is FetchPDFFileSuccess) {
+                    return SfPdfViewerTheme(
+                      data: SfPdfViewerThemeData(
+                        progressBarColor: ktransparent,
+                      ),
+                      child: SfPdfViewer.network(
+                        state.companyFiles[0].fileSource,
+                        onDocumentLoadFailed: (_) {
+                          showSnackBar(
+                            message: 'Document failed to load',
+                            snackBartState: SnackBartState.error,
+                          );
+                        },
                       ),
                     );
-                  },
-                ),
+                  } else if (state is FetchPDFFileFailed) {
+                    showSnackBar(message: state.message);
+                  }
+                  return Container(
+                    color: kLightGrey,
+                    padding: EdgeInsets.all(width * 0.035),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        for (int i = 0; i < loaderItems; i++)
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: height * 0.008,
+                              horizontal: width * 0.025,
+                            ),
+                            child: lineLoader(
+                              height: Random().nextInt(15) + 10,
+                              width: double.infinity,
+                            ),
+                          )
+                      ],
+                    ),
+                  );
+                },
               ),
             ),
           ),
