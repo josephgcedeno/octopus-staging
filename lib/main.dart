@@ -19,6 +19,7 @@ import 'package:octopus/infrastructures/service/cubit/user_cubit.dart';
 import 'package:octopus/interfaces/screens/splash_screen.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/accomplishments_generator/service/cubit/accomplishments_cubit.dart';
+import 'package:octopus/module/add_new_project/service/cubit/add_new_project_cubit.dart';
 import 'package:octopus/module/admin_registration/services/bloc/admin_registration_cubit.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
 import 'package:octopus/module/dashboard/service/cubit/reminder_cubit.dart';
@@ -114,6 +115,11 @@ class _AppState extends State<App> {
         BlocProvider<LeavesCubit>(
           create: (BuildContext context) => LeavesCubit(
             leaveRepository: leaveRepository,
+          ),
+        ),
+        BlocProvider<AddNewProjectCubit>(
+          create: (BuildContext context) => AddNewProjectCubit(
+            projectRepository: projectRepository,
           ),
         ),
         BlocProvider<AdminRegistrationCubit>(

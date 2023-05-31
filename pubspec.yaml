@@ -31,6 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.1
+  flutter_colorpicker: ^1.0.3
   flutter_dotenv: ^5.0.2
   flutter_fadein: ^2.0.0
   flutter_secure_storage: ^6.0.0
