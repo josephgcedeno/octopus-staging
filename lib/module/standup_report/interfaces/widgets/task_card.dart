@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:octopus/infrastructures/models/project/project_response.dart';
+import 'package:octopus/interfaces/screens/side_bar_screen.dart';
 import 'package:octopus/module/standup_report/interfaces/screens/edit_task_screen.dart';
 import 'package:octopus/module/standup_report/interfaces/widgets/project_chip.dart';
 import 'package:octopus/module/standup_report/service/cubit/task_card_dto.dart';
@@ -22,8 +23,15 @@ class TaskCard extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
-          MaterialPageRoute<dynamic>(
-            builder: (_) => EditTaskScreen(task: task),
+          PageRouteBuilder<dynamic>(
+            pageBuilder: (
+              BuildContext context,
+              Animation<double> animation1,
+              Animation<double> animation2,
+            ) =>
+                SidebarScreen(child: EditTaskScreen(task: task)),
+            transitionDuration: Duration.zero,
+            reverseTransitionDuration: Duration.zero,
           ),
         );
       },
@@ -41,7 +49,9 @@ class TaskCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Expanded(child: Text(task.taskName, style: theme.textTheme.bodyMedium)),
+            Expanded(
+              child: Text(task.taskName, style: theme.textTheme.bodyMedium),
+            ),
             ProjectChip(
               id: projectTag.id,
               name: projectTag.projectName,
