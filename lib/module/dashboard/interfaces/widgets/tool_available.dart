@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/infrastructures/models/user/user_response.dart';
 import 'package:octopus/infrastructures/service/cubit/user_cubit.dart';
+import 'package:octopus/interfaces/screens/side_bar_screen.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/screens/accomplishments_generator_screen.dart';
 import 'package:octopus/module/add_new_project/interfaces/screens/add_new_project_screen.dart';
@@ -53,7 +54,8 @@ class _ToolsAvailableState extends State<ToolsAvailable> {
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute<dynamic>(
-                            builder: (_) => const TimeRecordScreen(),
+                            builder: (_) =>
+                                const SidebarScreen(child: TimeRecordScreen()),
                           ),
                         );
                       },
@@ -65,7 +67,9 @@ class _ToolsAvailableState extends State<ToolsAvailable> {
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute<dynamic>(
-                            builder: (_) => const StandupReportScreen(),
+                            builder: (_) => const SidebarScreen(
+                              child: StandupReportScreen(),
+                            ),
                           ),
                         );
                       },
@@ -84,7 +88,8 @@ class _ToolsAvailableState extends State<ToolsAvailable> {
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute<dynamic>(
-                            builder: (_) => const LeavesScreen(),
+                            builder: (_) =>
+                                const SidebarScreen(child: LeavesScreen()),
                           ),
                         );
                       },
@@ -96,7 +101,8 @@ class _ToolsAvailableState extends State<ToolsAvailable> {
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute<dynamic>(
-                            builder: (_) => const HRFilesScreen(),
+                            builder: (_) =>
+                                const SidebarScreen(child: HRFilesScreen()),
                           ),
                         );
                       },
@@ -118,8 +124,9 @@ class _ToolsAvailableState extends State<ToolsAvailable> {
                             onTap: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute<dynamic>(
-                                  builder: (_) =>
-                                      const AccomplishmentsGeneratorScreen(),
+                                  builder: (_) => const SidebarScreen(
+                                    child: AccomplishmentsGeneratorScreen(),
+                                  ),
                                 ),
                               );
                             },
@@ -131,7 +138,9 @@ class _ToolsAvailableState extends State<ToolsAvailable> {
                             onTap: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute<dynamic>(
-                                  builder: (_) => const LeavesAdminScreen(),
+                                  builder: (_) => const SidebarScreen(
+                                    child: LeavesAdminScreen(),
+                                  ),
                                 ),
                               );
                             },
@@ -150,7 +159,9 @@ class _ToolsAvailableState extends State<ToolsAvailable> {
                             onTap: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute<dynamic>(
-                                  builder: (_) => const TeamMembersScreen(),
+                                  builder: (_) => const SidebarScreen(
+                                    child: TeamMembersScreen(),
+                                  ),
                                 ),
                               );
                             },
@@ -162,7 +173,9 @@ class _ToolsAvailableState extends State<ToolsAvailable> {
                             onTap: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute<dynamic>(
-                                  builder: (_) => const HistoricalDataScreen(),
+                                  builder: (_) => const SidebarScreen(
+                                    child: HistoricalDataScreen(),
+                                  ),
                                 ),
                               );
                             },
@@ -180,7 +193,9 @@ class _ToolsAvailableState extends State<ToolsAvailable> {
                             onTap: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute<dynamic>(
-                                  builder: (_) => const AddNewProjectScreen(),
+                                  builder: (_) => const SidebarScreen(
+                                    child: AddNewProjectScreen(),
+                                  ),
                                 ),
                               );
                             },
