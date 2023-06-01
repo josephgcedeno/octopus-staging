@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
 import 'package:octopus/interfaces/screens/pdf_viewer_screen.dart';
+import 'package:octopus/interfaces/screens/side_bar_screen.dart';
 import 'package:octopus/interfaces/widgets/upload_progress.dart';
 import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/daily_accomplishment_tabs.dart';
@@ -63,11 +64,20 @@ class _DailyAccomplishmentReportScreenState
         } else if (state is GeneratePDFSuccess) {
           Navigator.of(context).pop(); // pop the alert dialog
           Navigator.of(context).push(
-            MaterialPageRoute<dynamic>(
-              builder: (_) => PDFViewerScreen(
-                pdf: state.document,
-                title: 'Accomplishment Generator',
+            PageRouteBuilder<dynamic>(
+              pageBuilder: (
+                BuildContext context,
+                Animation<double> animation1,
+                Animation<double> animation2,
+              ) =>
+                  SidebarScreen(
+                child: PDFViewerScreen(
+                  pdf: state.document,
+                  title: 'Accomplishment Generator',
+                ),
               ),
+              transitionDuration: Duration.zero,
+              reverseTransitionDuration: Duration.zero,
             ),
           );
         }
