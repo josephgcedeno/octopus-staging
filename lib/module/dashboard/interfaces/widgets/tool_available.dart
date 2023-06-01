@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/infrastructures/models/user/user_response.dart';
@@ -23,6 +22,115 @@ class ToolsAvailable extends StatefulWidget {
 }
 
 class _ToolsAvailableState extends State<ToolsAvailable> {
+  List<DashboardButton> dashboardButtons(
+    BuildContext context,
+    UserRole userRole,
+  ) {
+    return <DashboardButton>[
+      DashboardButton(
+        icon: Icons.timer_outlined,
+        label: 'Daily Time Record',
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<dynamic>(
+              builder: (_) => const TimeRecordScreen(),
+            ),
+          );
+        },
+      ),
+      DashboardButton(
+        icon: Icons.collections_bookmark_outlined,
+        label: 'Daily Stand-Up Report',
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<dynamic>(
+              builder: (_) => const StandupReportScreen(),
+            ),
+          );
+        },
+      ),
+      DashboardButton(
+        icon: Icons.calendar_today_outlined,
+        label: 'Leaves',
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<dynamic>(
+              builder: (_) => const LeavesScreen(),
+            ),
+          );
+        },
+      ),
+      DashboardButton(
+        icon: Icons.collections_bookmark_outlined,
+        label: 'HR Files',
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<dynamic>(
+              builder: (_) => const HRFilesScreen(),
+            ),
+          );
+        },
+      ),
+      if (userRole == UserRole.admin) ...<DashboardButton>[
+        DashboardButton(
+          icon: Icons.calendar_today_outlined,
+          label: 'Accompl. Generator',
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<dynamic>(
+                builder: (_) => const AccomplishmentsGeneratorScreen(),
+              ),
+            );
+          },
+        ),
+        DashboardButton(
+          icon: Icons.folder_open_outlined,
+          label: 'Request Leaves',
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<dynamic>(
+                builder: (_) => const LeavesAdminScreen(),
+              ),
+            );
+          },
+        ),
+        DashboardButton(
+          icon: Icons.calendar_today_outlined,
+          label: 'Registration',
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<dynamic>(
+                builder: (_) => const TeamMembersScreen(),
+              ),
+            );
+          },
+        ),
+        DashboardButton(
+          icon: Icons.collections_bookmark_outlined,
+          label: 'Historical Data',
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<dynamic>(
+                builder: (_) => const HistoricalDataScreen(),
+              ),
+            );
+          },
+        ),
+        DashboardButton(
+          icon: Icons.post_add_rounded,
+          label: 'Add New Project',
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<dynamic>(
+                builder: (_) => const AddNewProjectScreen(),
+              ),
+            );
+          },
+        ),
+      ]
+    ];
+  }
+
   @override
   void initState() {
     super.initState();
@@ -31,8 +139,7 @@ class _ToolsAvailableState extends State<ToolsAvailable> {
 
   @override
   Widget build(BuildContext context) {
-    final double width = kIsWeb ? 560 : MediaQuery.of(context).size.width;
-    final double height = kIsWeb ? 560 : MediaQuery.of(context).size.height;
+    final double height = MediaQuery.of(context).size.height;
 
     return BlocBuilder<UserCubit, UserState>(
       buildWhen: (UserState previous, UserState current) =>
@@ -40,32 +147,36 @@ class _ToolsAvailableState extends State<ToolsAvailable> {
           current is FetchCurrentUserLoading,
       builder: (BuildContext context, UserState state) {
         if (state is FetchCurrentUserSuccess) {
+          final List<DashboardButton> dashboardBtn = dashboardButtons(
+            context,
+            state.userRole.userRole,
+          );
           return Column(
             children: <Widget>[
+              /// Minus 1 since the last button should be displayed as 1
+              for (int i = 0; i < dashboardBtn.length - 1; i = i + 2)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      dashboardBtn[i],
+                      const SizedBox(width: 16),
+                      dashboardBtn[i + 1]
+                    ],
+                  ),
+                ),
               Padding(
                 padding: EdgeInsets.only(bottom: height * 0.02),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     DashboardButton(
-                      icon: Icons.timer_outlined,
-                      label: 'Daily Time Record',
+                      icon: Icons.post_add_rounded,
+                      label: 'Add New Project',
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute<dynamic>(
-                            builder: (_) => const TimeRecordScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                    SizedBox(width: width * 0.03),
-                    DashboardButton(
-                      icon: Icons.collections_bookmark_outlined,
-                      label: 'Daily Stand-Up Report',
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<dynamic>(
-                            builder: (_) => const StandupReportScreen(),
+                            builder: (_) => const AddNewProjectScreen(),
                           ),
                         );
                       },
@@ -73,138 +184,35 @@ class _ToolsAvailableState extends State<ToolsAvailable> {
                   ],
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.only(bottom: height * 0.02),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    DashboardButton(
-                      icon: Icons.calendar_today_outlined,
-                      label: 'Leaves',
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<dynamic>(
-                            builder: (_) => const LeavesScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                    SizedBox(width: width * 0.03),
-                    DashboardButton(
-                      icon: Icons.collections_bookmark_outlined,
-                      label: 'HR Files',
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<dynamic>(
-                            builder: (_) => const HRFilesScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              if (state.userRole.userRole == UserRole.admin)
-                Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(bottom: height * 0.02),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          DashboardButton(
-                            icon: Icons.calendar_today_outlined,
-                            label: 'Accompl. Generator',
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute<dynamic>(
-                                  builder: (_) =>
-                                      const AccomplishmentsGeneratorScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                          SizedBox(width: width * 0.03),
-                          DashboardButton(
-                            icon: Icons.folder_open_outlined,
-                            label: 'Request Leaves',
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute<dynamic>(
-                                  builder: (_) => const LeavesAdminScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: height * 0.02),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          DashboardButton(
-                            icon: Icons.calendar_today_outlined,
-                            label: 'Registration',
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute<dynamic>(
-                                  builder: (_) => const TeamMembersScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                          SizedBox(width: width * 0.03),
-                          DashboardButton(
-                            icon: Icons.collections_bookmark_outlined,
-                            label: 'Historical Data',
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute<dynamic>(
-                                  builder: (_) => const HistoricalDataScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: height * 0.02),
-                      child: Row(
-                        children: <Widget>[
-                          DashboardButton(
-                            icon: Icons.post_add_rounded,
-                            label: 'Add New Project',
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute<dynamic>(
-                                  builder: (_) => const AddNewProjectScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
             ],
           );
         }
+
         return Column(
           children: <Widget>[
             for (int i = 0; i < 2; i++)
               Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    lineLoader(height: height * 0.1, width: width * 0.43),
-                    SizedBox(width: width * 0.03),
-                    lineLoader(height: height * 0.1, width: width * 0.43),
-                  ],
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Expanded(
+                  child: LayoutBuilder(
+                    builder:
+                        (BuildContext context, BoxConstraints constraints) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          lineLoader(
+                            height: height * 0.1,
+                            width: constraints.maxWidth * 0.45,
+                          ),
+                          const SizedBox(width: 16),
+                          lineLoader(
+                            height: height * 0.1,
+                            width: constraints.maxWidth * 0.45,
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                 ),
               ),
           ],
