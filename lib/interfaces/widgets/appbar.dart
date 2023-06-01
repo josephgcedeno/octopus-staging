@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/service/cubit/secure_storage_cubit_cubit.dart';
 import 'package:octopus/interfaces/screens/members_profile_screen.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/internal/local_storage.dart';
+import 'package:octopus/module/dashboard/interfaces/widgets/greetings_status.dart';
 
 enum LeadingButton {
   name,
   back,
   menu,
+  dashboard,
 }
 
 class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -26,22 +30,6 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-
-    final Widget nameButton = RichText(
-      text: TextSpan(
-        children: <TextSpan>[
-          TextSpan(
-            text: 'Good Morning!\n',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          TextSpan(text: 'Angel', style: theme.textTheme.bodySmall),
-        ],
-      ),
-    );
-
     final Widget backButton = GestureDetector(
       onTap: () {
         Navigator.pop(context);
@@ -62,14 +50,23 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
     );
 
+    final Widget dashboard = SvgPicture.asset(
+      logoSvg,
+      width: 40,
+      height: 40,
+    );
+
     Widget leadingButton() {
       switch (leading) {
         case LeadingButton.name:
-          return nameButton;
+          return const GreetingsStatus();
         case LeadingButton.back:
           return backButton;
         case LeadingButton.menu:
           return menuButton;
+        case LeadingButton.dashboard:
+          // TODO: Handle this case.
+          return dashboard;
       }
     }
 
