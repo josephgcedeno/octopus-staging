@@ -76,7 +76,7 @@ class _StatusColumnState extends State<StatusColumn> {
     final double width = MediaQuery.of(context).size.width;
 
     return Container(
-      width: width * 0.3,
+      width: width * 0.25,
       padding: widget.status == ProjectStatus.blockers &&
               !(kIsWeb && width > smWebMinWidth)
           ? const EdgeInsets.only(left: 8, right: 8, top: 8)

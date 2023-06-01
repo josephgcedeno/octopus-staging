@@ -237,6 +237,7 @@ class _StandupReportScreenState extends State<StandupReportScreen> {
                             )
                           : kIsWeb && width > smWebMinWidth
                               ? Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
                                   children:
