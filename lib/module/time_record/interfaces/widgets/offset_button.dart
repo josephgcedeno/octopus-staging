@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/interfaces/screens/side_bar_screen.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/module/time_record/interfaces/screens/request_offset_screen.dart';
 import 'package:octopus/module/time_record/service/cubit/time_record_cubit.dart';
@@ -27,8 +28,15 @@ class OffsetButton extends StatelessWidget {
         return ElevatedButton(
           onPressed: () {
             Navigator.of(context).push(
-              MaterialPageRoute<dynamic>(
-                builder: (_) => const RequestOffsetScreen(),
+              PageRouteBuilder<dynamic>(
+                pageBuilder: (
+                  BuildContext context,
+                  Animation<double> animation1,
+                  Animation<double> animation2,
+                ) =>
+                    const SidebarScreen(child: RequestOffsetScreen()),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
               ),
             );
           },
