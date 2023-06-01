@@ -83,6 +83,8 @@ class HistoricalDataScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
                   children: historicalMenuButtons(context),
                 ),
               ),
