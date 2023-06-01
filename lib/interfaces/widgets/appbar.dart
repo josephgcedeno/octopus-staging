@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/infrastructures/service/cubit/secure_storage_cubit_cubit.dart';
 import 'package:octopus/interfaces/screens/members_profile_screen.dart';
+import 'package:octopus/interfaces/screens/side_bar_screen.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/internal/local_storage.dart';
 
@@ -83,13 +84,32 @@ class GlobalAppBar extends StatelessWidget implements PreferredSizeWidget {
           Padding(
             padding: const EdgeInsets.only(right: 15),
             child: GestureDetector(
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute<dynamic>(
-                  builder: (_) => const MembersProfileScreen(
-                    userView: UserView.user,
-                  ),
-                ),
-              ),
+              onTap: () {
+                final PageRoute<dynamic> withAnimation =
+                    leading == LeadingButton.name
+                        ? MaterialPageRoute<dynamic>(
+                            builder: (_) => const SidebarScreen(
+                              child: MembersProfileScreen(
+                                userView: UserView.user,
+                              ),
+                            ),
+                          )
+                        : PageRouteBuilder<dynamic>(
+                            pageBuilder: (
+                              BuildContext context,
+                              Animation<double> animation1,
+                              Animation<double> animation2,
+                            ) =>
+                                const SidebarScreen(
+                              child: MembersProfileScreen(
+                                userView: UserView.user,
+                              ),
+                            ),
+                            transitionDuration: Duration.zero,
+                            reverseTransitionDuration: Duration.zero,
+                          );
+                Navigator.of(context).push(withAnimation);
+              },
               child: CircleAvatar(
                 radius: 18,
                 backgroundColor: Colors.blueAccent,
