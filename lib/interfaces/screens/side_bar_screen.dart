@@ -1,7 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:octopus/configs/themes.dart';
+import 'package:octopus/infrastructures/models/user/user_response.dart';
+import 'package:octopus/infrastructures/service/cubit/user_cubit.dart';
 import 'package:octopus/interfaces/screens/members_profile_screen.dart';
 import 'package:octopus/interfaces/screens/pdf_viewer_screen.dart';
 import 'package:octopus/interfaces/widgets/side_bar_button.dart';
@@ -59,6 +62,7 @@ class SidebarScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
+    final UserRole? userrole = context.read<UserCubit>().state.currentUserRole;
 
     return Scaffold(
       body: Row(
@@ -141,97 +145,100 @@ class SidebarScreen extends StatelessWidget {
                             ),
                     title: 'HR Files',
                   ),
-                  SidebarButton(
-                    icon: Icons.calendar_today_outlined,
-                    isActive: child.runtimeType ==
-                            AccomplishmentsGeneratorScreen ||
-                        child.runtimeType == DailyAccomplishmentReportScreen ||
-                        (child.runtimeType == PDFViewerScreen &&
-                            (child as PDFViewerScreen).title ==
-                                'Accomplishment Generator'),
-                    onTap:
-                        child.runtimeType == AccomplishmentsGeneratorScreen ||
-                                child.runtimeType ==
-                                    DailyAccomplishmentReportScreen ||
-                                (child.runtimeType == PDFViewerScreen &&
-                                    (child as PDFViewerScreen).title ==
-                                        'Accomplishment Generator')
-                            ? null
-                            : () => pushReplaceScreen(
-                                  context,
-                                  const AccomplishmentsGeneratorScreen(),
-                                ),
-                    title: 'Accompl. Generator',
-                  ),
-                  SidebarButton(
-                    icon: Icons.folder_open_outlined,
-                    isActive: child.runtimeType == LeavesAdminScreen,
-                    onTap: child.runtimeType == LeavesAdminScreen
-                        ? null
-                        : () => pushReplaceScreen(
-                              context,
-                              const LeavesAdminScreen(),
-                            ),
-                    title: 'Request Leaves',
-                  ),
-                  SidebarButton(
-                    icon: Icons.calendar_today_outlined,
-                    isActive: child.runtimeType == TeamMembersScreen ||
-                        (child.runtimeType == MembersProfileScreen &&
-                            (child as MembersProfileScreen).userView ==
-                                UserView.admin) ||
-                        child.runtimeType == PersonalInformationFormScreen ||
-                        child.runtimeType == IdsFormScreen,
-                    onTap: child.runtimeType == TeamMembersScreen ||
-                            (child.runtimeType == MembersProfileScreen &&
-                                (child as MembersProfileScreen).userView ==
-                                    UserView.admin) ||
-                            child.runtimeType ==
-                                PersonalInformationFormScreen ||
-                            child.runtimeType == IdsFormScreen
-                        ? null
-                        : () => pushReplaceScreen(
-                              context,
-                              const TeamMembersScreen(),
-                            ),
-                    title: 'Registration',
-                  ),
-                  SidebarButton(
-                    icon: Icons.collections_bookmark_outlined,
-                    isActive: child.runtimeType == HistoricalDataScreen ||
-                        child.runtimeType == DailyTimeRecordScreen ||
-                        child.runtimeType == DailyStandUpReportScreen ||
-                        child.runtimeType == LeaveRequestScreen ||
-                        child.runtimeType == ReportScreenGenerator ||
-                        (child.runtimeType == PDFViewerScreen &&
-                            (child as PDFViewerScreen).title ==
-                                'Historical Data'),
-                    onTap: child.runtimeType == HistoricalDataScreen ||
-                            child.runtimeType == DailyTimeRecordScreen ||
-                            child.runtimeType == DailyStandUpReportScreen ||
-                            child.runtimeType == LeaveRequestScreen ||
-                            child.runtimeType == ReportScreenGenerator ||
-                            (child.runtimeType == PDFViewerScreen &&
-                                (child as PDFViewerScreen).title ==
-                                    'Historical Data')
-                        ? null
-                        : () => pushReplaceScreen(
-                              context,
-                              const HistoricalDataScreen(),
-                            ),
-                    title: 'Historical Data',
-                  ),
-                  SidebarButton(
-                    icon: Icons.post_add_rounded,
-                    isActive: child.runtimeType == AddNewProjectScreen,
-                    onTap: child.runtimeType == AddNewProjectScreen
-                        ? null
-                        : () => pushReplaceScreen(
-                              context,
-                              const AddNewProjectScreen(),
-                            ),
-                    title: 'Add New Project',
-                  ),
+                  if (userrole == UserRole.admin) ...<SidebarButton>[
+                    SidebarButton(
+                      icon: Icons.calendar_today_outlined,
+                      isActive:
+                          child.runtimeType == AccomplishmentsGeneratorScreen ||
+                              child.runtimeType ==
+                                  DailyAccomplishmentReportScreen ||
+                              (child.runtimeType == PDFViewerScreen &&
+                                  (child as PDFViewerScreen).title ==
+                                      'Accomplishment Generator'),
+                      onTap:
+                          child.runtimeType == AccomplishmentsGeneratorScreen ||
+                                  child.runtimeType ==
+                                      DailyAccomplishmentReportScreen ||
+                                  (child.runtimeType == PDFViewerScreen &&
+                                      (child as PDFViewerScreen).title ==
+                                          'Accomplishment Generator')
+                              ? null
+                              : () => pushReplaceScreen(
+                                    context,
+                                    const AccomplishmentsGeneratorScreen(),
+                                  ),
+                      title: 'Accompl. Generator',
+                    ),
+                    SidebarButton(
+                      icon: Icons.folder_open_outlined,
+                      isActive: child.runtimeType == LeavesAdminScreen,
+                      onTap: child.runtimeType == LeavesAdminScreen
+                          ? null
+                          : () => pushReplaceScreen(
+                                context,
+                                const LeavesAdminScreen(),
+                              ),
+                      title: 'Request Leaves',
+                    ),
+                    SidebarButton(
+                      icon: Icons.calendar_today_outlined,
+                      isActive: child.runtimeType == TeamMembersScreen ||
+                          (child.runtimeType == MembersProfileScreen &&
+                              (child as MembersProfileScreen).userView ==
+                                  UserView.admin) ||
+                          child.runtimeType == PersonalInformationFormScreen ||
+                          child.runtimeType == IdsFormScreen,
+                      onTap: child.runtimeType == TeamMembersScreen ||
+                              (child.runtimeType == MembersProfileScreen &&
+                                  (child as MembersProfileScreen).userView ==
+                                      UserView.admin) ||
+                              child.runtimeType ==
+                                  PersonalInformationFormScreen ||
+                              child.runtimeType == IdsFormScreen
+                          ? null
+                          : () => pushReplaceScreen(
+                                context,
+                                const TeamMembersScreen(),
+                              ),
+                      title: 'Registration',
+                    ),
+                    SidebarButton(
+                      icon: Icons.collections_bookmark_outlined,
+                      isActive: child.runtimeType == HistoricalDataScreen ||
+                          child.runtimeType == DailyTimeRecordScreen ||
+                          child.runtimeType == DailyStandUpReportScreen ||
+                          child.runtimeType == LeaveRequestScreen ||
+                          child.runtimeType == ReportScreenGenerator ||
+                          (child.runtimeType == PDFViewerScreen &&
+                              (child as PDFViewerScreen).title ==
+                                  'Historical Data'),
+                      onTap: child.runtimeType == HistoricalDataScreen ||
+                              child.runtimeType == DailyTimeRecordScreen ||
+                              child.runtimeType == DailyStandUpReportScreen ||
+                              child.runtimeType == LeaveRequestScreen ||
+                              child.runtimeType == ReportScreenGenerator ||
+                              (child.runtimeType == PDFViewerScreen &&
+                                  (child as PDFViewerScreen).title ==
+                                      'Historical Data')
+                          ? null
+                          : () => pushReplaceScreen(
+                                context,
+                                const HistoricalDataScreen(),
+                              ),
+                      title: 'Historical Data',
+                    ),
+                    SidebarButton(
+                      icon: Icons.post_add_rounded,
+                      isActive: child.runtimeType == AddNewProjectScreen,
+                      onTap: child.runtimeType == AddNewProjectScreen
+                          ? null
+                          : () => pushReplaceScreen(
+                                context,
+                                const AddNewProjectScreen(),
+                              ),
+                      title: 'Add New Project',
+                    ),
+                  ],
                 ],
               ),
             ),
