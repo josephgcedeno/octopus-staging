@@ -81,6 +81,8 @@ flutter:
     - assets/images/nuxify_logo_text.svg
     - assets/images/nuxify_logo_text.png
     - assets/images/taking_notes.svg
+    - assets/images/project_octopus_logo_text.svg
+    
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

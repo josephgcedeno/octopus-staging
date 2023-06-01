@@ -82,3 +82,4 @@ const String logoPng = 'assets/images/app_logo.png';
 const String nuxifyLogoSvg = 'assets/images/nuxify_logo_text.svg';
 const String nuxifyLogoPng = 'assets/images/nuxify_logo_text.png';
 const String nuxifyTakingNotesSvg = 'assets/images/taking_notes.svg';
+const String logoSvgWithText = 'assets/images/project_octopus_logo_text.svg';
