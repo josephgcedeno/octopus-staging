@@ -557,7 +557,7 @@ class _AccomplishmentsSliderAndTasksListState
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
                                       SizedBox(
-                                        width: width * 0.45,
+                                        width: width * 0.30,
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
