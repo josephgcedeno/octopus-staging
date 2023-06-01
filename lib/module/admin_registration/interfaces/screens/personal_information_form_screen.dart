@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:octopus/interfaces/screens/side_bar_screen.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/admin_registration/interfaces/screens/ids_form_screen.dart';
@@ -65,18 +66,27 @@ class _PersonalInformationFormScreenState
         buttonFunction: () {
           if (_formKey.currentState!.validate()) {
             Navigator.of(context).push(
-              MaterialPageRoute<dynamic>(
-                builder: (_) => IdsFormScreen(
-                  addressTextController: addressTextController,
-                  birthdateTextController: birthdateTextController,
-                  dateHiredTextController: dateHiredTextController,
-                  emailTextController: emailTextController,
-                  firstNameTextController: firstNameTextController,
-                  lastNameTextController: lastNameTextController,
-                  positionTextController: positionTextController,
-                  birthDate: birthDate,
-                  hireDate: hireDate,
+              PageRouteBuilder<dynamic>(
+                pageBuilder: (
+                  BuildContext context,
+                  Animation<double> animation1,
+                  Animation<double> animation2,
+                ) =>
+                    SidebarScreen(
+                  child: IdsFormScreen(
+                    addressTextController: addressTextController,
+                    birthdateTextController: birthdateTextController,
+                    dateHiredTextController: dateHiredTextController,
+                    emailTextController: emailTextController,
+                    firstNameTextController: firstNameTextController,
+                    lastNameTextController: lastNameTextController,
+                    positionTextController: positionTextController,
+                    birthDate: birthDate,
+                    hireDate: hireDate,
+                  ),
                 ),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
               ),
             );
           }

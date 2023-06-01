@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/interfaces/screens/side_bar_screen.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/internal/screen_resolution_utils.dart';
@@ -97,7 +98,7 @@ class _IdsFormScreenState extends State<IdsFormScreen> {
           showSnackBar(message: 'User created successfully.');
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute<dynamic>(
-              builder: (_) => const TeamMembersScreen(),
+              builder: (_) => const SidebarScreen(child: TeamMembersScreen()),
             ),
             (Route<dynamic> route) => false,
           );

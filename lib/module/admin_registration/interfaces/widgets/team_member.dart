@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:octopus/infrastructures/models/user/user_response.dart';
 import 'package:octopus/interfaces/screens/members_profile_screen.dart';
+import 'package:octopus/interfaces/screens/side_bar_screen.dart';
 import 'package:octopus/interfaces/widgets/loading_indicator.dart';
 import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/admin_registration/services/bloc/admin_registration_cubit.dart';
@@ -54,11 +55,20 @@ class _TeamMemberState extends State<TeamMember> {
         ? GestureDetector(
             onTap: () {
               Navigator.of(context).push(
-                MaterialPageRoute<dynamic>(
-                  builder: (_) => MembersProfileScreen(
-                    user: widget.user,
-                    userView: UserView.admin,
+                PageRouteBuilder<dynamic>(
+                  pageBuilder: (
+                    BuildContext context,
+                    Animation<double> animation1,
+                    Animation<double> animation2,
+                  ) =>
+                      SidebarScreen(
+                    child: MembersProfileScreen(
+                      user: widget.user,
+                      userView: UserView.admin,
+                    ),
                   ),
+                  transitionDuration: Duration.zero,
+                  reverseTransitionDuration: Duration.zero,
                 ),
               );
             },
@@ -185,11 +195,20 @@ class _TeamMemberState extends State<TeamMember> {
             child: GestureDetector(
               onTap: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute<dynamic>(
-                    builder: (_) => MembersProfileScreen(
-                      user: widget.user,
-                      userView: UserView.admin,
+                  PageRouteBuilder<dynamic>(
+                    pageBuilder: (
+                      BuildContext context,
+                      Animation<double> animation1,
+                      Animation<double> animation2,
+                    ) =>
+                        SidebarScreen(
+                      child: MembersProfileScreen(
+                        user: widget.user,
+                        userView: UserView.admin,
+                      ),
                     ),
+                    transitionDuration: Duration.zero,
+                    reverseTransitionDuration: Duration.zero,
                   ),
                 );
               },
