@@ -35,80 +35,77 @@ class AdminRegistrationTemplate extends StatelessWidget {
     final double width = MediaQuery.of(context).size.width;
     return Stack(
       children: <Widget>[
-        Positioned(
-          top: 0,
-          child: Container(
-            height: height * 0.87,
-            width: width,
-            padding: const EdgeInsets.symmetric(horizontal: 25.0),
-            child: SingleChildScrollView(
-              child: Container(
-                margin: EdgeInsets.only(bottom: height * 0.07),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Padding(
-                          padding:
-                              EdgeInsets.only(bottom: height * 0.03, top: 20),
-                          child: Align(
-                            alignment: kIsWeb && width > smWebMinWidth
-                                ? Alignment.centerLeft
-                                : Alignment.center,
-                            child: Text(
-                              title,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+        Container(
+          height: height * 0.87,
+          width: width,
+          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+          child: SingleChildScrollView(
+            child: Container(
+              margin: EdgeInsets.only(bottom: height * 0.07),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding:
+                            EdgeInsets.only(bottom: height * 0.03, top: 20),
+                        child: Align(
+                          alignment: kIsWeb && width > smWebMinWidth
+                              ? Alignment.centerLeft
+                              : Alignment.center,
+                          child: Text(
+                            title,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                    if (templateVariation != TemplateVariation.teamMembers)
-                      Container(
-                        width: kIsWeb && width > smWebMinWidth
-                            ? width * 0.10
-                            : width,
-                        margin: EdgeInsets.only(bottom: height * 0.02),
-                        height: height * 0.003,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Flexible(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.blue,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Flexible(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color:
-                                      templateVariation == TemplateVariation.iDs
-                                          ? Colors.blue
-                                          : Colors.grey,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
+                    ],
+                  ),
+                  if (templateVariation != TemplateVariation.teamMembers)
                     Container(
-                      margin: const EdgeInsets.only(top: 10),
-                      child: body,
-                    )
-                  ],
-                ),
+                      width: kIsWeb && width > smWebMinWidth
+                          ? width * 0.10
+                          : width,
+                      margin: EdgeInsets.only(bottom: height * 0.02),
+                      height: height * 0.003,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Flexible(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.blue,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Flexible(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color:
+                                    templateVariation == TemplateVariation.iDs
+                                        ? Colors.blue
+                                        : Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: body,
+                  )
+                ],
               ),
             ),
           ),
