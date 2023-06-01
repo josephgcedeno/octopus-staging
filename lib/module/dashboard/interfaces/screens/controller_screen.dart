@@ -53,9 +53,11 @@ class ControllerScreen extends StatelessWidget {
                                       child: GreetingsStatus(),
                                     ),
                                     panelReminder,
-                                    Padding(
-                                      padding: EdgeInsets.only(top: 8.0),
-                                      child: panelLeavesStatus,
+                                    Expanded(
+                                      child: Padding(
+                                        padding: EdgeInsets.only(top: 8.0),
+                                        child: panelLeavesStatus,
+                                      ),
                                     ),
                                   ],
                                 ),
