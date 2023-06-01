@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:octopus/interfaces/screens/side_bar_screen.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/historical_data/interfaces/screens/daily_time_record_screen.dart';
@@ -17,8 +18,17 @@ class HistoricalDataScreen extends StatelessWidget {
           title: 'Daily Time Record',
           functionCall: () {
             Navigator.of(context).push(
-              MaterialPageRoute<dynamic>(
-                builder: (_) => const DailyTimeRecordScreen(),
+              PageRouteBuilder<dynamic>(
+                pageBuilder: (
+                  BuildContext context,
+                  Animation<double> animation1,
+                  Animation<double> animation2,
+                ) =>
+                    const SidebarScreen(
+                  child: DailyTimeRecordScreen(),
+                ),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
               ),
             );
           },
@@ -28,8 +38,17 @@ class HistoricalDataScreen extends StatelessWidget {
           title: 'Daily Standup Report',
           functionCall: () {
             Navigator.of(context).push(
-              MaterialPageRoute<dynamic>(
-                builder: (_) => const DailyStandUpReportScreen(),
+              PageRouteBuilder<dynamic>(
+                pageBuilder: (
+                  BuildContext context,
+                  Animation<double> animation1,
+                  Animation<double> animation2,
+                ) =>
+                    const SidebarScreen(
+                  child: DailyStandUpReportScreen(),
+                ),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
               ),
             );
           },
@@ -39,8 +58,17 @@ class HistoricalDataScreen extends StatelessWidget {
           title: 'Leave Requests',
           functionCall: () {
             Navigator.of(context).push(
-              MaterialPageRoute<dynamic>(
-                builder: (_) => const LeaveRequestScreen(),
+              PageRouteBuilder<dynamic>(
+                pageBuilder: (
+                  BuildContext context,
+                  Animation<double> animation1,
+                  Animation<double> animation2,
+                ) =>
+                    const SidebarScreen(
+                  child: LeaveRequestScreen(),
+                ),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
               ),
             );
           },

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/interfaces/screens/pdf_viewer_screen.dart';
+import 'package:octopus/interfaces/screens/side_bar_screen.dart';
 import 'package:octopus/interfaces/widgets/upload_progress.dart';
 import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/internal/string_helper.dart';
@@ -65,11 +66,20 @@ class _ReportScreenGeneratorState extends State<ReportScreenGenerator> {
           Navigator.of(context).pop(); // pop the alert dialog
 
           Navigator.of(context).push(
-            MaterialPageRoute<dynamic>(
-              builder: (_) => PDFViewerScreen(
-                pdf: state.document,
-                title: 'Historical Data',
+            PageRouteBuilder<dynamic>(
+              pageBuilder: (
+                BuildContext context,
+                Animation<double> animation1,
+                Animation<double> animation2,
+              ) =>
+                  SidebarScreen(
+                child: PDFViewerScreen(
+                  pdf: state.document,
+                  title: 'Historical Data',
+                ),
               ),
+              transitionDuration: Duration.zero,
+              reverseTransitionDuration: Duration.zero,
             ),
           );
         }
