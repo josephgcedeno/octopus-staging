@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/models/hr/hr_response.dart';
+import 'package:octopus/interfaces/screens/side_bar_screen.dart';
 import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/hr_files/interfaces/screens/pdf_viewer_screen.dart';
 
@@ -56,12 +57,21 @@ class _HrMenuButtonState extends State<HrMenuButton> {
                   onTap: widget.companyFileType != null
                       ? () async {
                           Navigator.of(context).push(
-                            MaterialPageRoute<dynamic>(
-                              builder: (_) => PDFViewerScreen(
-                                title: widget.title,
-                                icon: widget.icon,
-                                companyFileType: widget.companyFileType!,
+                            PageRouteBuilder<dynamic>(
+                              pageBuilder: (
+                                BuildContext context,
+                                Animation<double> animation1,
+                                Animation<double> animation2,
+                              ) =>
+                                  SidebarScreen(
+                                child: PDFViewerScreen(
+                                  title: widget.title,
+                                  icon: widget.icon,
+                                  companyFileType: widget.companyFileType!,
+                                ),
                               ),
+                              transitionDuration: Duration.zero,
+                              reverseTransitionDuration: Duration.zero,
                             ),
                           );
                           setState(() {

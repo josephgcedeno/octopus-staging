@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:octopus/infrastructures/models/hr/hr_response.dart';
+import 'package:octopus/interfaces/screens/side_bar_screen.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/hr_files/interfaces/screens/credential_list_screen.dart';
@@ -16,8 +17,17 @@ class HRFilesScreen extends StatelessWidget {
 
     void navigateToCredentialList() {
       Navigator.of(context).push(
-        MaterialPageRoute<dynamic>(
-          builder: (_) => const CredentialListScreen(),
+        PageRouteBuilder<dynamic>(
+          pageBuilder: (
+            BuildContext context,
+            Animation<double> animation1,
+            Animation<double> animation2,
+          ) =>
+              const SidebarScreen(
+            child: CredentialListScreen(),
+          ),
+          transitionDuration: Duration.zero,
+          reverseTransitionDuration: Duration.zero,
         ),
       );
     }

@@ -55,7 +55,7 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
           Container(
             padding: EdgeInsets.symmetric(
               horizontal: width * 0.055,
-              vertical: height * 0.02,
+              vertical: height * 0.01,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
