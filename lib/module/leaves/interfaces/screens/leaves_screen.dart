@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:octopus/interfaces/screens/side_bar_screen.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/interfaces/widgets/date_and_time_picker.dart';
 import 'package:octopus/interfaces/widgets/loading_indicator.dart';
@@ -65,10 +66,19 @@ class _LeavesScreenState extends State<LeavesScreen> {
       listener: (BuildContext context, LeavesState state) {
         if (state is SubmitLeaveRequestSuccess) {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute<dynamic>(
-              builder: (_) => LeavesDetailsScreen(
-                leaveRequest: state.leaveRequest,
+            PageRouteBuilder<dynamic>(
+              pageBuilder: (
+                BuildContext context,
+                Animation<double> animation1,
+                Animation<double> animation2,
+              ) =>
+                  SidebarScreen(
+                child: LeavesDetailsScreen(
+                  leaveRequest: state.leaveRequest,
+                ),
               ),
+              transitionDuration: Duration.zero,
+              reverseTransitionDuration: Duration.zero,
             ),
           );
 
