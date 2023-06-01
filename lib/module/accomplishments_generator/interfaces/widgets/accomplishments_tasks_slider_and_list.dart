@@ -529,8 +529,8 @@ class _AccomplishmentsSliderAndTasksListState
                       if (state is FetchAllAccomplishmentsDataLoading) {
                         return tasksLoader(context);
                       } else if (state is FetchAllAccomplishmentsDataSuccess) {
-                        if (tasks.isEmpty ||
-                            !tasks.values.any(
+                        if (state.tasks.isEmpty &&
+                            state.tasks.values.any(
                               (List<DSRWorks> category) => category.isEmpty,
                             )) {
                           return Center(

@@ -30,27 +30,34 @@ class AccomplishmentsTaskChecker extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(bottom: height * 0.015),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Row(
-            children: <Widget>[
-              if (hasProfile)
-                CircleAvatar(
-                  minRadius: kIsWeb && width > smWebMinWidth
-                      ? width * 0.009
-                      : width * 0.04,
-                  maxRadius: kIsWeb && width > smWebMinWidth
-                      ? width * 0.009
-                      : width * 0.04,
-                  backgroundImage: const NetworkImage(
-                    'https://cdn-icons-png.flaticon.com/512/201/201634.png',
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                if (hasProfile)
+                  CircleAvatar(
+                    minRadius: kIsWeb && width > smWebMinWidth
+                        ? width * 0.009
+                        : width * 0.04,
+                    maxRadius: kIsWeb && width > smWebMinWidth
+                        ? width * 0.009
+                        : width * 0.04,
+                    backgroundImage: const NetworkImage(
+                      'https://cdn-icons-png.flaticon.com/512/201/201634.png',
+                    ),
+                  ),
+                Expanded(
+                  flex: 2,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Text(title),
                   ),
                 ),
-              Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: Text(title),
-              ),
-            ],
+              ],
+            ),
           ),
           GestureDetector(
             onTap: onTap,
