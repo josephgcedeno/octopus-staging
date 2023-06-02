@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -7,6 +8,7 @@ import 'package:octopus/infrastructures/models/dsr/dsr_response.dart';
 import 'package:octopus/infrastructures/models/project/project_response.dart';
 import 'package:octopus/interfaces/widgets/active_button_tab.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_date_picker.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_dots_indicator.dart';
 import 'package:octopus/module/accomplishments_generator/interfaces/widgets/accomplishments_project_card.dart';
@@ -25,6 +27,7 @@ class AccomplishmentsSliderAndTasksList extends StatefulWidget {
 
 class _AccomplishmentsSliderAndTasksListState
     extends State<AccomplishmentsSliderAndTasksList> {
+  final ScrollController scrollController = ScrollController();
   bool displayTitle = false;
   bool isToday = true;
   bool isClicked = false;
@@ -49,6 +52,8 @@ class _AccomplishmentsSliderAndTasksListState
   Map<String, List<DSRWorks>> selectedTasks = <String, List<DSRWorks>>{};
 
   List<Project> projects = <Project>[];
+
+  int projectIndex = 0;
 
   final List<Widget> selectedTaskWidgets = <Widget>[];
   final List<Widget> taskWidgets = <Widget>[];
@@ -340,30 +345,65 @@ class _AccomplishmentsSliderAndTasksListState
           if (isLoading) sliderLoader(context),
           if (!isLoading)
             Column(
+              mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Container(
-                  width: double.infinity,
+                  width: width,
                   margin: EdgeInsets.symmetric(vertical: height * 0.03),
                   height: height * 0.2,
-                  child: PageView(
-                    controller: _pageController,
-                    clipBehavior: Clip.none,
-                    onPageChanged: _updateProjects,
-                    physics: shouldProjectDateChange() && projects.length > 1
-                        ? const ClampingScrollPhysics()
-                        : const NeverScrollableScrollPhysics(),
-                    children: projects.map((Project project) {
-                      projectID = project.id;
-                      return AccomplishmentsProjectCard(
-                        title: project.projectName,
-                        image: SvgPicture.asset(
-                          whiteLogoSvg,
+                  child: kIsWeb && width > smWebMinWidth
+                      ? Scrollbar(
+                          controller: scrollController,
+                          child: SingleChildScrollView(
+                            controller: scrollController,
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: <Widget>[
+                                for (int i = 0; i < projects.length; i++)
+                                  InkWell(
+                                    hoverColor: Colors.transparent,
+                                    onTap: () {
+                                      setState(
+                                        () => _currentPageIndex = i,
+                                      );
+                                      _updateProjects(i);
+                                    },
+                                    child: AccomplishmentsProjectCard(
+                                      title: projects[i].projectName,
+                                      image: SvgPicture.asset(
+                                        whiteLogoSvg,
+                                        width: width * 0.25,
+                                        height: height * 0.09,
+                                      ),
+                                      textColor: kWhite,
+                                      backgroundColor:
+                                          Color(int.parse(projects[i].color)),
+                                    ),
+                                  )
+                              ],
+                            ),
+                          ),
+                        )
+                      : PageView(
+                          controller: _pageController,
+                          clipBehavior: Clip.none,
+                          onPageChanged: _updateProjects,
+                          physics:
+                              shouldProjectDateChange() && projects.length > 1
+                                  ? const ClampingScrollPhysics()
+                                  : const NeverScrollableScrollPhysics(),
+                          children: projects.map((Project project) {
+                            projectID = project.id;
+                            return AccomplishmentsProjectCard(
+                              title: project.projectName,
+                              image: SvgPicture.asset(
+                                whiteLogoSvg,
+                              ),
+                              textColor: kWhite,
+                              backgroundColor: Color(int.parse(project.color)),
+                            );
+                          }).toList(),
                         ),
-                        textColor: kWhite,
-                        backgroundColor: Color(int.parse(project.color)),
-                      );
-                    }).toList(),
-                  ),
                 ),
                 DotsIndicator(
                   currentIndex: _currentPageIndex,
@@ -371,157 +411,239 @@ class _AccomplishmentsSliderAndTasksListState
                 ),
               ],
             ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: width * 0.05),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    RichText(
-                      text: TextSpan(
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: (_selectedDate.year == _today.year &&
-                                    _selectedDate.month == _today.month &&
-                                    _selectedDate.day == _today.day)
-                                ? 'Today'
-                                : formattedDate,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.primaryColor,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          TextSpan(
-                            text: "'s Task",
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        GestureDetector(
-                          onTap: _selectDateToday,
-                          child: Icon(
-                            Icons.today_outlined,
-                            color: isToday ? theme.primaryColor : kDarkGrey,
-                          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  RichText(
+                    text: TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: (_selectedDate.year == _today.year &&
+                                  _selectedDate.month == _today.month &&
+                                  _selectedDate.day == _today.day)
+                              ? 'Today'
+                              : formattedDate,
+                          style: kIsWeb
+                              ? theme.textTheme.titleMedium?.copyWith(
+                                  color: theme.primaryColor,
+                                  fontWeight: FontWeight.w600,
+                                )
+                              : theme.textTheme.bodyMedium?.copyWith(
+                                  color: theme.primaryColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
                         ),
-                        AccomplishmentsDatePicker(
-                          onDateSelected: _handleDateSelection,
-                          shouldProjectDateChange: shouldProjectDateChange(),
-                          isClicked: !isToday,
+                        TextSpan(
+                          text: "'s Task",
+                          style: kIsWeb
+                              ? theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                )
+                              : theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
                         ),
                       ],
                     ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Wrap(
-                      spacing: 10,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: _selectDateToday,
+                        child: Icon(
+                          Icons.today_outlined,
+                          color: isToday ? theme.primaryColor : kDarkGrey,
+                        ),
+                      ),
+                      AccomplishmentsDatePicker(
+                        onDateSelected: _handleDateSelection,
+                        shouldProjectDateChange: shouldProjectDateChange(),
+                        isClicked: !isToday,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Wrap(
+                      spacing: kIsWeb && width > smWebMinWidth ? 0 : 10,
                       children: <Widget>[
                         ActiveButtonTab(
                           title: 'Done',
                           onPressed: () => toggleCategory('done'),
                           isClicked: shouldHighlightButton('done'),
+                          isWeb: kIsWeb && width > smWebMinWidth,
                         ),
                         ActiveButtonTab(
                           title: 'Doing',
                           onPressed: () => toggleCategory('doing'),
                           isClicked: shouldHighlightButton('doing'),
+                          isWeb: kIsWeb && width > smWebMinWidth,
                         ),
                         ActiveButtonTab(
                           title: 'Blocked',
                           onPressed: () => toggleCategory('blockers'),
                           isClicked: shouldHighlightButton('blockers'),
+                          isWeb: kIsWeb && width > smWebMinWidth,
                         ),
                       ],
                     ),
-                    if (showSelectedTasks)
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: height * 0.010),
-                        child: const Text('Added tasks'),
-                      ),
-                    if (selectedTasks.isNotEmpty)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: selectedTaskWidgets.toList(),
-                      ),
-                    Visibility(
-                      visible: showSelectedTasks & shouldShowTaskstoAdd(),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          const Divider(
-                            height: 4,
-                            color: kDarkGrey,
-                          ),
-                          Padding(
-                            padding:
-                                EdgeInsets.symmetric(vertical: height * 0.014),
-                            child: const Text('Select tasks to add'),
-                          ),
-                        ],
+                  ),
+                  if (showSelectedTasks && !(kIsWeb && width > smWebMinWidth))
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: height * 0.010),
+                      child: const Text('Added tasks'),
+                    ),
+                  if (selectedTasks.isNotEmpty &&
+                      !(kIsWeb && width > smWebMinWidth))
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: selectedTaskWidgets.toList(),
+                    ),
+                  if (showSelectedTasks & shouldShowTaskstoAdd() &&
+                      !(kIsWeb && width > smWebMinWidth))
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8.0),
+                      child: Divider(
+                        height: 4,
+                        color: kDarkGrey,
                       ),
                     ),
-                    BlocBuilder<AccomplishmentsCubit, AccomplishmentsState>(
-                      buildWhen: (
-                        AccomplishmentsState previous,
-                        AccomplishmentsState current,
-                      ) =>
-                          current is FetchAllAccomplishmentsDataLoading ||
-                          current is FetchAllAccomplishmentsDataSuccess,
-                      builder:
-                          (BuildContext context, AccomplishmentsState state) {
-                        if (state is FetchAllAccomplishmentsDataLoading) {
-                          return tasksLoader(context);
-                        } else if (state
-                            is FetchAllAccomplishmentsDataSuccess) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              if ((tasks.isEmpty ||
-                                      tasks.values.any(
-                                        (List<DSRWorks> category) =>
-                                            category.isEmpty,
-                                      )) &&
-                                  (selectedTasks.isEmpty ||
-                                      selectedTasks.values.any(
-                                        (List<DSRWorks> category) =>
-                                            category.isEmpty,
-                                      )))
-                                Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                  BlocBuilder<AccomplishmentsCubit, AccomplishmentsState>(
+                    buildWhen: (
+                      AccomplishmentsState previous,
+                      AccomplishmentsState current,
+                    ) =>
+                        current is FetchAllAccomplishmentsDataLoading ||
+                        current is FetchAllAccomplishmentsDataSuccess,
+                    builder:
+                        (BuildContext context, AccomplishmentsState state) {
+                      if (state is FetchAllAccomplishmentsDataLoading) {
+                        return tasksLoader(context);
+                      } else if (state is FetchAllAccomplishmentsDataSuccess) {
+                        if (state.tasks.isEmpty &&
+                            state.tasks.values.any(
+                              (List<DSRWorks> category) => category.isEmpty,
+                            )) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.all(height * 0.02),
+                                  child: const Icon(
+                                    Icons.error_outline_outlined,
+                                  ),
+                                ),
+                                const Text('No data available'),
+                              ],
+                            ),
+                          );
+                        }
+                        return kIsWeb && width > smWebMinWidth
+                            ? Padding(
+                                padding: const EdgeInsets.only(top: 18.0),
+                                child: IntrinsicHeight(
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: <Widget>[
-                                      Padding(
-                                        padding: EdgeInsets.all(height * 0.02),
-                                        child: const Icon(
-                                          Icons.error_outline_outlined,
+                                      SizedBox(
+                                        width: width * 0.30,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                vertical: height * 0.014,
+                                              ),
+                                              child: Text(
+                                                'Select tasks to add',
+                                                style: theme.textTheme.bodyLarge
+                                                    ?.copyWith(
+                                                  color:
+                                                      kLightBlack.withOpacity(
+                                                    0.7,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            ...taskWidgets.toList(),
+                                          ],
                                         ),
                                       ),
-                                      const Text('No data available'),
+                                      if (showSelectedTasks && kIsWeb)
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                            left: width * 0.03,
+                                            right: width * 0.03,
+                                            top: height * 0.050,
+                                          ),
+                                          child: VerticalDivider(
+                                            color:
+                                                kLightBlack.withOpacity(0.16),
+                                            thickness: 2,
+                                          ),
+                                        ),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            if (showSelectedTasks && kIsWeb)
+                                              Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                  vertical: height * 0.010,
+                                                ),
+                                                child: Text(
+                                                  'Added tasks',
+                                                  style: theme
+                                                      .textTheme.bodyLarge
+                                                      ?.copyWith(
+                                                    color:
+                                                        kLightBlack.withOpacity(
+                                                      0.7,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            if (selectedTasks.isNotEmpty)
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: selectedTaskWidgets
+                                                    .toList(),
+                                              ),
+                                          ],
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
-                              ...taskWidgets.toList(),
-                            ],
-                          );
-                        }
-                        return const Placeholder();
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                              )
+                            : Padding(
+                                padding: const EdgeInsets.only(top: 18.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: taskWidgets.toList(),
+                                ),
+                              );
+                      }
+                      return const Placeholder();
+                    },
+                  ),
+                ],
+              ),
+            ],
           ),
         ],
       ),

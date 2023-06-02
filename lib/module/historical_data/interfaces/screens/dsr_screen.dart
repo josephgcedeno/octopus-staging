@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/infrastructures/models/project/project_response.dart';
+import 'package:octopus/interfaces/screens/side_bar_screen.dart';
 import 'package:octopus/internal/helper_function.dart';
 import 'package:octopus/module/historical_data/interfaces/screens/report_screen_generator.dart';
 import 'package:octopus/module/historical_data/interfaces/widgets/historical_screen_template.dart';
@@ -65,15 +66,24 @@ class _DailyStandUpReportScreenState extends State<DailyStandUpReportScreen> {
                   );
 
               Navigator.of(context).push(
-                MaterialPageRoute<dynamic>(
-                  builder: (_) => ReportScreenGenerator(
-                    reportDate: startDateToEndDateLabel(
-                      to: callbackReturnData.to,
-                      from: callbackReturnData.from,
-                      today: callbackReturnData.today,
+                PageRouteBuilder<dynamic>(
+                  pageBuilder: (
+                    BuildContext context,
+                    Animation<double> animation1,
+                    Animation<double> animation2,
+                  ) =>
+                      SidebarScreen(
+                    child: ReportScreenGenerator(
+                      reportDate: startDateToEndDateLabel(
+                        to: callbackReturnData.to,
+                        from: callbackReturnData.from,
+                        today: callbackReturnData.today,
+                      ),
+                      reportType: ReportType.dsr,
                     ),
-                    reportType: ReportType.dsr,
                   ),
+                  transitionDuration: Duration.zero,
+                  reverseTransitionDuration: Duration.zero,
                 ),
               );
             },

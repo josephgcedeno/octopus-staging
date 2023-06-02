@@ -19,6 +19,7 @@ import 'package:octopus/infrastructures/service/cubit/user_cubit.dart';
 import 'package:octopus/interfaces/screens/splash_screen.dart';
 import 'package:octopus/internal/debug_utils.dart';
 import 'package:octopus/module/accomplishments_generator/service/cubit/accomplishments_cubit.dart';
+import 'package:octopus/module/add_new_project/service/cubit/add_new_project_cubit.dart';
 import 'package:octopus/module/admin_registration/services/bloc/admin_registration_cubit.dart';
 import 'package:octopus/module/dashboard/interfaces/screens/controller_screen.dart';
 import 'package:octopus/module/dashboard/service/cubit/reminder_cubit.dart';
@@ -37,9 +38,17 @@ void main() async {
   /// Load env file
   await dotenv.load();
 
-  final String appId = dotenv.get('APP_ID');
-  final String serverUrl = dotenv.get('SERVER_URL');
-  final String masterKey = dotenv.get('MASTER_KEY');
+  final String appId = dotenv.get('API_ENV') == 'staging'
+      ? dotenv.get('STAGING_APP_ID')
+      : dotenv.get('APP_ID');
+
+  final String serverUrl = dotenv.get('API_ENV') == 'staging'
+      ? dotenv.get('STAGING_SERVER_URL')
+      : dotenv.get('SERVER_URL');
+
+  final String masterKey = dotenv.get('API_ENV') == 'staging'
+      ? dotenv.get('STAGING_MASTER_KEY')
+      : dotenv.get('MASTER_KEY');
 
   final String liveQueryUrl = 'ws://${serverUrl.split('/')[2]}/';
 
@@ -108,6 +117,11 @@ class _AppState extends State<App> {
             leaveRepository: leaveRepository,
           ),
         ),
+        BlocProvider<AddNewProjectCubit>(
+          create: (BuildContext context) => AddNewProjectCubit(
+            projectRepository: projectRepository,
+          ),
+        ),
         BlocProvider<AdminRegistrationCubit>(
           create: (BuildContext context) => AdminRegistrationCubit(
             iUserRepository: userRepository,
@@ -144,7 +158,6 @@ class _AppState extends State<App> {
       ],
       child: MaterialApp(
         scaffoldMessengerKey: snackbarKey,
-        title: dotenv.get('TITLE'),
         home: _HomePageState(),
         theme: defaultTheme,
         supportedLocales: const <Locale>[

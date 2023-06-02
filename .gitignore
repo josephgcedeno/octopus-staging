@@ -32,6 +32,8 @@
 .pub-cache/
 .pub/
 /build/
+/android/app/build/
+
 
 # Web related
 lib/generated_plugin_registrant.dart
@@ -47,3 +49,4 @@ app.*.map.json
 
 # Generated JSON Serializable files
 *.g.dart
+

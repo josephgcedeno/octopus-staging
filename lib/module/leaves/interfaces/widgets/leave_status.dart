@@ -65,7 +65,7 @@ class _LeaveStatusIndicatorState extends State<LeaveStatusIndicator> {
         borderRadius: BorderRadius.circular(15),
         color: currentStatus[widget.status]!.color.withOpacity(0.1),
       ),
-      width: kIsWeb ? width * 0.3 : width * 0.9,
+      width: width,
       height: kIsWeb ? height * 0.15 : height * 0.12,
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.only(bottom: 10),

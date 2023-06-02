@@ -16,7 +16,9 @@ import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class PDFRepository implements IPDFRepository {
   final String _generatePdfUrl = '/generate-pdf';
-  late final String _baseUrlApi = dotenv.get('STAGING_PARSE_SERVER_API');
+  late final String _baseUrlApi = dotenv.get('API_ENV') == 'staging'
+      ? dotenv.get('STAGING_PARSE_SERVER_API')
+      : dotenv.get('PARSE_SERVER_API');
 
   @override
   Future<APIResponse<Uint8List>> generateHistoricalReport({

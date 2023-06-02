@@ -20,37 +20,40 @@ class _ControllerScreenState extends State<ControllerScreen> {
     final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      appBar: const GlobalAppBar(leading: LeadingButton.name),
-      body: Center(
-        child: SizedBox(
-          width: kIsWeb ? 500 : width * 0.9,
-          child: Column(
-            children: <Widget>[
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: PanelReminder(),
-              ),
-              Expanded(
-                child: ListView(
-                  children: <Widget>[
-                    Container(
-                      margin: EdgeInsets.symmetric(vertical: height * 0.02),
-                      child: Text(
-                        'Tools',
-                        style: theme.textTheme.bodyMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    const ToolsAvailable(),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 8.0),
-                      child: PanelLeavesStatus(),
-                    ),
-                  ],
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: const GlobalAppBar(leading: LeadingButton.name),
+        body: Center(
+          child: SizedBox(
+            width: kIsWeb ? 500 : width * 0.9,
+            child: Column(
+              children: <Widget>[
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: PanelReminder(),
                 ),
-              )
-            ],
+                Expanded(
+                  child: ListView(
+                    children: <Widget>[
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: height * 0.02),
+                        child: Text(
+                          'Tools',
+                          style: theme.textTheme.bodyMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      const ToolsAvailable(),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 8.0),
+                        child: PanelLeavesStatus(),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),

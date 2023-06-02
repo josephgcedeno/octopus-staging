@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
 import 'package:octopus/infrastructures/models/user/user_response.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 
 class ReportDTRPage extends StatelessWidget {
   const ReportDTRPage({required this.employeeAttendances, Key? key})
@@ -10,12 +12,24 @@ class ReportDTRPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final double width = MediaQuery.of(context).size.width;
 
     return Container(
-      color: kLightGrey.withOpacity(0.2),
       padding: const EdgeInsets.only(
         top: 24,
         right: 10,
+      ),
+      decoration: BoxDecoration(
+        color: kLightGrey.withOpacity(0.2),
+        border: kIsWeb && width > smWebMinWidth
+            ? Border(
+                bottom: BorderSide(
+                  color: kLightBlack
+                      .withOpacity(0.10), // Replace with your desired color
+                  width: 2.0, // Replace with your desired width
+                ),
+              )
+            : null,
       ),
       child: PageView.builder(
         itemCount: employeeAttendances.length,

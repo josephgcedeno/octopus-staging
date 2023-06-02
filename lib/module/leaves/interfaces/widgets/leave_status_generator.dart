@@ -95,16 +95,22 @@ class _LeaveStatusGeneratorState extends State<LeaveStatusGenerator> {
                   )
               ],
             )
-          : ListView.builder(
-              shrinkWrap: true,
-              itemCount: leaves.length,
-              itemBuilder: (BuildContext context, int index) {
-                return LeaveSlideableButton(
-                  key: UniqueKey(),
-                  leaveRequest: leaves[index],
-                );
-              },
-            ),
+          : leaves.isNotEmpty
+              ? ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: leaves.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return LeaveSlideableButton(
+                      key: UniqueKey(),
+                      leaveRequest: leaves[index],
+                    );
+                  },
+                )
+              : const Center(
+                  child: Text(
+                    'No record available.',
+                  ),
+                ),
     );
   }
 }

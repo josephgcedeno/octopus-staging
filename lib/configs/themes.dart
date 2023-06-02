@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 final ThemeData defaultTheme = _buildDefaultTheme();
@@ -58,6 +59,18 @@ TextTheme _buildDefaultTextTheme(TextTheme base) {
   );
 }
 
+ButtonStyle primaryButtonStyle = ButtonStyle(
+  elevation: MaterialStateProperty.all(0),
+  shape: MaterialStateProperty.all(
+    RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(6),
+    ),
+  ),
+  padding: kIsWeb
+      ? MaterialStateProperty.all(const EdgeInsets.symmetric(vertical: 20))
+      : MaterialStateProperty.all(const EdgeInsets.all(10)),
+);
+
 const Color shimmerBase = Colors.white38;
 const Color shimmerGlow = Colors.white60;
 const Color gradient1 = Color(0xFF57A6FC);
@@ -69,3 +82,4 @@ const String logoPng = 'assets/images/app_logo.png';
 const String nuxifyLogoSvg = 'assets/images/nuxify_logo_text.svg';
 const String nuxifyLogoPng = 'assets/images/nuxify_logo_text.png';
 const String nuxifyTakingNotesSvg = 'assets/images/taking_notes.svg';
+const String logoSvgWithText = 'assets/images/project_octopus_logo_text.svg';

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:octopus/infrastructures/models/user/user_response.dart';
 import 'package:octopus/infrastructures/repository/interfaces/user_repository.dart';
+import 'package:octopus/interfaces/screens/side_bar_screen.dart';
 import 'package:octopus/interfaces/widgets/appbar.dart';
 import 'package:octopus/interfaces/widgets/widget_loader.dart';
 import 'package:octopus/internal/debug_utils.dart';
@@ -102,12 +103,20 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
         body: AdminRegistrationTemplate(
           templateVariation: TemplateVariation.teamMembers,
           buttonName: 'Add Member',
-          subtitle: 'Current Members',
           title: 'Team Members',
           buttonFunction: () {
             Navigator.of(context).push(
-              MaterialPageRoute<dynamic>(
-                builder: (_) => const PersonalInformationFormScreen(),
+              PageRouteBuilder<dynamic>(
+                pageBuilder: (
+                  BuildContext context,
+                  Animation<double> animation1,
+                  Animation<double> animation2,
+                ) =>
+                    const SidebarScreen(
+                  child: PersonalInformationFormScreen(),
+                ),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
               ),
             );
           },
@@ -132,7 +141,16 @@ class _TeamMembersScreenState extends State<TeamMembersScreen> {
               } else {
                 return SizedBox(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 11.0),
+                        child: Text(
+                          'Current Members',
+                          style: theme.textTheme.titleSmall
+                              ?.copyWith(fontWeight: FontWeight.w500),
+                        ),
+                      ),
                       if (activated.isEmpty)
                         const Center(
                           child: Text('There is no Activated Members'),

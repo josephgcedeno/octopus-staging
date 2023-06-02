@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:octopus/internal/debug_utils.dart';
@@ -162,12 +161,10 @@ class _DateTimePickerState<T> extends State<DateTimePicker<T>> {
                         ),
                         child: Text(
                           i == 0 ? 'From' : 'To',
-                          style: kIsWeb
-                              ? theme.textTheme.titleLarge
-                              : theme.textTheme.titleMedium?.copyWith(
-                                  color: blackColor,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: blackColor,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     SizedBox(

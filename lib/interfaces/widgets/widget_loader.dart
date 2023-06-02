@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -144,19 +146,34 @@ Widget sliderLoader(BuildContext context) {
   return Column(
     children: <Widget>[
       Container(
-        margin: EdgeInsets.symmetric(
-          vertical: height * 0.03,
-          horizontal: width * 0.08,
-        ),
-        alignment: Alignment.center,
-        child: lineLoader(
-          height: height * 0.2,
-          width: double.infinity,
-        ),
+        margin: kIsWeb && width > smWebMinWidth
+            ? const EdgeInsets.symmetric(vertical: 15)
+            : EdgeInsets.symmetric(
+                vertical: height * 0.03,
+                horizontal: width * 0.08,
+              ),
+        alignment: kIsWeb ? Alignment.centerLeft : Alignment.center,
+        child: kIsWeb
+            ? Row(
+                children: <Widget>[
+                  for (int i = 0; i < 3; i++)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: lineLoader(
+                        height: height * 0.15,
+                        width: width * 0.15,
+                      ),
+                    )
+                ],
+              )
+            : lineLoader(
+                height: height * 0.15,
+                width: width,
+              ),
       ),
       lineLoader(
         height: height * 0.010,
-        width: width * 0.13,
+        width: kIsWeb ? width * 0.05 : width * 0.13,
       )
     ],
   );
@@ -173,13 +190,13 @@ Widget tasksLoader(BuildContext context) {
         Row(
           children: <Widget>[
             Container(
-              margin: EdgeInsets.all(width * 0.03),
+              margin: EdgeInsets.all(kIsWeb ? 10 : width * 0.03),
               decoration: const BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
               ),
               child: CircularPercentIndicator(
-                radius: width * 0.04,
+                radius: kIsWeb ? width * 0.006 : width * 0.04,
                 lineWidth: 1.5,
                 backgroundColor: Colors.transparent,
                 progressColor: Colors.transparent,
@@ -200,7 +217,7 @@ Widget tasksLoader(BuildContext context) {
                 ),
               ),
             ),
-            lineLoader(height: 12, width: width * 0.72),
+            lineLoader(height: 12, width: kIsWeb ? width * 0.10 : width * 0.72),
           ],
         )
     ],

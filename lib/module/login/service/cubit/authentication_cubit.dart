@@ -42,6 +42,11 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     }
   }
 
+  /// For development purposes only
+  Future<void> logout() async {
+    await authRepository.logout();
+  }
+
   Future<void> validateToken() async {
     try {
       await authRepository.isLoggedIn();

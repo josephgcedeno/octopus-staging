@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:octopus/configs/themes.dart';
+import 'package:octopus/internal/screen_resolution_utils.dart';
 
 enum CheckerType {
   selected,
@@ -26,30 +28,41 @@ class AccomplishmentsTaskChecker extends StatelessWidget {
     final double width = MediaQuery.of(context).size.width;
 
     return Container(
-      margin: EdgeInsets.symmetric(vertical: height * 0.015),
+      margin: EdgeInsets.only(bottom: height * 0.015),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Row(
-            children: <Widget>[
-              if (hasProfile)
-                CircleAvatar(
-                  minRadius: width * 0.04,
-                  maxRadius: width * 0.04,
-                  backgroundImage: const NetworkImage(
-                    'https://cdn-icons-png.flaticon.com/512/201/201634.png',
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                if (hasProfile)
+                  CircleAvatar(
+                    minRadius: kIsWeb && width > smWebMinWidth
+                        ? width * 0.009
+                        : width * 0.04,
+                    maxRadius: kIsWeb && width > smWebMinWidth
+                        ? width * 0.009
+                        : width * 0.04,
+                    backgroundImage: const NetworkImage(
+                      'https://cdn-icons-png.flaticon.com/512/201/201634.png',
+                    ),
+                  ),
+                Expanded(
+                  flex: 2,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Text(title),
                   ),
                 ),
-              Padding(
-                padding: EdgeInsets.only(left: width * 0.03),
-                child: Text(title),
-              ),
-            ],
+              ],
+            ),
           ),
           GestureDetector(
             onTap: onTap,
             child: Container(
-              padding: EdgeInsets.all(width * 0.01),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: type == CheckerType.selected
                     ? kLightRed.withOpacity(0.08)

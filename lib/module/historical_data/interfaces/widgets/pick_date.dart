@@ -44,21 +44,29 @@ class _PickDateState extends State<PickDate> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         const Text('Pick a date'),
-        Row(
-          children: <Widget>[
-            ActiveButtonTab(
-              title: 'Today',
-              onPressed: () => setState(() => isToday = true),
-              isClicked: isToday,
-            ),
-            ActiveButtonTab(
-              title: 'Custom',
-              onPressed: () => setState(() => isToday = false),
-              isClicked: !isToday,
-            ),
-          ],
+        Padding(
+          padding: const EdgeInsets.only(
+            bottom: 15.5,
+            top: 12,
+          ),
+          child: Wrap(
+            spacing: 10,
+            children: <Widget>[
+              ActiveButtonTab(
+                title: 'Today',
+                onPressed: () => setState(() => isToday = true),
+                isClicked: isToday,
+              ),
+              ActiveButtonTab(
+                title: 'Custom',
+                onPressed: () => setState(() => isToday = false),
+                isClicked: !isToday,
+              ),
+            ],
+          ),
         ),
         if (isToday)
           TextField(

@@ -85,7 +85,6 @@ class _DownloadButtonState extends State<DownloadButton> {
 
   @override
   Widget build(BuildContext context) {
-    final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
 
     return GestureDetector(
@@ -98,7 +97,7 @@ class _DownloadButtonState extends State<DownloadButton> {
         }
       },
       child: Container(
-        padding: EdgeInsets.all(width * 0.015),
+        padding: const EdgeInsets.all(9),
         decoration: BoxDecoration(
           color: kLightGrey,
           borderRadius: BorderRadius.circular(10),
